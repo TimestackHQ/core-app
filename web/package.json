@@ -1,0 +1,47 @@
+{
+  "name": "timelist",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@daypilot/daypilot-lite-react": "^3.11.0",
+    "@devexpress/dx-react-core": "^4.0.2",
+    "@devexpress/dx-react-scheduler": "^4.0.2",
+    "@devexpress/dx-react-scheduler-material-ui": "^4.0.2",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.11.0",
+    "@mui/material": "^5.11.3",
+    "autocorrect": "^1.2.0",
+    "axios": "^1.2.1",
+    "bootstrap": "^5.2.2",
+    "chrono-node": "^2.5.0",
+    "joi": "^17.7.0",
+    "joi-phone-number": "^5.1.1",
+    "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
+    "next": "13.0.0",
+    "next-redux-wrapper": "^8.0.0",
+    "react": "18.2.0",
+    "react-big-calendar": "^1.5.2",
+    "react-dom": "18.2.0",
+    "react-fade-in": "^2.0.1",
+    "react-no-ssr": "^1.1.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.0",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.2",
+    "sass": "^1.57.1",
+    "sugar": "^2.0.6",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "8.26.0",
+    "eslint-config-next": "13.0.0"
+  }
+}

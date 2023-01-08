@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html,
+body {
+    font-family: 'Raleway', sans-serif;
+    /*background-image: linear-gradient(180deg, #eee, #fff 100px, #fff);*/
+    background-color: #fafafa;
+    height: 100%;
+
+}
+
+.card {
+    border-color: white;
+}
+
+.btn {
+    border-radius: 1rem;
+}
+
+.alert {
+    border-radius: 1rem;
+}
+
+.border-rounded {
+    border-radius: 20px;
+}
+
+.natural-language-main-input {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.main-shadow {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.result-card-body {
+    border-color: #494949;
+    border-width: 1px;
+    border-radius: 20px;
+    margin: 8px;
+}
+
+.day-name {
+
+}
+
+.day-number {
+    border-radius: 10px;
+    margin-right: 3px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.save-button {
+    border-radius: 18px;
+    background-color: #FFEDE0;
+    color: black;
+    margin-right: 5px;
+}
+
+.save-button:hover {
+    border-radius: 18px;
+    background-color: #FFC093;
+    color: black;
+}
+
+.send-button {
+    border-radius: 18px;
+    background-color: #FFC093;
+    color: black;
+    width: 250px
+}
+
+.send-button:hover {
+    border-radius: 18px;
+    background-color: #ff8e41;
+    color: black;
+}
+
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.btn-selected:after {
+    content: " Selected"
+}
+.btn-selected:hover:after {
+    content: " Remove"
+}

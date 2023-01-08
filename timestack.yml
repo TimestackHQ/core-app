@@ -1,0 +1,13 @@
+name: app
+version: 0.0.1
+
+teammates:
+    - name: MingXi Gu
+      role: CEO
+      email: mingixi
+    - name: Achraf Ghellach
+      role: CTO
+      email: achraf
+
+services:
+  - api_service
