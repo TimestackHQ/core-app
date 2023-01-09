@@ -50,7 +50,6 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         rm -rf .dist
-        cd ..
         tsc --build .
         mv ./.dist ./ApiService/.dist
         cp -R ./ApiService/package.json ./ApiService/.dist/ApiService/package.json
