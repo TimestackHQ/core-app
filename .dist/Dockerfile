@@ -3,7 +3,7 @@ FROM node:17
 # Create app directory
 WORKDIR /app
 
-COPY ./.dist ./
+COPY ./ ./
 
 USER root
 RUN chmod -R 777 ./
