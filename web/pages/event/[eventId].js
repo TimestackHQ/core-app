@@ -126,109 +126,113 @@ export default function Event () {
 							</form>
 						</div>
 						<div className={"col-8"}>
-							<h4>Availabilities</h4>
-							<div className={"col-12"}>
-								<form onSubmit={processPrompt} className="input-group mb-3">
+							<div className={"card result-card-body"}>
+								<div className={"card-body "}>
+								<h4>Timeslots</h4>
+								<div className={"col-12"}>
+									<form onSubmit={processPrompt} className="input-group mb-3">
 
-									<input autoFocus={true} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder={"Add your availabilities"} className={"form-control"}/>
-									<button type={"submit"} className={"btn btn-outline-secondary btn-block"}>Add</button>
-								</form>
-							</div>
-							<div className={"col-12"}>
-								{Draft(prompt).timeRanges.map((day, i) => (
-									<h6 key={i}>
-										<b>{moment(day?.start).format("ddd, MMM Do")}:</b> {moment(day?.start).format("LT")} to {moment(day?.end).format("LT")}
+										<input autoFocus={true} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder={"Add timeslots"} className={"form-control"}/>
+										<button type={"submit"} className={"btn btn-outline-secondary btn-block"}>Add</button>
+									</form>
+								</div>
+								<div className={"col-12"}>
+									{Draft(prompt).timeRanges.map((day, i) => (
+										<h6 key={i}>
+											<b>{moment(day?.start).format("ddd, MMM Do")}:</b> {moment(day?.start).format("LT")} to {moment(day?.end).format("LT")}
 
 
-									</h6>
-								))}
-							</div>
-							<hr/>
-							<ul className="nav nav-tabs" id="pills-tab" role="tablist">
-								<li className="nav-item" role="presentation">
-									<button className="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-									        data-bs-target="#pills-home" type="button" role="tab"
-									        aria-controls="pills-home" aria-selected="true">List
-									</button>
-								</li>
-								<li className="nav-item" role="presentation">
-									<button className="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-									        data-bs-target="#pills-profile" type="button" role="tab"
-									        aria-controls="pills-profile" aria-selected="false">Visual
-									</button>
-								</li>
-							</ul>
-							<div className="tab-content" id="pills-tabContent">
-								<div className="tab-pane fade show active" id="pills-home" role="tabpanel"
-								     aria-labelledby="pills-home-tab">
-
-									<br/>
-										{timeRanges?.map((availability, i) => (
-										<FadeIn key={i}>
-											<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
-												<div className={"card-body  row"} >
-													<div className={"col-7"}>
-														<h6><b>{moment(availability.start).format("ddd, MMMM D, h:mm a")}</b> to {moment(availability.end).format("h:mm a")}</h6>
-													</div>
-													<div className={"col-5"}>
-														<button onClick={
-															() => setTimeRanges(timeRanges.filter(time => time !== availability))
-														} style={{width: "100%"}} className={"btn btn-primary btn-block btn-selected"}>
-															<i className="fa-solid fa-check"></i></button>
-													</div>
-												</div>
-											</div>
-											<br/>
-										</FadeIn>
+										</h6>
 									))}
+								</div>
+								<hr/>
+								<ul className="nav nav-tabs" id="pills-tab" role="tablist">
+									<li className="nav-item" role="presentation">
+										<button className="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+										        data-bs-target="#pills-home" type="button" role="tab"
+										        aria-controls="pills-home" aria-selected="true">List
+										</button>
+									</li>
+									<li className="nav-item" role="presentation">
+										<button className="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+										        data-bs-target="#pills-profile" type="button" role="tab"
+										        aria-controls="pills-profile" aria-selected="false">Visual
+										</button>
+									</li>
+								</ul>
+								<div className="tab-content" id="pills-tabContent">
+									<div className="tab-pane fade show active" id="pills-home" role="tabpanel"
+									     aria-labelledby="pills-home-tab">
 
-										{timeRanges?.length === 0 && event?.availabilities.filter(e => e.selected).length === 0 ? null : <Fragment>
-										<h5>People&apos;s availabilities</h5>
-										{event?.availabilities.sort((a, b) => moment(a.start).unix() - moment(b.start).unix()).map((availability, i) => {
-											const toggle = () => setEvent({
-												...event,
-												availabilities: event.availabilities.map((availability, j) => {
-													if (i === j) {
-														return {
-															...availability,
-															selected: !availability.selected
-														}
-													}
-													return availability
-												})
-											})
-											return (
-												<FadeIn key={i}>
-													<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
-														<div className={"card-body  row"} >
-															<div className={"col-7"}>
-																<h6><b>{moment(availability.start).format("ddd, MMMM Do YYYY, h:mm a")}</b> to {moment(availability.end).format("h:mm a")}</h6>
-															</div>
-															<div className={"col-5"}>
-																{
-																	availability.selected ? <button style={{width: "100%"}} className={"btn btn-success btn-block btn-selected"} onClick={toggle} ><i className="fa-solid fa-check"></i></button> :
-																		<button onClick={toggle} style={{width: "100%"}} className={"btn btn-outline-secondary btn-block"}>Select</button>
-																}
-															</div>
-															<AvailabilityRate users={event.users} availability={availability}/>
+										<br/>
+											{timeRanges?.map((availability, i) => (
+											<FadeIn key={i}>
+												<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
+													<div className={"card-body  row"} >
+														<div className={"col-7"}>
+															<h6><b>{moment(availability.start).format("ddd, MMMM D, h:mm a")}</b> to {moment(availability.end).format("h:mm a")}</h6>
+														</div>
+														<div className={"col-5"}>
+															<button onClick={
+																() => setTimeRanges(timeRanges.filter(time => time !== availability))
+															} style={{width: "100%"}} className={"btn btn-primary btn-block btn-selected"}>
+																<i className="fa-solid fa-check"></i></button>
 														</div>
 													</div>
-													<br/>
-												</FadeIn>
-											)
-										})}
+												</div>
+												<br/>
+											</FadeIn>
+										))}
 
-									</Fragment>}
+											{timeRanges?.length === 0 && event?.availabilities.filter(e => e.selected).length === 0 ? null : <Fragment>
+											<h5>People&apos;s timeslots</h5>
+											{event?.availabilities.sort((a, b) => moment(a.start).unix() - moment(b.start).unix()).map((availability, i) => {
+												const toggle = () => setEvent({
+													...event,
+													availabilities: event.availabilities.map((availability, j) => {
+														if (i === j) {
+															return {
+																...availability,
+																selected: !availability.selected
+															}
+														}
+														return availability
+													})
+												})
+												return (
+													<FadeIn key={i}>
+														<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
+															<div className={"card-body  row"} >
+																<div className={"col-7"}>
+																	<h6><b>{moment(availability.start).format("dddd, MMM Do")} {moment(availability.start).format("YYYY") === moment().format("YYYY") ? null : moment(availability.start).format("YYYY")} </b><br/>{moment(availability.start).format("h:mm A")} to {moment(availability.end).format("h:mm A")}</h6>
+																</div>
+																<div className={"col-5"}>
+																	{
+																		availability.selected ? <button style={{width: "100%"}} className={"btn btn-success btn-block btn-selected"} onClick={toggle} ><i className="fa-solid fa-check"></i></button> :
+																			<button onClick={toggle} style={{width: "100%"}} className={"btn btn-outline-secondary btn-block"}>Select</button>
+																	}
+																</div>
+																<AvailabilityRate users={event.users} availability={availability}/>
+															</div>
+														</div>
+														<br/>
+													</FadeIn>
+												)
+											})}
 
+										</Fragment>}
+
+									</div>
+									{/*<div className="tab-pane fade" id="pills-profile" role="tabpanel"*/}
+									{/*     aria-labelledby="pills-profile-tab">*/}
+									{/*	<FadeIn><CalendarView/></FadeIn>*/}
+									{/*</div>*/}
 								</div>
-								{/*<div className="tab-pane fade" id="pills-profile" role="tabpanel"*/}
-								{/*     aria-labelledby="pills-profile-tab">*/}
-								{/*	<FadeIn><CalendarView/></FadeIn>*/}
-								{/*</div>*/}
+
+
+								<br/>
+								</div>
 							</div>
-
-
-							<br/>
 							{/*<input className={"form-control"} type={"datetime-local"}/>*/}
 
 						</div>

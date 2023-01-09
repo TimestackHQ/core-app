@@ -112,7 +112,7 @@ export default function Home() {
 											</svg>
 											<br/>
 											<br/>
-											<h4 className={"text-left"}>Sent !</h4>
+											<h4 className={"text-left"}>Sent!</h4>
 											<h3>{event.name}</h3>
 
 										</div>
@@ -121,7 +121,7 @@ export default function Home() {
 											navigator.clipboard.writeText(event.link)
 											setCopied(true)
 										}} style={{borderColor: "black", borderRadius: "1rem"}}>
-											<div className={"card-body btn btn-outline"}>
+											<div className={"card-body btn btn-outline justify-content-start"}>
 												<h5>{event.link} <img style={{
 													position: "absolute",
 													right: 10,
@@ -162,7 +162,7 @@ export default function Home() {
 								<div className="card main-shadow border-rounded">
 									<div className="card-body text-center">
 										<img src="images/eventloader.gif" width={"100px"} className="img-fluid" alt="logo"/>
-										<h5>Creating your event.</h5>
+										<h5>Creating your event</h5>
 										<br/>
 									</div>
 								</div>
@@ -287,7 +287,7 @@ export default function Home() {
 														setPrompt(prompt + " " + e.target[0].value);
 														document.getElementById("morePrompt").value = "";
 													}}>
-														{draft.timeRanges?.length === 0 ? null : <input id={"morePrompt"} style={{borderRadius: "1rem"}} className={"form-control"} placeholder={"Add timeslot"} />}
+														{draft.timeRanges?.length === 0 ? null : <input id={"morePrompt"} style={{borderRadius: "1rem"}} className={"form-control"} placeholder={"Add timeslots"} />}
 													</form>
 												</div>
 
@@ -334,7 +334,7 @@ export default function Home() {
 														setPrompt(prompt + " " + e.target[0].value);
 														document.getElementById("morePrompt2").value = "";
 													}}>
-														{draft.contacts?.length === 0 ? null : <input id={"morePrompt2"} style={{borderRadius: "1rem", marginTop: "10px"}} className={"form-control"} placeholder={"Add a contact"} />}
+														{draft.contacts?.length === 0 ? null : <input id={"morePrompt2"} style={{borderRadius: "1rem", marginTop: "10px"}} className={"form-control"} placeholder={"Add contacts"} />}
 													</form>
 												</div>
 											</div>
