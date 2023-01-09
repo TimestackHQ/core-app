@@ -51,7 +51,7 @@ jobs:
         # be deployed to ECS.
         rm -rf .dist
         cd ..
-        tsc
+        tsc --build .
         mv ./.dist ./ApiService/.dist
         cp -R ./ApiService/package.json ./ApiService/.dist/ApiService/package.json
         cp -R ./shared/package.json ./ApiService/.dist/shared/package.json
