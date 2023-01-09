@@ -110,8 +110,8 @@ export default function Event () {
 							<h4>People</h4>
 							<PeopleList people={event?.people} event={event}/>
 							{
-								contacts.map(contact => (
-									<h6 className={"ml-2"}>
+								contacts.map((contact, i) => (
+									<h6 key={i} className={"ml-2"}>
 										<img style={{border: "1px solid black", borderRadius: "5px"}} width={"25px"} src={"/images/default.png"}/> {contact.anchor}
 									</h6>
 								))
@@ -135,8 +135,8 @@ export default function Event () {
 								</form>
 							</div>
 							<div className={"col-12"}>
-								{Draft(prompt).timeRanges.map(day => (
-									<h6>
+								{Draft(prompt).timeRanges.map((day, i) => (
+									<h6 key={i}>
 										<b>{moment(day?.start).format("ddd, MMM Do")}:</b> {moment(day?.start).format("LT")} to {moment(day?.end).format("LT")}
 
 
@@ -163,8 +163,8 @@ export default function Event () {
 								     aria-labelledby="pills-home-tab">
 
 									<br/>
-										{timeRanges?.map(availability => (
-										<FadeIn>
+										{timeRanges?.map((availability, i) => (
+										<FadeIn key={i}>
 											<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
 												<div className={"card-body  row"} >
 													<div className={"col-7"}>
@@ -183,7 +183,7 @@ export default function Event () {
 									))}
 
 										{timeRanges?.length === 0 && event?.availabilities.filter(e => e.selected).length === 0 ? null : <Fragment>
-										<h5>People's availabilities</h5>
+										<h5>People&apos;s availabilities</h5>
 										{event?.availabilities.sort((a, b) => moment(a.start).unix() - moment(b.start).unix()).map((availability, i) => {
 											const toggle = () => setEvent({
 												...event,
@@ -198,7 +198,7 @@ export default function Event () {
 												})
 											})
 											return (
-												<FadeIn>
+												<FadeIn key={i}>
 													<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
 														<div className={"card-body  row"} >
 															<div className={"col-7"}>

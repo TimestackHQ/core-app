@@ -369,7 +369,7 @@ export default function Home() {
 												<div className={"row"}>
 													<h5>Activity</h5>
 														{events?.map((event, index) => (
-															<FadeIn>
+															<FadeIn key={index}>
 																<div key={index} className={"card result-card-body"} style={{borderWidth: "1px"}}>
 																	<div className={"card-body "} style={{borderColor: "black"}}>
 																		<Link style={{color: "black"}} href={"./event/"+event.publicId}><h5 className={"card-title"}>{event.name}</h5></Link>

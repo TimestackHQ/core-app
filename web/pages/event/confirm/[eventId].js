@@ -105,7 +105,7 @@ export default function Event () {
 								{event?.availabilities.sort((a, b) => moment(a.start).unix() - moment(b.start).unix()).map((availability, i) => {
 
 									return (
-										<FadeIn>
+										<FadeIn key={i}>
 											<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
 												<div className={"card-body  row"} >
 													<div className={"col-7"}>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const origin = "http://localhost:4000/v1";
+const origin = process.env.NEXT_PUBLIC_API_URL+"/v1";
 
 export default function HTTPClient (path, method, data) {
 	console.log(	"Bearer " + window.localStorage.getItem("TIMESTACK_TOKEN") || ""
