@@ -94,7 +94,7 @@ export default function Event () {
 							</svg>
 							<br/>
 							<br/>
-							<h4 className={"text-left"}>Response sent !</h4>
+							<h4 className={"text-left"}>Sent !</h4>
 							<h3>{event.name}</h3>
 
 						</div>
@@ -124,6 +124,18 @@ export default function Event () {
 								<input value={contactPrompt} onChange={e => setContactPrompt(e.target.value)} type="text" className="form-control" placeholder="Add a person" aria-label="Add a person" aria-describedby="button-addon2"/>
 								<button className="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
 							</form>
+							{event?.createdBy._id === user._id ? <div className={"col-12"}>
+								<hr/>
+								<h6>Host actions</h6>
+								<button style={{width: "100%"}} className={"btn btn-lg btn-outline-danger btn-block"}>Cancel</button>
+								<Link href={"./confirm/"+event.publicId} style={{width: "100%", marginTop: "10px"}} className={"btn btn-lg btn-outline-success btn-block"}>Confirm</Link>
+							</div> : <div className={"col-6"}/>}
+							<hr/>
+							<div className={"col-12"}>
+								<button onClick={sendResponse} style={{width: "100%"}} className={"btn btn-lg btn-primary btn-block"}>
+									<i className="fa-solid fa-circle-check"></i> Send
+								</button>
+							</div>
 						</div>
 						<div className={"col-8"}>
 							<div className={"card result-card-body"}>
@@ -170,7 +182,7 @@ export default function Event () {
 												<div className={"card  border-rounded"} style={{borderColor: "black", borderWidth: "1px"}}>
 													<div className={"card-body  row"} >
 														<div className={"col-7"}>
-															<h6><b>{moment(availability.start).format("ddd, MMMM D, h:mm a")}</b> to {moment(availability.end).format("h:mm a")}</h6>
+															<h6><b>{moment(availability.start).format("dddd, MMM Do")} {moment(availability.start).format("YYYY") === moment().format("YYYY") ? null : moment(availability.start).format("YYYY")} </b><br/>{moment(availability.start).format("h:mm A")} to {moment(availability.end).format("h:mm A")}</h6>
 														</div>
 														<div className={"col-5"}>
 															<button onClick={
@@ -236,19 +248,7 @@ export default function Event () {
 							{/*<input className={"form-control"} type={"datetime-local"}/>*/}
 
 						</div>
-						{event?.createdBy._id === user._id ? <div className={"col-6 row"}>
-							<div className={"col-6"}>
-								<button style={{width: "100%"}} className={"btn btn-lg btn-outline-danger btn-block"}>Cancel</button>
-							</div>
-							<div className={"col-6"}>
-								<Link href={"./confirm/"+event.publicId} style={{width: "100%"}} className={"btn btn-lg btn-success btn-block"}>Confirm</Link>
-							</div>
-						</div> : <div className={"col-6"}/>}
-						<div className={"col-6"}>
-							<button onClick={sendResponse} style={{width: "100%"}} className={"btn btn-lg btn-primary btn-block"}>
-								<i className="fa-solid fa-circle-check"></i> Send
-							</button>
-						</div>
+
 					</div>
 				</div>}
 			</div>
