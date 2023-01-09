@@ -309,14 +309,12 @@ export async function confirm (req: Request, res: Response, next: NextFunction) 
         event.status = "confirmed";
         await event.save();
 
+        // @ts-ignore
         const ics = await event.ics(req.user, event.users)
 
         for (const userRaw of event.users) {
             // @ts-ignore
-
-            console.log(userRaw)
             let user: {email: string, phoneNumber:string} = userRaw;
-            console.log(ics)
             if(user.email) await notifyOfEventConfirmation(event, req.user, user.email, `${process.env.FRONTEND_URL}/event/${event.publicId}`, ics.value);
         }
 

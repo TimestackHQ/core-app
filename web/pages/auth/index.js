@@ -6,6 +6,7 @@ import Code from "./Code";
 import Welcome from "./Welcome";
 import {useDispatch} from "react-redux";
 import {userInitRoutine} from "../../utils/auth";
+import FirstAndLastNames from "./FirstAndLastNames";
 
 export default function Login() {
 
@@ -26,6 +27,8 @@ export default function Login() {
 	const [phoneNumber, setPhoneNumber] = React.useState("");
 	const [code, setCode] = React.useState("");
 
+	const [userConfirmed , setUserConfirmed] = React.useState(false);
+
 	const initLogin = (nextStep = true) => {
 		httpClient("/auth/login", "POST", {username: "+1"+String(phoneNumber)})
 			.then((_res) => setStep(nextStep ? 1 : 0))
@@ -41,6 +44,9 @@ export default function Login() {
 			window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
 			dispatch({type: "SET_USER", payload: userInitRoutine()});
 			setStep(1);
+			if(res.data.message === "User confirmed") {
+				setUserConfirmed(true);
+			}
 		})
 		.catch((_err) => setError("The code you entered is invalid"));
 	}
@@ -70,9 +76,17 @@ export default function Login() {
 							initLogin={initLogin}
 							error={error}
 						/> : null}
-						{step === 3 ? <div>
+
+						{step === 3 && userConfirmed ? <div>
 							<Welcome/>
 						</div> : null}
+
+						{step === 3 && !userConfirmed ? <div>
+							<FirstAndLastNames
+								setUserConfirmed={setUserConfirmed}
+							/>
+						</div> : null}
+
 					</div>
 				</div>
 			</div>

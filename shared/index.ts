@@ -59,6 +59,7 @@ export async function authCheck (req: Request, res: Response, next: NextFunction
         const token = String(req.headers.authorization).split(" ")[1]
         jwt.verify(token, String(process.env.JWT_SECRET));
         const decodedToken: any = jwt.decode(token);
+        // @ts-ignore
         req.user = await Models.User.findById(String(decodedToken?._id)).select("-events -password");
         next();
     } catch (e) {
@@ -101,6 +102,7 @@ export const sendEmail = (
     subject,
     text,
     html,
+    // @ts-ignore
     attachments
 });
 
@@ -164,6 +166,7 @@ export const notifyOfEventConfirmation = async (event: EventSchema, user: UserSc
     await sendEmail(anchor, `${user.firstName} invited you to ${event.name}`, htmlToSend, htmlToSend, [{
         filename: "invite.ics",
         type: "text/calendar",
+        // @ts-ignore
         content: Buffer.from(ics).toString('base64'),
         disposition: "attachment"
     }]);

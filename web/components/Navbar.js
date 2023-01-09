@@ -27,7 +27,7 @@ export default function Navbar () {
 							{/*<li><a className="dropdown-item" href="#">Settings</a></li>*/}
 							{/*<li><a className="dropdown-item" href="#">Profile</a></li>*/}
 							{/*<li><hr className="dropdown-divider" /></li>*/}
-							<li><a className="dropdown-item" href="#">Sign out</a></li>
+							<li><Link className="dropdown-item" href="/logout">Sign out</Link></li>
 						</ul>
 					</div>
 				</div>

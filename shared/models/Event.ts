@@ -20,7 +20,7 @@ export interface EventSchema extends mongoose.Document {
     status: ("draft" | "pending" | "confirmed" | "cancelled");
     publicId: string;
     commonProperties: commonProperties;
-    ics: (users: UserSchema[]) => Promise<any>;
+    ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
 }
 
 const EventSchema = new mongoose.Schema({
