@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import {Fragment, useEffect, useState} from "react";
 import moment from "moment";
 import FadeIn from "react-fade-in";
