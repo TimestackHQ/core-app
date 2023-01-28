@@ -49,10 +49,10 @@ const SMSCodeSchema = new mongoose.Schema({
 SMSCodeSchema.methods.sendSMS = async function (code: number) {
     const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
     try {
-        if(process.env.NODE_ENV === "development") {
-            Logger(`SMS sent to ${this.phoneNumber} with code: ${code}`);
-            return true;
-        } else {
+        // if(process.env.NODE_ENV === "development") {
+        //     Logger(`SMS sent to ${this.phoneNumber} with code: ${code}`);
+        //     return true;
+        // } else {
             const message = await sendTextMessage(
                 code+' is your Timestack authentication code.\n' +
                 '\n' +
@@ -62,7 +62,7 @@ SMSCodeSchema.methods.sendSMS = async function (code: number) {
             )
 
             this.twilioMessageId = message.sid;
-        }
+        // }
 
 
         return true;

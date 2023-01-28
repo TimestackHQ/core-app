@@ -11,17 +11,17 @@ export default function Welcome () {
 	const user = userInitRoutine();
 
 	setTimeout(() => {
-		router.push("/");
-	}, 1000);
+		router.push("/main_ios");
+	}, 0);
 
 	return (
 		<div>
-			<FadeIn>
-				<div style={{paddingTop: "200px"}}/>
-				<h2 className={"h2 mb-3 text-center"}>Welcome {user.firstName} 🎊</h2>
-				<hr/>
-				Loading...
-			</FadeIn>
+			{/*<FadeIn>*/}
+			{/*	<div style={{paddingTop: "200px"}}/>*/}
+			{/*	<h2 className={"h2 mb-3 text-center"}>Welcome {user.firstName} 🎊</h2>*/}
+			{/*	<hr/>*/}
+			{/*	Loading...*/}
+			{/*</FadeIn>*/}
 		</div>
 	);
 }

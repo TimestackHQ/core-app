@@ -35,7 +35,7 @@ export default function InitLogin({
 						{/*<li><a className="dropdown-item" href="#">Separated link</a></li>*/}
 					</ul>
 					<input
-						type={"number"}
+						type={"tel"}
 						min="1" max="9999999999"
 						required={true}
 						className="form-control"

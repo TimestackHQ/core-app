@@ -1,14 +1,12 @@
 import {Router} from "express";
 import {HTTPValidator, authCheck} from "../../shared";
-import {confirmValidator, createEventValidator, respondValidator} from "./events.validator";
-import {confirm, createEvent, getAll, getOne, respond} from "./events.controller";
+import {createEventValidator} from "./events.validator";
+import {createEvent, getAllEvents, getEvent} from "./events.controller";
 
 const router = Router()
 
-router.get("/", getAll);
-router.get("/:eventId", getOne);
-router.post("/:eventId/respond", HTTPValidator(respondValidator), respond);
-router.post("/:eventId/confirm", HTTPValidator(confirmValidator), confirm);
-router.post("/", HTTPValidator(createEventValidator), createEvent);
+router.get("/", authCheck, getAllEvents);
+router.get("/:eventId", authCheck, getEvent);
+router.post("/", authCheck, HTTPValidator(createEventValidator), createEvent);
 
 export default router;
