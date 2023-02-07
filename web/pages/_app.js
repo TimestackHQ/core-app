@@ -13,6 +13,9 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     require("bootstrap/dist/js/bootstrap.bundle.min.js");
   }, []);
+
+
+
   return (
       <Fragment>
           <Script src="https://kit.fontawesome.com/496369c1d1.js"/>

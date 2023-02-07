@@ -16,7 +16,7 @@ export default function InitLogin({
 			initLogin()
 		}}>
 			<FadeIn>
-				<img style={{marginTop: "150px"}} className={"mb-4"} src={"/images/logo@timestack.svg"} alt={"Logo"} width={"72"} height={"72"} />
+				<img style={{marginTop: "180px"}} className={"mb-4"} src={"/images/logo@timestack.svg"} alt={"Logo"} width={"72"} height={"72"} />
 				<br/>
 				<h2 className={"h4 mb-3 fw-normal"}>Welcome 👋<br/>Enter your phone number</h2>
 				<br/>

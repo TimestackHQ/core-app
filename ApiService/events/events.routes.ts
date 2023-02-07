@@ -3,7 +3,7 @@ import {HTTPValidator, authCheck} from "../../shared";
 import {createEventValidator} from "./events.validator";
 import {createEvent, getAllEvents, getEvent} from "./events.controller";
 
-const router = Router()
+const router: Router = Router()
 
 router.get("/", authCheck, getAllEvents);
 router.get("/:eventId", authCheck, getEvent);

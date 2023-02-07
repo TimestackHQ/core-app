@@ -18,9 +18,25 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
         startsAt: Joi.string().required(),
         endsAt: Joi.string().required(),
         location: Joi.string().required(),
-        contacts: contactsValidator
+        cover: Joi.string(),
+        invitees: Joi.array().items(
+            Joi.object(
+                {
+                    _id: isObjectIdJoiValidator,
+                    firstName: Joi.string(),
+                    lastName: Joi.string(),
+                    email: Joi.string().email(),
+                    username: Joi.string(),
+                    profilePictureSource: Joi.string(),
+                    phoneNumber: PhoneNumberValidator,
+                }
+            )
+        ).required(),
     });
-    return schema.validate(body);
+    const v= schema.validate(body);
+    console.log(v);
+
+    return v;
 
 };
 

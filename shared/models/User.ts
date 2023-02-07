@@ -7,6 +7,7 @@ import {Logger} from "../index";
 export interface UserSchema extends mongoose.Document {
     firstName?: string;
     lastName?: string;
+    username: string;
     email?: string;
     phoneNumber?: string;
     isConfirmed: boolean;
@@ -26,6 +27,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    username: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
         unique: false,
@@ -38,8 +43,18 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    profilePictureSource: {
+        type: String,
+        required: false,
+    },
 
     ...commonProperties,
+});
+
+UserSchema.index({
+    firstName: 'text',
+    lastName: 'text',
+    username: 'text'
 });
 
 UserSchema.methods.initSMSLogin = async function () {

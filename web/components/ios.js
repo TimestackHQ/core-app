@@ -9,7 +9,8 @@ const icons = {
 export default function IOS ({
 	children,
 	main,
-	buttons
+	buttons,
+    timestackButtonLink
 }) {
   return (
 		<div style={{backgroundColor: "white"}}>
@@ -63,7 +64,7 @@ export default function IOS ({
 			</FadeIn>
 
 
-				<div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px"}}>
+				<div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", marginBottom: "0px"}}>
 					<div className="container">
 						<div className="row">
 							<div className="col-3">
@@ -75,7 +76,7 @@ export default function IOS ({
 								<img  src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 							</div>
 							<div className="col-2 text-center">
-								<Link href={"/new"}>
+								<Link href={timestackButtonLink ? timestackButtonLink : "/new"}>
 									<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>
 								</Link>
 							</div>

@@ -20,15 +20,18 @@ export default function Home() {
 	const [waitingForPeople, setWaitingForPeople] = useState(false);
 
 	const [name, setName] = useState("");
+	const [location, setLocation] = useState("");
 	const [startsAt, setStartsAt] = useState("");
 	const [endsAt, setEndsAt] = useState("");
-	const [contact, setContact] = useState("");
-	const [contacts, setContacts] = useState([]);
+	const [cover, setCover] = useState(null);
+
+	const [invitees, setInvitees] = useState([]);
 
 	const router = useRouter();
 
-	const callback = () => {
+	const callback = (invitees) => {
 		setWaitingForPeople(false);
+		setInvitees(invitees);
 	}
 
 	return <IOS>
@@ -47,72 +50,81 @@ export default function Home() {
 					<div className={"card-body"}>
 						<FadeIn>
 						<div className={"row"}>
-							<div className={"col-12 row"} style={{margin: "0px"}}>
+							<form onSubmit={async (e) => {
+
+								e.preventDefault();
+
+								const formData = new FormData();
+								formData.append("cover", new Blob([cover]));
+								const coverUpload = await HTTPClient("/media/cover", "POST", formData, {
+									"Content-Type": "multipart/form-data",
+								});
+
+								console.log(coverUpload);
+
+								HTTPClient("/events", "POST", {
+									name,
+									location,
+									startsAt,
+									endsAt,
+									invitees,
+									cover: coverUpload.data.media.publicId,
+								}, ).then(res => {
+									router.push("/event/"+res.data.event._id);
+								}).catch((err) => {
+									alert(err);
+								})
+							}} className={"col-12 row"} style={{margin: "0px"}}>
 								<h1>
 									<b>Create</b>
 								</h1>
 
 								{waitingForPeople ?<div className={"col-12"}>
-										<AddPeopleScreen callback={callback}/>
+										<AddPeopleScreen currentInvitees={invitees} callback={callback}/>
 									</div>
 												:
 								<div>
 									<div className={"col-12"}>
-										<input style={buttonStyle} className={"form-control crud_input"} value={name} onChange={(e) => setName(e.target.value)}/>
+										<input style={buttonStyle} className={"form-control crud_input"} value={name} onChange={(e) => setName(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Name</h6>
 									</div>
 
 									<div className={"col-12"}>
-										<input style={buttonStyle} className={"form-control crud_input"} value={name} onChange={(e) => setName(e.target.value)}/>
+										<input style={buttonStyle} className={"form-control crud_input"} value={location} onChange={(e) => setLocation(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Location</h6>
 									</div>
 
-									<div className={"col-6"}>
-										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={startsAt} onChange={(e) => setStartsAt(e.target.value)}/>
+									<div className={"col-12"}>
+										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Start date</h6>
 									</div>
-									<div className={"col-6"}>
-										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={endsAt} onChange={(e) => setEndsAt(e.target.value)}/>
+									<div className={"col-12"}>
+										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>End date</h6>
 									</div>
 
 									<div className={"col-12"}>
 										<br/>
 										<h6 style={{color: "gray"}}>People</h6>
-										{contacts.map((contact, index) => {
-											return <div key={index}>
-												{contact}
-												<button className={"btn btn-primary"} onClick={() => setContacts(contacts.filter((c, i) => i !== index))}>
-													x
-												</button>
-											</div>
-										})}
 										<div style={{}}>
 											<img onClick={() => setWaitingForPeople(true)} width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
-											<img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/MingXi Profile.jpg"}/>
-											<img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/Flavia Profile.jpg"}/>
-											<img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/Dostie Profile.jpg"}/>
-											<img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/Frederique Profile.jpg"}/>
+											{invitees.map((invitee, index) => {
+												return <img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+											})}
 
 										</div>
 									</div>
 									<div className={"col-12"}>
 										<br/>
-										<CoverPicture/>
+										<CoverPicture setCover={setCover}/>
 
 									</div>
 									<div className={"col-12"}>
-										<button style={{width: "100%"}} className={"btn btn-outline-secondary btn-block"} onClick={() => {
-											HTTPClient("/events", "POST", {
-												name,
-												startsAt,
-												contacts
-											}).then(res => {
-												router.push("/event/"+res.data.event._id);
-											}).catch((err) => {
-												alert(err);
-											})
-										}}>Create</button>
+										<button style={{width: "100%"}} type={"submit"} className={"btn btn-outline-secondary btn-block"}>Create</button>
+
+										<br/>
+										<br/>
+										<br/>
 									</div>
 								</div>}
 
@@ -121,7 +133,17 @@ export default function Home() {
 								<br/>
 								<br/>
 								<br/>
-							</div>
+								<br/>
+								<br/>
+
+								<br/>
+								<br/>
+								<br/>
+
+								<br/>
+								<br/>
+								<br/>
+							</form>
 						</div>
 						</FadeIn>
 					</div>

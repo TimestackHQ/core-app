@@ -1,14 +1,24 @@
 import * as mongoose from "mongoose";
 import {commonProperties} from "./utils";
 import {v4 as uuid} from "uuid";
+import {MediaSchema} from "./Media";
 
 export interface EventSchema extends mongoose.Document {
     name: string;
     startsAt: Date;
     endsAt: Date;
     location: string;
+    media: MediaSchema[] & mongoose.Schema.Types.ObjectId[],
     createdBy: mongoose.Types.ObjectId;
     users: mongoose.Types.ObjectId[];
+    invitees: mongoose.Types.ObjectId[];
+    nonUsersInvitees: {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        phoneNumber?: string;
+    }[];
+    cover: MediaSchema & mongoose.Schema.Types.ObjectId;
     publicId: string;
     commonProperties: commonProperties;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
@@ -32,6 +42,10 @@ const EventSchema = new mongoose.Schema({
         required: false,
         max: 1000
     },
+    media: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Media"
+    }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -40,10 +54,37 @@ const EventSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "User",
     },
+    invitees: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User",
+    },
+    nonUsersInvitees: [{
+        email: {
+            type: String,
+            required: false,
+        },
+        phoneNumber: {
+            type: String,
+            required: false,
+        },
+        firstName: {
+            type: String,
+            required: false,
+        },
+        lastName: {
+            type: String,
+            required: false,
+        }
+    }],
     publicId: {
         type: String,
         required: true,
         default: uuid
+    },
+    cover: {
+        type: mongoose.Types.ObjectId,
+        required: false,
+        ref: "Media"
     },
     ...commonProperties,
 });

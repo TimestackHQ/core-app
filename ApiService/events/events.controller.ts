@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
-import {Logger, Models, notifyOfEvent, notifyOfEventConfirmation} from "../../shared";
+import {Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
-import moment = require("moment");
 import * as _ from "lodash";
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
@@ -10,21 +9,38 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
 
         // finds existing users
         const users = await Models.User.find({
-            email: {
-                $in: req.body.contacts
+            _id: {
+                $in: req.body.invitees.filter((i: any) => isObjectIdOrHexString(i._id)).map((invitee: any) => invitee._id)
             }
         }).select("_id");
 
+        const cover = await Models.Media.findOne({
+            publicId: req.body.cover
+        });
+
+        if(!cover) return res.sendStatus(404);
 
         const event = new Models.Event({
             name: req.body.name,
             createdBy: req.user._id,
-            users: _.uniq([
-                req.user._id.toString(), ...users.map((user: {_id: any}) => user._id.toString())
+            invitees: _.uniq([
+                req.user._id.toString(),
+                ...users.map((user: {_id: any}) => user._id.toString())
             ]),
+            nonUsersInvitees: req.body.invitees
+                .filter((invitee: any) => !isObjectIdOrHexString(invitee?._id))
+                .map((invitee: { phoneNumber: any; email: any; firstName: any; lastName: any; }) => ({
+                    phoneNumber: invitee?.phoneNumber,
+                    email: invitee?.email,
+                    firstName: invitee?.firstName,
+                    lastName: invitee?.lastName
+
+                 }))
+                .filter((invitee: {}) => Object.keys(invitee).length > 0),
             startsAt: req.body.startsAt,
             endsAt: req.body.endsAt,
             location: req.body.location,
+            cover: cover._id,
         });
 
         await event.save();
@@ -39,6 +55,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
         });
 
     } catch (e) {
+        console.log(e)
         next(e);
     }
 
@@ -49,19 +66,31 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
     try {
 
         const events = await Models.Event.find({
-            users: {
-                $in: [req.user._id]
-            }
+            $or: [{
+                users: {
+                    $in: [req.user._id]
+                }
+            }, {
+                createdBy: req.user._id
+            }],
         })
             .sort({createdAt: -1})
             .populate([{
                 path: "users",
                 select: "firstName lastName profilePictureSource"
+            }, {
+                path: "cover",
+                select: "thumbnail"
             }])
             .lean();
 
         res.json({
-            events
+            events: events.map(event => {
+                return {
+                    ...event,
+                    cover: event.cover.thumbnail
+                }
+            })
         });
 
     } catch (e) {
@@ -75,18 +104,33 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
     try {
 
         const event = await Models.Event.findOne({
-            $or: [
+            $and: [{
+                $or: [
+                    {
+                        publicId: req.params.eventId
+                    },
+                    {
+                        _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                    }
+                ]},
                 {
-                    publicId: req.params.eventId
-                },
-                {
-                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
-                }
-            ],
-            users: {
-                $in: [req.user._id]
-            }
-        }).populate("users");
+                    $or: [{
+                    users: {
+                        $in: [req.user._id]
+                    }
+                }, {
+                    createdBy: req.user._id
+                }],
+            }]
+        }).populate([{
+            path: "users"
+        }, {
+            path: "media",
+            select: "-_id publicId",
+        }, {
+            path: "cover",
+            select: "thumbnail"
+        }]).lean();
 
         if (!event) {
             return res.status(404).json({
@@ -95,7 +139,11 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
         }
 
         res.json({
-            event
+            event: {
+                ...event,
+                media: event.media.map(file => file.publicId),
+                cover: event.cover.thumbnail
+            }
         })
     } catch (e) {
         next(e);

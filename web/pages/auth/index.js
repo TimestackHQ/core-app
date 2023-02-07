@@ -42,6 +42,10 @@ export default function Login() {
 		})
 		.then((res) => {
 			window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
+			window.ReactNativeWebView?.postMessage(JSON.stringify({
+				request: "session",
+				session: res.data.token
+			}));
 			dispatch({type: "SET_USER", payload: userInitRoutine()});
 			setStep(1);
 			if(res.data.message === "User confirmed") {
@@ -52,7 +56,9 @@ export default function Login() {
 	}
 
 	return (
-		<div className={"container"}>
+		<div style={{
+			backgroundImage: "hey.svg"
+		}} className={"container"}>
 			<div className={"content"}>
 				{step !== 1 ? <FadeIn>
 					<button style={{marginTop: "10px"}} className={"btn btn-outline-secondary btn-sm"} onClick={() => setStep(-1)}>
@@ -61,6 +67,8 @@ export default function Login() {
 				</FadeIn> : null}
 				<div className="row justify-content-center align-items-center ">
 					<div className="col-lg-5 col-sm-10 text-center ">
+						<br/>
+						<br/>
 
 						{step === 1 ? <InitLogin
 							phoneNumber={phoneNumber}

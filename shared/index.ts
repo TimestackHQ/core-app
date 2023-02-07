@@ -16,6 +16,8 @@ import {isObjectIdOrHexString} from "mongoose";
 // @ts-ignore
 import * as JoiObjectId from "joi-objectid";
 import moment = require("moment");
+//cloud
+import * as GCP from "./cloud/gcp";
 
 export const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
@@ -148,9 +150,9 @@ export const notifyOfEventConfirmation = async (event: EventSchema, user: UserSc
     const engine = Handlebars.compile(html);
     const htmlToSend = engine({
         firstName: String(user.firstName),
-        startDate: moment(event.start).format("dddd, MMMM Do YYYY"),
-        startTime: moment(event.start).format("h:mm a"),
-        endTime: moment(event.end).format("h:mm a"),
+        startDate: moment(event.startsAt).format("dddd, MMMM Do YYYY"),
+        startTime: moment(event.startsAt).format("h:mm a"),
+        endTime: moment(event.endsAt).format("h:mm a"),
         anchor: String(anchor),
         eventName: event.name,
         inviteLink
@@ -178,4 +180,5 @@ export const isObjectIdJoiValidator = JoiObjectId(Joi);
 export {
     isObjectIdOrHexString,
     Models,
+    GCP
 }

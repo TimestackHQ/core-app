@@ -1,11 +1,11 @@
 import React from "react";
 
-export default function CoverPicture() {
+export default function CoverPicture({setCover}) {
 
 	const [coverPicture, setCoverPicture] = React.useState(null);
 
 	React.useEffect(() => {
-		console.log(coverPicture);
+		setCover(coverPicture);
 	}, [coverPicture]);
 	return (
 		<div className="image-upload">

@@ -4,6 +4,7 @@
   "main": "index.ts",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/storage": "^6.9.1",
     "@sendgrid/mail": "^7.7.0",
     "@sentry/core": "^7.20.0",
     "@sentry/tracing": "^7.20.0",

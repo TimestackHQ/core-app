@@ -11,10 +11,15 @@ export default function MainIOS () {
 	useEffect(() => {
 		HTTPClient("/events", "GET").then((res) => {
 			setEvents(res.data.events);
-		});
+		}).catch(err => {})
 	}, [])
 
 	const router = useRouter();
+
+	window.ReactNativeWebView?.postMessage(JSON.stringify({
+		request: "session",
+		session: window.localStorage.getItem("TIMESTACK_TOKEN")
+	}));
 
 
 	return (
@@ -24,7 +29,7 @@ export default function MainIOS () {
 				<div className="row" style={{paddingTop: "20px"}}>
 					<div className={"col-10"} style={{borderRightColor: "black", borderWidth: "10px"}}>
 						{events.map((event, index) => {
-							return <EventCard key={index}/>
+							return <EventCard event={event} key={index}/>
 						})}
 					</div>
 
