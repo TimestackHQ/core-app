@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ./.dist ./
 
 RUN apt update -y
-RUN apt install ffmpeg pdftk -y
+RUN apt install ffmpeg -y
 
 USER root
 RUN chmod -R 777 ./
