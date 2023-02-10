@@ -104,7 +104,7 @@ export default function EventIOS ({}) {
 										<br/>
 										<img style={{width: "42px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
 										{event?.people.map((invitee, index) => {
-											return <img style={{width: "42px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+											return <img key={index} style={{width: "42px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
 										})}
 										<hr/>
 									</div>

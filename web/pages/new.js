@@ -109,7 +109,7 @@ export default function Home() {
 										<div style={{}}>
 											<img onClick={() => setWaitingForPeople(true)} width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
 											{invitees.map((invitee, index) => {
-												return <img width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+												return <img key={index} width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
 											})}
 
 										</div>

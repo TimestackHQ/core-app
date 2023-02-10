@@ -93,7 +93,7 @@ export default function EventIOS ({}) {
 					<div style={{}}>
 						<img onClick={() => setWaitingForPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
 						{event?.people.map((invitee, index) => {
-							return <img style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+							return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
 						})}
 
 					</div>

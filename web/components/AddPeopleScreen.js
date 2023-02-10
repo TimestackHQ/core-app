@@ -89,7 +89,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 						{!search ? invitees.map((invitee, index) => {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(invitee._id);
 							return (
-								<div className={"row"} onClick={() => {
+								<div key={index} className={"row"} onClick={() => {
 									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(row => row._id !== invitee._id));
@@ -125,7 +125,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 						{currentInvitees.filter(current => !invitees.map(i => i._id).includes(current._id)).map((invitee, index) => {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(invitee._id);
 							return (
-								<div className={"row"} onClick={() => {
+								<div key={index} className={"row"} onClick={() => {
 									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(row => row._id !== invitee._id));
@@ -162,7 +162,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 						{users.map((user, index) => {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(user._id)
 							return (
-								<div className={"row"} onClick={() => {
+								<div key={index} className={"row"} onClick={() => {
 									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(invitee => invitee._id !== user._id));
