@@ -45,9 +45,18 @@ const MediaSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    metadata: {
+        type: Object,
+        required: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
+        required: false,
     }
 });
 

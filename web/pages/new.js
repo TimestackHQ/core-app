@@ -38,8 +38,8 @@ export default function Home() {
 		<br/>
 		<br/>
 		<br/>
-		<div className="row ">
-
+		<div className={"container"}>
+			<div className="row">
 				<div className={"card "} style={{
 					boxShadow: "rgba(100, 100, 111, 0.5) 0px 10px 50px 0px",
 					borderRadius: "3rem",
@@ -55,7 +55,7 @@ export default function Home() {
 								e.preventDefault();
 
 								const formData = new FormData();
-								formData.append("cover", new Blob([cover]));
+								formData.append("cover", new Blob([cover], {type: cover.type}));
 								const coverUpload = await HTTPClient("/media/cover", "POST", formData, {
 									"Content-Type": "multipart/form-data",
 								});
@@ -74,7 +74,7 @@ export default function Home() {
 								}).catch((err) => {
 									alert(err);
 								})
-							}} className={"col-12 row"} style={{margin: "0px"}}>
+							}} className={"row"} style={{margin: "0px"}}>
 								<h1>
 									<b>Create</b>
 								</h1>
@@ -83,7 +83,7 @@ export default function Home() {
 										<AddPeopleScreen currentInvitees={invitees} callback={callback}/>
 									</div>
 												:
-								<div>
+								<div className={"row"}>
 									<div className={"col-12"}>
 										<input style={buttonStyle} className={"form-control crud_input"} value={name} onChange={(e) => setName(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Name</h6>
@@ -94,12 +94,12 @@ export default function Home() {
 										<h6 style={{color: "gray"}}>Location</h6>
 									</div>
 
-									<div className={"col-12"}>
-										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required/>
+									<div className={"col-6"}>
+										<input style={buttonStyle} className={"form-control"} type={"date"} value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Start date</h6>
 									</div>
-									<div className={"col-12"}>
-										<input style={buttonStyle} className={"form-control"} type={"datetime-local"} value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required/>
+									<div className={"col-6"}>
+										<input style={buttonStyle} className={"form-control"} type={"date"} value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>End date</h6>
 									</div>
 
@@ -151,7 +151,7 @@ export default function Home() {
 				</div>
 
 		</div>
-
+		</div>
 	</IOS>
 
 }

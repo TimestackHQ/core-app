@@ -1,13 +1,21 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
-import {restOrigin} from "../utils/httpClient";
+import HTTPClient, {restOrigin} from "../utils/httpClient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
+import {LazyLoadImage} from "react-lazy-load-image-component";
 
 export default function EventCard ({
        event
 }) {
 
 	const router = useRouter();
+
+	const [uri, setUri] = useState("");
+
+	useEffect(() => {
+		HTTPClient("/media/"+event.cover+"?thumbnail=true").then(res => setUri(res.data))
+			.catch(err => {});
+	}, [])
 
 	return (
 		<div onClick={() => router.push("/event/"+event?.publicId)} className={"card "} style={{
@@ -18,7 +26,11 @@ export default function EventCard ({
 		}}>
 			<div className={"row"}>
 				<div className={"col-4"}>
-					<img src={event?.cover} style={{borderRadius: "15px", objectFit: "cover"}} alt={"Cassis 2022"} width={"100%"} height={"130px"}/>
+					<LazyLoadImage src={uri}
+		                style={{borderRadius: "15px", objectFit: "cover"}}
+		                alt={""}
+		                width={"100%"} height={"130px"}
+					/>
 				</div>
 				<div className={"col-5"} style={{paddingLeft: "0px"}}>
 					<h6 style={{marginTop: "10px", marginBottom: "0px"}}><b>{event?.name}</b></h6>

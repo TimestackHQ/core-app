@@ -4,6 +4,7 @@ import * as cors from "cors";
 import * as morgan from "morgan";
 import routes from "./routes";
 import {NextFunction, Request, Response} from "express";
+import * as bodyParser from "body-parser";
 
 const server = async () => {
 
@@ -13,7 +14,8 @@ const server = async () => {
 
     app.use(cors());
     app.use(morgan("dev"));
-    app.use(express.json());
+    app.use(bodyParser.urlencoded());
+    app.use(bodyParser.json());
 
     app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
 

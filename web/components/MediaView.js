@@ -2,9 +2,11 @@ import {useEffect, useState} from "react";
 import HTTPClient from "../utils/httpClient";
 import FadeIn from "react-fade-in";
 import ContentLoader from 'react-content-loader'
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 
 export default function MediaView ({publicId}) {
+
 
 	const [uri, setUri] = useState("");
 
@@ -38,6 +40,10 @@ export default function MediaView ({publicId}) {
 	// 	</video>
 	// );
 	return <FadeIn >
-		<img style={{objectFit: "cover"}} alt={""} width={"100%"} height={"230px"} src={uri}/>
+		<LazyLoadImage src={uri}
+           style={{objectFit: "cover", margin: 0, padding: 0}}
+           alt="Image Alt"
+           width={"100%"} height={"200px"}
+		/>
 	</FadeIn>
 }

@@ -74,6 +74,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 								onChange={e => setSearch(e.target.value)}
 								placeholder="Search"
 								aria-label="Search"
+								value={search}
 								autoFocus={true}
 							/>
 							<button onClick={() => setSearch("")} type="button" className="btn bg-transparent"

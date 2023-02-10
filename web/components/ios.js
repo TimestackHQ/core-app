@@ -10,7 +10,8 @@ export default function IOS ({
 	children,
 	main,
 	buttons,
-    timestackButtonLink
+    timestackButtonLink,
+	hideNavbar
 }) {
   return (
 		<div style={{backgroundColor: "white"}}>
@@ -64,35 +65,39 @@ export default function IOS ({
 			</FadeIn>
 
 
-				<div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", marginBottom: "0px"}}>
+				{!hideNavbar ? <div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", marginBottom: "0px"}}>
 					<div className="container">
-						<div className="row">
-							<div className="col-3">
-								<Link href={"/main_ios"}>
-									<img style={{marginLeft: "30px"}} className={"float-right"} src={"/icons/home_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
-								</Link>
+						{/*<FadeIn>*/}
+							<div className="row">
+								<div className="col-3">
+									<Link href={"/main_ios"}>
+										<img style={{marginLeft: "30px", marginTop: "5px"}} className={"float-right"} src={"/icons/home_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
+									</Link>
+								</div>
+								<div className="col-2">
+									<img style={{marginTop: "5px"}} src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
+								</div>
+								<div className="col-2 text-center">
+									<Link href={timestackButtonLink ? timestackButtonLink : "/new"}>
+										{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
+										<img src={"/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
+									</Link>
+								</div>
+								<div className="col-2 text-center">
+									<img style={{marginLeft: "5px", marginTop: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
+								</div>
+								<div className="col-3 left">
+									<Link href={"/profile"}>
+										<img style={{marginLeft: "10px", marginTop: "5px", borderRadius: "100px", borderColor: "black", borderWidth:"20px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
+									</Link>
+								</div>
 							</div>
-							<div className="col-2">
-								<img  src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
-							</div>
-							<div className="col-2 text-center">
-								<Link href={timestackButtonLink ? timestackButtonLink : "/new"}>
-									<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>
-								</Link>
-							</div>
-							<div className="col-2 text-center">
-								<img style={{marginLeft: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
-							</div>
-							<div className="col-3 left">
-								<Link href={"/profile"}>
-									<img style={{marginLeft: "10px", borderRadius: "100px", borderColor: "black", borderWidth:"20px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
-								</Link>
-							</div>
-						</div>
+						{/*</FadeIn>*/}
+
 					</div>
 
 
-				</div>
+				</div> : null}
 
 		</div>
 

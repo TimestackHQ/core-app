@@ -75,12 +75,13 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             }],
         })
             .sort({createdAt: -1})
+            .select("-media")
             .populate([{
                 path: "users",
                 select: "firstName lastName profilePictureSource"
             }, {
                 path: "cover",
-                select: "thumbnail"
+                select: "publicId"
             }])
             .lean();
 
@@ -88,7 +89,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             events: events.map(event => {
                 return {
                     ...event,
-                    cover: event.cover.thumbnail
+                    cover: event.cover?.publicId
                 }
             })
         });
@@ -123,13 +124,25 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 }],
             }]
         }).populate([{
-            path: "users"
-        }, {
             path: "media",
             select: "-_id publicId",
+            options: {
+                sort: {
+                    createdAt: -1
+                }
+            }
         }, {
             path: "cover",
-            select: "thumbnail"
+            select: "publicId"
+        },{
+            path: "users",
+            select: "firstName lastName profilePictureSource"
+        }, {
+            path: "invitees",
+            select: "firstName lastName profilePictureSource"
+        },{
+            path: "nonUsersInvitees",
+            select: "firstName lastName profilePictureSource"
         }]).lean();
 
         if (!event) {
@@ -141,8 +154,33 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
         res.json({
             event: {
                 ...event,
-                media: event.media.map(file => file.publicId),
-                cover: event.cover.thumbnail
+                media: event.media.map(file => file?.publicId),
+                cover: event.cover?.publicId,
+                peopleCount : event.users.length + event.invitees.length + event.nonUsersInvitees.length,
+                mediaCount: event.media.length,
+                users: undefined,
+                invitees: undefined,
+                nonUsersInvitees: undefined,
+                people: [
+                    ...event.users.map(user => {
+                        return {
+                            ...user,
+                            status: "accepted"
+                        }
+                    }),
+                    ...event.invitees.map(user => {
+                        return {
+                            ...user,
+                            status: "pending"
+                        }
+                    }),
+                    ...event.nonUsersInvitees.map(user => {
+                        return {
+                            ...user,
+                            status: "notUser"
+                        }
+                    })
+                ]
             }
         })
     } catch (e) {

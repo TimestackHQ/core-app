@@ -4,6 +4,8 @@ import FadeIn from "react-fade-in";
 import HTTPClient, {restOrigin} from "../../utils/httpClient";
 import {useRouter} from "next/router";
 import MediaView from "../../components/MediaView";
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import Gallery from "../../components/Gallery";
 
 export default function EventIOS ({}) {
 
@@ -13,34 +15,14 @@ export default function EventIOS ({}) {
 
 	const [media, setMedia] = useState([]);
 
+	const [uri, setUri] = useState("");
+
 	useEffect(() => {
+		HTTPClient("/media/"+event?.cover+"?thumbnail=true").then(res => setUri(res.data))
+			.catch(err => {});
+	}, [event])
 
-		document.addEventListener("DOMContentLoaded", function() {
-			const lazyVideos = [].slice.call(document.querySelectorAll("video.lazy"));
-
-			if ("IntersectionObserver" in window) {
-				const lazyVideoObserver = new IntersectionObserver(function(entries, observer) {
-					entries.forEach(function(video) {
-						if (video.isIntersecting) {
-							for (const source in video.target.children) {
-								const videoSource = video.target.children[source];
-								if (typeof videoSource.tagName === "string" && videoSource.tagName === "SOURCE") {
-									videoSource.src = videoSource.dataset.src;
-								}
-							}
-
-							video.target.load();
-							video.target.classList.remove("lazy");
-							lazyVideoObserver.unobserve(video.target);
-						}
-					});
-				});
-
-				lazyVideos.forEach(function(lazyVideo) {
-					lazyVideoObserver.observe(lazyVideo);
-				});
-			}
-		});
+	useEffect(() => {
 
 		HTTPClient("/events/"+eventId, "GET")
 			.then((response) => {
@@ -49,6 +31,7 @@ export default function EventIOS ({}) {
 			.catch((error) => {
 				window.location.href = "/main_ios";
 			});
+
 	}, []);
 	return (
 		<IOS buttons={[
@@ -62,33 +45,66 @@ export default function EventIOS ({}) {
 			// 	href: "/main_ios",
 			// }
 		]} timestackButtonLink={"./"+event?._id+"/upload"}>
-			<FadeIn>
-				<FadeIn delay={400}>
-					<div className={"container row"}>
-						<div className={"col-5"} autofocus={true}>
-							<img src={event?.cover} style={{borderRadius: "15px", objectFit: "cover"}} alt={"Cassis 2022"} width={"100%"} height={"230px"}/>
+			<div className={"container"}>
+				<FadeIn>
+					<FadeIn delay={400}>
+						<div className={" row"}>
+							<div className={"col-5"} autofocus={true}>
+								<LazyLoadImage
+									src={uri}
+					                style={{borderRadius: "15px", objectFit: "cover"}}
+					                alt={""}
+					                width={"100%"} height={"200px"}
+									threshold={500}
+								/>
+							</div>
+							<div className={"col-7 position-relative"}>
+								<div className="position-absolute top-0 start-0">
+									<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
+								</div>
+								<div className="position-absolute bottom-0 start-0">
+									<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
+									<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
+								</div>
+
+							</div>
+
 						</div>
-						<div className={"col-7"}>
-							<h2 className={"overflow-auto"} style={{marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
-							<p style={{fontSize: "12px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
-							<p style={{fontSize: "12px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
+					</FadeIn>
+
+					<br/>
+					<div className={"row"}>
+						<div className={"col-4 text-center"}>
+							<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
+							<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
 						</div>
+
+						<div className={"col-4 text-center"}>
+							<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
+							<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+						</div>
+
+						<div className={"col-4 text-center"}>
+							<h5 style={{margin: 0}}>0</h5>
+							<h5 style={{color: "gray"}}>Revisits</h5>
+						</div>
+					</div>
+					<br/>
+					<div style={{}}>
+						<img onClick={() => setWaitingForPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+						{event?.people.map((invitee, index) => {
+							return <img style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+						})}
 
 					</div>
+					<br/>
+					<div className={"row"}>
+						<Gallery gallery={event?.media}/>
+					</div>
+					<br/>
+					<br/>
 				</FadeIn>
-
-				<br/>
-				<br/>
-				<div className={"row"}>
-					{event?.media.map(file => {
-						return (
-							<div className={"col-4"} style={{margin: 0, padding: 1}}>
-								<MediaView publicId={file}/>
-							</div>
-						);
-					})}
-				</div>
-			</FadeIn>
+			</div>
 		</IOS>
 	);
 }

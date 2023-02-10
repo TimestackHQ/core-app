@@ -1,11 +1,13 @@
 import {NextFunction, Request, Response} from "express";
-import {Models, GCP, Logger} from "../../shared";
+import {GCP, Logger, Models} from "../../shared";
 import {v4 as uuid} from 'uuid';
 import * as mime from "mime-types";
-import * as imageThumbnail from "image-thumbnail";
 // @ts-ignore
 import * as Ffmpeg from "fluent-ffmpeg";
+import * as sharp from "sharp";
 import * as fs from "fs";
+import moment = require("moment");
+
 const bucket = GCP.storage.bucket(String(process.env.GCP_STORAGE_BUCKET));
 
 export async function uploadCover (req: Request, res: Response, next: NextFunction) {
@@ -14,50 +16,76 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
         const file: Express.Multer.File | undefined = req.file;
 
-        const publicId = uuid()+"."+mime.extension(<string>file?.mimetype);
+        let thumbnail: any;
 
-        let options = { width: 400, height: 600, responseType: 'base64' }
-        // @ts-ignore
-        const thumbnail = await imageThumbnail(<Buffer>file?.buffer, options);
+        const fileId = uuid();
 
-        const blob = bucket.file(publicId);
-        const blobStream = blob.createWriteStream({
-            resumable: false
-        });
+        if(file?.mimetype.split("/")[0] === "image") {
 
-        blobStream.on('finish', async () => {
-            const publicUrl =
-                `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+            const thumbnailBuffer = await sharp(<Buffer>file?.buffer)
+                .resize(400)
+                .jpeg()
+                .toBuffer();
 
+            Logger("Generating thumbnail for image")
+            const publicId = fileId+".thumb."+mime.extension(file.mimetype);
+            Logger("Uploading thumbnail to GCP")
+            await GCP.upload(publicId, <Buffer>thumbnailBuffer);
+            thumbnail = publicId;
+
+        }
+
+        if(file?.mimetype.split("/")[0] === "video") {
+            Logger("Generating thumbnail for video")
+            thumbnail = await new Promise((resolve, reject) => {
+                fs.writeFileSync("/tmp/"+fileId, <Buffer>file?.buffer)
+                Ffmpeg("/tmp/"+fileId)
+                    .noAudio()
+                    //mp4
+                    .videoCodec('mpeg4')
+                    .fps(24)
+                    .videoBitrate(1000)
+                    .size('400x?')
+                    .duration(10)
+                    .output("/tmp/"+fileId+".thumb.mp4")
+                    .on('end', async function() {
+                        Logger("Uploading thumbnail to GCP")
+                        const publicId = fileId+".thumb.mp4";
+                        await GCP.upload(publicId, <Buffer>fs.readFileSync("/tmp/"+publicId));
+                        resolve(publicId);
+                    })
+                    .on('error', function(err) {
+                        console.log('an error happened: ' + err.message);
+                        reject(err)
+                    }).run();
+            });
+
+        }
+
+
+        const publicId = fileId+"."+mime.extension(String(file?.mimetype));
+
+        const media = new Models.Media({
+            publicId,
             // @ts-ignore
+            original: req.file.filename,
+            // @ts-ignore
+            storageLocation: thumbnail,
+            // @ts-ignore
+            type: req.file.mimetype,
+            group: "cover",
+            user: req.user._id,
+            thumbnail,
+        });
+        await media.save();
 
-            const media = new Models.Media({
-                publicId,
-                // @ts-ignore
-                original: req.file.filename,
-                storageLocation: publicUrl,
-                // @ts-ignore
-                type: req.file.mimetype,
-                group: "cover",
-                user: req.user._id,
-                thumbnail: "data:image/png;base64,"+thumbnail
-            });
-
-            await media.save();
-
-            res.status(200).json({
-                message: "Cover uploaded successfully",
-                media: {
-                    publicId: media.publicId,
-                    storageLocation: media.storageLocation,
-                },
-            });
-        })
-        .on('error', () => {
-            res.sendStatus(500)
-        })
-        .end(file?.buffer);
-
+        res.status(200).json({
+            message: "Cover uploaded successfully",
+            media: {
+                publicId: media.publicId,
+                storageLocation: media.storageLocation,
+            },
+        });
 
 
     } catch (e) {
@@ -72,7 +100,6 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
         const {publicId} = req.params;
         const media = await Models.Media.findOne({
             publicId,
-            group: "event",
         });
 
         if (!media) {
@@ -113,17 +140,20 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         }
 
         const file: Express.Multer.File | undefined = req.file;
-
-        let thumbnail: any;
-
         const fileId = uuid();
 
+        let thumbnail: any;
+        let metadata: any = JSON.parse(req.body?.metadata);
+
         if(file?.mimetype.split("/")[0] === "image") {
+
+            const thumbnailBuffer = await sharp(<Buffer>file?.buffer)
+                .resize(400)
+                .jpeg()
+                .toBuffer();
+
             Logger("Generating thumbnail for image")
-            let options = { width: 400, height: 600, responseType: 'base64' }
-            // @ts-ignore
-            const thumbnailBuffer = await imageThumbnail(<Buffer>file?.buffer, options);
-            const publicId = fileId+".png";
+            const publicId = fileId+".thumb."+mime.extension(file.mimetype);
             Logger("Uploading thumbnail to GCP")
             await GCP.upload(publicId, <Buffer>thumbnailBuffer);
             thumbnail = publicId
@@ -139,13 +169,22 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
                     .videoCodec('mpeg4')
                     .fps(24)
                     .videoBitrate(1000)
-                    .videoFilters('scale=400:600')
+                    .size('?x600')
                     .duration(10)
                     .output("/tmp/"+fileId+".thumb.mp4")
                     .on('end', async function() {
+
                         Logger("Uploading thumbnail to GCP")
                         const publicId = fileId+".thumb.mp4";
                         await GCP.upload(publicId, <Buffer>fs.readFileSync("/tmp/"+publicId));
+                        if(!metadata) await new Promise((resolve, reject) => {
+                            fs.writeFileSync("/tmp/"+fileId, <Buffer>file?.buffer);
+                            Ffmpeg.ffprobe("/tmp/"+fileId, function(err, metadataRaw) {
+                                metadata = metadataRaw;
+                                resolve(true);
+                            });
+                        });
+
                         resolve(publicId);
                     })
                     .on('error', function(err) {
@@ -154,32 +193,56 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
                     }).run();
             });
 
+        };
+
+        let timestamp = undefined;
+        if(metadata?.DateTimeOriginal) {
+            const date =
+                metadata?.DateTimeOriginal.split(" ")[0].replace(":", "-").replace(":", "-")
+                +"T"
+                +metadata?.DateTimeOriginal.split(" ")[1]
+                +"Z"
+
+            console.log(date)
+            timestamp = moment(date).toDate();
+        }
+        if(metadata?.format?.tags?.["com.apple.quicktime.creationdate"]) {
+            console.log(metadata?.format?.tags?.["com.apple.quicktime.creationdate"])
+            timestamp = moment(metadata?.format?.tags?.com?.apple?.quicktime?.creationdate).toDate();
+        }
+        else if(metadata?.format?.tags?.creation_time) {
+            timestamp = moment(metadata?.format?.tags?.creation_time).toDate();
         }
 
-        res.status(202).json({
-            message: "Media queued for upload",
-        });
-
-        Logger("Uploading media to GCP")
         const publicId = fileId+"."+mime.extension(String(file?.mimetype));
-        const publicUrl = await GCP.upload(publicId, <Buffer>file?.buffer);
 
         const media = new Models.Media({
             publicId,
             // @ts-ignore
             original: req.file.filename,
-            storageLocation: publicUrl,
+            storageLocation: fileId+".thumb."+mime.extension(String(file.mimetype)),
             // @ts-ignore
             type: req.file.mimetype,
             group: "event",
             user: req.user._id,
-            thumbnail
+            thumbnail,
+            metadata: JSON.parse(req.body.metadata),
+            timestamp,
         });
 
         await media.save();
 
         event.media.push(media._id);
         await event.save();
+
+        res.status(202).json({
+            message: "Media queued for upload",
+        });
+
+        Logger("Uploading media to GCP")
+        media.storageLocation = await GCP.upload(publicId, <Buffer>file?.buffer);
+        await media.save();
+
 
     } catch (e) {
         next(e);

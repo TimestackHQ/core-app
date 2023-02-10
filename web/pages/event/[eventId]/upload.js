@@ -2,17 +2,32 @@ import React, {Fragment, useEffect, useState} from 'react';
 import IOS from "../../../components/ios";
 import FadeIn from "react-fade-in";
 import {useRouter} from "next/router";
+import HTTPClient from "../../../utils/httpClient";
+import {LazyLoadImage} from "react-lazy-load-image-component";
 
 export default function EventIOS ({}) {
 
-	const eventId = useRouter().query.eventId;
-	const [files, setFiles] = useState([]);
+	const router = useRouter();
+	const eventId = router.query.eventId;
+	const [event, setEvent] = useState(null);
+	const [uri, setUri] = useState("");
 
 	useEffect(() => {
-		// Array.from(files).map(async file=> {
-		// 	console.log(Buffer.from(await file.arrayBuffer()).toString("binary"));
-		// });
-	}, [files]);
+		HTTPClient("/media/"+event?.cover+"?thumbnail=true").then(res => setUri(res.data))
+			.catch(err => {});
+	}, [event])
+
+	useEffect(() => {
+
+		HTTPClient("/events/"+eventId, "GET")
+			.then((response) => {
+				setEvent(response.data.event);
+			})
+			.catch((error) => {
+				window.location.href = "/main_ios";
+			});
+
+	}, []);
 
 	const upload = () => {
 		window.ReactNativeWebView?.postMessage(JSON.stringify({
@@ -34,49 +49,79 @@ export default function EventIOS ({}) {
 	});
 
 	return (
-		<IOS buttons={[
-			{
-				icon: "leftArrow",
-				href: "/main_ios",
-				position: "left"
-			},
+		<IOS hideNavbar={true} buttons={[
+			// {
+			// 	icon: "leftArrow",
+			// 	href: "/main_ios",
+			// 	position: "left"
+			// },
 			// {
 			// 	icon: "leftArrow",
 			// 	href: "/main_ios",
 			// }
 		]} >
 			<FadeIn>
-				<div className={"row"} style={{borderRight: "2rem", borderColor: "black"}}>
-					<hr/>
-					<button className={"btn btn-outline-secondary"} onClick={upload} >
-						Upload
-					</button>
-					<hr/>
-					<div className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px"}}>
+				<br/>
+				<br/>
+				<br/>
+				<div className={"container"} >
+					<div className="row">
+						<div className={"card"} style={{
+							boxShadow: "rgba(100, 100, 111, 0.5) 0px 10px 50px 0px",
+							borderRadius: "3rem",
+							borderBottomRightRadius: "0px",
+							borderBottomLeftRadius: "0px",
+							padding: 0
+						}}>
 
-						<div className="image-upload">
-							<label htmlFor="file-input" style={{height: "200px"}}>
-								<img style={{objectFit: "cover"}} alt={"Cassis 2022"} height={"100%"} width={"100%"} src={"/images/add-media.png"}/>
-							</label>
+							<div className={"card-body"} >
+								<div className={"row"} style={{margin: "0.5rem", paddingTop: "10px", paddingLeft: 1, paddingRight: 1, padding: 0}}>
 
-							<input id={"file-input"} multiple type="file" onChange={(e) => {
-								setFiles(e.target.files);
-							}}/><br/><br/>
-						</div>
+									<div className={"col-6"} >
+										<h1>
+											<b>Upload</b>
+										</h1>
+									</div>
+									<div className={"col-6 text-end"} onClick={() => router.push("/event/"+eventId)}>
+										<img src={"/icons/x.svg"} width={"20px"}/>
+									</div>
+								</div>
+								<br/>
+								<div className={"row"} autofocus={true} style={{}}>
+									<div className={"col-3"}>
+										<LazyLoadImage
+											src={uri}
+											style={{borderRadius: "15px", objectFit: "cover"}}
+											alt={""}
+											width={"80px"} height={"120px"}
+										/>
+									</div>
+									<div className={"col-8"}>
+										<h6 style={{marginBottom: "0px"}}>{event?.name}</h6>
+										<p style={{color: "gray"}}>{event?.location}</p>
+									</div>
+									<div className={"col-12"}>
+										<br/>
+										<img style={{width: "42px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+										{event?.people.map((invitee, index) => {
+											return <img style={{width: "42px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+										})}
+										<hr/>
+									</div>
+								</div>
 
-
-					</div>
-
-					{Array.from(files)?.map((file, i) => {
-						return (
-							<div className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px"}}>
-								<img key={i} style={{objectFit: "cover"}} alt={"Cassis 2022"} height={"100%"} width={"100%"} src={"data:image/png;base64,"+file.base64}/>
 							</div>
-						);
-					})}
-
-
-
+							<div>
+								<div className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>
+									<br/>
+									<img onClick={upload} style={{objectFit: "cover"}} alt={"Cassis 2022"} height={"100%"} width={"100%"} src={"/images/add-media.png"}/>
+								</div>
+								<div style={{display: "flex",
+									flexDirection: "column",
+									height: "50vh"}} />
+							</div>
+						</div>
+					</div>
 				</div>
 			</FadeIn>
 		</IOS>
