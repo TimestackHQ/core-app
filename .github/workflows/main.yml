@@ -58,6 +58,7 @@ jobs:
         tsc --build .
         cp ./package.json ./.dist/ApiService/package.json
         cp ../shared/package.json ./.dist/shared/package.json
+        cp ../shared/cloud/.gc/peppy-plateau-376819-bdf2b94447bd.json ./.dist/shared/cloud/.gc/peppy-plateau-376819-bdf2b94447bd.json
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
