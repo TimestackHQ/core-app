@@ -26,7 +26,8 @@ export default function EventCard ({
 		}}>
 			<div className={"row"}>
 				<div className={"col-4"}>
-					<LazyLoadImage src={uri}
+					<img src={uri}
+					     loading={"lazy"}
 		                style={{borderRadius: "15px", objectFit: "cover"}}
 		                alt={""}
 		                width={"100%"} height={"130px"}

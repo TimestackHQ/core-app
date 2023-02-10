@@ -13,8 +13,6 @@ export default function EventIOS ({}) {
 
 	const [event, setEvent] = useState(null);
 
-	const [media, setMedia] = useState([]);
-
 	const [uri, setUri] = useState("");
 
 	useEffect(() => {
@@ -47,15 +45,15 @@ export default function EventIOS ({}) {
 		]} timestackButtonLink={"./"+event?._id+"/upload"}>
 			<div className={"container"}>
 				<FadeIn>
-					<FadeIn delay={400}>
+					<FadeIn transitionDuration={50} >
 						<div className={" row"}>
 							<div className={"col-5"} autofocus={true}>
-								<LazyLoadImage
+								<img
 									src={uri}
 					                style={{borderRadius: "15px", objectFit: "cover"}}
 					                alt={""}
 					                width={"100%"} height={"200px"}
-									threshold={500}
+
 								/>
 							</div>
 							<div className={"col-7 position-relative"}>
@@ -70,33 +68,34 @@ export default function EventIOS ({}) {
 							</div>
 
 						</div>
+						<br/>
+						<div className={"row"}>
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
+								<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
+							</div>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
+								<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+							</div>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>0</h5>
+								<h5 style={{color: "gray"}}>Revisits</h5>
+							</div>
+						</div>
+						<br/>
+						<div style={{}}>
+							<img onClick={() => setWaitingForPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+							{event?.people.map((invitee, index) => {
+								return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+							})}
+
+						</div>
 					</FadeIn>
 
-					<br/>
-					<div className={"row"}>
-						<div className={"col-4 text-center"}>
-							<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
-							<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
-						</div>
 
-						<div className={"col-4 text-center"}>
-							<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
-							<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
-						</div>
-
-						<div className={"col-4 text-center"}>
-							<h5 style={{margin: 0}}>0</h5>
-							<h5 style={{color: "gray"}}>Revisits</h5>
-						</div>
-					</div>
-					<br/>
-					<div style={{}}>
-						<img onClick={() => setWaitingForPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
-						{event?.people.map((invitee, index) => {
-							return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
-						})}
-
-					</div>
 					<br/>
 					<div className={"row"}>
 						<Gallery gallery={event?.media}/>
