@@ -1,0 +1,146 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ca-central-1:275218587958:task-definition/api-prod:2",
+    "containerDefinitions": [
+        {
+            "name": "api-prod",
+            "image": "275218587958.dkr.ecr.ca-central-1.amazonaws.com/timestack:41f8fb66e1c5ae5216f0424e17302bc642bf4467",
+            "cpu": 0,
+            "links": [],
+            "portMappings": [
+                {
+                    "name": "api-prod-4000-tcp",
+                    "containerPort": 4000,
+                    "hostPort": 4000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [
+                {
+                    "name": "PORT",
+                    "value": "4000"
+                },
+                {
+                    "name": "JWT_SECRET",
+                    "value": "secret"
+                },
+                {
+                    "name": "SENTRY_DSN",
+                    "value": "https://7fd3e5e1215c4863a260041005eea609@o4504176377069568.ingest.sentry.io/4504176393519104"
+                },
+                {
+                    "name": "SENDGRID_API_KEY",
+                    "value": "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"
+                },
+                {
+                    "name": "APP_NAME",
+                    "value": "timestack"
+                },
+                {
+                    "name": "MONGODB_URI",
+                    "value": "mongodb+srv://achraf:s8n9vNf8YbxnuJzB@provolone.hrdhqmc.mongodb.net/timestack_prod"
+                },
+                {
+                    "name": "NODE_ENV",
+                    "value": "production"
+                },
+                {
+                    "name": "TWILIO_SID",
+                    "value": "AC1b4929596fbd01a9c44d7f9ae59b7e11"
+                },
+                {
+                    "name": "TWILIO_AUTH_TOKEN",
+                    "value": "08618991c264517d8516320276811da2"
+                },
+                {
+                    "name": "FRONTEND_URL",
+                    "value": "https://timestack.world"
+                },
+                {
+                    "name": "TWILIO_PHONE_NUMBER",
+                    "value": "+14388123252"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "dnsServers": [],
+            "dnsSearchDomains": [],
+            "extraHosts": [],
+            "dockerSecurityOptions": [],
+            "dockerLabels": {},
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/api-prod",
+                    "awslogs-region": "ca-central-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "api-prod",
+    "executionRoleArn": "arn:aws:iam::275218587958:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "1024",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2023-02-04T01:52:05.613Z",
+    "registeredBy": "arn:aws:iam::275218587958:root",
+    "tags": [
+        {
+            "key": "ecs:taskDefinition:createdFrom",
+            "value": "ecs-console-v2"
+        }
+    ]
+}
