@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import IOS from "../../../components/ios";
 import FadeIn from "react-fade-in";
-import {useRouter} from "next/router";
+import Router, {useRouter} from "next/router";
 import HTTPClient from "../../../utils/httpClient";
 import {LazyLoadImage} from "react-lazy-load-image-component";
 
@@ -82,7 +82,7 @@ export default function EventIOS ({}) {
 											<b>Upload</b>
 										</h1>
 									</div>
-									<div className={"col-6 text-end"} onClick={() => router.push("/event/"+eventId)}>
+									<div className={"col-6 text-end"} onClick={() => Router.back()}>
 										<img src={"/icons/x.svg"} width={"20px"}/>
 									</div>
 								</div>
