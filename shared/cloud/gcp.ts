@@ -1,6 +1,6 @@
 import * as Cloud from '@google-cloud/storage';
 import * as path from "path";
-const serviceKey = path.join(__dirname, '.gc/peppy-plateau-376819-bdf2b94447bd.json')
+const serviceKey = path.join(__dirname, './.gc/peppy-plateau-376819-bdf2b94447bd.json')
 
 const { Storage } = Cloud
 export const storage = new Storage({
