@@ -3,7 +3,7 @@ import {confirmLoginValidator, loginValidator, registerValidator} from "./auth.v
 import {HTTPValidator, authCheck} from "../../shared";
 import {confirmLogin, login, register} from "./auth.controller";
 
-const router = Router()
+const router: Router = Router()
 
 router.post("/login", HTTPValidator(loginValidator), login);
 router.post("/confirm-login", HTTPValidator(confirmLoginValidator), confirmLogin);
