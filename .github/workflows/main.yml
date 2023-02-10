@@ -56,8 +56,8 @@ jobs:
         cd ApiService
         npm install
         tsc --build .
-        cp ./package.json ./dist/ApiService/package.json
-        cp ../shared/package.json ./dist/shared/package.json
+        cp ./package.json ./.dist/ApiService/package.json
+        cp ../shared/package.json ./.dist/shared/package.json
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
