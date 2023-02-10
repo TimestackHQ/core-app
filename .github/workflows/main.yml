@@ -49,13 +49,19 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        cp -R ./ApiService/package.json ./.dist/ApiService/package.json
-        cp -R ./shared/package.json ./.dist/shared/package.json
-        cp -R ./shared/email ./.dist/shared/email
-        cd ./.dist
+        
+        cd shared
+        npm install
+        cd ..
+        cd ApiService
+        npm install
+        tsc --build .
+        cp ./package.json ./dist/ApiService/package.json
+        cp ../shared/package.json ./dist/shared/package.json
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
