@@ -220,6 +220,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             publicId,
             // @ts-ignore
             original: req.file.filename,
+            // @ts-ignore
             storageLocation: fileId+".thumb."+mime.extension(String(file.mimetype)),
             // @ts-ignore
             type: req.file.mimetype,

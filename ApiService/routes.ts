@@ -6,7 +6,7 @@ import mediaRoutes from "./media/media.routes";
 import {authCheck} from "../shared";
 
 
-const router = Router();
+const router: Router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/events", authCheck, eventsRoutes);
