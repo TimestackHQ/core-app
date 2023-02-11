@@ -2,8 +2,10 @@ import FadeIn from "react-fade-in";
 import HTTPClient from "../utils/httpClient";
 import React, {useEffect} from "react";
 import Image from "next/image";
+import Router from "next/router";
+import {CleanUpPhoneNumber} from "../utils/phoneNumber";
 
-export default function AddPeopleScreen ({currentInvitees, callback}) {
+export default function AddPeopleScreen ({eventId, currentInvitees, callback}) {
 
 	const [search, setSearch] = React.useState(null);
 	const [localContacts, setLocalContacts] = React.useState([]);
@@ -21,14 +23,19 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 		}));
 	}, []);
 
-	window.addEventListener("message", messageRaw => {
-		const message = messageRaw?.data ? JSON.parse(messageRaw.data) : null;
-		if(message.response !== "allContacts") return;
+	window?.addEventListener("message", messageRaw => {
 		try {
-			setLocalContacts(message.data);
-		}catch(err){
+			const message = messageRaw?.data ? JSON.parse(messageRaw?.data) : null;
+			if(message.response !== "allContacts") return;
+			try {
+				setLocalContacts(message.data);
+			}catch(err){
 
+			}
+		} catch (err) {
+			console.log(err);
 		}
+
 	});
 
 	useEffect(() => {
@@ -47,18 +54,18 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 						<h3>
 							<b>People</b>
 						</h3>
-					</div>
-					<div className={"col-2 text-right"}>
-						<div onClick={() => {
-							callback(invitees.map(invitee => ({
-								_id: invitee._id,
-								username: invitee?.username,
-								firstName: invitee?.firstName ? invitee?.firstName : invitee?.name.split(" ")[0],
-								lastName: invitee?.lastName ? invitee?.lastName : invitee?.name.split(" ")[1],
+						</div>
+						<div className={"col-2 text-right"}>
+							<div onClick={() => {
+								callback(invitees.map(invitee => ({
+									_id: invitee._id,
+									username: invitee?.username,
+									firstName: invitee?.firstName ? invitee?.firstName : invitee?.name.split(" ")[0],
+									lastName: invitee?.lastName ? invitee?.lastName : invitee?.name.split(" ")[1],
 								phoneNumber: invitee?.phoneNumber,
 								email: invitee?.email,
 								profilePictureSource: invitee?.profilePictureSource,
-							})));
+							})).filter(invitee => invitees.map(invitee => invitee?._id).includes(invitee._id)));
 						}}>
 							<Image src={"/icons/times.svg"} width={20} height={20} alt={""}/>
 						</div>
@@ -90,12 +97,10 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(invitee._id);
 							return (
 								<div key={index} className={"row"} onClick={() => {
-									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(row => row._id !== invitee._id));
 									} else {
 										setInvitees([...invitees, invitee]);
-										console.log(invitees)
 									}
 								}}>
 									<div className={"col-3"}>
@@ -105,7 +110,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 											src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}
 										/>
 									</div>
-									<div className={"col-8"} style={{paddingLeft: "0px"}}>
+									<div className={"col-7"} style={{paddingLeft: "0px"}}>
 										<h5 style={{marginBottom: "0px", marginTop: "3px"}}><b>
 											{invitee.firstName ? invitee?.firstName : invitee?.name} {invitee.lastName ? invitee?.lastName : invitee?.name}
 
@@ -114,6 +119,9 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 											{invitee?.username ? "@" + invitee?.username : null}
 											{invitee?.phoneNumber ? invitee?.phoneNumber : null}
 										</p>
+									</div>
+									<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
+										{invitee?.status === "pending" || invitee?.status === "notUser" ? <i style={{color: "orange"}} className={"fa fa-question-circle"}/> : null}
 									</div>
 									<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
 										{isInvitee ? <i className={"fa fa-circle-check"}/> : <i className={"fa fa-circle-o"}/>}
@@ -126,12 +134,10 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(invitee._id);
 							return (
 								<div key={index} className={"row"} onClick={() => {
-									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(row => row._id !== invitee._id));
 									} else {
 										setInvitees([...invitees, invitee]);
-										console.log(invitees)
 									}
 								}}>
 									<div className={"col-3"}>
@@ -141,7 +147,7 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 											src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}
 										/>
 									</div>
-									<div className={"col-8"} style={{paddingLeft: "0px"}}>
+									<div className={"col-7"} style={{paddingLeft: "0px"}}>
 										<h5 style={{marginBottom: "0px", marginTop: "3px"}}><b>
 											{invitee.firstName ? invitee?.firstName : invitee?.name} {invitee.lastName ? invitee?.lastName : invitee?.name}
 
@@ -150,6 +156,9 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 											{invitee?.username ? "@" + invitee?.username : null}
 											{invitee?.phoneNumber ? invitee?.phoneNumber : null}
 										</p>
+									</div>
+									<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
+										{invitee?.status === "pending" || invitee?.status === "notUser" ? <i style={{color: "orange"}} className={"fa fa-question-circle"}/> : null}
 									</div>
 									<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
 										{isInvitee ? <i className={"fa fa-circle-check"}/> : <i className={"fa fa-circle-o"}/>}
@@ -163,12 +172,10 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 							const isInvitee = invitees.map(invitee => invitee?._id).includes(user._id)
 							return (
 								<div key={index} className={"row"} onClick={() => {
-									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(invitee => invitee._id !== user._id));
 									} else {
 										setInvitees([...invitees, user]);
-										console.log(invitees)
 									}
 								}}>
 									<div className={"col-3"}>
@@ -206,10 +213,12 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 						)
 							.sort((a, b) => a?.name?.localeCompare(b?.name))
 							.map((contact, index) => {
-								const isInvitee = invitees.map(invitee => invitee?._id).includes(contact.id);
+
+								const isInvitee =
+									invitees.map(invitee => invitee?._id.toString()).includes(contact.id.toString()) ||
+									invitees.map(invitee => CleanUpPhoneNumber(invitee?.phoneNumber)).includes(CleanUpPhoneNumber(contact?.phoneNumbers?.[0]?.number))
 								return (
 								<div key={index} className={"row"} onClick={() => {
-									console.log(isInvitee)
 									if (isInvitee) {
 										setInvitees(invitees.filter(invitee => invitee._id !== contact.id));
 									} else {
@@ -219,7 +228,6 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 											phoneNumber: contact?.phoneNumbers?.[0]?.number,
 											email: contact?.emails?.[0]?.email,
 										}]);
-										console.log(invitees)
 									}
 								}}>
 									{index !== 0 ? null : <div className={"col-12"}>
@@ -247,14 +255,6 @@ export default function AddPeopleScreen ({currentInvitees, callback}) {
 
 
 						<br/><br/><br/><br/>
-						<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-						<br/><br/><br/>
-						<br/><br/>
-						<br/>
-						<br/>
-						<br/>
-
-
 
 					</div>
 				</div>

@@ -2,66 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/fullview.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Bold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-BoldItalic.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Italic.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Regular.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/styles/fullview.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/utils/phoneNumber.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.controller.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.controller.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.routes.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.routes.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.routes.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.routes.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.validator.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/auth/auth.validator.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.controller.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.routes.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/events/events.validator.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/index.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/index.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/ApiService/routes.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/email/eventConfirmTemplate.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/email/eventInviteTemplate.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/index.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/index.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/index.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Availability.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Availability.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Availability.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/DBModel.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/DBModel.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/DBModel.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/Event.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/EventSourcing.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/EventSourcing.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/SMSCode.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/SMSCode.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/SMSCode.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/SMSCode.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/User.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/index.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/models/utils.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/.dist/shared/models/utils.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/test.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/test.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/types.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/types.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/.dist/shared/types.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/shared/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/events/events.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/events/events.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/events/events.validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.validator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/models/Event.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/models/Event.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/components/Event.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/Event.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/_app.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/_app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId].js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId].js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/web/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/styles/globals.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,27 +40,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/timestack/assets/icons&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/achrafghellach/projects/time/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/achrafghellach/projects/time/web/public/fonts",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/achrafghellach/projects/time/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/public/fonts" />
+      <recent name="$PROJECT_DIR$/web/pages/event/[eventId]" />
       <recent name="$PROJECT_DIR$/timestack/assets/icons" />
       <recent name="$PROJECT_DIR$/timestack/assets" />
       <recent name="$PROJECT_DIR$/ApiService" />
-      <recent name="$PROJECT_DIR$/web/public/icons" />
-      <recent name="$PROJECT_DIR$/web/public/images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/timestack/assets" />
@@ -178,7 +138,8 @@
       <workItem from="1675874176187" duration="13555000" />
       <workItem from="1675972455453" duration="18066000" />
       <workItem from="1676038931308" duration="1793000" />
-      <workItem from="1676048805472" duration="2099000" />
+      <workItem from="1676048805472" duration="15463000" />
+      <workItem from="1676132733510" duration="21806000" />
     </task>
     <servers />
   </component>

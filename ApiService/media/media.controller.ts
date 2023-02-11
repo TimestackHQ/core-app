@@ -87,6 +87,10 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             },
         });
 
+        Logger("Uploading media to GCP")
+        media.storageLocation = await GCP.upload(publicId, <Buffer>file?.buffer);
+        await media.save();
+
 
     } catch (e) {
         next(e);
@@ -238,6 +242,9 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         res.status(202).json({
             message: "Media queued for upload",
+            media: {
+                publicId: media.publicId,
+            }
         });
 
         Logger("Uploading media to GCP")

@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import {commonProperties} from "./utils";
 import {v4 as uuid} from "uuid";
 import {MediaSchema} from "./Media";
+import {UserSchema} from "./User";
 
 export interface EventSchema extends mongoose.Document {
     name: string;
@@ -21,6 +22,7 @@ export interface EventSchema extends mongoose.Document {
     cover: MediaSchema & mongoose.Schema.Types.ObjectId;
     publicId: string;
     commonProperties: commonProperties;
+    people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & {type: String})[];
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
 }
 
@@ -88,6 +90,29 @@ const EventSchema = new mongoose.Schema({
     },
     ...commonProperties,
 });
+
+EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
+    return [
+        ...this.users.map((user: any) => {
+            return {
+                ...user.toJSON(),
+                status: "accepted"
+            }
+        }).filter((user: { _id: { toString: () => any; }; }) => String(user?._id) !== String(userId)),
+        ...this.invitees.map((user: any) => {
+            return {
+                ...user.toJSON(),
+                status: "pending"
+            }
+        }),
+        ...this.nonUsersInvitees.map((user: any) => {
+            return {
+                ...user.toJSON(),
+                status: "notUser"
+            }
+        })
+    ]
+}
 
 // EventSchema.methods.ics = async function (organizer: UserSchema, users: UserSchema[]) {
 //
