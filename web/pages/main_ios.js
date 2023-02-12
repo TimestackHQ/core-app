@@ -29,7 +29,7 @@ export default function MainIOS () {
 				<div className="row" style={{paddingTop: "20px"}}>
 						{events?.map((event, index) => {
 							return (
-								<div className={"col-6"}>
+								<div key={index} className={"col-6"}>
 									<EventCard event={event} key={index}/>
 								</div>
 							);
