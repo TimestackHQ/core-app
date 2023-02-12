@@ -45,7 +45,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
                     .videoCodec('mpeg4')
                     .fps(20)
                     .videoBitrate(500)
-                    .size('200x?')
+                    .size('400x?')
                     .duration(10)
                     .output("/tmp/"+fileId+".thumb.mp4")
                     .on('end', async function() {
@@ -173,7 +173,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
                     .videoCodec('mpeg4')
                     .fps(20)
                     .videoBitrate(500)
-                    .size('?x300')
+                    .size('?x600')
                     .duration(10)
                     .output("/tmp/"+fileId+".thumb.mp4")
                     .on('end', async function() {
