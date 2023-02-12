@@ -2,26 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/fullview.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Bold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-BoldItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/public/fonts/Athelas-Regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/styles/fullview.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/utils/phoneNumber.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/compress.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/input.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/movie.mp4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/output.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/output.mp4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mylab/yarn.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared/compress.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/events/events.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/events/events.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.routes.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/events/events.validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.validator.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/models/Event.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/models/Event.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/components/Event.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/Event.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/pages/_app.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/_app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId].js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId].js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/shared/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/yarn-error.log" beforeDir="false" afterPath="$PROJECT_DIR$/shared/yarn-error.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/shared/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/fullview.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/fullview.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/web/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,20 +38,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/achrafghellach/projects/time/web/public/fonts",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "/Users/achrafghellach/projects/time/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/web/public/fonts&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/achrafghellach/projects/time/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/public/fonts" />
@@ -63,11 +61,11 @@
       <recent name="$PROJECT_DIR$/ApiService" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/mylab" />
       <recent name="$PROJECT_DIR$/timestack/assets" />
       <recent name="$PROJECT_DIR$/shared/cloud" />
       <recent name="$PROJECT_DIR$/web/public" />
       <recent name="$PROJECT_DIR$/web/public/images" />
-      <recent name="$PROJECT_DIR$/web/pages/event" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -139,7 +137,11 @@
       <workItem from="1675972455453" duration="18066000" />
       <workItem from="1676038931308" duration="1793000" />
       <workItem from="1676048805472" duration="15463000" />
-      <workItem from="1676132733510" duration="21806000" />
+      <workItem from="1676132733510" duration="27217000" />
+      <workItem from="1676169319782" duration="4888000" />
+      <workItem from="1676174901203" duration="170000" />
+      <workItem from="1676225405697" duration="28000" />
+      <workItem from="1676229042379" duration="6222000" />
     </task>
     <servers />
   </component>

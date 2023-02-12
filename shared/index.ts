@@ -12,6 +12,7 @@ import {UserSchema} from "./models/User";
 import {EventSchema} from "./models/Event";
 import * as fs from "fs";
 import * as path from "path";
+import * as Compress from "./compress";
 import {isObjectIdOrHexString} from "mongoose";
 // @ts-ignore
 import * as JoiObjectId from "joi-objectid";
@@ -180,5 +181,6 @@ export const isObjectIdJoiValidator = JoiObjectId(Joi);
 export {
     isObjectIdOrHexString,
     Models,
-    GCP
+    GCP,
+    Compress
 }
