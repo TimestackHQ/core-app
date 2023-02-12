@@ -29,7 +29,7 @@ export default function EventIOS ({}) {
 	}, []);
 
 	useEffect(() => {
-		HTTPClient("/media/"+event?.cover).then(res => setUri(res.data))
+		HTTPClient("/media/"+event?.cover+"?thumbnail=true").then(res => setUri(res.data))
 			.catch(err => {});
 	}, [event])
 
