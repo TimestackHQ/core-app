@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import HTTPClient from "../utils/httpClient";
 import FadeIn from "react-fade-in";
 import ContentLoader from 'react-content-loader'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 

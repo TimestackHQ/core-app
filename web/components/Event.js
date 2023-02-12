@@ -4,6 +4,7 @@ import HTTPClient, {restOrigin} from "../utils/httpClient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
 import {LazyLoadImage} from "react-lazy-load-image-component";
 import ContentLoader from "react-content-loader";
+import Skeleton from "react-loading-skeleton";
 
 export default function EventCard ({
        event
@@ -29,6 +30,8 @@ export default function EventCard ({
 
 				<div className={"col-12"}>
 					<LazyLoadImage src={uri}
+					               style={{objectFit: "cover", margin: 0, padding: 0}}
+placeholderSrc={"images/gray.png"}
 		                style={{borderRadius: "15px", objectFit: "cover", borderBottomRightRadius: "5px", borderBottomLeftRadius: "5px"}}
 		                alt={""}
 		                width={"100%"} height={"200px"}

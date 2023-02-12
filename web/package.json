@@ -38,6 +38,8 @@
     "react-fade": "^1.1.1",
     "react-fade-in": "^2.0.1",
     "react-lazy-load-image-component": "^1.5.6",
+    "react-loading-skeleton": "^3.1.1",
+    "react-native-skeletons": "^1.2.1",
     "react-no-ssr": "^1.1.0",
     "react-redux": "^8.0.5",
     "react-shimmer-effects": "^1.0.2",
