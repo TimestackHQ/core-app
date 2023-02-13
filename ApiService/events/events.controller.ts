@@ -1,31 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {GCP, Models} from "../../shared";
-import {EventSchema} from "../../shared/models/Event";
+import {Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
-
-const getBuffer = async (event: EventSchema): Promise<String | undefined> => {
-    const cover = event.cover;
-
-    if(cover.snapshot) return Buffer.from(await GCP.download(cover.snapshot)).toString('base64');
-    else if(cover.thumbnail) return Buffer.from(await GCP.download(cover.thumbnail)).toString('base64');
-}
-
-const standardEventPopulation = [{
-    path: "cover",
-    select: "publicId thumbnail snapshot"
-},
-    {
-        path: "users",
-        select: "firstName lastName profilePictureSource"
-    }, {
-        path: "invitees",
-        select: "firstName lastName profilePictureSource"
-    },{
-        path: "nonUsersInvitees",
-        select: "firstName lastName profilePictureSource"
-    }
-]
+import {getBuffer, standardEventPopulation} from "./events.tools";
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 

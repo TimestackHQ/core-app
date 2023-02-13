@@ -28,11 +28,6 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             const publicId = fileId+".thumb.jpg";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
-
-            Logger("Generating snapshot for image")
-
-
-
         }
 
         if(file?.mimetype.split("/")[0] === "video") {
@@ -41,6 +36,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
+            Logger("Generating snapshot for image")
             const snapshotPublicId = fileId+".snapshot.jpg";
             await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
             snapshot = snapshotPublicId;
@@ -78,7 +74,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
         }
         else if(file?.mimetype.split("/")[0] === "image") {
             Logger("Uploading media to GCP")
-            const storageLocation = await Compress.compressImage(fileId, <Buffer>file?.buffer, 21);
+            const storageLocation = await Compress.compressImage(fileId, <Buffer>file?.buffer, 0);
             await GCP.upload(fileId+".jpg", <Buffer>fs.readFileSync(storageLocation));
             media.storageLocation = fileId+".jpg";
             media.publicId = media.storageLocation

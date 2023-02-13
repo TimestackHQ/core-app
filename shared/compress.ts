@@ -57,7 +57,7 @@ export const compressImage = async (fileId: string, fileBuffer: Buffer, compress
 				"-q:v",
 				compression.toString()
 			])
-			.size('?x1200')
+			.size('1200x?')
 			.output(outputFilePath)
 			.on('end', function() {
 				resolve(true);
