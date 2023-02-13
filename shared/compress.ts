@@ -21,13 +21,23 @@ export const compressVideo = async (fileId: string, fileBuffer: Buffer, compress
 			.output(outputFilePath)
 			.on('end', function() {
 				resolve(true);
+			})
+			.screenshot({
+				timestamps: ['00:00.000'],
+				filename: fileId+'.snapshot.jpg',
+				folder: '/tmp/',
+				size: '300x?'
 			});
 
 		if(duration) video = video.duration(duration).size("600x?");
 
 		video.run();
 
+
+
 	});
+
+	console.log(fs.readFileSync("/tmp/"+fileId+".snapshot.jpg"))
 
 	return outputFilePath;
 

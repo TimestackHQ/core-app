@@ -17,6 +17,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
         const file: Express.Multer.File | undefined = req.file;
 
         let thumbnail: any;
+        let snapshot: any;
 
         const fileId = uuid();
 
@@ -28,6 +29,10 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
 
+            Logger("Generating snapshot for image")
+
+
+
         }
 
         if(file?.mimetype.split("/")[0] === "video") {
@@ -36,6 +41,9 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
+            const snapshotPublicId = fileId+".snapshot.jpg";
+            await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
+            snapshot = snapshotPublicId;
         }
 
         const media = new Models.Media({
@@ -44,6 +52,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             original: req.file.filename,
             // @ts-ignore
             storageLocation: thumbnail,
+            snapshot,
             // @ts-ignore
             type: req.file.mimetype,
             group: "cover",
@@ -100,9 +109,18 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
             return res.sendStatus(404);
         }
 
-        if(media?.thumbnail && req.query?.thumbnail == "true") {
+        if(media?.snapshot && req.query?.snapshot == "true") {
+            return res.send(await GCP.signedUrl(media.snapshot));
+        }
+
+        if(media?.thumbnail && (req.query?.thumbnail == "true" || req.query?.snapshot == "true")) {
             return res.send(await GCP.signedUrl(media.thumbnail));
         }
+
+        if(media?.thumbnail === media?.storageLocation) {
+            return res.send(await GCP.signedUrl(media.thumbnail));
+        }
+
         return res.send(await GCP.signedUrl(media.publicId));
 
     } catch (e) {
@@ -137,6 +155,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         const fileId = uuid();
 
         let thumbnail: any;
+        let snapshot: any;
         let metadata: any = JSON.parse(req.body?.metadata);
 
         if(file?.mimetype.split("/")[0] === "image") {
@@ -159,6 +178,9 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
+            const snapshotPublicId = fileId+".snapshot.jpg";
+            await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
+            snapshot = snapshotPublicId;
         }
 
         let timestamp = undefined;
@@ -186,6 +208,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             original: req.file.filename,
             // @ts-ignore
             storageLocation: fileId+".thumb."+mime.extension(String(file.mimetype)),
+            snapshot,
             // @ts-ignore
             type: req.file.mimetype,
             group: "event",

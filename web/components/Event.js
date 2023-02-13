@@ -3,6 +3,7 @@ import {useRouter} from "next/router";
 import HTTPClient, {restOrigin} from "../utils/httpClient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
 import {LazyLoadImage} from "react-lazy-load-image-component";
+import Image from "next/image";
 
 export default function EventCard ({
 	                                   event
@@ -10,9 +11,12 @@ export default function EventCard ({
 
 	const router = useRouter();
 
+	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
 
 	useEffect(() => {
+		HTTPClient("/media/"+event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
+			.catch(err => {});
 		HTTPClient("/media/"+event.cover+"?thumbnail=true").then(res => setUri(res.data))
 			.catch(err => {});
 	}, [])
@@ -26,12 +30,29 @@ export default function EventCard ({
 		}}>
 			<div className={"row"}>
 				<div className={"col-4"}>
-					<img src={uri}
-					     loading={"lazy"}
-					     style={{borderRadius: "15px", objectFit: "cover"}}
-					     alt={""}
-					     width={"100%"} height={"145px"}
-					/>
+					<div style={{
+						backgroundImage: `url(${placeholder})`,
+						backgroundSize: "cover",
+						backgroundRepeat: "no-repeat",
+						backgroundPosition: "center",
+						borderRadius: "15px 15px 15px 15px",
+					}}>
+						<img
+
+							src={uri}
+							effect="blur"
+							loading={"lazy"}
+							style={{
+								borderRadius: "15px",
+								objectFit: "cover",
+
+								// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
+							}}
+							alt={""}
+							width={"100%"} height={"145px"}
+						/>
+					</div>
+
 				</div>
 				<div className={"col-5"} style={{paddingLeft: "0px"}}>
 					<h6 style={{marginTop: "10px", marginBottom: "0px"}}><b>{event?.name}</b></h6>

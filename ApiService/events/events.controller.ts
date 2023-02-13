@@ -81,7 +81,8 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             }, {
                 path: "cover",
                 select: "publicId"
-            },{
+            },
+                {
                 path: "users",
                 select: "firstName lastName profilePictureSource"
             }, {
@@ -90,7 +91,8 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             },{
                 path: "nonUsersInvitees",
                 select: "firstName lastName profilePictureSource"
-            }]);
+            }
+            ]);
 
         res.json({
             events: events.map(event => {

@@ -9,6 +9,7 @@ export interface MediaSchema extends mongoose.Document {
     type: string;
     group: string;
     thumbnail: string;
+    snapshot: string;
     active: boolean;
 }
 
@@ -42,6 +43,10 @@ const MediaSchema = new mongoose.Schema({
         default: true,
     },
     thumbnail: {
+        type: String,
+        required: false
+    },
+    snapshot: {
         type: String,
         required: false
     },
