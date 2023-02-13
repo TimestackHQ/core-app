@@ -1,3 +1,4 @@
+import "newrelic";
 import {config, Logger, Models} from "../shared";
 import * as express from "express";
 import * as cors from "cors";
