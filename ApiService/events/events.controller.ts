@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {Models} from "../../shared";
+import {GCP, Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 
@@ -149,7 +149,7 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             }
         }, {
             path: "cover",
-            select: "publicId"
+            select: "publicId thumbnail snapshot"
         },{
             path: "users",
             select: "firstName lastName profilePictureSource username"
@@ -167,6 +167,19 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             })
         }
 
+        // get cover thumbnail from google cloud
+
+        let buffer = null;
+        const cover = event.cover;
+        if(cover.snapshot) {
+            buffer = Buffer.from(await GCP.download(cover.snapshot)).toString('base64');
+        }
+        else if(cover.thumbnail) {
+            buffer = Buffer.from(await GCP.download(cover.thumbnail)).toString('base64');
+        }
+        console.log(buffer);
+
+
         res.json({
             event: {
                 ...event.toJSON(),
@@ -177,6 +190,7 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 users: undefined,
                 invitees: undefined,
                 nonUsersInvitees: undefined,
+                buffer,
                 people: event.people(req.user._id)
             }
         })

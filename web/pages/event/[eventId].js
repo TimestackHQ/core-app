@@ -14,22 +14,21 @@ export default function EventIOS ({}) {
 
 	const [event, setEvent] = useState(null);
 
+	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
 
 	const [updatingPeople, setUpdatingPeople] = useState(false);
 
-	useEffect(() => {
-		HTTPClient("/media/"+event?.cover+"?thumbnail=true").then(res => setUri(res.data))
-			.catch(err => {});
-	}, [event])
 
 	useEffect(() => {
-
-		console.log("/events/"+eventId)
 
 		HTTPClient("/events/"+eventId, "GET")
 			.then((response) => {
 				setEvent(response.data.event);
+				HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
+					.catch(err => {});
+				HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
+					.catch(err => {});
 			})
 			.catch((error) => {
 				// window.location.href = "/main_ios";
@@ -97,13 +96,32 @@ export default function EventIOS ({}) {
 						<FadeIn transitionDuration={50} >
 							<div className={" row"}>
 								<div className={"col-5"} autofocus={true}>
-									<img
-										src={uri}
-						                style={{borderRadius: "15px", objectFit: "cover"}}
-						                alt={""}
-						                width={"100%"} height={"200px"}
-									/>
+									<div style={{
+										backgroundImage: `url(data:image/jpeg;base64,${event?.buffer})`,
+										backgroundSize: "cover",
+										backgroundRepeat: "no-repeat",
+										backgroundPosition: "center",
+										borderRadius: "15px 15px 15px 15px",
+										height: "200px",
+									}}>
+										<img
+
+											src={uri}
+											effect="blur"
+											loading={"lazy"}
+											style={{
+												borderRadius: "15px",
+												objectFit: "cover",
+
+												// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
+											}}
+											alt={""}
+											width={"100%"} height={"200px"}
+										/>
+									</div>
 								</div>
+
+
 								<div className={"col-7 position-relative"}>
 									<div className="position-absolute top-0 start-0">
 										<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>

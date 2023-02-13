@@ -46,3 +46,11 @@ export const upload = async (publicId: string, buffer: Buffer): Promise<string> 
             .end(buffer);
     });
 }
+
+export const download = async (publicId: string): Promise<Buffer> => {
+    const file = storage
+        .bucket(String(process.env.GCP_STORAGE_BUCKET))
+        .file(publicId);
+
+    return (await file.download())[0];
+}
