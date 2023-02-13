@@ -75,11 +75,11 @@ export default function EventIOS ({}) {
 		<IOS buttons={[
 			{
 				icon: "leftArrow",
-				href: "back",
+				href: "/main_ios",
 				position: "left"
 			},
 			{
-				icon: "leftArrow",
+				icon: "events",
 				href: "/event/"+event?._id+"/fullview",
 				position: "right"
 			}

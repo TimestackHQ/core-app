@@ -19,24 +19,23 @@ export default function EventIOS ({}) {
 		HTTPClient("/events/"+eventId, "GET")
 			.then((response) => {
 				setEvent(response.data.event);
-
+				HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
+					setUri(res.data);
+					setLoaded(true);
+				})
+					.catch(err => {
+						Router.push("/event/"+eventId);
+					});
 
 			})
 			.catch((error) => {
-				alert(event?.cover + err.response)
+				// Router.push("/event/"+eventId);
 			});
 
 	}, []);
 
 	useEffect(() => {
-		HTTPClient("/media/"+event?.cover).then(res => {
-			setUri(res.data);
-			setLoaded(true);
-		})
 
-			.catch(err => {
-				// alert(event?.cover + err.response)
-			});
 	}, [event]);
 
 	return (loaded && event?.name) ? (

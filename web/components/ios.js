@@ -4,7 +4,8 @@ import FadeIn from "react-fade-in";
 import Router, {useRouter} from "next/router";
 
 const icons = {
-	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg"
+	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
+	"events": "/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"
 }
 
 export default function IOS ({
@@ -47,7 +48,7 @@ export default function IOS ({
 								</div>
 							})}
 						</div>
-						<div className={"col-5 d-flex justify-content-end"}>
+						<div className={"col-6 d-flex justify-content-end"} style={{paddingRight: "25px"}}>
 							{buttons?.filter(button => button.position !== "left").map((button, index) => {
 								return <Link key={index} href={button.href}>
 									<img style={{marginLeft: "20px"}} src={icons?.[button.icon]} alt="logo" width="25px"/>
