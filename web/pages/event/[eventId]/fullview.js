@@ -29,7 +29,7 @@ export default function EventIOS ({}) {
 
 			})
 			.catch((error) => {
-				// Router.push("/event/"+eventId);
+				Router.push("/event/"+eventId);
 			});
 
 	}, []);
