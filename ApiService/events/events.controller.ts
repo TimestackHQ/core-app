@@ -11,6 +11,22 @@ const getBuffer = async (event: EventSchema): Promise<String | undefined> => {
     else if(cover.thumbnail) return Buffer.from(await GCP.download(cover.thumbnail)).toString('base64');
 }
 
+const standardEventPopulation = [{
+    path: "cover",
+    select: "publicId thumbnail snapshot"
+},
+    {
+        path: "users",
+        select: "firstName lastName profilePictureSource"
+    }, {
+        path: "invitees",
+        select: "firstName lastName profilePictureSource"
+    },{
+        path: "nonUsersInvitees",
+        select: "firstName lastName profilePictureSource"
+    }
+]
+
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -83,24 +99,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             }],
         })
             .sort({createdAt: -1})
-            .populate([{
-                path: "users",
-                select: "firstName lastName profilePictureSource"
-            }, {
-                path: "cover",
-                select: "publicId thumbnail snapshot"
-            },
-                {
-                path: "users",
-                select: "firstName lastName profilePictureSource"
-            }, {
-                path: "invitees",
-                select: "firstName lastName profilePictureSource"
-            },{
-                path: "nonUsersInvitees",
-                select: "firstName lastName profilePictureSource"
-            }
-            ]);
+            .populate(standardEventPopulation);
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
@@ -152,27 +151,18 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                     createdBy: req.user._id
                 }],
             }]
-        }).populate([{
-            path: "media",
-            select: "-_id publicId",
-            options: {
-                sort: {
-                    createdAt: -1
+        }).populate([
+            {
+                path: "media",
+                select: "-_id publicId",
+                options: {
+                    sort: {
+                        createdAt: -1
+                    }
                 }
-            }
-        }, {
-            path: "cover",
-            select: "publicId thumbnail snapshot"
-        },{
-            path: "users",
-            select: "firstName lastName profilePictureSource username"
-        }, {
-            path: "invitees",
-            select: "firstName lastName profilePictureSource username"
-        },{
-            path: "nonUsersInvitees",
-            select: "firstName lastName profilePictureSource"
-        }]);
+            },
+            ...standardEventPopulation
+        ]);
 
         if (!event) {
             return res.status(404).json({
