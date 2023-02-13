@@ -14,7 +14,6 @@ export default function IOS ({
     timestackButtonLink,
 	hideNavbar
 }) {
-
 	const router = useRouter()
 
 	return (
@@ -75,7 +74,12 @@ export default function IOS ({
 							<div className="row">
 								<div className="col-3">
 									<Link href={"/main_ios"}>
-										<img style={{marginLeft: "30px", marginTop: "5px"}} className={"float-right"} src={"/icons/home_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
+										<img
+											style={{marginLeft: "30px", marginTop: "5px"}}
+											className={"float-right"}
+											src={Router.pathname === "/main_ios" ? "/icons/home-black.svg" : "/icons/home_FILL0_wght300_GRAD0_opsz48.svg"}
+											width={"30px"}
+										/>
 									</Link>
 								</div>
 								<div className="col-2">
@@ -84,7 +88,7 @@ export default function IOS ({
 								<div className="col-2 text-center">
 									<Link href={timestackButtonLink ? timestackButtonLink : "/new"}>
 										{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
-										<img src={"/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
+										<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
 									</Link>
 								</div>
 								<div className="col-2 text-center">
@@ -92,7 +96,7 @@ export default function IOS ({
 								</div>
 								<div className="col-3 left">
 									<Link href={"/profile"}>
-										<img style={{marginLeft: "10px", marginTop: "5px", borderRadius: "100px", borderColor: "black", borderWidth:"20px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
+										<img style={{marginLeft: "10px", border:Router.pathname === "/profile" ? "2px solid black" : "1px solid black", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
 									</Link>
 								</div>
 							</div>

@@ -79,9 +79,9 @@ export default function EventIOS ({}) {
 												letterSpacing: "-3px",
 												marginBottom: "0px",
 												lineHeight: "0.9",
-											}}>Cassis Vineyard</h2>
+											}}>{event?.name}</h2>
 											<br/>
-											<h6 style={{fontSize: "15px"}}>Cassis, France<br/>June 20, 2022</h6>
+											<h6 style={{fontSize: "15px"}}>{event?.location}<br/>June 20, 2022</h6>
 										</div>
 										<div className={"col-12 text-center"}>
 											<br/>
