@@ -171,7 +171,7 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
         }
 
         // get cover buffer from google cloud
-        const buffer = getBuffer(event);
+        const buffer = await getBuffer(event);
 
         res.json({
             event: {
