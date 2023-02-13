@@ -97,7 +97,7 @@ export default function EventIOS ({}) {
 							<div className={" row"}>
 								<div className={"col-5"} autofocus={true}>
 									<div style={{
-										backgroundImage: `url(data:image/jpeg;base64,${event?.buffer})`,
+										backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
 										backgroundSize: "cover",
 										backgroundRepeat: "no-repeat",
 										backgroundPosition: "center",

@@ -1,7 +1,15 @@
 import {NextFunction, Request, Response} from "express";
 import {GCP, Models} from "../../shared";
+import {EventSchema} from "../../shared/models/Event";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
+
+const getBuffer = async (event: EventSchema): Promise<String | undefined> => {
+    const cover = event.cover;
+
+    if(cover.snapshot) return Buffer.from(await GCP.download(cover.snapshot)).toString('base64');
+    else if(cover.thumbnail) return Buffer.from(await GCP.download(cover.thumbnail)).toString('base64');
+}
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 
@@ -80,7 +88,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
                 select: "firstName lastName profilePictureSource"
             }, {
                 path: "cover",
-                select: "publicId"
+                select: "publicId thumbnail snapshot"
             },
                 {
                 path: "users",
@@ -95,7 +103,11 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             ]);
 
         res.json({
-            events: events.map(event => {
+            events: await Promise.all(events.map(async (event, i) => {
+                let buffer = undefined;
+                if(i < 4) {
+                    buffer = await getBuffer(event);
+                }
                 return {
                     ...event.toJSON(),
                     cover: event.cover?.publicId,
@@ -105,9 +117,10 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
                     invitees: undefined,
                     nonUsersInvitees: undefined,
                     media: undefined,
-                    people: event.people(req.user._id)
+                    people: event.people(req.user._id),
+                    buffer
                 }
-            })
+            }))
         });
 
     } catch (e) {
@@ -167,18 +180,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             })
         }
 
-        // get cover thumbnail from google cloud
-
-        let buffer = null;
-        const cover = event.cover;
-        if(cover.snapshot) {
-            buffer = Buffer.from(await GCP.download(cover.snapshot)).toString('base64');
-        }
-        else if(cover.thumbnail) {
-            buffer = Buffer.from(await GCP.download(cover.thumbnail)).toString('base64');
-        }
-        console.log(buffer);
-
+        // get cover buffer from google cloud
+        const buffer = getBuffer(event);
 
         res.json({
             event: {

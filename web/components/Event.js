@@ -31,7 +31,7 @@ export default function EventCard ({
 			<div className={"row"}>
 				<div className={"col-4"}>
 					<div style={{
-						backgroundImage: `url(${placeholder})`,
+						backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
 						backgroundSize: "cover",
 						backgroundRepeat: "no-repeat",
 						backgroundPosition: "center",
