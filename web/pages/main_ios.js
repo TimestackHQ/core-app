@@ -27,13 +27,11 @@ export default function MainIOS () {
 			<div className="container">
 				<h1>My Timewall</h1>
 				<div className="row" style={{paddingTop: "20px"}}>
+					<div className={"col-12"} style={{borderRightColor: "black", borderWidth: "10px"}}>
 						{events?.map((event, index) => {
-							return (
-								<div key={index} className={"col-6"}>
-									<EventCard event={event} key={index}/>
-								</div>
-							);
+							return <EventCard event={event} key={index}/>
 						})}
+					</div>
 
 
 				</div>
