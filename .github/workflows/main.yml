@@ -8,7 +8,7 @@ env:
   ECR_REPOSITORY: timestack  
   ECS_SERVICE: timestack-api-prod   
   ECS_CLUSTER: timestack-prod            
-  ECS_TASK_DEFINITION: .aws/api-prod-revision2.json
+  ECS_TASK_DEFINITION: .aws/api-prod-revision13.json
   CONTAINER_NAME: api-prod           
 
 permissions:
