@@ -36,6 +36,7 @@ export default function EventCard ({
 						backgroundRepeat: "no-repeat",
 						backgroundPosition: "center",
 						borderRadius: "15px 15px 15px 15px",
+						height: "145px",
 					}}>
 						<img
 
