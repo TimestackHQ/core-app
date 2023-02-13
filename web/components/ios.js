@@ -72,33 +72,27 @@ export default function IOS ({
 					<div className="container">
 						{/*<FadeIn>*/}
 							<div className="row">
-								<div className="col-3">
-									<Link href={"/main_ios"}>
-										<img
-											style={{marginLeft: "30px", marginTop: "5px"}}
-											className={"float-right"}
-											src={Router.pathname === "/main_ios" ? "/icons/home-black.svg" : "/icons/home_FILL0_wght300_GRAD0_opsz48.svg"}
-											width={"30px"}
-										/>
-									</Link>
-								</div>
+								<Link className="col-3" href={"/main_ios"}>
+									<img
+										style={{marginLeft: "30px", marginTop: "5px"}}
+										className={"float-right"}
+										src={Router.pathname === "/main_ios" ? "/icons/home-black.svg" : "/icons/home_FILL0_wght300_GRAD0_opsz48.svg"}
+										width={"30px"}
+									/>
+								</Link>
 								<div className="col-2">
 									<img style={{marginTop: "5px"}} src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 								</div>
-								<div className="col-2 text-center">
-									<Link href={timestackButtonLink ? timestackButtonLink : "/new"}>
-										{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
-										<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
-									</Link>
-								</div>
+								<Link className="col-2 text-center" href={timestackButtonLink ? timestackButtonLink : "/new"}>
+									{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
+									<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
+								</Link>
 								<div className="col-2 text-center">
 									<img style={{marginLeft: "5px", marginTop: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 								</div>
-								<div className="col-3 left">
-									<Link href={"/profile"}>
-										<img style={{marginLeft: "10px", border:Router.pathname === "/profile" ? "2px solid black" : "1px solid black", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
-									</Link>
-								</div>
+								<Link className="col-3 left" href={"/profile"}>
+									<img style={{marginLeft: "10px", border:Router.pathname === "/profile" ? "2px solid black" : "1px solid black", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"28px"}/>
+								</Link>
 							</div>
 						{/*</FadeIn>*/}
 
