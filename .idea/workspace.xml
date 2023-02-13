@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ApiService/newrelic.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.aws/api-prod-revision13.json" beforeDir="false" afterPath="$PROJECT_DIR$/.aws/api-prod-revision13.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +125,7 @@
       <workItem from="1676174901203" duration="170000" />
       <workItem from="1676225405697" duration="28000" />
       <workItem from="1676229042379" duration="10589000" />
-      <workItem from="1676249274015" duration="951000" />
+      <workItem from="1676249274015" duration="996000" />
     </task>
     <servers />
   </component>
