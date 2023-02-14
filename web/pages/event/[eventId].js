@@ -7,10 +7,12 @@ import MediaView from "../../components/MediaView";
 import {LazyLoadImage} from "react-lazy-load-image-component";
 import Gallery from "../../components/Gallery";
 import AddPeopleScreen from "../../components/AddPeopleScreen";
+import ContentLoader from "react-content-loader";
 
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
+	const [loaded, setLoaded] = useState(false);
 
 	const [event, setEvent] = useState(null);
 
@@ -83,7 +85,7 @@ export default function EventIOS ({}) {
 				position: "right"
 			}
 		]} timestackButtonLink={"./"+event?._id+"/upload"}>
-			<div className={"container"}>
+			{!loaded ? <div className={"container"}>
 				{updatingPeople
 					? <div className={"col-12"}>
 						<AddPeopleScreen
@@ -170,7 +172,34 @@ export default function EventIOS ({}) {
 						<br/>
 					</FadeIn>)
 				}
-			</div>
+			</div> : <div className={"container row"}>
+
+				<div className={"col-5"} autofocus={true}>
+					<ContentLoader viewBox="0 0 100 300" height={200} width={300} >
+						<rect x="0" y="0" rx="10" ry="0" width="100%" height="100%" />
+					</ContentLoader>
+				</div>
+
+
+				<div className={"col-12"}>
+					<ContentLoader
+						width={"100%"}
+						height={"100%"}
+						viewBox="0 0 800 575"
+						backgroundColor="#f3f3f3"
+						foregroundColor="#ecebeb"
+					>
+						<rect x="12" y="58" rx="2" ry="2" width="33%" height="211" />
+						<rect x="240" y="57" rx="2" ry="2" width="33%" height="211" />
+						<rect x="467" y="56" rx="2" ry="2" width="33%" height="211" />
+						<rect x="12" y="283" rx="2" ry="2" width="33%" height="211" />
+						<rect x="240" y="281" rx="2" ry="2" width="33%" height="211" />
+						<rect x="468" y="279" rx="2" ry="2" width="33%" height="211" />
+
+					</ContentLoader>
+				</div>
+
+			</div> }
 		</IOS>
 	);
 }

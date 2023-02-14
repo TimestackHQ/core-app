@@ -28,6 +28,9 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             const publicId = fileId+".thumb.jpg";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
+
+            Logger("Generating snapshot for image")
+
         }
 
         if(file?.mimetype.split("/")[0] === "video") {
@@ -36,7 +39,6 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
-            Logger("Generating snapshot for image")
             const snapshotPublicId = fileId+".snapshot.jpg";
             await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
             snapshot = snapshotPublicId;
@@ -88,6 +90,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
 
     } catch (e) {
+        console.log("OUP");
         next(e);
     }
 
