@@ -181,7 +181,7 @@ export default function EventIOS ({}) {
 
 						<div className={"row"}>
 							<div className={"col-5"}>
-								<ContentLoader height={200} width={370}>
+								<ContentLoader height={"100%"} width={370}>
 									<rect x="10" y="" rx="20" ry="10" width="42%" height="200px" />
 								</ContentLoader>
 								<br/>
