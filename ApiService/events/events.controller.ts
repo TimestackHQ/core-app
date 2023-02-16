@@ -109,6 +109,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
     try {
 
+
+        console.log("devdev")
         const event = await Models.Event.findOne({
             $and: [{
                 $or: [
@@ -146,6 +148,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 message: "Event not found"
             })
         }
+
+        console.log("okokokokok")
 
         // get cover buffer from google cloud
         const buffer = await getBuffer(event);

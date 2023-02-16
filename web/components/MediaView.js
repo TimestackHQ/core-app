@@ -13,9 +13,15 @@ export default function MediaView ({publicId}) {
 	const [uri, setUri] = useState("");
 
 	useEffect(() => {
-		HTTPClient("/media/"+publicId+"?thumbnail=true").then(res => setUri(res.data))
-			.catch(err => {});
-	}, [])
+		HTTPClient("/media/"+publicId+"?thumbnail=true").then(res => {
+			setUri(res.data)
+		}).catch(() => {
+			HTTPClient("/media/"+publicId+"?snapshot=true").then(res => setUri(res.data))
+				.catch(err => {
+
+				})
+		});
+	}, [publicId])
 
 	// if(!uri) return <ContentLoader
 	// 	width={"100%"}
@@ -41,11 +47,11 @@ export default function MediaView ({publicId}) {
 	// 		<source src={uri}/>
 	// 	</video>
 	// );
-	return <FadeIn >
+	return (
 		<LazyLoadImage src={uri}
            style={{objectFit: "cover", margin: 0, padding: 0}}
            alt="Image Alt"
            width={"100%"} height={"200px"}
 		/>
-	</FadeIn>
+	);
 }

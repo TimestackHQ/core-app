@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as Ffmpeg from "fluent-ffmpeg";
 
-export const compressVideo = async (fileId: string, fileBuffer: Buffer, compression: number, duration?: number) => {
+export const compressVideo = async (fileId: string, fileBuffer: Buffer, compression: number,  fps: number, duration?: number) => {
 
 	try {
 		const inputFilePath = "/tmp/"+fileId+".tmp";
@@ -14,7 +14,7 @@ export const compressVideo = async (fileId: string, fileBuffer: Buffer, compress
 			let video = Ffmpeg(inputFilePath)
 				.videoCodec('libx264')
 				.format('mp4')
-				.fps(24)
+				.fps(fps)
 				.outputOptions([
 					"-crf",
 					compression.toString(),
@@ -40,8 +40,6 @@ export const compressVideo = async (fileId: string, fileBuffer: Buffer, compress
 
 
 		});
-
-		console.log(fs.readFileSync("/tmp/"+fileId+".snapshot.jpg"))
 
 		return outputFilePath;
 	} catch(err) {

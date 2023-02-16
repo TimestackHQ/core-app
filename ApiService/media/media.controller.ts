@@ -35,7 +35,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
         if(file?.mimetype.split("/")[0] === "video") {
             Logger("Generating thumbnail for video")
-            const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 10);
+            const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 20, 10);
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
@@ -69,7 +69,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
         if(file?.mimetype.split("/")[0] === "video") {
             Logger("Uploading media to GCP")
-            const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21);
+            const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 31, 30);
             await GCP.upload(fileId+".mp4", <Buffer>fs.readFileSync(storageLocation));
             media.storageLocation = fileId+".mp4";
             media.publicId = media.storageLocation
@@ -173,7 +173,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         if(file?.mimetype.split("/")[0] === "video") {
             Logger("Generating thumbnail for video")
-            const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 10);
+            const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 31, 20, 10);
             const publicId = fileId+".thumb.mp4";
             await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
             thumbnail = publicId;
@@ -195,14 +195,14 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         }
         if(metadata?.format?.tags?.["com.apple.quicktime.creationdate"]) {
             console.log(metadata?.format?.tags?.["com.apple.quicktime.creationdate"])
-            timestamp = moment(metadata?.format?.tags?.com?.apple?.quicktime?.creationdate).toDate();
+            timestamp = moment(metadata?.format?.tags?.com?.apple?.quicktime?.creationdate).toISOString();
         }
         else if(metadata?.format?.tags?.creation_time) {
             timestamp = moment(metadata?.format?.tags?.creation_time).toDate();
         }
 
         const media = new Models.Media({
-            publicId: fileId,
+            publicId: fileId+"."+(file?.mimetype.split("/")[0] === "video" ? "mp4" : "jpg"),
             // @ts-ignore
             original: req.file.filename,
             // @ts-ignore
@@ -215,6 +215,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             thumbnail,
             metadata: JSON.parse(req.body.metadata),
             timestamp,
+            event: event._id
         });
 
         await media.save();
@@ -231,7 +232,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         if(file?.mimetype.split("/")[0] === "video") {
             Logger("Uploading media to GCP")
-            const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21);
+            const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 30);
             await GCP.upload(fileId+".mp4", <Buffer>fs.readFileSync(storageLocation));
             media.storageLocation = fileId+".mp4";
             media.publicId = media.storageLocation
@@ -252,4 +253,45 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         next(e);
     }
 
+}
+
+export async function getUploadedMedia (req: Request, res: Response, next: NextFunction) {
+    try {
+
+
+        if(!req.query?.gte) {
+            return res.status(400).json({
+                message: "gte is required"
+            });
+        }
+
+        const event = await Models.Event.findOne({
+            _id: req.params.eventId,
+            users: {
+                $in: [req.user._id]
+            }
+        });
+
+        if(!event) return res.sendStatus(404);
+
+        const newMedia = await Models.Media.find({
+            event: event._id,
+            user: req.user._id,
+            group: "event",
+            createdAt: {
+                $gte: moment(String(req.query?.gte)).toDate()
+            }
+        })
+            .select("publicId")
+            .sort({createdAt: 1});
+
+        return res.json({
+            media: newMedia.map(m => m.publicId),
+            mediaCount: event.media.length
+        });
+
+    } catch(err) {
+        console.log(err);
+        next(err);
+    }
 }

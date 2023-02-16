@@ -3,9 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/events/events.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.validator.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/yarn.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared/compress.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/compress.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/models/Media.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/models/Media.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/MediaView.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/MediaView.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/next.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +37,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/web/public/fonts&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/timestack&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
@@ -40,11 +48,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/timestack" />
       <recent name="$PROJECT_DIR$/web/public/fonts" />
       <recent name="$PROJECT_DIR$/web/pages/event/[eventId]" />
       <recent name="$PROJECT_DIR$/timestack/assets/icons" />
       <recent name="$PROJECT_DIR$/timestack/assets" />
-      <recent name="$PROJECT_DIR$/ApiService" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/public/images" />
@@ -134,7 +142,10 @@
       <workItem from="1676298484961" duration="4558000" />
       <workItem from="1676316583655" duration="4427000" />
       <workItem from="1676329499821" duration="2449000" />
-      <workItem from="1676397284070" duration="45000" />
+      <workItem from="1676397284070" duration="11991000" />
+      <workItem from="1676487383435" duration="13000" />
+      <workItem from="1676501402626" duration="787000" />
+      <workItem from="1676554600839" duration="5685000" />
     </task>
     <servers />
   </component>
