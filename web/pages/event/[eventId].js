@@ -95,74 +95,72 @@ export default function EventIOS ({}) {
 							callback={updatingPeopleCallback}
 						/>
 					</div> :
-					(<FadeIn>
-						<FadeIn transitionDuration={50} >
-							<div className={" row"}>
-								<div className={"col-5"} autofocus={true}>
-									<div style={{
-										backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
-										backgroundSize: "cover",
-										backgroundRepeat: "no-repeat",
-										backgroundPosition: "center",
-										borderRadius: "15px 15px 15px 15px",
-										height: "200px",
-									}}>
-										<img
+					(<div>
+						<div className={" row"}>
+							<div className={"col-5"} autofocus={true}>
+								<div style={{
+									backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
+									backgroundSize: "cover",
+									backgroundRepeat: "no-repeat",
+									backgroundPosition: "center",
+									borderRadius: "15px 15px 15px 15px",
+									height: "200px",
+								}}>
+									<img
 
-											src={uri}
-											effect="blur"
-											loading={"lazy"}
-											style={{
-												borderRadius: "15px",
-												objectFit: "cover",
+										src={uri}
+										effect="blur"
+										loading={"lazy"}
+										style={{
+											borderRadius: "15px",
+											objectFit: "cover",
 
-												// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
-											}}
-											alt={""}
-											width={"100%"} height={"200px"}
-										/>
-									</div>
+											// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
+										}}
+										alt={""}
+										width={"100%"} height={"200px"}
+									/>
 								</div>
+							</div>
 
 
-								<div className={"col-7 position-relative"}>
-									<div className="position-absolute top-0 start-0">
-										<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
-									</div>
-									<div className="position-absolute bottom-0 start-0">
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
-										<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
-									</div>
-
+							<div className={"col-7 position-relative"}>
+								<div className="position-absolute top-0 start-0">
+									<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
+								</div>
+								<div className="position-absolute bottom-0 start-0">
+									<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
+									<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
 								</div>
 
 							</div>
-							<br/>
-							<div className={"row"}>
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
-									<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
-								</div>
 
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
-									<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
-								</div>
-
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>0</h5>
-									<h5 style={{color: "gray"}}>Revisits</h5>
-								</div>
+						</div>
+						<br/>
+						<div className={"row"}>
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
+								<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
 							</div>
-							<br/>
-							<div style={{}}>
-								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
-								{event?.people.map((invitee, index) => {
-									return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
-								})}
 
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
+								<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
 							</div>
-						</FadeIn>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{margin: 0}}>0</h5>
+								<h5 style={{color: "gray"}}>Revisits</h5>
+							</div>
+						</div>
+						<br/>
+						<div style={{}}>
+							<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+							{event?.people.map((invitee, index) => {
+								return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+							})}
+
+						</div>
 
 
 						<br/>
@@ -171,23 +169,43 @@ export default function EventIOS ({}) {
 						</div>
 						<br/>
 						<br/>
-					</FadeIn>)
+					</div>)
 				}
-			</div> :<div>
+			</div> :<FadeIn>
 
 
-				<div style={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					height: '80vh'
-				}}>
-					<i style={{color: "black"}} className="fas fa-circle-notch fa-spin fa-2x"></i>
-
-				</div>
+					<div>
+						<ContentLoader height={200} width={400}>
+							<rect x="10" y="" rx="20" ry="10" width="43%" height="200" />
+							<rect x="210" y="8" rx="0" ry="0" width="55%" height="15" />
+							<rect x="210" y="8" rx="30" ry="0" width="55%" height="15" />
+							<rect x="210" y="30" rx="0" ry="0" width="40%" height="15" />
 
 
-				</div> }
+						</ContentLoader>
+						<br/>
+						<br/>
+						<br/>
+						<br/>
+						<br/>
+
+						<ContentLoader
+							width={500}
+							height={100}
+							backgroundColor="#f3f3f3"
+							foregroundColor="#ecebeb"
+						>
+							<circle cx="35" cy="38" r="25" />
+							<circle cx="95" cy="38" r="25" />
+							<circle cx="155" cy="38" r="25" />
+							<circle cx="215" cy="38" r="25" />
+							<circle cx="215" cy="38" r="25" />
+							<circle cx="275" cy="38" r="25" />
+						</ContentLoader>
+					</div>
+
+
+				</FadeIn> }
 		</IOS>
 	);
 }
