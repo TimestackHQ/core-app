@@ -76,7 +76,8 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
             }],
         })
             .sort({createdAt: -1})
-            .populate(standardEventPopulation);
+            .populate(standardEventPopulation)
+            .select("-media")
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
@@ -88,7 +89,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
                     ...event.toJSON(),
                     cover: event.cover?.publicId,
                     peopleCount : event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
-                    mediaCount: event.media.length,
+                    // mediaCount: event.media.length,
                     users: undefined,
                     invitees: undefined,
                     nonUsersInvitees: undefined,

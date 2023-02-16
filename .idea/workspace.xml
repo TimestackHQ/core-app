@@ -4,16 +4,8 @@
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApiService/events/events.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/events/events.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/media/media.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.routes.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/media/media.validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.validator.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/compress.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/compress.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/models/Media.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/models/Media.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/components/MediaView.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/MediaView.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId].js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId].js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +137,7 @@
       <workItem from="1676397284070" duration="11991000" />
       <workItem from="1676487383435" duration="13000" />
       <workItem from="1676501402626" duration="787000" />
-      <workItem from="1676554600839" duration="5685000" />
+      <workItem from="1676554600839" duration="10599000" />
     </task>
     <servers />
   </component>
