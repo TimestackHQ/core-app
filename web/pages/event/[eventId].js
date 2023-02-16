@@ -24,18 +24,18 @@ export default function EventIOS ({}) {
 
 	useEffect(() => {
 
-		HTTPClient("/events/"+eventId, "GET")
-			.then((response) => {
-				setEvent(response.data.event);
-				HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
-					.catch(err => {});
-				HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
-					.catch(err => {});
-				setLoaded(true);
-			})
-			.catch((error) => {
-				// window.location.href = "/main_ios";
-			});
+			HTTPClient("/events/"+eventId, "GET")
+				.then((response) => {
+					setEvent(response.data.event);
+					HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
+						.catch(err => {});
+					HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
+						.catch(err => {});
+					setLoaded(true);
+				})
+				.catch((error) => {
+					// window.location.href = "/main_ios";
+				});
 
 	}, []);
 
@@ -171,23 +171,41 @@ export default function EventIOS ({}) {
 						<br/>
 					</div>)
 				}
-			</div> :<FadeIn>
+			</div> :
 
 
 					<div>
-						<ContentLoader height={200} width={400}>
-							<rect x="10" y="" rx="20" ry="10" width="43%" height="200" />
-							<rect x="210" y="8" rx="0" ry="0" width="55%" height="15" />
-							<rect x="210" y="8" rx="30" ry="0" width="55%" height="15" />
-							<rect x="210" y="30" rx="0" ry="0" width="40%" height="15" />
 
 
-						</ContentLoader>
-						<br/>
-						<br/>
-						<br/>
-						<br/>
-						<br/>
+
+
+						<div className={"row"}>
+							<div className={"col-5"}>
+								<ContentLoader height={200} width={370}>
+									<rect x="10" y="" rx="20" ry="10" width="42%" height="200px" />
+								</ContentLoader>
+								<br/>
+								<br/>
+								<br/>
+							</div>
+							<div className={"col-7 position-relative"}>
+								<div className="position-absolute top-0 start-0">
+									<h2 className={"overflow-auto"} style={{marginLeft: "4px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
+								</div>
+							</div>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
+							</div>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+							</div>
+
+							<div className={"col-4 text-center"}>
+								<h5 style={{color: "gray"}}>Revisits</h5>
+							</div>
+						</div>
 
 						<ContentLoader
 							width={500}
@@ -203,9 +221,7 @@ export default function EventIOS ({}) {
 							<circle cx="275" cy="38" r="25" />
 						</ContentLoader>
 					</div>
-
-
-				</FadeIn> }
+ }
 		</IOS>
 	);
 }

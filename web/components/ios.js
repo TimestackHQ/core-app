@@ -64,9 +64,7 @@ export default function IOS ({
 			}
 
 
-			<FadeIn>
 				{children}
-			</FadeIn>
 
 
 				{!hideNavbar ? <div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", marginBottom: "0px"}}>
