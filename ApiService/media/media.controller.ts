@@ -154,6 +154,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         console.log(req.files)
 
+        // @ts-ignore
         const file = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
         const thumbnail = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
         const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
