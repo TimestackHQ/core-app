@@ -8,7 +8,7 @@ const upload = multer();
 const router: Router = Router()
 
 router.post("/cover", authCheck, upload.single("cover"), uploadCover);
-router.post("/:eventId", authCheck, upload.single("file"), uploadFile);
+router.post("/:eventId", authCheck, upload.any(), uploadFile);
 router.get("/:publicId", get);
 router.get("/:eventId/new", authCheck, getUploadedMedia);
 

@@ -39,6 +39,12 @@ export default function EventIOS ({}) {
 				window.location.href = "/main_ios";
 			});
 
+		setInterval(async () => {
+			const res = await HTTPClient("/media/"+eventId+"/new?gte="+greaterThanOrEqual, "GET");
+			setUploadedMedia(_.uniq(res.data.media));
+			setMediaCount(res.data.mediaCount);
+		}, 5000);
+
 	}, []);
 
 
@@ -54,11 +60,7 @@ export default function EventIOS ({}) {
 		try {
 			const message = JSON.parse(messageRaw.data);
 			if (message.response === "uploadMedia") {
-				setTimeout(async () => {
-					const res = await HTTPClient("/media/"+eventId+"/new?gte="+greaterThanOrEqual, "GET");
-					setUploadedMedia(_.uniq(res.data.media));
-					setMediaCount(res.data.mediaCount);
-				}, 1000);
+
 			}
 			else if (message.response === "mediaLength") {
 			}

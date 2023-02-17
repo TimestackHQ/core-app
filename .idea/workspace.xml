@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/components/Event.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/Event.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/components/ios.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/ios.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId].js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId].js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/media/media.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timestack/app.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/timestack/app.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +141,8 @@
       <workItem from="1676397284070" duration="11991000" />
       <workItem from="1676487383435" duration="13000" />
       <workItem from="1676501402626" duration="787000" />
-      <workItem from="1676554600839" duration="15132000" />
+      <workItem from="1676554600839" duration="29925000" />
+      <workItem from="1676649095245" duration="8416000" />
     </task>
     <servers />
   </component>
