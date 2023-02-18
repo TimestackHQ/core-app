@@ -1,100 +1,111 @@
 import {NextFunction, Request, Response} from "express";
-import {Models} from "../../shared";
+import {GCP, Models} from "../../shared";
 import * as jwt from "jsonwebtoken";
+import {v4} from "uuid";
 
-export async function login (req: Request, res: Response, next: NextFunction) {
+export async function get (req: Request, res: Response, next: NextFunction) {
 
     try {
-        const {username} = req.body;
-
-        let user = await Models.User.findOne({phoneNumber: username});
-
-        let newUser = false;
-        if (!user) {
-            newUser = true;
-            user = new Models.User({
-                phoneNumber: username,
-                firstName: "new",
-                lastName: "new",
-            });
-            await user.save();
-        };
-
-        const smsLogin = await user.initSMSLogin();
-        if(!smsLogin) {
-            return res.status(500).json({
-                message: "Internal Server Error"
-            });
-        }
 
         return res.status(200).json({
-            message: newUser ? "User created" : "User found",
-        });
+            ...req.user.toJSON(),
+        })
+
     } catch (e) {
         next(e);
     }
 
-
-
 }
 
-export async function confirmLogin (req: Request, res: Response, next: NextFunction) {
+export async function picture (req: Request, res: Response, next: NextFunction) {
+
     try {
-        const {username, code} = req.body;
 
-        const user = await Models.User.findOne({phoneNumber: username});
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
-
-        const smsCode = await user.checkSMSCode(code);
-        if (!smsCode) {
+        const file: Express.Multer.File | undefined = req.file;
+        if (!file) {
             return res.status(400).json({
-                message: "Invalid code"
+                message: "No file provided"
             });
-        } else {
-            return res.status(200).json({
-                message: user.isConfirmed ? "User confirmed" : "User not confirmed",
-                token: await user.generateSessionToken(),
-            })
+        } else if (file.size > 10000000) {
+            return res.status(400).json({
+                message: "File size too large"
+            });
+        } else if (!file.mimetype.startsWith("image/")) {
+            return res.status(400).json({
+                message: "File is not an image"
+            });
         }
+
+
+        const fileName = v4()+"."+file.originalname.split(".").pop();
+
+        await GCP.upload(fileName, <Buffer>file.buffer, "timestack-profiles");
+
+        req.user.profilePictureSource = "https://storage.googleapis.com/timestack-profiles/"+fileName;
+        await req.user.save();
+
+        return res.status(200).json({
+            message: "Profile picture updated",
+            profilePictureSource: req.user.profilePictureSource
+        });
+
+
+
     } catch (e) {
         next(e);
     }
 
 }
 
-export async function register (req: Request, res: Response, next: NextFunction) {
+export async function editProfile (req: Request, res: Response, next: NextFunction) {
 
     try {
-        let {authorization} = req.headers;
 
-        authorization = String(authorization).replace("Bearer ", "");
-        const token: any = jwt.verify(authorization, String(process.env.JWT_SECRET));
+        const {username, firstName, lastName, email, phoneNumber} = req.body;
 
-        const user = await Models.User.findById(String(token?._id));
-        if (!user || user.isConfirmed) {
-            return res.status(404).json({
-                message: "User not found"
-            });
+        if (username) {
+            if(await Models.User.countDocuments({username})) {
+                return res.status(400).json({
+                    message: "This username is taken"
+                });
+            }
         }
 
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
-        user.email = req.body.email;
-        user.isConfirmed = true;
-        await user.save();
+        if (firstName) {
+            req.user.firstName = firstName;
+        }
+
+        if (lastName) {
+            req.user.lastName = lastName;
+        }
+
+        if (email) {
+            req.user.email = email;
+        }
+
+        if (phoneNumber && phoneNumber !== req.user.phoneNumber) {
+            if(await Models.User.countDocuments({phoneNumber})){
+                return res.status(400).json({
+                    message: "This phone number is taken"
+                });
+            }
+            req.user.isConfirmed = false;
+            req.user.phoneNumber = phoneNumber;
+        }
+
+        await req.user.save();
+        //
+        // await req.user.pushEvent("profileUpdate", {
+        //     ...req.body
+        // })
 
         return res.status(200).json({
-            message: "User registered",
-            token: await user.generateSessionToken(),
+            message: "Profile updated",
+            user: req.body
         });
+
     } catch (e) {
         next(e);
     }
-
-
 
 }

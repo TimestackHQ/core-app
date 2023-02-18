@@ -1,10 +1,14 @@
 import {Router} from "express";
-import {confirmLoginValidator, loginValidator, registerValidator} from "./auth.validator";
-import {HTTPValidator, authCheck} from "../../shared";
-import {confirmLogin, login, register} from "./auth.controller";
+import {editProfileValidator} from "./profile.validator";
+import {HTTPValidator} from "../../shared";
+import {editProfile, get, picture} from "./profile.controller";
+import * as multer from "multer";
+const upload = multer();
 
 const router: Router = Router()
 
-router.post("/login", HTTPValidator(loginValidator), login);
+router.get("/", get);
+router.post("/", HTTPValidator(editProfileValidator), editProfile);
+router.post("/picture", upload.single("file"), picture);
 
 export default router;

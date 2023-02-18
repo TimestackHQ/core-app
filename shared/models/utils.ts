@@ -14,6 +14,7 @@ export const commonProperties = {
     events: {
         type: [mongoose.Schema.Types.ObjectId],
         default: [],
+        required: true,
         ref: "EventSourcing",
         select: false
     }

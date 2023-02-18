@@ -90,7 +90,7 @@ export default function IOS ({
 									<img style={{marginLeft: "5px", marginTop: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 								</div>
 								<Link className="col-3 left" href={"/profile"}>
-									<img style={{marginLeft: "10px", border:Router.pathname === "/profile" ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"30px"}/>
+									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"30px"}/>
 								</Link>
 							</div>
 						{/*</FadeIn>*/}

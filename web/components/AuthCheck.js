@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 export default function AuthCheck({children}) {
 
 	const router = useRouter();
-	const isAuthPath = router.pathname.includes("/auth")
+	const isAuthPath = router.pathname.includes("/auth") || router.pathname ===  "/"
 
 	const [isValidSession, setIsValidSession] = useState(isAuthPath);
 
@@ -13,6 +13,7 @@ export default function AuthCheck({children}) {
 		if(!isAuthPath) HTTPClient("/auth/check", "GET")
 			.then((res) => {
 				setIsValidSession(true);
+
 			})
 			.catch((err) => {
 				setIsValidSession(true);

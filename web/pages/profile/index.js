@@ -1,18 +1,58 @@
-import IOS from "../components/ios";
+import IOS from "../../components/ios";
 import Link from "next/link";
+import React from "react";
+import Router from "next/router";
+import HTTPClient from "../../utils/httpClient";
+import ProfilePicture from "../../components/ProfilePicture";
 
-export default function Profile() {
+export default function Index() {
+
+	const [coverPicture, setCoverPicture] = React.useState(null);
+	const [user, setUser] = React.useState(null);
+
+	React.useEffect(() => {
+		HTTPClient("/profile", "GET")
+			.then((res) => {
+				setUser(res.data);
+				setCoverPicture(res.data.profilePictureSource);
+			})
+			.catch((err) => console.log(err));
+	}, []);
+
 	return (
 		<IOS>
-			<div className={"container"}>
-				<div className={"row"}>
+			<div className={"container"} style={{paddingTop: 0, marginTop: 0} }>
+				<div className={"row"} style={{paddingTop: 0, marginTop: 0} }>
 					<div className={"col-12 text-center"}>
-						<img style={{borderRadius: "100%"}} width={"90px"} height={"60px"} className={"img-fluid"} src={"/images/mingxi.jpg"}/>
+						<div className="image-upload">
+							<label htmlFor="file-input">
+								<ProfilePicture location={coverPicture}/>
+							</label>
+							<input  id={"file-input"} accept="image/*" type="file" onChange={(e) => {
+								e.preventDefault();
+
+								console.log("okokokok");
+
+								const image = e.target.files[0];
+
+
+								const formData = new FormData();
+								formData.append("file", new Blob([image], {type: image.type}));
+
+								HTTPClient("/profile/picture", "POST", formData, {
+									"Content-Type": "multipart/form-data",
+								})
+									.then((res) => setCoverPicture(res.data.profilePictureSource))
+									.catch((err) => alert(JSON.stringify(err.response.data)));
+							}}/>
+						</div>
 					</div>
+
+
 
 					<div className={"col-12 text-center"}>
 						<br/>
-						<h5>Achraf Ghellach</h5>
+						<h5>{user?.firstName} {user?.lastName}</h5>
 						<h6>@overcomputed</h6>
 						{/*<hr/>*/}<br/>
 						<ul className="list-group text-start" >
@@ -28,6 +68,7 @@ export default function Profile() {
 						<br/>
 						<ul className="list-group text-start">
 							<li
+								onClick={() => Router.push("/profile/edit")}
 								className="list-group-item"
 								style={{
 									height: "50px",
@@ -66,7 +107,7 @@ export default function Profile() {
 						</ul>
 						<br/>
 						<ul className="list-group text-start">
-							<li className="list-group-item"  style={{
+							<li className="list-group-item" onClick={() => Router.push("/logout")}  style={{
 								height: "50px",
 								display: 'flex',
 								alignItems: 'center',

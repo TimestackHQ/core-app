@@ -14,6 +14,7 @@ export async function login (req: Request, res: Response, next: NextFunction) {
             newUser = true;
             user = new Models.User({
                 phoneNumber: username,
+                username: username,
                 firstName: "new",
                 lastName: "new",
             });

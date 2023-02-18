@@ -12,10 +12,11 @@ export interface UserSchema extends mongoose.Document {
     phoneNumber?: string;
     isConfirmed: boolean;
     commonProperties: commonProperties;
-
+    profilePictureSource?: string;
     initSMSLogin: () => Promise<boolean>;
     checkSMSCode: (code: string) => Promise<boolean>;
     generateSessionToken: () => Promise<string>;
+    pushEvent: (eventName: ("profileUpdate"), payload: any) => void;
 }
 
 const UserSchema = new mongoose.Schema({
@@ -47,7 +48,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-
     ...commonProperties,
 });
 
@@ -96,6 +96,17 @@ UserSchema.methods.generateSessionToken = async function () {
         phoneNumber: this.phoneNumber,
         isConfirmed: this.isConfirmed,
     }, String(process.env.JWT_SECRET), {expiresIn: "1w"});
+}
+
+UserSchema.methods.pushEvent = function (eventName: string, payload: string) {
+
+    console.log(this.events)
+    this.events.push({
+        name: eventName,
+        payload: payload,
+        createdAt: new Date(),
+    });
+
 }
 
 export default mongoose.model<UserSchema>("User", UserSchema);

@@ -24,9 +24,9 @@ export const signedUrl = async (publicId: string): Promise<string> => {
     return String(object?.[0]);
 }
 
-export const upload = async (publicId: string, buffer: Buffer): Promise<string> => {
+export const upload = async (publicId: string, buffer: Buffer, bucketName: string): Promise<string> => {
     const blob = storage
-        .bucket(String(process.env.GCP_STORAGE_BUCKET))
+        .bucket(bucketName ? bucketName : String(process.env.GCP_STORAGE_BUCKET))
         .file(publicId);
 
     const blobStream = blob.createWriteStream({
