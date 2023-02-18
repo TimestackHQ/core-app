@@ -84,11 +84,6 @@ export default function Profile() {
 							<br/>
 							<br/>
 							<br/>
-							<br/>
-							<br/>
-							<br/>
-							<br/>
-							<br/>
 						</div>
 
 
