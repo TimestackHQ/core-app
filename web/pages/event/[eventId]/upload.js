@@ -21,6 +21,7 @@ export default function EventIOS ({}) {
 	const [uploadedMedia, setUploadedMedia] = useState([]);
 	const [updatingPeople, setUpdatingPeople] = useState(false);
 	const [uploadingMedia, setUploadingMedia] = useState(false);
+	const [uploadingStatus, setUploadingStatus] = useState(null);
 	const [mediaCount, setMediaCount] = useState(null);
 
 	useEffect(() => {
@@ -59,8 +60,17 @@ export default function EventIOS ({}) {
 	window.addEventListener("message", async messageRaw => {
 		try {
 			const message = JSON.parse(messageRaw.data);
-			if (message.response === "uploadMedia") {
-
+			if (message.response === "uploadStatus") {
+				if(message.data === "import") {
+					setUploadingStatus("Importing");
+				}
+				else if(message.data === "upload") {
+					setUploadingStatus("Uploading");
+				}
+				else if(message.data === "complete") {
+					setUploadingStatus(null);
+					setUploadingMedia(false);
+				}
 			}
 			else if (message.response === "mediaLength") {
 			}
@@ -176,8 +186,9 @@ export default function EventIOS ({}) {
 											/>
 										</div>
 										<div className={"col-8"}>
-											<h6 style={{marginBottom: "0px"}}>{event?.name} {uploadingMedia ? <i style={{color: "blue"}} className="fas fa-circle-notch fa-spin"></i> : null}</h6>
+											<h6 style={{marginBottom: "0px"}} >{event?.name}<br/></h6>
 											<p style={{color: "gray"}}>{event?.location}</p>
+											<h6><span style={{color: "blue"}}>{uploadingMedia ? <i className="fas fa-circle-notch fa-spin"></i> : null} {uploadingStatus}</span></h6>
 											{/*{mediaLength && (mediaLength !== uploadedCount && mediaLength !== 0) ? <div style={{color: "blue"}}>*/}
 											{/*	<i className="fas fa-circle-notch fa-spin"></i> {mediaLength !== "loading" && mediaLength ? `Uploading ${uploadedCount}/${mediaLength}` : null}*/}
 											{/*</div> : null}*/}

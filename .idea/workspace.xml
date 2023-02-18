@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ApiService/profile/profile.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ApiService/profile/profile.routes.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ApiService/profile/profile.validator.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/media/media.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ApiService/media/media.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/media/media.routes.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/timestack/app.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/timestack/app.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/public/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/public/styles/globals.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,27 +28,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/timestack&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/achrafghellach/projects/time/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/achrafghellach/projects/time/ApiService",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/achrafghellach/projects/time/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ApiService" />
       <recent name="$PROJECT_DIR$/timestack" />
       <recent name="$PROJECT_DIR$/web/public/fonts" />
       <recent name="$PROJECT_DIR$/web/pages/event/[eventId]" />
       <recent name="$PROJECT_DIR$/timestack/assets/icons" />
-      <recent name="$PROJECT_DIR$/timestack/assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/public/images" />
@@ -142,7 +142,7 @@
       <workItem from="1676487383435" duration="13000" />
       <workItem from="1676501402626" duration="787000" />
       <workItem from="1676554600839" duration="29925000" />
-      <workItem from="1676649095245" duration="8416000" />
+      <workItem from="1676649095245" duration="18614000" />
     </task>
     <servers />
   </component>
