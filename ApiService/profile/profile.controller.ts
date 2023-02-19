@@ -63,7 +63,7 @@ export async function editProfile (req: Request, res: Response, next: NextFuncti
 
         const {username, firstName, lastName, email, phoneNumber} = req.body;
 
-        if (username) {
+        if (username && username !== req.user.username) {
             if(await Models.User.countDocuments({username})) {
                 return res.status(400).json({
                     message: "This username is taken"
@@ -71,15 +71,15 @@ export async function editProfile (req: Request, res: Response, next: NextFuncti
             }
         }
 
-        if (firstName) {
+        if (firstName && firstName !== req.user.firstName) {
             req.user.firstName = firstName;
         }
 
-        if (lastName) {
+        if (lastName && lastName !== req.user.lastName) {
             req.user.lastName = lastName;
         }
 
-        if (email) {
+        if (email && email !== req.user.email) {
             req.user.email = email;
         }
 

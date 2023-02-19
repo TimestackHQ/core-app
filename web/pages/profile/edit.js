@@ -4,6 +4,7 @@ import React from "react";
 import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
 import FadeIn from "react-fade-in";
+import Router from "next/router";
 
 const buttonStyle = {
 	borderRadius: "0px",
@@ -26,6 +27,18 @@ export default function Index() {
 			})
 			.catch((err) => console.log(err));
 	}, []);
+
+	const save = () => {
+		HTTPClient("/profile", "POST", {
+			firstName: user.firstName,
+			lastName: user.lastName,
+			username: user.username,
+			email: user.email,
+			phoneNumber: user.phoneNumber,
+		})
+			.then((_req) => Router.push("/profile"))
+			.catch((err) => alert(err.response.data.message ? err.response.data.message : "An error occurred"));
+	}
 
 	return (
 		<IOS
@@ -83,6 +96,23 @@ export default function Index() {
 								</div>
 							</div>
 							<br/>
+							<div className={"row"}>
+								<div className={"col-4"} style={{paddingTop: "8px", marginRight: 0, paddingRight: 0}}>
+									Email
+								</div>
+								<div className={"col-8"}>
+									<input style={buttonStyle} className={"form-control crud_input"} value={user?.email} onChange={(e) => setUser({...user, email: e.target.value})} required/>
+
+								</div>
+							</div>
+							<hr/>
+							<button
+								className={"btn btn-primary"}
+								onClick={save}
+								style={{width: "100%", borderRadius: "10px"}}
+							>
+								Save
+							</button>
 						</div>
 					</div>
 				</div>

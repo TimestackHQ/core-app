@@ -4,6 +4,7 @@ import React from "react";
 import Router from "next/router";
 import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
+import FadeIn from "react-fade-in";
 
 export default function Index() {
 
@@ -21,7 +22,7 @@ export default function Index() {
 
 	return (
 		<IOS>
-			<div className={"container"} style={{paddingTop: 0, marginTop: 0} }>
+			<FadeIn className={"container"} style={{paddingTop: 0, marginTop: 0} }>
 				<div className={"row"} style={{paddingTop: 0, marginTop: 0} }>
 					<div className={"col-12 text-center"}>
 						<div className="image-upload">
@@ -131,7 +132,7 @@ export default function Index() {
 
 					</div>
 				</div>
-			</div>
+			</FadeIn>
 		</IOS>
 	);
 }

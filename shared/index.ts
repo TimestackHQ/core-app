@@ -65,7 +65,6 @@ export async function authCheck (req: Request, res: Response, next: NextFunction
         // @ts-ignore
         req.user = await Models.User.findById(String(decodedToken?._id)).select("-password");
 
-        console.log(req.user);
         if(!req.user.isConfirmed) {
             return res.status(401).json({
                 message: "Unauthorized"

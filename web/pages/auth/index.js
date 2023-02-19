@@ -19,7 +19,7 @@ export default function Login() {
 			setErrorRaw("");
 		}, 5000);
 	}
-	const [step, setStepRaw] = React.useState(1);
+	const [step, setStepRaw] = React.useState(0);
 	const setStep = (increment) => {
 		setStepRaw(step + increment);
 		setError("");
@@ -60,7 +60,7 @@ export default function Login() {
 			backgroundImage: "hey.svg"
 		}} className={"container"}>
 			<div className={"content"}>
-				{step !== 1 ? <FadeIn>
+				{step !== 0 ? <FadeIn>
 					<button style={{marginTop: "10px"}} className={"btn btn-outline-secondary btn-sm"} onClick={() => setStep(-1)}>
 						<i className={"fas fa-arrow-left"}/> Back
 					</button>
@@ -69,6 +69,50 @@ export default function Login() {
 					<div className="col-lg-5 col-sm-10 text-center ">
 						<br/>
 						<br/>
+
+						{step === 0 ? <div className={"text-center"} style={{
+							backgroundImage: `url("images/MXG_evening_sunset_cozy_city_water_dreamy_people_pixar_New_York_17c83fe6-95dc-48c8-9d85-b767645172c1.png")`,
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+							backgroundRepeat: "no-repeat",
+							height: "100%",
+							width: "100vw",
+							position: "absolute",
+							top: "0",
+							left: "0",
+							zIndex: 1,
+							margin: 0,
+							overflow: "hidden"
+						}}>
+
+							<img className={"white-shadow"} width={"240px"} style={{
+								fill: "white",
+								position: "absolute",
+								top: "20%",
+								left: "50%",
+								transform: "translateX(-50%)"
+							}} src={"images/logo-glow.png"}/>
+
+							<img className={"white-shadow"} width={"180px"} style={{
+								fill: "white",
+								position: "absolute",
+								top: "48%",
+								left: "50%",
+								transform: "translateX(-50%)"
+							}} src={"images/Make great memories.png"}/>
+
+							<img onClick={() => setStep(1)} className={"white-shadow"} width={"100%"} style={{
+								fill: "white",
+								position: "absolute",
+								bottom: "5%",
+								left: "50%",
+								transform: "translateX(-50%)",
+								zIndex: 999
+							}} src={"images/button-glow.png"}/>
+
+
+
+						</div> : null}
 
 						{step === 1 ? <InitLogin
 							phoneNumber={phoneNumber}

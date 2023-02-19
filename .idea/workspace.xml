@@ -2,7 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/web/pages/_app.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/_app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/public/images/full logo white@3x.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/profile/profile.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/profile/profile.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/shared/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/ProfilePicture.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/ProfilePicture.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/auth/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/auth/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/profile/edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/profile/edit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/pages/profile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/profile/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +53,8 @@
       <recent name="$PROJECT_DIR$/web/public/fonts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/web/pages/profile" />
       <recent name="$PROJECT_DIR$/web/public/images" />
+      <recent name="$PROJECT_DIR$/web/pages/profile" />
       <recent name="$PROJECT_DIR$/mylab" />
       <recent name="$PROJECT_DIR$/timestack/assets" />
       <recent name="$PROJECT_DIR$/shared/cloud" />
@@ -136,7 +145,7 @@
       <workItem from="1676501402626" duration="787000" />
       <workItem from="1676554600839" duration="29925000" />
       <workItem from="1676649095245" duration="23619000" />
-      <workItem from="1676739808242" duration="5139000" />
+      <workItem from="1676739808242" duration="9340000" />
     </task>
     <servers />
   </component>
