@@ -7,7 +7,7 @@ export default function AuthCheck({children}) {
 	const router = useRouter();
 	const isAuthPath = router.pathname.includes("/auth") || router.pathname ===  "/"
 
-	const [isValidSession, setIsValidSession] = useState(isAuthPath);
+	const [isValidSession, setIsValidSession] = useState(isAuthPath ? isAuthPath : false);
 
 	useEffect(() => {
 		if(!isAuthPath) HTTPClient("/auth/check", "GET")

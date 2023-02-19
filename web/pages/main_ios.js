@@ -3,6 +3,7 @@ import IOS from "../components/ios";
 import { useRouter } from 'next/router'
 import HTTPClient from "../utils/httpClient";
 import EventCard from "../components/Event";
+import FadeIn from "react-fade-in";
 
 export default function MainIOS () {
 
@@ -24,7 +25,7 @@ export default function MainIOS () {
 
 	return (
 		<IOS main={true}>
-			<div className="container">
+			<FadeIn className="container">
 				<h1>My Timewall</h1>
 				<div className="row" style={{paddingTop: "20px"}}>
 					<div className={"col-12"} style={{borderRightColor: "black", borderWidth: "10px"}}>
@@ -35,7 +36,7 @@ export default function MainIOS () {
 
 
 				</div>
-			</div>
+			</FadeIn>
 		</IOS>
 	);
 }

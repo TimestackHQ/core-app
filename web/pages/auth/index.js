@@ -61,14 +61,16 @@ export default function Login() {
 		}} className={"container"}>
 			<div className={"content"}>
 				{step !== 0 ? <FadeIn>
+					<br/><br/>
 					<button style={{marginTop: "10px"}} className={"btn btn-outline-secondary btn-sm"} onClick={() => setStep(-1)}>
 						<i className={"fas fa-arrow-left"}/> Back
 					</button>
 				</FadeIn> : null}
 				<div className="row justify-content-center align-items-center ">
 					<div className="col-lg-5 col-sm-10 text-center ">
-						<br/>
-						<br/>
+
+						<FadeIn>
+
 
 						{step === 0 ? <div className={"text-center"} style={{
 							backgroundImage: `url("images/MXG_evening_sunset_cozy_city_water_dreamy_people_pixar_New_York_17c83fe6-95dc-48c8-9d85-b767645172c1.png")`,
@@ -84,6 +86,7 @@ export default function Login() {
 							margin: 0,
 							overflow: "hidden"
 						}}>
+
 
 							<img className={"white-shadow"} width={"240px"} style={{
 								fill: "white",
@@ -112,7 +115,9 @@ export default function Login() {
 
 
 
+
 						</div> : null}
+						</FadeIn>
 
 						{step === 1 ? <InitLogin
 							phoneNumber={phoneNumber}
