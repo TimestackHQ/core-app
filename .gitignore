@@ -2,5 +2,8 @@
 node_modules
 .vercel
 ApiService/.dist
-Timestack.
-timestack/ios
+
+# ios app related
+Timestack.app
+ios/ios
+build*
