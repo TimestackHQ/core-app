@@ -21,7 +21,7 @@ export default function DBWorker (db) {
 
 			// get all content from media table
 			tx.executeSql(
-				"SELECT * FROM media WHERE locker = ?",
+				"SELECT * FROM media WHERE locker = ?, failedCounter < 3",
 				[false],
 				(_, { rows: { _array } }) => {
 					_array.forEach(async (mediaRaw) => {

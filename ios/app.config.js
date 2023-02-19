@@ -2,7 +2,7 @@ module.exports = {
   "expo": {
     "name": "Timestack.",
     "slug": "timestack",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

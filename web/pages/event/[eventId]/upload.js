@@ -228,6 +228,11 @@ export default function EventIOS ({}) {
 
 											</div>
 										})}
+										{/*{uploadQueue.map((media, index) => {*/}
+										{/*	return <div key={index} className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>*/}
+										{/*		{media.uri}*/}
+										{/*	</div>*/}
+										{/*})}*/}
 										<div style={{display: "flex",
 											flexDirection: "column",
 											height: "50vh"}} />

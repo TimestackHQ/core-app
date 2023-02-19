@@ -14,7 +14,7 @@ export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
 	const [loaded, setLoaded] = useState(false);
-	const uploadQueue = useSelector(state => state.uploadQueue);
+	const uploadQueue = useSelector(state => state.uploadQueue.filter(upload => upload.eventId === eventId));
 
 	const [event, setEvent] = useState(null);
 
