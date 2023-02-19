@@ -6,11 +6,9 @@ import * as Contacts from "expo-contacts";
 import * as ImagePicker from 'expo-image-picker';
 import * as SQLite from 'expo-sqlite';
 import {v4 as uuid} from "uuid";
-import {useEffect} from "react";
+import {useEffect, useId} from "react";
 import Constants from "expo-constants";
 import axios from "axios";
-
-const mediaDB = SQLite.openDatabase("timestack-media-queue");
 
 function ViewType ({children, type}) {
     if(type === "safe") {
@@ -20,11 +18,30 @@ function ViewType ({children, type}) {
 }
 
 
-export default function Main({pickImage, apiUrl, frontendUrl}) {
+export default function Main({pickImage, apiUrl, frontendUrl, queueUpdated}) {
+
+    const db = SQLite.openDatabase("media.local.db");
 
     const webviewRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
+
+    useEffect(() => {
+        setInterval(async () => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    "SELECT * FROM media",
+                    [],
+                    (_, { rows: { _array } }) => {
+                        webviewRef.current?.postMessage(JSON.stringify({
+                            response: "uploadQueue",
+                            data: _array
+                        }))
+                    })
+            })
+        }, 1000);
+    });
+
 
     return (
         <ViewType type={viewtype}>

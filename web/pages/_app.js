@@ -8,6 +8,7 @@ import AuthCheck from "../components/AuthCheck";
 import Script from "next/script";
 import 'react-big-calendar/lib/sass/styles.scss';
 import * as React from "react";
+import IOSLayer from "../components/IOSLayer";
 
 
 function MyApp({ Component, pageProps }) {
@@ -30,10 +31,11 @@ function MyApp({ Component, pageProps }) {
 
           </Head>
           <Provider store={store}>
-              <AuthCheck>
-                  <Component {...pageProps} />
-
-              </AuthCheck>
+              <IOSLayer>
+                  <AuthCheck>
+                      <Component {...pageProps} />
+                  </AuthCheck>
+              </IOSLayer>
           </Provider>
 
       </Fragment>

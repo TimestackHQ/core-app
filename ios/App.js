@@ -9,22 +9,31 @@ import * as _ from "lodash";
 import { FFmpegKit } from 'ffmpeg-kit-react-native';
 import uuid from 'react-native-uuid';
 import {generateScreenshot, processPhoto, processVideo} from "./utils/compression";
+import * as SQLite from "expo-sqlite";
+import DBWorker from "./dbWorker";
+import {useEffect} from "react";
+
 
 
 export default function App() {
 
+    const db = SQLite.openDatabase("media.local.db");
+    DBWorker(db);
+
+    useEffect(() => {
+        console.log("DB", db)
+    }, [])
+
     const apiUrl = Constants.expoConfig.extra.apiUrl;
     const frontendUrl = Constants.expoConfig.extra.frontendUrl;
+
+    const [queue, setQueue] = React.useState([]);
 
     const pickImage = async (eventId, webviewRef) => {
 
         try {
 
-            webviewRef.current.postMessage(JSON.stringify({
-                response: "uploadStatus",
-                data: "import",
-                eventId
-            }));
+
 
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -33,65 +42,44 @@ export default function App() {
                 quality: 0,
             });
 
-            webviewRef.current.postMessage(JSON.stringify({
-                response: "uploadStatus",
-                data: "upload",
-                eventId
-            }));
+
 
 
             if (!result.canceled) {
                 console.log("UPLOADING", result.assets.map(media => media.uri), "result")
+
+
                 for await (const media of _.uniq(result.assets)) {
 
-                    const mediaId = uuid.v4();
-
-                    const mediaList = [];
-
-                    if(media.type === "video") {
-                        const videoPath = await processVideo(mediaId, media.uri, 30, 10, 1080);
-                        const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
-                        const snapshotPath = await generateScreenshot(mediaId, media.uri);
-                        mediaList.push(videoPath, thumbnailPath, snapshotPath);
-                    }
-
-                    else {
-                        const imagePath = await processPhoto(mediaId, media.uri, 10);
-                        const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 41);
-                        mediaList.push(imagePath, thumbnailPath);
-                    }
-
-
-                    try {
-
-                        const formData = new FormData();
-                        formData.append('metadata', JSON.stringify(media.exif));
-                        formData.append('media', {uri: mediaList[0], name: mediaList[0].split("/").pop()});
-                        formData.append('thumbnail', {uri: mediaList[1], name: mediaList[1].split("/").pop()});
-                        if(media.type === "video") {
-                            formData.append('snapshot', {uri: mediaList[2], name: mediaList[2].split("/").pop()});
-                        }
-
-                        console.log("UPLOADING", "result")
-
-                        const upload = await axios.post(apiUrl+"/v1/media/" + eventId, formData, {
-                            headers: {
-                                authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
+                    db.transaction(tx => {
+                        tx.executeSql(
+                            "INSERT INTO media (media, eventId, failedCounter, locker) VALUES (?, ?, ?, ?)",
+                            [JSON.stringify({
+                                ...media,
+                                eventId
+                            }), eventId, 0, false],
+                            () => {
+                                console.log("INSERTED", media.uri, "media")
+                            },
+                            (_, error) => {
+                                console.log(error, "error")
                             }
-                        });
+                        );
+                    });
 
-                        webviewRef?.current?.postMessage(JSON.stringify({
-                            response: "uploadMedia",
-                            data: {
-                                mediaId: upload.data.media.publicId,
-                                eventId: eventId
-                            }
-                        }));
-
-                    } catch (err) {
-                        console.log(err, "err")
-                    }
                 }
+
+                webviewRef.current.postMessage(JSON.stringify({
+                    response: "uploadStatus",
+                    data: "import",
+                    eventId
+                }));
+
+                webviewRef.current.postMessage(JSON.stringify({
+                    response: "uploadStatus",
+                    data: "upload",
+                    eventId
+                }));
                 //
                 // webviewRef?.current?.postMessage(JSON.stringify({
                 //     response: "uploadMediaDone",
@@ -114,6 +102,24 @@ export default function App() {
         }
     };
 
+    // useEffect(() => {
+    //     // get all media from db
+    //     setInterval(() => {
+    //         db.transaction(tx => {
+    //             tx.executeSql(
+    //                 "SELECT * FROM media",
+    //                 [],
+    //                 (_, { rows: { _array } }) => {
+    //                     console.log("Sending upload queue", _array);
+    //                     setQueue(_array);
+    //                 },
+    //                 () => {}
+    //             );
+    //         });
+    //     }, 1000);
+    //
+    // }, []);
+
 
     return (
         <React.Fragment>
@@ -121,6 +127,7 @@ export default function App() {
                 pickImage={pickImage}
                 apiUrl={apiUrl}
                 frontendUrl={frontendUrl}
+                queueUpdated={queue}
             />
         </React.Fragment>
     );

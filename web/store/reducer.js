@@ -6,6 +6,9 @@ const rootReducer = (oldState = {}, action) => {
 	if (type === "SET_USER") {
 		state = {...state, user: action.payload};
 	}
+	else if (type === "SET_UPLOAD_QUEUE") {
+		state = {...state, uploadQueue: action.payload};
+	}
 
 	return {...state};
 };

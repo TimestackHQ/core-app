@@ -7,6 +7,7 @@ import {userInitRoutine} from "../utils/auth";
 
 const initialState = {
 	user: userInitRoutine(),
+	uploadQueue: []
 }
 
 let store = createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(thunk)));

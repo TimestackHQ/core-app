@@ -8,6 +8,7 @@ import {LazyLoadImage} from "react-lazy-load-image-component";
 import AddPeopleScreen from "../../../components/AddPeopleScreen";
 import moment from "moment/moment";
 import MediaView from "../../../components/MediaView";
+import {useSelector} from "react-redux";
 
 export default function EventIOS ({}) {
 
@@ -15,6 +16,7 @@ export default function EventIOS ({}) {
 	const eventId = router.query.eventId;
 	const [event, setEvent] = useState(null);
 	const [uri, setUri] = useState("");
+	const uploadQueue = useSelector(state => state.uploadQueue.filter(upload => upload.eventId === eventId));
 
 
 	const [greaterThanOrEqual, setGreaterThanOrEqual] = useState(moment().toDate());
@@ -44,7 +46,7 @@ export default function EventIOS ({}) {
 			const res = await HTTPClient("/media/"+eventId+"/new?gte="+greaterThanOrEqual, "GET");
 			setUploadedMedia(_.uniq(res.data.media));
 			setMediaCount(res.data.mediaCount);
-		}, 5000);
+		}, 1000);
 
 	}, []);
 
@@ -54,7 +56,9 @@ export default function EventIOS ({}) {
 			request: "uploadMedia",
 			eventId: eventId,
 		}));
-		setUploadingMedia(true);
+		setTimeout(() => {
+			setUploadingMedia(true);
+		}, 2000);
 	}
 
 	window.addEventListener("message", async messageRaw => {
@@ -188,7 +192,9 @@ export default function EventIOS ({}) {
 										<div className={"col-8"}>
 											<h6 style={{marginBottom: "0px"}} >{event?.name}<br/></h6>
 											<p style={{color: "gray"}}>{event?.location}</p>
-											<h6><span style={{color: "blue"}}>{uploadingMedia ? <i className="fas fa-circle-notch fa-spin"></i> : null} {uploadingStatus}</span></h6>
+											{uploadingMedia ? <h6><span style={{color: "blue"}}><i className="fas fa-circle-notch fa-spin"></i> {uploadingStatus}</span></h6>: null}
+											{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-check-circle"></i> {uploadQueue.length} remaining</span></h6>: null}
+
 											{/*{mediaLength && (mediaLength !== uploadedCount && mediaLength !== 0) ? <div style={{color: "blue"}}>*/}
 											{/*	<i className="fas fa-circle-notch fa-spin"></i> {mediaLength !== "loading" && mediaLength ? `Uploading ${uploadedCount}/${mediaLength}` : null}*/}
 											{/*</div> : null}*/}

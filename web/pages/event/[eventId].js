@@ -8,11 +8,13 @@ import {LazyLoadImage} from "react-lazy-load-image-component";
 import Gallery from "../../components/Gallery";
 import AddPeopleScreen from "../../components/AddPeopleScreen";
 import ContentLoader from "react-content-loader";
+import {useSelector} from "react-redux";
 
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
 	const [loaded, setLoaded] = useState(false);
+	const uploadQueue = useSelector(state => state.uploadQueue);
 
 	const [event, setEvent] = useState(null);
 
@@ -165,6 +167,8 @@ export default function EventIOS ({}) {
 
 						<br/>
 						<div className={"row"}>
+							{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
+
 							<Gallery gallery={event?.media}/>
 						</div>
 						<br/>
