@@ -19,11 +19,10 @@ export default function EventIOS ({}) {
 	const uploadQueue = useSelector(state => state.uploadQueue.filter(upload => upload.eventId === eventId));
 
 
-	const [greaterThanOrEqual, setGreaterThanOrEqual] = useState(moment().toDate());
+	const [greaterThanOrEqual] = useState(moment().toDate());
 	const [uploadedMedia, setUploadedMedia] = useState([]);
 	const [updatingPeople, setUpdatingPeople] = useState(false);
 	const [uploadingMedia, setUploadingMedia] = useState(false);
-	const [uploadingStatus, setUploadingStatus] = useState(null);
 	const [mediaCount, setMediaCount] = useState(null);
 
 	useEffect(() => {
@@ -64,19 +63,8 @@ export default function EventIOS ({}) {
 	window.addEventListener("message", async messageRaw => {
 		try {
 			const message = JSON.parse(messageRaw.data);
-			if (message.response === "uploadStatus") {
-				if(message.data === "import") {
-					setUploadingStatus("Importing");
-				}
-				else if(message.data === "upload") {
-					setUploadingStatus("Uploading");
-				}
-				else if(message.data === "complete") {
-					setUploadingStatus(null);
-					setUploadingMedia(false);
-				}
-			}
-			else if (message.response === "mediaLength") {
+			if (message.response === "uploadStatus" && message.data === "complete") {
+				setUploadingMedia(false);
 			}
 			else if (message.response === "uploadMediaDone") {
 				setUploadingMedia(false);
@@ -192,12 +180,8 @@ export default function EventIOS ({}) {
 										<div className={"col-8"}>
 											<h6 style={{marginBottom: "0px"}} >{event?.name}<br/></h6>
 											<p style={{color: "gray"}}>{event?.location}</p>
-											{uploadingMedia ? <h6><span style={{color: "blue"}}><i className="fas fa-circle-notch fa-spin"></i> {uploadingStatus}</span></h6>: null}
+											{uploadingMedia ? <h6><span style={{color: "blue"}}><i className="fas fa-circle-notch fa-spin"></i> Importing</span></h6>: null}
 											{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-check-circle"></i> {uploadQueue.length} remaining</span></h6>: null}
-
-											{/*{mediaLength && (mediaLength !== uploadedCount && mediaLength !== 0) ? <div style={{color: "blue"}}>*/}
-											{/*	<i className="fas fa-circle-notch fa-spin"></i> {mediaLength !== "loading" && mediaLength ? `Uploading ${uploadedCount}/${mediaLength}` : null}*/}
-											{/*</div> : null}*/}
 										</div>
 										<div className={"col-12"}>
 											<br/>

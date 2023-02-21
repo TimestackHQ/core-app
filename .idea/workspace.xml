@@ -2,11 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="682af11e-6d49-4e9e-a834-f81922cec6af" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ios/uploadWorker.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApiService/newrelic_agent.log" beforeDir="false" afterPath="$PROJECT_DIR$/ApiService/newrelic_agent.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/ios/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Main.js" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/app.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/ios/app.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/dbWorker.js" beforeDir="false" afterPath="$PROJECT_DIR$/ios/dbWorker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/dbWorker.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/ios/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/utils/compression.js" beforeDir="false" afterPath="$PROJECT_DIR$/ios/utils/compression.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ios/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/AddPeopleScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/Gallery.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/Gallery.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/components/IOSLayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/components/IOSLayer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId].js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId].js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/pages/event/[eventId]/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/utils/httpClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/utils/httpClient.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,21 +36,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/achrafghellach/projects/time/web/public/images",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "/Users/achrafghellach/projects/time/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/achrafghellach/projects/time/web/public/images&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/achrafghellach/projects/time/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/public/images" />
@@ -142,7 +153,10 @@
       <workItem from="1676554600839" duration="29925000" />
       <workItem from="1676649095245" duration="23619000" />
       <workItem from="1676739808242" duration="11815000" />
-      <workItem from="1676827187895" duration="11432000" />
+      <workItem from="1676827187895" duration="13453000" />
+      <workItem from="1676911620671" duration="195000" />
+      <workItem from="1676913185802" duration="2599000" />
+      <workItem from="1676924951110" duration="12196000" />
     </task>
     <servers />
   </component>

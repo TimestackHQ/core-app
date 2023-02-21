@@ -3,14 +3,16 @@ import { WebView } from 'react-native-webview';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {SafeAreaView, View} from "react-native";
 import * as Contacts from "expo-contacts";
-import * as ImagePicker from 'expo-image-picker';
 import * as SQLite from 'expo-sqlite';
-import {v4 as uuid} from "uuid";
-import {useEffect, useId} from "react";
-import Constants from "expo-constants";
-import axios from "axios";
+import ExpoJobQueue from "expo-job-queue";
+import {useEffect} from "react";
 
-function ViewType ({children, type}) {
+let mediaWatcher = null;
+
+
+function ViewType ({children, type, webviewRef}) {
+
+
     if(type === "safe") {
         return <SafeAreaView  style={{flex: 1, flexDirection: 'row'}}>{children}</SafeAreaView>
     }
@@ -18,35 +20,15 @@ function ViewType ({children, type}) {
 }
 
 
-export default function Main({pickImage, apiUrl, frontendUrl, queueUpdated}) {
-
-    const db = SQLite.openDatabase("media.local.db");
+export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
     const webviewRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
 
-    useEffect(() => {
-        setInterval(async () => {
-            db.transaction(tx => {
-                tx.executeSql(
-                    "SELECT * FROM media",
-                    [],
-                    (_, { rows: { _array } }) => {
-                        webviewRef.current?.postMessage(JSON.stringify({
-                            response: "uploadQueue",
-                            data: _array
-                        }))
-                    })
-            })
-        }, 1000);
-    });
-
-
     return (
-        <ViewType type={viewtype}>
+        <ViewType webviewRef={webviewRef} type={viewtype}>
             <WebView
-                // style={{ resizeMode: 'cover', flex: 1 }}
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"
                 allowsBackForwardNavigationGestures="true"
@@ -90,113 +72,17 @@ export default function Main({pickImage, apiUrl, frontendUrl, queueUpdated}) {
                         console.log("Setting session");
                         await AsyncStorage.setItem('@session', message.session);
                     }
+
+                    if(message.request === "uploadQueue") {
+                        console.log("Sending back queue");
+                        webviewRef.current.postMessage(JSON.stringify({
+                            response: "uploadQueue",
+                            data: (await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload))
+                        }));
+                    }
                 }}
                 ref={webviewRef}
             />
         </ViewType>
     );
 }
-
-
-
-// media.transaction(tx => {
-//     tx.executeSql(
-//         "UPDATE media SET locker = ? WHERE id = ?",
-//         [true, media.id]
-//     );
-// });
-//
-// const formData = new FormData();
-// formData.append('metadata', JSON.stringify(media.metadata));
-// formData.append('file', {uri: media.file, name: "name"});
-// try {
-//
-//     const xhr = new XMLHttpRequest();
-//     xhr.open('POST', "http://10.0.0.151:4000/v1/media/" + media.eventId);
-//     xhr.setRequestHeader("authorization", "Bearer " + (await AsyncStorage.getItem("@session")));
-//     xhr.send(formData);
-//
-//     media.transaction(tx => {
-//         tx.executeSql(
-//             "DELETE FROM media WHERE id = ?",
-//             [media.id]
-//         );
-//     });
-//
-// } catch (err) {
-//     console.log(err, "err")
-//     media.transaction(tx => {
-//         tx.executeSql(
-//             "UPDATE media SET failed = ? WHERE id = ?",
-//             [true, media.id]
-//         );
-//     });
-// }
-
-
-
-// useEffect(() => {
-//
-//     mediaDB.transaction(tx => {
-//         tx.executeSql(
-//             "CREATE TABLE IF NOT EXISTS media (id text primary key not null, eventId text, file text, locker boolean, failed boolean, metadata text);"
-//         );
-//     });
-//     const worker = async () => {
-//         mediaDB.transaction(tx => {
-//             tx.executeSql(
-//                 "SELECT * FROM media WHERE locker = ? AND failed = ?",
-//                 [false, false],
-//                 (_, { rows: { _array } }) => {
-//                     console.log(_array)
-//                     _array.map(async media => {
-//                         mediaDB.transaction(tx => {
-//                             tx.executeSql(
-//                                 "UPDATE media SET locker = ? WHERE id = ?",
-//                                 [true, media.id]
-//                             );
-//                         });
-//                         const formData = new FormData();
-//                         formData.append('metadata', JSON.stringify(media.metadata));
-//                         formData.append('file', {uri: media.file, name: "name"});
-//                         try {
-//
-//                             const upload = await axios.post(apiUrl+"/v1/media/" + media.eventId, formData, {
-//                                 headers: {
-//                                     authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
-//                                 }
-//                             });
-//
-//
-//                             webviewRef.current.postMessage(JSON.stringify({
-//                                 response: "uploadMedia",
-//                                 data: {
-//                                     mediaId: upload.data.media.publicId,
-//                                     eventId: media.eventId
-//                                 }
-//                             }));
-//
-//                             mediaDB.transaction(tx => {
-//                                 tx.executeSql(
-//                                     "DELETE FROM media WHERE id = ?",
-//                                     [media.id]
-//                                 );
-//                             });
-//                         } catch (err) {
-//                             console.log(err, "err")
-//                             mediaDB.transaction(tx => {
-//                                 tx.executeSql(
-//                                     "UPDATE media SET locker = ? AND failed = ? WHERE id = ?",
-//                                     [false, true, media.id]
-//                                 );
-//                             });
-//                         }
-//                     })
-//                 }
-//             );
-//         });
-//         await new Promise(resolve => setTimeout(resolve, 5000));
-//         worker();
-//     }
-//     worker();
-// }, [])

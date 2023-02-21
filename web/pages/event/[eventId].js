@@ -14,9 +14,11 @@ export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
 	const [loaded, setLoaded] = useState(false);
-	const uploadQueue = useSelector(state => state.uploadQueue.filter(upload => upload.eventId === eventId));
 
+	const rawUploadQueue = useSelector(state => state.uploadQueue);
 	const [event, setEvent] = useState(null);
+	const [uploadQueue, setUploadQueue] = useState([]);
+
 
 	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
@@ -29,6 +31,7 @@ export default function EventIOS ({}) {
 			HTTPClient("/events/"+eventId, "GET")
 				.then((response) => {
 					setEvent(response.data.event);
+
 					HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
 						.catch(err => {});
 					HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
@@ -39,7 +42,12 @@ export default function EventIOS ({}) {
 					// window.location.href = "/main_ios";
 				});
 
+
 	}, []);
+
+	useEffect(() => {
+		setUploadQueue(rawUploadQueue.filter(upload => upload.eventId.toString() === event?._id.toString()));
+	}, [event, rawUploadQueue])
 
 	const updatingPeopleCallback = async (people) => {
 

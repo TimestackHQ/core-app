@@ -3,7 +3,6 @@ import React from "react";
 
 export default function Gallery ({gallery}) {
 
-	console.log(gallery)
 	return (
 		<React.Fragment>
 			{gallery?.map((publicId, i) => {

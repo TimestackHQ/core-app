@@ -19,7 +19,7 @@ export default function AddPeopleScreen ({eventId, currentInvitees, callback}) {
 
 	useEffect(() => {
 		window.ReactNativeWebView?.postMessage(JSON.stringify({
-			request: "allContacts",
+			request: "uploadQueue",
 		}));
 	}, []);
 

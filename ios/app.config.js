@@ -1,6 +1,6 @@
 module.exports = {
   "expo": {
-    "name": "Timestack.",
+    "name": "Timestack",
     "slug": "timestack",
     "version": "0.0.9",
     "orientation": "portrait",

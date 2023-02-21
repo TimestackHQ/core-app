@@ -3,8 +3,6 @@ import axios from "axios";
 export const restOrigin = process.env.NEXT_PUBLIC_API_URL+"/v1";
 
 export default function HTTPClient (path, method, data, headers) {
-	console.log(	"Bearer " + window.localStorage.getItem("TIMESTACK_TOKEN") || ""
-)
 	return axios({
 		method: method,
 		url: restOrigin+path,

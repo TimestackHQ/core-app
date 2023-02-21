@@ -25,6 +25,7 @@ export async function processVideo (mediaId, mediaUri, fps, compression, height,
 		`-i ${mediaUri} ` +
 		`-c:v libx264 ` +
 		`-vf scale=-1:${String(height)} ` +
+		`-preset veryfast ` +
 		`-r ${fps} ` +
 		`-crf ${compression} ` +
 		String(duration ? `-t ${duration ? duration : 10} ` : "") +
