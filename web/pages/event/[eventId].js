@@ -30,13 +30,18 @@ export default function EventIOS ({}) {
 
 			HTTPClient("/events/"+eventId, "GET")
 				.then((response) => {
-					setEvent(response.data.event);
+					if(response.data.message === "joinRequired") {
+						Router.push("/event/"+eventId+"/join");
+					}else {
+						setEvent(response.data.event);
 
-					HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
-						.catch(err => {});
-					HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
-						.catch(err => {});
-					setLoaded(true);
+						HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
+							.catch(err => {});
+						HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
+							.catch(err => {});
+						setLoaded(true);
+					}
+
 				})
 				.catch((error) => {
 					// window.location.href = "/main_ios";
@@ -94,6 +99,12 @@ export default function EventIOS ({}) {
 				icon: "events",
 				href: "/event/"+event?._id+"/fullview",
 				position: "right"
+			},
+			{
+				icon: "share",
+				href: window.location.protocol + "//" + window.location.host + "/event/" + event?._id+"/invite",
+				position: "right",
+				share: true
 			}
 		]} timestackButtonLink={"./"+event?._id+"/upload"}>
 			{loaded ? <div className={"container"}>

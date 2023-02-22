@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
+	const [joined, setJoined] = useState(true);
 	const [loaded, setLoaded] = useState(false);
 	const [event, setEvent] = useState(null);
 	const [uri, setUri] = useState("");
@@ -19,6 +20,9 @@ export default function EventIOS ({}) {
 		HTTPClient("/events/"+eventId, "GET")
 			.then((response) => {
 				setEvent(response.data.event);
+				if(response.data.message === "joinRequired") {
+					setJoined(false);
+				}
 				HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
 					setUri(res.data);
 					setLoaded(true);
@@ -37,6 +41,17 @@ export default function EventIOS ({}) {
 	useEffect(() => {
 
 	}, [event]);
+
+	const join = () => {
+		HTTPClient("/events/"+eventId+"/join", "POST")
+			.then((response) => {
+				setJoined(true);
+				Router.push("/event/"+eventId);
+			})
+			.catch((error) => {
+				alert("Error joining event. Please try again later.");
+			});
+	}
 
 	return (loaded && event?.name) ? (
 			<div style={{
@@ -95,7 +110,7 @@ export default function EventIOS ({}) {
 							<div className={"col-12 text-center"}></div>
 							<div className={"col-3"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
 								<FadeIn delay={600}>
-									<button onClick={() => Router.push("/event/"+eventId)}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+									<button onClick={() => joined ? Router.back() : Router.push("/main_ios")}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 										<div className={"white-shadow"}>
 											<b>X</b>
 										</div>
@@ -103,9 +118,9 @@ export default function EventIOS ({}) {
 								</FadeIn>
 
 							</div>
-							<div className={"col-6 text-center"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%"}}>
+							<div className={"col-6 text-center"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
 								<FadeIn delay={600}>
-									<button onClick={() => Router.back()} className={"btn btn-secondary"} style={{fontSize: "20px", width: "50%", height: "120%", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
+									<button onClick={join} className={"btn btn-secondary"} style={{fontSize: "20px", width: "50%", height: "120%", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
 										<div className={"white-shadow"}>
 											<b>JOIN</b>
 										</div>

@@ -2,7 +2,8 @@ module.exports = {
   "expo": {
     "name": "Timestack",
     "slug": "timestack",
-    "version": "0.0.9",
+    "scheme": "timestack",
+    "version": "0.0.10",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,9 +21,6 @@ module.exports = {
         }
       }
     ]],
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -58,6 +56,14 @@ module.exports = {
       "eas": {
         "projectId": "aa3c70a4-d2ff-4a95-a002-74668153f9d8"
       },
+    },
+    "updates": {
+      "url": "https://u.expo.dev/aa3c70a4-d2ff-4a95-a002-74668153f9d8",
+      "fallbackToCacheTimeout": 0
+
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion",
     }
   }
 }

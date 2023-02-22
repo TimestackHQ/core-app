@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
-import {Models} from "../../shared";
+import {inviteToEvent, Models} from "../../shared";
+import {UserSchema} from "../../shared/models/User";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 import {getBuffer, standardEventPopulation} from "./events.tools";
@@ -13,7 +14,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             _id: {
                 $in: req.body.invitees.filter((i: any) => isObjectIdOrHexString(i._id)).map((invitee: any) => invitee._id)
             }
-        }).select("_id");
+        });
 
         const cover = await Models.Media.findOne({
             publicId: req.body.cover
@@ -30,7 +31,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             nonUsersInvitees: req.body.invitees
                 .filter((invitee: any) => !isObjectIdOrHexString(invitee?._id))
                 .map((invitee: { phoneNumber: any; email: any; firstName: any; lastName: any; }) => ({
-                    phoneNumber: invitee?.phoneNumber,
+                    phoneNumber: invitee.phoneNumber,
                     email: invitee?.email,
                     firstName: invitee?.firstName,
                     lastName: invitee?.lastName
@@ -54,6 +55,20 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
                 link: `${process.env.FRONTEND_URL}/event/${event.publicId}`
             }
         });
+
+        await Promise.all([
+            ...users.map(async (user: UserSchema) => {
+                await inviteToEvent(event, req.user, user);
+            }),
+            ...event.nonUsersInvitees.map(async (invitee) => {
+                await inviteToEvent(event, req.user, {
+                    firstName: invitee.firstName,
+                    lastName: invitee.lastName,
+                    phoneNumber: String(invitee.phoneNumber),
+                    email: invitee.email,
+                });
+            }
+        )]);
 
     } catch (e) {
         console.log(e)
@@ -121,16 +136,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                     {
                         _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
                     }
-                ]},
-                {
-                    $or: [{
-                    users: {
-                        $in: [req.user._id]
-                    }
-                }, {
-                    createdBy: req.user._id
-                }],
-            }]
+                ]}
+            ],
         }).populate([
             {
                 path: "media",
@@ -150,10 +157,29 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             })
         }
 
-        console.log("okokokokok")
+        const buffer = await getBuffer(event);
+
+        if (!event.users?.map(u => u._id.toString()).includes(req.user._id.toString())) return res.status(200).json({
+            message: "joinRequired",
+            event: {
+                _id: event._id,
+                publicId: event.publicId,
+                name: event.name,
+                location: event.location,
+                startsAt: event.startsAt,
+                endsAt: event?.endsAt,
+                cover: event.cover?.publicId,
+                people: (await Models.User.find({
+                    _id: {
+                        $in: event.users
+                    }
+                }).select("profilePictureSource")).map((user: any) => user?.profilePictureSource),
+                buffer
+            }
+
+        })
 
         // get cover buffer from google cloud
-        const buffer = await getBuffer(event);
 
         res.json({
             event: {
@@ -244,6 +270,38 @@ export const updatePeople = async (req: any, res: any, next: any) => {
             people: event.people(req.user._id)
         });
 
+
+    } catch (e) {
+        next(e);
+    }
+}
+
+export const joinEvent = async (req: any, res: any, next: any) => {
+    try {
+        const event = await Models.Event.findOne({
+            $or: [
+                {
+                    publicId: req.params.eventId
+                },
+                {
+                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                }
+            ],
+            users: {
+                $nin: [req.user._id],
+            }
+        });
+
+        if (!event) {
+            return res.sendStatus(200);
+        }
+
+        console.log( event.users)
+
+        event.users.push(req.user._id);
+        await event.save();
+
+        return res.sendStatus(200);
 
     } catch (e) {
         next(e);

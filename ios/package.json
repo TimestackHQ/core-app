@@ -7,7 +7,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eas:android": "export $(cat ../.env | xargs) && eas build --platform android --profile development",
-    "eas:ios": "export $(cat ../.env | xargs) && eas build --platform ios --profile development"
+    "eas:ios": "export $(cat ../.env | xargs) && eas build -p ios --profile preview"
   },
   "dependencies": {
     "@config-plugins/ffmpeg-kit-react-native": "^4.0.0",
@@ -29,11 +29,14 @@
     "expo-file-system": "~15.1.1",
     "expo-image-picker": "~14.0.2",
     "expo-job-queue": "^1.4.2",
+    "expo-linking": "^3.3.0",
     "expo-secure-store": "^12.0.0",
+    "expo-sharing": "~11.0.1",
     "expo-splash-screen": "~0.17.5",
     "expo-sqlite": "^11.0.0",
     "expo-status-bar": "~1.4.2",
     "expo-task-manager": "^11.0.1",
+    "expo-updates": "~0.15.6",
     "ffmpeg-kit-react-native": "^5.1.0",
     "image-thumbnail": "^1.0.15",
     "inline-style-prefixer": "^7.0.0",

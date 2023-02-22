@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps }) {
           <Script src="https://kit.fontawesome.com/496369c1d1.js"/>
           <Head>
               <title>Timestack</title>
-              <link href="images/favicon.png" rel="shortcut icon" type="image/x-icon" />
+              <link href="images/favicon.png" rel="shortcut icon" />
               <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
                     rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
                     crossOrigin="anonymous"/>

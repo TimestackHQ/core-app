@@ -5,7 +5,8 @@ import Router, {useRouter} from "next/router";
 
 const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
-	"events": "/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"
+	"events": "/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg",
+	"share": "/icons/ios_share_FILL0_wght300_GRAD0_opsz48.svg"
 }
 
 export default function IOS ({
@@ -50,6 +51,21 @@ export default function IOS ({
 						</div>
 						<div className={"col-6 d-flex justify-content-end"} style={{paddingRight: "25px"}}>
 							{buttons?.filter(button => button.position !== "left").map((button, index) => {
+								if(button?.share) {
+									return <img
+										key={index}
+										onClick={() => {
+											window.ReactNativeWebView?.postMessage(JSON.stringify({
+												request: "shareLink",
+												link: button.href
+											}));
+										}}
+										style={{marginLeft: "20px"}}
+										src={icons?.[button.icon]}
+										alt="logo"
+										width="25px"
+									/>
+								}
 								return <Link key={index} href={button.href}>
 									<img style={{marginLeft: "20px"}} src={icons?.[button.icon]} alt="logo" width="25px"/>
 								</Link>

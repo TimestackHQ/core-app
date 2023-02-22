@@ -88,7 +88,6 @@ export function sendTextMessage (body: string, to: string, mediaUrl?: string) {
     return client.messages
         .create({
             body,
-            // body: "Achraf invites you for a brunch today at Wienstein & Gavino's at 12:00",
             to, // Text this number
             from: String(process.env.TWILIO_PHONE_NUMBER), // From a valid Twilio number,
             mediaUrl
@@ -145,6 +144,35 @@ export async function notifyOfEvent (event: EventSchema, user: UserSchema, ancho
         }
     } catch(err: any) {
         console.log(err.response.body);
+    }
+
+}
+
+export const inviteToEvent = async (
+    event: EventSchema,
+    host: UserSchema,
+    user: (
+        UserSchema | {
+            firstName?: string,
+            lastName?: string,
+            email?: string,
+            phoneNumber: string
+        }
+    ),
+) => {
+
+    const inviteLink = `${process.env.MOBILE_APP_URL}/invite/${event.publicId}`;
+
+    try {
+        await sendTextMessage(
+        host.firstName + ' invites you to ' + event.name + ' on Timestack.' +
+                    '\n' +
+                    'Click here to join: ' + `${inviteLink}`,
+
+            String(user.phoneNumber),
+        )
+    } catch(err: any) {
+        Logger(err.response.body);
     }
 
 }

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
+import * as Sharing from 'expo-sharing';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {SafeAreaView, View} from "react-native";
+import * as Linking from 'expo-linking';
+import {SafeAreaView, Share, View} from "react-native";
 import * as Contacts from "expo-contacts";
 import * as SQLite from 'expo-sqlite';
 import ExpoJobQueue from "expo-job-queue";
@@ -22,9 +24,20 @@ function ViewType ({children, type, webviewRef}) {
 
 export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
+    const url = Linking.useURL();
+
+
     const webviewRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
+
+    useEffect(() => {
+        console.log("URL:", url);
+        if(url) {
+            setUri(url.replace("timestack://", frontendUrl+"/"));
+        }
+    }, [url]);
+
 
     return (
         <ViewType webviewRef={webviewRef} type={viewtype}>
@@ -36,7 +49,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                 injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
                     console.log(event);
-                   if(event.url.includes("/fullview") || event.url.includes("/auth")) {
+                   if(event.url.endsWith("/join") || event.url.includes("/auth")) {
                        setUri(event.url);
 
                        setViewtype("full");
@@ -79,6 +92,14 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                             response: "uploadQueue",
                             data: (await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload))
                         }));
+                    }
+
+                    if(message.request === "shareLink") {
+                        console.log("Sharing link", message.link);
+                        await Share.share({
+                            url: message.link,
+                            title: message.link
+                        });
                     }
                 }}
                 ref={webviewRef}
