@@ -5,7 +5,7 @@ export default function ProfilePicture ({location, width, height}) {
 		style={{borderRadius: "1000px", objectFit: "cover"}}
 		width={width ? width : "90px"}
 		height={height ? height : "90px"}
-		src={location ? location : "icons/contact.svg"}
+		src={location ? location : "/icons/contact.svg"}
 		alt={"Profile Picture"}
 	/>;
 }

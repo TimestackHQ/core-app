@@ -9,6 +9,7 @@ import Gallery from "../../components/Gallery";
 import AddPeopleScreen from "../../components/AddPeopleScreen";
 import ContentLoader from "react-content-loader";
 import {useSelector} from "react-redux";
+import ProfilePicture from "../../components/ProfilePicture";
 
 export default function EventIOS ({}) {
 
@@ -178,7 +179,7 @@ export default function EventIOS ({}) {
 						<div style={{}}>
 							<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
 							{event?.people.map((invitee, index) => {
-								return <img key={index} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+								return <ProfilePicture width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
 							})}
 
 						</div>
