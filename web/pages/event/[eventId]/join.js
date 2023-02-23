@@ -4,6 +4,7 @@ import HTTPClient from "../../../utils/httpClient";
 import axios from "axios";
 import FadeIn from "react-fade-in";
 import Link from "next/link";
+import ProfilePicture from "../../../components/ProfilePicture";
 
 export default function EventIOS ({}) {
 
@@ -100,7 +101,7 @@ export default function EventIOS ({}) {
 										<div className={"col-12 text-center"}>
 											<br/>
 											{event?.people.map((invitee, index) => {
-												return <img key={index} style={{width: "30px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
+												return <ProfilePicture key={index} width="30px" height="30px" location={invitee?.profilePictureSource}/>
 											})}
 										</div>
 									</div>
@@ -110,7 +111,7 @@ export default function EventIOS ({}) {
 							<div className={"col-12 text-center"}></div>
 							<div className={"col-3"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
 								<FadeIn delay={600}>
-									<button onClick={() => Router.back()}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+									<button onClick={() => Router.push("/event/"+eventId)}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 										<div className={"white-shadow"}>
 											<b>X</b>
 										</div>
