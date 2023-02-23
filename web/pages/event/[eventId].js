@@ -1,10 +1,7 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import {useEffect, useState, Fragment} from 'react';
 import IOS from "../../components/ios";
-import FadeIn from "react-fade-in";
-import HTTPClient, {restOrigin} from "../../utils/httpClient";
-import Router, {useRouter} from "next/router";
-import MediaView from "../../components/MediaView";
-import {LazyLoadImage} from "react-lazy-load-image-component";
+import HTTPClient from "../../utils/httpClient";
+import Router from "next/router";
 import Gallery from "../../components/Gallery";
 import AddPeopleScreen from "../../components/AddPeopleScreen";
 import ContentLoader from "react-content-loader";
@@ -57,27 +54,13 @@ export default function EventIOS ({}) {
 
 	const updatingPeopleCallback = async (people) => {
 
-		const addedPeople = [];
-		const removedPeople = [];
+		console.log(people)
 
-		people?.forEach(person => {
-			if(!event?.people.find(oldPerson => oldPerson._id.toString() === person._id.toString())) {
-				if(!event?.people.find(oldPerson => oldPerson?.phoneNumber === person?.phoneNumber)) {
-					addedPeople.push(person);
-				}
-			}
-		});
-
-		event?.people.forEach(person => {
-			console.log("finder", person, (people?.find(newPerson => newPerson._id.toString() === person._id.toString())), (people?.find(newPerson => newPerson._id === person._id)))
-			if(!(people?.find(newPerson => newPerson._id === person._id))?._id) {
-				removedPeople.push(person);
-			}
-		});
+		const add = people.filter(person => !event.people.find(p => p._id === person));
+		const remove = event.people.filter(person => !people.find(p => p._id === person));
 
 		HTTPClient("/events/"+event._id+"/people", "PUT", {
-			addedPeople: addedPeople.map(person => ({...person, status: undefined})),
-			removedPeople: removedPeople.map(person => ({...person, status: undefined})),
+			add, remove
 		}).then(async res => {
 			setUpdatingPeople(false);
 			const {data: {event}} = await HTTPClient("/events/"+eventId, "GET");
@@ -103,147 +86,149 @@ export default function EventIOS ({}) {
 				share: true
 			}
 		]} timestackButtonLink={"./"+event?._id+"/upload"}>
-			{loaded ? <div className={"container"}>
-				{updatingPeople
-					? <div className={"col-12"}>
-						<AddPeopleScreen
-							eventId={eventId}
-							currentInvitees={event?.people}
-							callback={updatingPeopleCallback}
-						/>
-					</div> :
-					(<div>
-						<div className={" row"}>
-							<div className={"col-5"} autofocus={true}>
-								<div style={{
-									backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
-									backgroundSize: "cover",
-									backgroundRepeat: "no-repeat",
-									backgroundPosition: "center",
-									borderRadius: "15px 15px 15px 15px",
-									height: "200px",
-								}}>
-									<img
+			{updatingPeople
+				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
+					<AddPeopleScreen
+						eventId={eventId}
+						currentInvitees={event?.people}
+						callback={updatingPeopleCallback}
+						sharelink={window.location.protocol + "//" + window.location.host + "/event/" + event?._id+"/invite"}
+					/>
+				</div> :
+				<Fragment>
+					{loaded ? <div className={"container"}>
 
-										onClick={() => {
-										Router.push("/event/"+event?._id+"/join")}
-										}
-										src={uri}
-										effect="blur"
-										loading={"lazy"}
-										style={{
-											borderRadius: "15px",
-											objectFit: "cover",
+							<div className={" row"}>
+								<div className={"col-5"} autofocus={true}>
+									<div style={{
+										backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
+										backgroundSize: "cover",
+										backgroundRepeat: "no-repeat",
+										backgroundPosition: "center",
+										borderRadius: "15px 15px 15px 15px",
+										height: "200px",
+									}}>
+										<img
 
-											// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
-										}}
-										alt={""}
-										width={"100%"} height={"200px"}
-									/>
+											onClick={() => {
+												Router.push("/event/"+event?._id+"/join")}
+											}
+											src={uri}
+											effect="blur"
+											loading={"lazy"}
+											style={{
+												borderRadius: "15px",
+												objectFit: "cover",
+
+												// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
+											}}
+											alt={""}
+											width={"100%"} height={"200px"}
+										/>
+									</div>
+								</div>
+
+
+								<div className={"col-7 position-relative"}>
+									<div className="position-absolute top-0 start-0">
+										<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
+									</div>
+									<div className="position-absolute bottom-0 start-0">
+										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
+										<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
+									</div>
+
+								</div>
+
+							</div>
+							<br/>
+							<div className={"row"}>
+								<div className={"col-4 text-center"}>
+									<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
+									<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
+								</div>
+
+								<div className={"col-4 text-center"}>
+									<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
+									<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+								</div>
+
+								<div className={"col-4 text-center"}>
+									<h5 style={{margin: 0}}>0</h5>
+									<h5 style={{color: "gray"}}>Revisits</h5>
+								</div>
+							</div>
+							<br/>
+							<div style={{}}>
+								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+								{event?.people.map((invitee, index) => {
+									return <ProfilePicture key={index} width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
+								})}
+
+							</div>
+
+
+							<br/>
+							<div className={"row"}>
+								{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
+
+								<Gallery gallery={event?.media}/>
+							</div>
+							<br/>
+							<br/>
+						</div> :
+
+
+						<div>
+
+
+
+
+							<div className={"row"}>
+								<div className={"col-5"}>
+									<ContentLoader height={"100%"} width={370}>
+										<rect x="10" y="" rx="20" ry="10" width="42%" height="200px" />
+									</ContentLoader>
+									<br/>
+									<br/>
+									<br/>
+								</div>
+								<div className={"col-7 position-relative"}>
+									<div className="position-absolute top-0 start-0">
+										<h2 className={"overflow-auto"} style={{marginLeft: "4px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
+									</div>
+								</div>
+
+								<div className={"col-4 text-center"}>
+									<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
+								</div>
+
+								<div className={"col-4 text-center"}>
+									<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+								</div>
+
+								<div className={"col-4 text-center"}>
+									<h5 style={{color: "gray"}}>Revisits</h5>
 								</div>
 							</div>
 
-
-							<div className={"col-7 position-relative"}>
-								<div className="position-absolute top-0 start-0">
-									<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
-								</div>
-								<div className="position-absolute bottom-0 start-0">
-									<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
-									<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
-								</div>
-
-							</div>
-
+							<ContentLoader
+								width={500}
+								height={100}
+								backgroundColor="#f3f3f3"
+								foregroundColor="#ecebeb"
+							>
+								<circle cx="35" cy="38" r="25" />
+								<circle cx="95" cy="38" r="25" />
+								<circle cx="155" cy="38" r="25" />
+								<circle cx="215" cy="38" r="25" />
+								<circle cx="215" cy="38" r="25" />
+								<circle cx="275" cy="38" r="25" />
+							</ContentLoader>
 						</div>
-						<br/>
-						<div className={"row"}>
-							<div className={"col-4 text-center"}>
-								<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
-								<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
-							</div>
-
-							<div className={"col-4 text-center"}>
-								<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
-								<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
-							</div>
-
-							<div className={"col-4 text-center"}>
-								<h5 style={{margin: 0}}>0</h5>
-								<h5 style={{color: "gray"}}>Revisits</h5>
-							</div>
-						</div>
-						<br/>
-						<div style={{}}>
-							<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
-							{event?.people.map((invitee, index) => {
-								return <ProfilePicture key={index} width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
-							})}
-
-						</div>
-
-
-						<br/>
-						<div className={"row"}>
-							{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
-
-							<Gallery gallery={event?.media}/>
-						</div>
-						<br/>
-						<br/>
-					</div>)
-				}
-			</div> :
-
-
-					<div>
-
-
-
-
-						<div className={"row"}>
-							<div className={"col-5"}>
-								<ContentLoader height={"100%"} width={370}>
-									<rect x="10" y="" rx="20" ry="10" width="42%" height="200px" />
-								</ContentLoader>
-								<br/>
-								<br/>
-								<br/>
-							</div>
-							<div className={"col-7 position-relative"}>
-								<div className="position-absolute top-0 start-0">
-									<h2 className={"overflow-auto"} style={{marginLeft: "4px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
-								</div>
-							</div>
-
-							<div className={"col-4 text-center"}>
-								<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
-							</div>
-
-							<div className={"col-4 text-center"}>
-								<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
-							</div>
-
-							<div className={"col-4 text-center"}>
-								<h5 style={{color: "gray"}}>Revisits</h5>
-							</div>
-						</div>
-
-						<ContentLoader
-							width={500}
-							height={100}
-							backgroundColor="#f3f3f3"
-							foregroundColor="#ecebeb"
-						>
-							<circle cx="35" cy="38" r="25" />
-							<circle cx="95" cy="38" r="25" />
-							<circle cx="155" cy="38" r="25" />
-							<circle cx="215" cy="38" r="25" />
-							<circle cx="215" cy="38" r="25" />
-							<circle cx="275" cy="38" r="25" />
-						</ContentLoader>
-					</div>
- }
+					}
+				</Fragment>
+			}
 		</IOS>
 	);
 }
