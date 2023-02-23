@@ -97,11 +97,6 @@ export default function EventIOS ({}) {
 				position: "left"
 			},
 			{
-				icon: "events",
-				href: "/event/"+event?._id+"/fullview",
-				position: "right"
-			},
-			{
 				icon: "share",
 				href: window.location.protocol + "//" + window.location.host + "/event/" + event?._id+"/invite",
 				position: "right",
@@ -130,6 +125,9 @@ export default function EventIOS ({}) {
 								}}>
 									<img
 
+										onClick={() => {
+										Router.push("/event/"+event?._id+"/join")}
+										}
 										src={uri}
 										effect="blur"
 										loading={"lazy"}
