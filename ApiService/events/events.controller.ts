@@ -12,7 +12,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
         // finds existing users
         const users = await Models.User.find({
             _id: {
-                $in: req.body.invitees.filter((i: any) => isObjectIdOrHexString(i._id)).map((invitee: any) => invitee._id)
+                $in: req.body.invitees
             }
         });
 
@@ -28,16 +28,6 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             invitees: _.uniq([
                 ...users.map((user: {_id: any}) => user._id.toString())
             ]),
-            nonUsersInvitees: req.body.invitees
-                .filter((invitee: any) => !isObjectIdOrHexString(invitee?._id))
-                .map((invitee: { phoneNumber: any; email: any; firstName: any; lastName: any; }) => ({
-                    phoneNumber: invitee.phoneNumber,
-                    email: invitee?.email,
-                    firstName: invitee?.firstName,
-                    lastName: invitee?.lastName
-
-                 }))
-                .filter((invitee: {}) => Object.keys(invitee).length > 0),
             startsAt: req.body.startsAt,
             endsAt: req.body.endsAt,
             location: req.body.location,
@@ -56,19 +46,19 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             }
         });
 
-        await Promise.all([
-            ...users.map(async (user: UserSchema) => {
-                await inviteToEvent(event, req.user, user);
-            }),
-            ...event.nonUsersInvitees.map(async (invitee) => {
-                await inviteToEvent(event, req.user, {
-                    firstName: invitee.firstName,
-                    lastName: invitee.lastName,
-                    phoneNumber: String(invitee.phoneNumber),
-                    email: invitee.email,
-                });
-            }
-        )]);
+        // await Promise.all([
+        //     ...users.map(async (user: UserSchema) => {
+        //         await inviteToEvent(event, req.user, user);
+        //     }),
+        //     ...event.nonUsersInvitees.map(async (invitee) => {
+        //         await inviteToEvent(event, req.user, {
+        //             firstName: invitee.firstName,
+        //             lastName: invitee.lastName,
+        //             phoneNumber: String(invitee.phoneNumber),
+        //             email: invitee.email,
+        //         });
+        //     }
+        // )]);
 
     } catch (e) {
         console.log(e)
@@ -125,8 +115,6 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
     try {
 
-
-        console.log("devdev")
         const event = await Models.Event.findOne({
             $and: [{
                 $or: [
@@ -202,6 +190,9 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
 export const updatePeople = async (req: any, res: any, next: any) => {
     try {
+
+        req.body.add = req.body.add.filter((id: string) => isObjectIdOrHexString(id));
+        req.body.remove = req.body.remove.filter((id: string) => isObjectIdOrHexString(id));
         const event = await Models.Event.findOne({
             $or: [
                 {
@@ -222,47 +213,31 @@ export const updatePeople = async (req: any, res: any, next: any) => {
             })
         }
 
-        const newPeople = await Models.User.find({
-            _id: {
-                $in: req.body.addedPeople.filter((i: any) => isObjectIdOrHexString(i._id)).map((invitee: any) => invitee._id)
-            }
-        }).select("_id");
+        if(req.body.add.length) {
+            const usersToAdd = await Models.User.find({
+                _id: {
+                    $in: req.body.add,
+                    $nin: event.users,
+                    $ne: req.user._id
+                }
+            }).select("_id");
+            event.invitees = _.uniq([
+                ...event.invitees.map(id => id.toString()),
+                ...usersToAdd.map((user: any) => user._id.toString())
+            ]);
+        }
 
-        event.invitees = [
-            ...event.invitees,
-            ...newPeople.map((user: any) => user._id)
-        ];
 
-        event.nonUsersInvitees = [...event.nonUsersInvitees, ...req.body.addedPeople
-            .filter((invitee: any) => !isObjectIdOrHexString(invitee?._id))
-            .map((invitee: { phoneNumber: any; email: any; firstName: any; lastName: any; }) => ({
-                phoneNumber: invitee?.phoneNumber,
-                email: invitee?.email,
-                firstName: invitee?.firstName,
-                lastName: invitee?.lastName
-            }))
-            .filter((invitee: {}) => Object.keys(invitee).length > 0)
-        ];
-
-        const removedPeople = await Models.User.find({
-            _id: {
-                $in: req.body.removedPeople.filter((i: any) => isObjectIdOrHexString(i._id)).map((invitee: any) => invitee._id)
-            }
-        });
-
-        console.log(req.body.removedPeople)
-
-        event.invitees = event.invitees.filter((invitee: any) => {
-            console.log(invitee, removedPeople.find(removed => removed?._id.toString() === invitee?._id.toString()));
-            if(removedPeople.find(removed => removed?._id.toString() === invitee.toString())) {
-                console.log("yes")
-                return false
-            }
-            return true;
-        });
-        event.nonUsersInvitees = event.nonUsersInvitees.filter((invitee: any) => {
-            return !req.body.removedPeople.find((removed: { _id: { toString: () => any; }; }) => removed._id.toString() == invitee._id.toString());
-        });
+        if(req.body.remove.length) {
+            const usersToRemove = await Models.User.find({
+                _id: {
+                    $in: req.body.remove,
+                    $ne: req.user._id
+                }
+            }).select("_id");
+            event.users = event.users.filter((user: any) => !usersToRemove.map((user: any) => user._id.toString()).includes(user._id.toString()));
+            event.invitees = event.invitees.filter((user: any) => !usersToRemove.map((user: any) => user._id.toString()).includes(user._id.toString()));
+        }
 
         await event.save();
 
@@ -295,8 +270,6 @@ export const joinEvent = async (req: any, res: any, next: any) => {
         if (!event) {
             return res.sendStatus(200);
         }
-
-        console.log( event.users)
 
         event.users.push(req.user._id);
         await event.save();
