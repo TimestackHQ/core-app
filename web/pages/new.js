@@ -1,10 +1,9 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {useState} from "react";
 import FadeIn from "react-fade-in";
 import { useRouter } from 'next/router'
 import HTTPClient from "../utils/httpClient";
 import IOS from "../components/ios";
 import CoverPicture from "../components/CoverPicture";
-import AddPeopleScreen from "../components/AddPeopleScreen";
 
 const buttonStyle = {
 	borderRadius: "0px",
@@ -17,8 +16,6 @@ const buttonStyle = {
 
 export default function Home() {
 
-	const [waitingForPeople, setWaitingForPeople] = useState(false);
-
 	const [name, setName] = useState("");
 	const [location, setLocation] = useState("");
 	const [startsAt, setStartsAt] = useState("");
@@ -27,12 +24,25 @@ export default function Home() {
 
 	const [invitees, setInvitees] = useState([]);
 
+
 	const router = useRouter();
 
-	const callback = (invitees) => {
-		setWaitingForPeople(false);
-		setInvitees(invitees);
-	}
+	const locationRef = React.useRef(null);
+
+	React.useEffect(() => {
+		const autocomplete = new window.google.maps.places.Autocomplete(locationRef.current, {
+			componentRestrictions: { country: ["us", "ca"] }
+		});
+
+		autocomplete.addListener("place_changed", () => {
+			const place = autocomplete.getPlace();
+			console.log(place);
+		});
+
+		locationRef.current.placeholder = "";
+	}, []);
+
+
 
 	return <IOS>
 		<br/>
@@ -79,10 +89,6 @@ export default function Home() {
 									<b>Create</b>
 								</h1>
 
-								{waitingForPeople ?<div className={"col-12"}>
-										<AddPeopleScreen currentInvitees={invitees} callback={callback}/>
-									</div>
-												:
 								<div className={"row"}>
 									<div className={"col-12"}>
 										<input style={buttonStyle} className={"form-control crud_input"} value={name} onChange={(e) => setName(e.target.value)} required/>
@@ -90,7 +96,7 @@ export default function Home() {
 									</div>
 
 									<div className={"col-12"}>
-										<input style={buttonStyle} className={"form-control crud_input"} value={location} onChange={(e) => setLocation(e.target.value)} required/>
+										<input ref={locationRef} style={buttonStyle} className={"form-control crud_input"} value={location} onChange={(e) => setLocation(e.target.value)} required/>
 										<h6 style={{color: "gray"}}>Location</h6>
 									</div>
 
@@ -105,17 +111,6 @@ export default function Home() {
 
 									<div className={"col-12"}>
 										<br/>
-										<h6 style={{color: "gray"}}>People</h6>
-										<div style={{}}>
-											<img onClick={() => setWaitingForPeople(true)} width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
-											{invitees.map((invitee, index) => {
-												return <img key={index} width="100px" style={{width: "40px", borderRadius: "25px", marginRight: "5px"}} src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}/>
-											})}
-
-										</div>
-									</div>
-									<div className={"col-12"}>
-										<br/>
 										<CoverPicture setCover={setCover}/>
 
 									</div>
@@ -126,7 +121,6 @@ export default function Home() {
 										<br/>
 										<br/>
 									</div>
-								</div>}
 
 
 
@@ -143,6 +137,7 @@ export default function Home() {
 								<br/>
 								<br/>
 								<br/>
+								</div>
 							</form>
 						</div>
 						</FadeIn>
