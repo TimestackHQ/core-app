@@ -7,7 +7,9 @@ export default function Invite() {
 
 	useEffect(() =>{
 		if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "?invite=true&id="+v4();
-		window.close();
+		setTimeout(() => {
+			window.close();
+		}, 5000);
 	}, [router.query.eventId]);
 
 	return (
