@@ -110,7 +110,7 @@ export default function EventIOS ({}) {
 							<div className={"col-12 text-center"}></div>
 							<div className={"col-3"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
 								<FadeIn delay={600}>
-									<button onClick={() => joined ? Router.back() : Router.push("/main_ios")}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+									<button onClick={() => Router.back()}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 										<div className={"white-shadow"}>
 											<b>X</b>
 										</div>
