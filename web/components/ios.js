@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import FadeIn from "react-fade-in";
 import Router, {useRouter} from "next/router";
+import {useSelector} from "react-redux";
+import ProfilePicture from "./ProfilePicture";
 
 const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
@@ -16,7 +18,9 @@ export default function IOS ({
     timestackButtonLink,
 	hideNavbar
 }) {
-	const router = useRouter()
+	const router = useRouter();
+
+	const user = useSelector(state => state.user);
 
 	return (
 		<div style={{backgroundColor: "white"}}>
@@ -106,7 +110,7 @@ export default function IOS ({
 									<img style={{marginLeft: "5px", marginTop: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 								</div>
 								<Link className="col-3 left" href={"/profile"}>
-									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px"}} src={"/images/mingxi.jpg"} width={"30px"}/>
+									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px", objectFit: "cover"}} src={user.profilePictureSource ? user.profilePictureSource :"/icons/contact.svg"} width={"30px"} height={"30px"}/>
 								</Link>
 							</div>
 						{/*</FadeIn>*/}

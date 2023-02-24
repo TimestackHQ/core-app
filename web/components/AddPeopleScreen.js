@@ -18,7 +18,7 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 
 	useEffect(() => {
 		window.ReactNativeWebView?.postMessage(JSON.stringify({
-			request: "uploadQueue",
+			request: "allContacts",
 		}));
 	}, []);
 
@@ -250,15 +250,14 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 													<hr/>
 													<h6>Your phone contacts</h6>
 												</div>}
-												<div className={"col-3"}>
-													<img width="90%" style={{borderRadius: "60px", marginRight: "5px"}} src={"/icons/contact.svg"}/>
-												</div>
-												<div className={"col-8"} style={{paddingLeft: "0px"}}>
+												<div className={"col-8"} style={{paddingLeft: "15px"}}>
 													<h5 style={{marginBottom: "0px", marginTop: "3px"}}><b>{contact?.name}</b></h5>
 													<p style={{color: "gray", marginBottom: "0px"}}>{contact?.phoneNumbers?.[0]?.number}</p>
 												</div>
-												<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
-													{isInvitee ? <i className={"fa fa-circle-check"}/> : <i className={"fa fa-circle-o"}/>}
+												<div className={"col-4 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
+													<button style={{width: "90%"}} className={"btn btn-sm btn-outline-dark"}>
+														Invite
+													</button>
 												</div>
 												<span style={{marginBottom: "8px"}}/>
 

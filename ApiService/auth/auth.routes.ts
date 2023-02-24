@@ -8,6 +8,6 @@ const router: Router = Router()
 router.post("/login", HTTPValidator(loginValidator), login);
 router.post("/confirm-login", HTTPValidator(confirmLoginValidator), confirmLogin);
 router.post("/register", HTTPValidator(registerValidator), register);
-router.get("/check", authCheck, (_req, res) => res.sendStatus(200));
+router.get("/check", authCheck, (req, res) => res.json(req.user));
 
 export default router;

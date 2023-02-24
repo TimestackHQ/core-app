@@ -5,11 +5,16 @@ import Router from "next/router";
 import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
 import FadeIn from "react-fade-in";
+import {useDispatch, useSelector} from "react-redux";
 
 export default function Index() {
 
+
+	const userStore = useSelector(state => state.user);
+	const dispatch = useDispatch();
 	const [coverPicture, setCoverPicture] = React.useState(null);
 	const [user, setUser] = React.useState(null);
+
 
 	React.useEffect(() => {
 		HTTPClient("/profile", "GET")
@@ -27,7 +32,7 @@ export default function Index() {
 					<div className={"col-12 text-center"}>
 						<div className="image-upload">
 							<label htmlFor="file-input">
-								<ProfilePicture location={coverPicture}/>
+								<ProfilePicture location={userStore.profilePictureSource}/>
 							</label>
 							<input  id={"file-input"} accept="image/*" type="file" onChange={(e) => {
 								e.preventDefault();
@@ -43,7 +48,12 @@ export default function Index() {
 								HTTPClient("/profile/picture", "POST", formData, {
 									"Content-Type": "multipart/form-data",
 								})
-									.then((res) => setCoverPicture(res.data.profilePictureSource))
+									.then((res) => {
+										dispatch({type: "SET_USER", payload: {
+											...userStore,
+											profilePictureSource: res.data.profilePictureSource
+										}})
+									})
 									.catch((err) => alert(JSON.stringify(err.response.data)));
 							}}/>
 						</div>

@@ -14,12 +14,9 @@ export const standardEventPopulation = [{
 },
     {
         path: "users",
-        select: "firstName lastName profilePictureSource"
+        select: "firstName lastName profilePictureSource username"
     }, {
         path: "invitees",
-        select: "firstName lastName profilePictureSource"
-    },{
-        path: "nonUsersInvitees",
-        select: "firstName lastName profilePictureSource"
+        select: "firstName lastName profilePictureSource username"
     }
 ]

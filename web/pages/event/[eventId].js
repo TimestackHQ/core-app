@@ -54,10 +54,14 @@ export default function EventIOS ({}) {
 
 	const updatingPeopleCallback = async (people) => {
 
-		console.log(people)
+		console.log(people, event.people);
 
-		const add = people.filter(person => !event.people.find(p => p._id === person));
-		const remove = event.people.filter(person => !people.find(p => p._id === person));
+		const add = people.filter(person => !event.people.map(p => p._id).includes(person));
+		const remove = event.people
+			.filter(person =>  !people.includes(person._id))
+			.map(person => person._id);
+
+		console.log(remove)
 
 		HTTPClient("/events/"+event._id+"/people", "PUT", {
 			add, remove
