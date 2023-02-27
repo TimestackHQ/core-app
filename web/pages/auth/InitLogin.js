@@ -65,6 +65,7 @@ export default function InitLogin({
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
+						{/* eslint-disable-next-line react/no-unescaped-entities */}
 						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>Let's get secure right away</h2>
 
 						<input
