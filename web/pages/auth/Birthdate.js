@@ -1,22 +1,21 @@
 import * as React from 'react';
 import FadeIn from "react-fade-in";
 import HTTPClient from "../../utils/httpClient";
+import moment from "moment/moment";
 import SignUpProgressBar from "../../components/SignUpProgressBar";
 
-export default function FirstAndLastNames ({
+export default function Birthdate ({
       setUserConfirmed, setStep
 }) {
 
-	const [firstName, setFirstName] = React.useState("");
-	const [lastName, setLastName] = React.useState("");
-	const [error, setError] = React.useState("");
+	const [birthDate, setBirthdate] = React.useState(moment().format("YYYY-MM-DD"));
 
 	const register = () => HTTPClient("/auth/register", "POST", {
-		firstName, lastName
+		birthDate
 	}).then((res) => {
 		window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
 		setStep(1);
-	}).catch((_err) => setError("Make sure that you entered valid information"));
+	}).catch((_err) => alert("You should be old enough to use Timestack."));
 
 	return (
 		<form
@@ -51,7 +50,8 @@ export default function FirstAndLastNames ({
 
 			</div>
 
-			<SignUpProgressBar percent={"25"}/>
+			<SignUpProgressBar percent={"50"}/>
+
 			<img width={"170px"} style={{
 				fill: "white",
 				position: "absolute",
@@ -64,39 +64,37 @@ export default function FirstAndLastNames ({
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
-						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>What's your name ?</h2>
+						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>When’s your birthday?</h2>
 						<br/><br/><br/>
 						<input
 							required={true}
 							className={"sign-up-phone-number"}
-							type="text"
+							type={"date"}
 							style={{
-								padding: 0, margin: 0
-
+								padding: 0, margin: 0,
+								wordBreak: "break-all",
+								width: "80%"
 							}}
-							name={"firstName"}
-							value={firstName}
-							onChange={(e) => setFirstName(e.target.value)}
-							placeholder="First name"
-						/>
-						<br/>
-						<input
-							required={true}
-							className={"sign-up-phone-number"}
-							type="text"
-							style={{
-								padding: 0, margin: 0
-
-							}}
-							name={"lastName"}
-							value={lastName}
-							onChange={(e) => setLastName(e.target.value)}
-							placeholder="Last name"
+							value={birthDate}
+							name={"birthDate"}
+							onChange={(e) => setBirthdate(e.target.value)}
 						/>
 
 					</div>
 				</div>
 				<br/>
+
+			<p style={{
+				position: "absolute",
+				bottom: "14%",
+				left: "50%",
+				transform: "translateX(-50%)",
+				zIndex: 999,
+				color: "white",
+				fontWeight: "500",
+				width: "80%",
+				fontSize: "14px"
+			}}>You should be old enough to use Timestack.</p>
 
 				<button
 					type={"submit"}

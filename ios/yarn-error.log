@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/achrafghellach/.nvm/versions/node/v16.19.0/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js start
+  /Users/achrafghellach/.nvm/versions/node/v16.19.0/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add expo-lining
 
 PATH: 
-  /Users/achrafghellach/.rvm/gems/ruby-2.7.2/bin:/Users/achrafghellach/.rvm/gems/ruby-2.7.2@global/bin:/Users/achrafghellach/.rvm/rubies/ruby-2.7.2/bin:/Users/achrafghellach/.nvm/versions/node/v16.19.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/achrafghellach/.rvm/bin
+  /Users/achrafghellach/.rvm/gems/ruby-2.7.2/bin:/Users/achrafghellach/.rvm/gems/ruby-2.7.2@global/bin:/Users/achrafghellach/.rvm/rubies/ruby-2.7.2/bin:/Users/achrafghellach/.nvm/versions/node/v16.19.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/achrafghellach/projects/time/node_modules/.bin:/Users/achrafghellach/.rvm/bin
 
 Yarn version: 
   1.22.19
@@ -14,12 +14,17 @@ Platform:
   darwin arm64
 
 Trace: 
-  SyntaxError: /Users/achrafghellach/projects/time/timestack/package.json: Unexpected token } in JSON at position 368
-      at JSON.parse (<anonymous>)
-      at /opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:1629:59
-      at Generator.next (<anonymous>)
-      at step (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:310:30)
-      at /opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:321:13
+  Error: https://registry.yarnpkg.com/expo-lining: Not found
+      at Request.params.callback [as _callback] (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:66145:18)
+      at Request.self.callback (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1358:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {
@@ -30,8 +35,8 @@ npm manifest:
       "android": "expo run:android",
       "ios": "expo run:ios",
       "web": "expo start --web",
-      "eas:android": "eas build --platform android --profile development",
-      "eas:ios": "eas build --platform ios --profile development",
+      "eas:android": "export $(cat ../.env | xargs) && eas build --platform android --profile development",
+      "eas:ios": "export $(cat ../.env | xargs) && eas build --platform ios --profile development"
     },
     "dependencies": {
       "@config-plugins/ffmpeg-kit-react-native": "^4.0.0",
@@ -58,6 +63,7 @@ npm manifest:
       "expo-sqlite": "^11.0.0",
       "expo-status-bar": "~1.4.2",
       "expo-task-manager": "^11.0.1",
+      "expo-updates": "~0.15.6",
       "ffmpeg-kit-react-native": "^5.1.0",
       "image-thumbnail": "^1.0.15",
       "inline-style-prefixer": "^7.0.0",
@@ -66,10 +72,11 @@ npm manifest:
       "npx": "^10.2.2",
       "react": "18.1.0",
       "react-native": "0.70.5",
+      "react-native-job-queue": "^0.5.0",
       "react-native-safe-area-context": "4.4.1",
       "react-native-screens": "~3.18.0",
       "react-native-uuid": "^2.0.1",
-      "react-native-webview": "11.23.1",
+      "react-native-webview": "^11.26.1",
       "react-use-queue": "^0.5.0"
     },
     "devDependencies": {
@@ -4548,6 +4555,11 @@ Lockfile:
     dependencies:
       uuid "^3.3.2"
   
+  expo-eas-client@~0.4.0:
+    version "0.4.1"
+    resolved "https://registry.yarnpkg.com/expo-eas-client/-/expo-eas-client-0.4.1.tgz#4ccdafb5faeac97394fb3fa4c777ec22b2017f1d"
+    integrity sha512-bIj2rm6lw/iZAOAW5CSAxshSXi2oY+ORpHRp4ZdqSDuwA0RIa9jGyMm1Jhostjjz5y9k2uur5vtVqq6P3Bwx/Q==
+  
   expo-error-recovery@~4.0.1:
     version "4.0.1"
     resolved "https://registry.npmjs.org/expo-error-recovery/-/expo-error-recovery-4.0.1.tgz"
@@ -4655,6 +4667,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.4.2.tgz"
     integrity sha512-ZWjO6D4ARGYfAd3SWDD3STNudHDhyBZDZjhhseqoEmsf7bS9ykny8KKOhlzJW24qIQNPhkgdvHhaw9fQwMJy3Q==
   
+  expo-structured-headers@~3.0.0:
+    version "3.0.1"
+    resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-3.0.1.tgz#291596c61acd2a45839ad6c6798c3d5cfc1eb4e9"
+    integrity sha512-x6hkzuQL5HJoyB+xQyBf9M04ZUmrjFWqEW7gzIYWN/6LA+dgyaV4fF6U9++Re+GgGjF03vHJFqR1xYaosKKZYQ==
+  
   expo-task-manager@^11.0.1:
     version "11.0.1"
     resolved "https://registry.yarnpkg.com/expo-task-manager/-/expo-task-manager-11.0.1.tgz#0c131c74dba46eb97989841336d3c8bdbf9c2a28"
@@ -4666,6 +4683,24 @@ Lockfile:
     version "0.8.1"
     resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.8.1.tgz#baeeeb01a77439682432be83ba78bc2e00547c4e"
     integrity sha512-1TPFCTQFHMZbltFGnxig3PbN/b6nO4T0RyL8XqdmYvQY0ElOCprZXQQ8vNDqeLYHgausG1lD4OyJwFzh2SNBSA==
+  
+  expo-updates@~0.15.6:
+    version "0.15.6"
+    resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.15.6.tgz#99e3faa3e38312ebddb77afb697863fa1f1f6a03"
+    integrity sha512-g5BuCmWdyiLqFaVkVz+m7r6U7MHJrLKvqybs04H6ArMNpTEf6FhUwSzmnCyOkSSP35KFNkC/I0dYlgW3Vcf1sw==
+    dependencies:
+      "@expo/code-signing-certificates" "0.0.5"
+      "@expo/config" "~7.0.2"
+      "@expo/config-plugins" "~5.0.3"
+      "@expo/metro-config" "~0.5.0"
+      arg "4.1.0"
+      expo-eas-client "~0.4.0"
+      expo-manifests "~0.4.0"
+      expo-structured-headers "~3.0.0"
+      expo-updates-interface "~0.8.0"
+      fbemitter "^3.0.0"
+      resolve-from "^5.0.0"
+      uuid "^3.4.0"
   
   expo@~47.0.12:
     version "47.0.13"
@@ -8717,6 +8752,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz"
     integrity sha512-oOanj84fJEXUg9FoEAQomA8ISG+DVIrTZ3qF7m69VQUJyOGYyDZmPqKcjvRku4KXlEH6hWO9i4ACLzNBh8gC0A==
   
+  react-native-job-queue@^0.5.0:
+    version "0.5.0"
+    resolved "https://registry.yarnpkg.com/react-native-job-queue/-/react-native-job-queue-0.5.0.tgz#68085ec7435781dd9510fd950da7922bd82b8f90"
+    integrity sha512-CtxDZddHG1f5IjT0tWxLzcRo2yEz8K7nUw0wTEhozrO/M6JPscsgi43AVsGPP8H0ha38gT41iI6HVTY7eJZ5yg==
+  
   react-native-safe-area-context@4.4.1:
     version "4.4.1"
     resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.4.1.tgz"
@@ -8735,10 +8775,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.1.tgz#ed4e2dfb1683eddb66967eb5dca140dfe1abddb9"
     integrity sha512-cptnoIbL53GTCrWlb/+jrDC6tvb7ypIyzbXNJcpR3Vab0mkeaaVd5qnB3f0whXYzS+SMoSQLcUUB0gEWqkPC0g==
   
-  react-native-webview@11.23.1:
-    version "11.23.1"
-    resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-11.23.1.tgz"
-    integrity sha512-bmqsdg4RYOUYD37R9XTrQALm7eD62KbLNPRfgvpLGd1SjaurvAjjsLrLN4mt6yOtKOMKeZvlcAl3x6De6cCQsA==
+  react-native-webview@^11.26.1:
+    version "11.26.1"
+    resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.26.1.tgz#658c09ed5162dc170b361e48c2dd26c9712879da"
+    integrity sha512-hC7BkxOpf+z0UKhxFSFTPAM4shQzYmZHoELa6/8a/MspcjEP7ukYKpuSUTLDywQditT8yI9idfcKvfZDKQExGw==
     dependencies:
       escape-string-regexp "2.0.0"
       invariant "2.2.4"

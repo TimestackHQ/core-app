@@ -169,3 +169,21 @@ input::-webkit-inner-spin-button {
         background-position: 315px 0, 0 0, 0 190px, 50px 195px;
     }
 }
+
+.sign-up-phone-number {
+
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    color: white;
+    font-size: 40px;
+    caret-color: white;
+    letter-spacing: -2px;
+    font-weight: 600;
+
+}
+
+.sign-up-phone-number:focus {
+    outline: none;
+    box-shadow: none;
+}

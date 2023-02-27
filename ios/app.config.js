@@ -3,7 +3,7 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.0.10",
+    "version": "0.0.12",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -38,6 +38,8 @@ module.exports = {
       }
     },
     "android": {
+      "package": "com.timestack.timestack",
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -60,7 +62,6 @@ module.exports = {
     "updates": {
       "url": "https://u.expo.dev/aa3c70a4-d2ff-4a95-a002-74668153f9d8",
       "fallbackToCacheTimeout": 0
-
     },
     "runtimeVersion": {
       "policy": "sdkVersion",

@@ -63,7 +63,7 @@ export async function authCheck (req: Request, res: Response, next: NextFunction
         jwt.verify(token, String(process.env.JWT_SECRET));
         const decodedToken: any = jwt.decode(token);
         // @ts-ignore
-        req.user = await Models.User.findById(String(decodedToken?._id)).select("-password");
+        req.user = await Models.User.findById(String(decodedToken?._id)).select("-password -events");
 
         if(!req.user.isConfirmed) {
             return res.status(401).json({

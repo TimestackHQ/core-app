@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {Models} from "../../shared";
 import * as jwt from "jsonwebtoken";
+import moment = require("moment");
 
 export async function login (req: Request, res: Response, next: NextFunction) {
 
@@ -82,10 +83,51 @@ export async function register (req: Request, res: Response, next: NextFunction)
             });
         }
 
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
-        user.email = req.body.email;
-        user.isConfirmed = true;
+        if (req.body.firstName) {
+            user.firstName = req.body.firstName;
+        }
+
+        if (req.body.lastName) {
+            user.lastName = req.body.lastName;
+        }
+
+        if (req.body.birthDate) {
+            if (moment(req.body.birthDate).isAfter(moment().subtract(13, "years"))) {
+                return res.status(400).json({
+                    message: "You must be at least 13 years old"
+                });
+            }
+            user.birthDate = req.body.birthDate;
+        }
+
+        if (req.body.email) {
+            if (await Models.User.countDocuments({email: req.body.email, _id: {$ne: user._id}})) {
+                return res.status(400).json({
+                    message: "This email is taken"
+                });
+            }
+            user.email = req.body.email;
+        }
+
+        if (req.body.username) {
+            if (await Models.User.countDocuments({username: req.body.username, _id: {$ne: user._id}})) {
+                return res.status(400).json({
+                    message: "This username is taken"
+                });
+            }
+            user.username = req.body.username;
+        }
+
+        if(
+            user.firstName &&
+            user.lastName &&
+            user.birthDate &&
+            user.email &&
+            user.username
+        ) {
+            user.isConfirmed = true;
+        }
+
         await user.save();
 
         return res.status(200).json({

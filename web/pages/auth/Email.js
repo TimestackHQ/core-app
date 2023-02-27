@@ -3,20 +3,18 @@ import FadeIn from "react-fade-in";
 import HTTPClient from "../../utils/httpClient";
 import SignUpProgressBar from "../../components/SignUpProgressBar";
 
-export default function FirstAndLastNames ({
+export default function Email ({
       setUserConfirmed, setStep
 }) {
 
-	const [firstName, setFirstName] = React.useState("");
-	const [lastName, setLastName] = React.useState("");
-	const [error, setError] = React.useState("");
+	const [email, setEmail] = React.useState("");
 
 	const register = () => HTTPClient("/auth/register", "POST", {
-		firstName, lastName
+		email
 	}).then((res) => {
 		window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
 		setStep(1);
-	}).catch((_err) => setError("Make sure that you entered valid information"));
+	}).catch((_err) => alert("This email address is already in use."));
 
 	return (
 		<form
@@ -50,8 +48,8 @@ export default function FirstAndLastNames ({
 				<img src={"/icons/arrow_back_ios_FILL1_wght300_GRAD0_opsz48-white.png"} alt={"Back"} width={"25"} height={"25"} />
 
 			</div>
+			<SignUpProgressBar percent={"75"}/>
 
-			<SignUpProgressBar percent={"25"}/>
 			<img width={"170px"} style={{
 				fill: "white",
 				position: "absolute",
@@ -64,39 +62,40 @@ export default function FirstAndLastNames ({
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
-						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>What's your name ?</h2>
+						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>How can we contact you ?</h2>
 						<br/><br/><br/>
 						<input
 							required={true}
 							className={"sign-up-phone-number"}
-							type="text"
+							type="email"
 							style={{
-								padding: 0, margin: 0
-
+								fontSize: "30px",
+								width: "100%",
+								padding: 0, margin: 0,
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap'
 							}}
 							name={"firstName"}
-							value={firstName}
-							onChange={(e) => setFirstName(e.target.value)}
-							placeholder="First name"
-						/>
-						<br/>
-						<input
-							required={true}
-							className={"sign-up-phone-number"}
-							type="text"
-							style={{
-								padding: 0, margin: 0
-
-							}}
-							name={"lastName"}
-							value={lastName}
-							onChange={(e) => setLastName(e.target.value)}
-							placeholder="Last name"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							placeholder="Email"
 						/>
 
 					</div>
 				</div>
 				<br/>
+
+				<p style={{
+					position: "absolute",
+					bottom: "14%",
+					left: "50%",
+					transform: "translateX(-50%)",
+					zIndex: 999,
+					color: "white",
+					fontWeight: "500",
+					width: "80%",
+					fontSize: "14px"
+				}}>Your email address will not be shared with anyone.</p>
 
 				<button
 					type={"submit"}

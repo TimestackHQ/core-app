@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
-import * as Sharing from 'expo-sharing';
+import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from 'expo-linking';
 import {SafeAreaView, Share, View} from "react-native";
 import * as Contacts from "expo-contacts";
-import * as SQLite from 'expo-sqlite';
 import ExpoJobQueue from "expo-job-queue";
 import {useEffect} from "react";
 
@@ -101,6 +100,13 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                             title: message.link
                         });
                     }
+
+                    if(message.request === "openLink") {
+                        console.log("Opening link", message.link);
+                        await WebBrowser.openBrowserAsync(message.link)
+                    }
+
+
                 }}
                 ref={webviewRef}
             />

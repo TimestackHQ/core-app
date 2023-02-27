@@ -5,7 +5,7 @@ import Router, {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import ProfilePicture from "./ProfilePicture";
 
-const icons = {
+export const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
 	"events": "/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg",
 	"share": "/icons/ios_share_FILL0_wght300_GRAD0_opsz48.svg"

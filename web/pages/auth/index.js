@@ -7,6 +7,14 @@ import Welcome from "./Welcome";
 import {useDispatch} from "react-redux";
 import {userInitRoutine} from "../../utils/auth";
 import FirstAndLastNames from "./FirstAndLastNames";
+import Step0 from "./Step0";
+import Step1 from "./Step1";
+import Email from "./Email";
+import {useEffect} from "react";
+import Router from "next/router";
+import * as PropTypes from "prop-types";
+import Birthdate from "./Birthdate";
+import Adventure from "./Adventure";
 
 export default function Login() {
 
@@ -29,6 +37,11 @@ export default function Login() {
 
 	const [userConfirmed , setUserConfirmed] = React.useState(false);
 
+	useEffect(() => {
+		if(userConfirmed) Router.push("/main_ios");
+	}, [userConfirmed]);
+
+
 	const initLogin = (nextStep = true) => {
 		httpClient("/auth/login", "POST", {username: "+1"+String(phoneNumber)})
 			.then((_res) => setStep(nextStep ? 1 : 0))
@@ -47,79 +60,35 @@ export default function Login() {
 				session: res.data.token
 			}));
 			dispatch({type: "SET_USER", payload: userInitRoutine()});
-			setStep(1);
 			if(res.data.message === "User confirmed") {
 				setUserConfirmed(true);
+				return;
 			}
+			setStep(1);
 		})
-		.catch((_err) => setError("The code you entered is invalid"));
+		.catch((_err) => alert("The code is incorrect.\n Try again."));
 	}
 
 	return (
 		<div style={{
-			backgroundImage: "hey.svg"
+			backgroundImage: "hey.svg",
+			overflow: "hidden"
 		}} className={"container"}>
-			<div className={"content"}>
-				{step !== 0 ? <FadeIn>
-					<br/><br/>
-					<button style={{marginTop: "10px"}} className={"btn btn-outline-secondary btn-sm"} onClick={() => setStep(-1)}>
-						<i className={"fas fa-arrow-left"}/> Back
-					</button>
-				</FadeIn> : null}
+			<div className={"content"} style={{overflow: "hidden"}}>
+
 				<div className="row justify-content-center align-items-center ">
 					<div className="col-lg-5 col-sm-10 text-center ">
 
-						<FadeIn>
 
 
-						{step === 0 ? <div className={"text-center"} style={{
-							backgroundImage: `url("images/MXG_evening_sunset_cozy_city_water_dreamy_people_pixar_New_York_17c83fe6-95dc-48c8-9d85-b767645172c1.png")`,
-							backgroundSize: "cover",
-							backgroundPosition: "center",
-							backgroundRepeat: "no-repeat",
-							height: "100%",
-							width: "100vw",
-							position: "absolute",
-							top: "0",
-							left: "0",
-							zIndex: 1,
-							margin: 0,
-							overflow: "hidden"
-						}}>
+						{step === 0 ? <Step0
+							setStep={setStep}
+						/> : null}
 
 
-							<img className={"white-shadow"} width={"240px"} style={{
-								fill: "white",
-								position: "absolute",
-								top: "20%",
-								left: "50%",
-								transform: "translateX(-50%)"
-							}} src={"images/logo-glow.png"}/>
-
-							<img className={"white-shadow"} width={"180px"} style={{
-								fill: "white",
-								position: "absolute",
-								top: "48%",
-								left: "50%",
-								transform: "translateX(-50%)"
-							}} src={"images/Make great memories.png"}/>
-
-							<img onClick={() => setStep(1)} className={"white-shadow"} width={"100%"} style={{
-								fill: "white",
-								position: "absolute",
-								bottom: "5%",
-								left: "50%",
-								transform: "translateX(-50%)",
-								zIndex: 999
-							}} src={"images/button-glow.png"}/>
-
-
-
-
-						</div> : null}
-						</FadeIn>
 
 						{step === 1 ? <InitLogin
+							setStep={setStep}
 							phoneNumber={phoneNumber}
 							setPhoneNumber={setPhoneNumber}
 							initLogin={initLogin}
@@ -130,16 +99,44 @@ export default function Login() {
 							setCode={setCode}
 							setStep={setStep}
 							confirmCode={confirmCode}
+							phoneNumber={phoneNumber}
 							initLogin={initLogin}
 							error={error}
+							timeRemaining={1}
 						/> : null}
 
-						{step === 3 && userConfirmed ? <div>
+						{step === 3 ? <Step1
+							setStep={setStep}
+						/> : null}
+
+						{step === 4 && userConfirmed ? <div>
 							<Welcome/>
 						</div> : null}
 
-						{step === 3 && !userConfirmed ? <div>
+						{step === 4 && !userConfirmed ? <div>
 							<FirstAndLastNames
+								setStep={setStep}
+								setUserConfirmed={setUserConfirmed}
+							/>
+						</div> : null}
+
+						{step === 5 && !userConfirmed ? <div>
+							<Birthdate
+								setStep={setStep}
+								setUserConfirmed={setUserConfirmed}
+							/>
+						</div> : null}
+
+						{step === 6 && !userConfirmed ? <div>
+							<Email
+								setStep={setStep}
+								setUserConfirmed={setUserConfirmed}
+							/>
+						</div> : null}
+
+						{step === 7 ? <div>
+							<Adventure
+								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}

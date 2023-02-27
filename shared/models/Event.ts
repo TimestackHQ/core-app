@@ -3,6 +3,7 @@ import {commonProperties} from "./utils";
 import {v4 as uuid} from "uuid";
 import {MediaSchema} from "./Media";
 import {UserSchema} from "./User";
+import {isObjectIdOrHexString} from "mongoose";
 
 export interface EventSchema extends mongoose.Document {
     name: string;
@@ -92,25 +93,28 @@ const EventSchema = new mongoose.Schema({
 });
 
 EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
+
     return [
         ...this.users.map((user: any) => {
+            if (isObjectIdOrHexString(user)) return {
+                _id: isObjectIdOrHexString(user) ? user : user._id,
+                status: "accepted"
+            }
             return {
                 ...user.toJSON(),
                 status: "accepted"
             }
-        }).filter((user: { _id: { toString: () => any; }; }) => String(user?._id) !== String(userId)),
+        }).filter((user: any) => user._id.toString() !== userId.toString()),
         ...this.invitees.map((user: any) => {
+            if (isObjectIdOrHexString(user)) return {
+                _id: isObjectIdOrHexString(user) ? user : user._id,
+                status: "pending"
+            }
             return {
                 ...user.toJSON(),
                 status: "pending"
             }
         }),
-        ...this.nonUsersInvitees.map((user: any) => {
-            return {
-                ...user.toJSON(),
-                status: "notUser"
-            }
-        })
     ]
 }
 

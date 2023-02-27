@@ -64,13 +64,13 @@ export default function EventIOS ({}) {
 				color: "white"
 			}}>
 					<FadeIn>
-						<img className={"image-fade-in"} src={uri} style={{"pointerEvents":"none","position":"absolute","width":"100%","height":"100%","zIndex":"-1", objectFit: "cover", backgroundColor: "black"}} />
+						<img className={"image-fade-in"} src={uri} style={{"pointerEvents":"none","position":"absolute","width":"100%","height":"100%","zIndex":"-10", objectFit: "cover", backgroundColor: "black"}} />
 
 					</FadeIn>
-					<div className={"container"}>
+					<div className={"container"} style={{zIndex: 1}}>
 						<div className={"row "}>
 							<FadeIn delay={600}  >
-								<div>
+								<div >
 									<div className={"row justify-content-center"}>
 										<div className={"col-12  text-center"} style={{marginTop: "10vh", color: "white"}}>
 											<br/>
@@ -108,26 +108,28 @@ export default function EventIOS ({}) {
 								</div>
 
 							</FadeIn>
-							<div className={"col-12 text-center"}></div>
-							<div className={"col-3"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
-								<FadeIn delay={600}>
-									<button onClick={() => Router.push("/event/"+eventId)}  className={"btn btn-secondary"} style={{display: "inline-block", fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "48px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
-										<div className={"white-shadow"}>
-											<b>X</b>
-										</div>
-									</button>
-								</FadeIn>
+							<div className={"col-12 row"} style={{marginTop: "10vh","position":"fixed","bottom":"8%"}}>
+								<div className={"col-2"} style={{"height":"40px", "width":"50%"}}>
+									<FadeIn delay={600}>
+										<button onClick={() => Router.push("/event/"+eventId)}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "40px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+											<div className={"white-shadow"}>
+												<b>X</b>
+											</div>
+										</button>
+									</FadeIn>
 
-							</div>
-							<div className={"col-6 text-center"} style={{"height":"40px","position":"fixed","bottom":"8%","width":"100%", zIndex: 1}}>
-								<FadeIn delay={600}>
-									<button onClick={join} className={"btn btn-secondary"} style={{fontSize: "20px", width: "50%", height: "120%", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
-										<div className={"white-shadow"}>
-											<b>JOIN</b>
-										</div>
-									</button>
-								</FadeIn>
 
+								</div>
+								<div className={"col-6 text-center"} style={{"height":"40px", "width":"100%"}}>
+									<FadeIn delay={600}>
+										<button onClick={join} className={"btn btn-secondary"} style={{fontSize: "20px", width: "50%", height: "120%", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
+											<div className={"white-shadow"}>
+												<b>JOIN</b>
+											</div>
+										</button>
+									</FadeIn>
+
+								</div>
 							</div>
 						</div>
 					</div>

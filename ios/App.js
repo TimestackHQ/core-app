@@ -5,14 +5,11 @@ import Constants from "expo-constants";
 import * as _ from "lodash";
 import ExpoJobQueue from "expo-job-queue";
 import uploadWorker from "./uploadWorker";
-import {useEffect} from "react";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
 
 uploadWorker();
-
-let mediaWatcher = null;
 
 export default function App() {
 

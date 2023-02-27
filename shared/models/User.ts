@@ -11,6 +11,7 @@ export interface UserSchema extends mongoose.Document {
     email?: string;
     phoneNumber?: string;
     isConfirmed: boolean;
+    birthDate?: Date;
     commonProperties: commonProperties;
     profilePictureSource?: string;
     initSMSLogin: () => Promise<boolean>;
@@ -30,11 +31,16 @@ const UserSchema = new mongoose.Schema({
     },
     username: {
         type: String,
-        required: true,
+        required: false,
+        unique: true,
     },
     email: {
         type: String,
-        unique: false,
+        unique: true,
+    },
+    birthDate: {
+        type: Date,
+        required: false,
     },
     phoneNumber: {
         type: String,

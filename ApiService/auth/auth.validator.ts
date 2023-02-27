@@ -23,9 +23,12 @@ export const confirmLoginValidator = (body: unknown): Joi.ValidationResult => {
 export const registerValidator = (body: unknown): Joi.ValidationResult => {
 
         const schema = Joi.object({
-            firstName: Joi.string().required(),
-            lastName: Joi.string().required(),
-            email: Joi.string().required(),
+            firstName: Joi.string(),
+            lastName: Joi.string(),
+            email: Joi.string(),
+            username: Joi.string(),
+            birthDate: Joi.date(),
+
         });
         return schema.validate(body);
 
