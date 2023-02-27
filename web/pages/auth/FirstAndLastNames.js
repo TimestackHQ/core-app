@@ -64,7 +64,7 @@ export default function FirstAndLastNames ({
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
-						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>What's your name ?</h2>
+						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>What&apos;s your name ?</h2>
 						<br/><br/><br/>
 						<input
 							required={true}
