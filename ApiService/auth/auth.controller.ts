@@ -6,18 +6,15 @@ import moment = require("moment");
 export async function login (req: Request, res: Response, next: NextFunction) {
 
     try {
-        const {username} = req.body;
+        const {phoneNumber} = req.body;
 
-        let user = await Models.User.findOne({phoneNumber: username});
+        let user = await Models.User.findOne({phoneNumber: phoneNumber});
 
         let newUser = false;
         if (!user) {
             newUser = true;
             user = new Models.User({
-                phoneNumber: username,
-                username: username,
-                firstName: "new",
-                lastName: "new",
+                phoneNumber,
             });
             await user.save();
         };

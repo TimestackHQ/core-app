@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import FadeIn from "react-fade-in";
 import {icons} from "../../components/ios";
 
@@ -10,6 +10,15 @@ export default function InitLogin({
 	error
 
 }) {
+
+	const inputRef = React.useRef(null);
+
+	useEffect(() => {
+		setInterval(() => {
+			inputRef?.current?.focus();
+		}, 100);
+	}, []);
+
 	return (
 
 		<form
@@ -50,7 +59,7 @@ export default function InitLogin({
 					left: "50%",
 					transform: "translateX(-50%)"
 				}} src={"images/logoglow.png"}/>
-				<div style={{marginTop: "330px"}}/>
+				<div style={{marginTop: "180px"}}/>
 
 				<br/>
 				{/*<div className="input-group mb-3" style={{borderRadius: "1rem"}}>*/}
@@ -68,9 +77,12 @@ export default function InitLogin({
 						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>Let&apos;s get secure right away</h2>
 
 						<input
+							ref={inputRef}
 							min="1" max="9999999999"
 							required={true}
 							className={"sign-up-phone-number"}
+							returnKeyType="sendd" // change the key type to "send"
+
 							type="tel"
 							style={{
 								padding: 0, margin: 0
@@ -86,7 +98,7 @@ export default function InitLogin({
 
 				<p style={{
 					position: "absolute",
-					bottom: "14%",
+					bottom: "48%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -104,13 +116,13 @@ export default function InitLogin({
 						border: "none !important",
 						fontSize :0,
 						width: "0%",
-						height: "0%"
+						height: "0%",
 					}}
 				>
 					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "5%",
+						bottom: "40%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999

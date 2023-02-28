@@ -27,6 +27,15 @@ export default function Code ({
 			 setTimeRemaining(timeRemaining - 1);
 		}, 1000);
 	}, [timeRemaining]);
+
+	const inputRef = React.useRef(null);
+
+	useEffect(() => {
+		setInterval(() => {
+			inputRef?.current?.focus();
+		}, 100);
+	}, []);
+
 	return (
 		<form
 			style={{
@@ -67,7 +76,7 @@ export default function Code ({
 				left: "50%",
 				transform: "translateX(-50%)"
 			}} src={"images/logoglow.png"}/>
-			<div style={{marginTop: "330px"}}/>
+			<div style={{marginTop: "180px"}}/>
 
 			<br/>
 			<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
@@ -80,6 +89,8 @@ export default function Code ({
 					required={true}
 					className={"sign-up-phone-number"}
 					type="text"
+					pattern="\d*"
+					ref={inputRef}
 					style={{
 						padding: 0, margin: 0
 
@@ -92,7 +103,7 @@ export default function Code ({
 				/>
 
 			</div>
-				<p style={{fontSize: "12px", color: "white"}}>
+				<p style={{fontSize: "14px", color: "white"}}>
 					Didn&#39;t get it? <b><br/>
 						{timeRemaining ? <span style={{color: "white"}}>Resend in {timeRemaining}s</span> : <a style={{color: "white"}} href={"#"} onClick={() => {
 							initLogin(false);
@@ -107,14 +118,14 @@ export default function Code ({
 				<br/>
 				<p style={{
 					position: "absolute",
-					bottom: "14%",
+					bottom: "46%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
 					color: "white",
 					fontWeight: "500",
 					width: "80%",
-					fontSize: "14px"
+					fontSize: "16px"
 				}}>This code is only for you.</p>
 
 				<button
@@ -130,7 +141,7 @@ export default function Code ({
 					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "5%",
+						bottom: "39%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999

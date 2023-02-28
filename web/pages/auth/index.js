@@ -15,6 +15,7 @@ import Router from "next/router";
 import * as PropTypes from "prop-types";
 import Birthdate from "./Birthdate";
 import Adventure from "./Adventure";
+import Username from "./Username";
 
 export default function Login() {
 
@@ -43,7 +44,7 @@ export default function Login() {
 
 
 	const initLogin = (nextStep = true) => {
-		httpClient("/auth/login", "POST", {username: "+1"+String(phoneNumber)})
+		httpClient("/auth/login", "POST", {phoneNumber: "+1"+String(phoneNumber)})
 			.then((_res) => setStep(nextStep ? 1 : 0))
 			.catch((_err) => setError("The phone number you entered is invalid"));
 	}
@@ -114,27 +115,34 @@ export default function Login() {
 						</div> : null}
 
 						{step === 4 && !userConfirmed ? <div>
-							<FirstAndLastNames
+							<Username
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
 						{step === 5 && !userConfirmed ? <div>
-							<Birthdate
+							<FirstAndLastNames
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
 						{step === 6 && !userConfirmed ? <div>
+							<Birthdate
+								setStep={setStep}
+								setUserConfirmed={setUserConfirmed}
+							/>
+						</div> : null}
+
+						{step === 7 && !userConfirmed ? <div>
 							<Email
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 7 ? <div>
+						{step === 8 ? <div>
 							<Adventure
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}

@@ -3,11 +3,11 @@ import FadeIn from "react-fade-in";
 import HTTPClient from "../../utils/httpClient";
 import SignUpProgressBar from "../../components/SignUpProgressBar";
 
-export default function Email ({
+export default function Username ({
       setUserConfirmed, setStep
 }) {
 
-	const [email, setEmail] = React.useState("");
+	const [username, setUsername] = React.useState("");
 	const inputRef = React.useRef(null);
 
 	React.useEffect(() => {
@@ -17,11 +17,11 @@ export default function Email ({
 	}, []);
 
 	const register = () => HTTPClient("/auth/register", "POST", {
-		email
+		username
 	}).then((res) => {
 		window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
 		setStep(1);
-	}).catch((_err) => alert("This email address is already in use."));
+	}).catch((_err) => alert("This username is not available."));
 
 	return (
 		<form
@@ -69,12 +69,12 @@ export default function Email ({
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
-						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>How can we contact you ?</h2>
+						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>Choose your handle.</h2>
 						<br/><br/><br/>
 						<input
 							required={true}
 							className={"sign-up-phone-number"}
-							type="email"
+							type="text"
 							ref={inputRef}
 							style={{
 								fontSize: "30px",
@@ -83,27 +83,28 @@ export default function Email ({
 								textOverflow: 'ellipsis',
 								whiteSpace: 'nowrap'
 							}}
-							name={"firstName"}
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							placeholder="Email"
+							name={"username"}
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+							placeholder="Username"
+							autoCapitalize={"none"}
 						/>
 
 					</div>
 				</div>
 				<br/>
 
-				<p style={{
-					position: "absolute",
-					bottom: "52%",
-					left: "50%",
-					transform: "translateX(-50%)",
-					zIndex: 999,
-					color: "white",
-					fontWeight: "500",
-					width: "80%",
-					fontSize: "14px"
-				}}>Your email address will not be shared with anyone.</p>
+				{/*<p style={{*/}
+				{/*	position: "absolute",*/}
+				{/*	bottom: "52%",*/}
+				{/*	left: "50%",*/}
+				{/*	transform: "translateX(-50%)",*/}
+				{/*	zIndex: 999,*/}
+				{/*	color: "white",*/}
+				{/*	fontWeight: "500",*/}
+				{/*	width: "80%",*/}
+				{/*	fontSize: "14px"*/}
+				{/*}}>Your email address will not be shared with anyone.</p>*/}
 
 				<button
 					type={"submit"}
