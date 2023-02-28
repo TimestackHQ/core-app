@@ -33,7 +33,11 @@ export default function Login() {
 		setStepRaw(step + increment);
 		setError("");
 	}
-	const [phoneNumber, setPhoneNumber] = React.useState("");
+	const [phoneNumber, setPhoneNumberRaw] = React.useState("");
+
+	const setPhoneNumber = (number) => {
+		setPhoneNumberRaw(number.replace(/[^0-9]/g, ''));
+	}
 	const [code, setCode] = React.useState("");
 
 	const [userConfirmed , setUserConfirmed] = React.useState(false);
