@@ -65,8 +65,14 @@ export async function authCheck (req: Request, res: Response, next: NextFunction
         // @ts-ignore
         req.user = await Models.User.findById(String(decodedToken?._id)).select("-password -events");
 
-        if(!req.user?.isConfirmed || req.user?.isOnWaitList) {
-            console.log("hehre")
+        if(!req.user) {
+            return res.status(401).json({
+                message: "Unauthorized"
+            });
+        }
+
+        if(!req.user.isConfirmed || req.user.isOnWaitList) {
+            console.log(req.path)
             if(req.path.includes("/check")) {
                 return res.status(401).json({
                     status: !req.user.isConfirmed ? "unconfirmed" : req.user.isOnWaitList ? "waitlist" : "ok"

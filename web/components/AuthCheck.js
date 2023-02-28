@@ -25,20 +25,21 @@ export default function AuthCheck({children}) {
 				setIsValidSession(true);
 			})
 
-			.catch((err) => {
-				setTimeout(() => {
-					let eventId = window.location.pathname.split("/")[2];
+			.catch(async (err) => {
+				let eventId = window.location.pathname.split("/")[2];
 
-					if(
-						eventId && window.localStorage.getItem("TIMESTACK_TOKEN") &&
-						(err.response?.data?.status === "waitlist" ||
-							err.response?.data?.status === "unconfirmed")
-					){
-						Router.push("/auth?eventId="+eventId);
-					} else {
-						router.push("/auth");
-					}
-				}, 1000);
+				if(
+					eventId && window.localStorage.getItem("TIMESTACK_TOKEN") &&
+					(err.response?.data?.status === "waitlist" ||
+						err.response?.data?.status === "unconfirmed")
+				){
+					await Router.push("/auth?eventId="+eventId);
+				} else {
+					await Router.push("/auth");
+				}
+
+				setIsValidSession(true);
+
 
 			})
 	}, [])

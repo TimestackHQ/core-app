@@ -139,7 +139,7 @@ export default function Login() {
 							setStep={setStep}
 						/> : null}
 
-						{step === 5 && !userConfirmed ? <div>
+						{step === 5 ? <div>
 							<Username
 								setStep={setStep}
 								setStepRaw={setStepRaw}
@@ -147,21 +147,21 @@ export default function Login() {
 							/>
 						</div> : null}
 
-						{step === 6 && !userConfirmed ? <div>
+						{step === 6 ? <div>
 							<FirstAndLastNames
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 7 && !userConfirmed ? <div>
+						{step === 7 ? <div>
 							<Birthdate
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 8 && !userConfirmed ? <div>
+						{step === 8 ? <div>
 							<Email
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
