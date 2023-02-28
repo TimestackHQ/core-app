@@ -55,7 +55,7 @@ export default function Email ({
 				<img src={"/icons/arrow_back_ios_FILL1_wght300_GRAD0_opsz48-white.png"} alt={"Back"} width={"25"} height={"25"} />
 
 			</div>
-			<SignUpProgressBar percent={"75"}/>
+			<SignUpProgressBar percent={"80"}/>
 
 			<img width={"170px"} style={{
 				fill: "white",
@@ -87,6 +87,7 @@ export default function Email ({
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							placeholder="Email"
+							autoFocus={true}
 						/>
 
 					</div>
@@ -109,10 +110,10 @@ export default function Email ({
 					type={"submit"}
 					style={{
 						background: "transparent",
-						border: "none !important",
+						borderWidth: 0,
 						fontSize :0,
-						width: "0%",
-						height: "0%"
+						width: "0px",
+						height: "0px",
 					}}
 				>
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{

@@ -50,7 +50,7 @@ export default function Birthdate ({
 
 			</div>
 
-			<SignUpProgressBar percent={"50"}/>
+			<SignUpProgressBar percent={"60"}/>
 
 			<img width={"170px"} style={{
 				fill: "white",
@@ -77,6 +77,7 @@ export default function Birthdate ({
 							}}
 							value={birthDate}
 							name={"birthDate"}
+							onFocus={(e) => e.target.type = "date"}
 							onChange={(e) => setBirthdate(e.target.value)}
 						/>
 
@@ -100,10 +101,10 @@ export default function Birthdate ({
 					type={"submit"}
 					style={{
 						background: "transparent",
-						border: "none !important",
+						borderWidth: 0,
 						fontSize :0,
-						width: "0%",
-						height: "0%"
+						width: "0px",
+						height: "0px",
 					}}
 				>
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{

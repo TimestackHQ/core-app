@@ -55,7 +55,7 @@ export default function Username ({
 				<img src={"/icons/arrow_back_ios_FILL1_wght300_GRAD0_opsz48-white.png"} alt={"Back"} width={"25"} height={"25"} />
 
 			</div>
-			<SignUpProgressBar percent={"75"}/>
+			<SignUpProgressBar percent={"20"}/>
 
 			<img width={"170px"} style={{
 				fill: "white",
@@ -88,6 +88,7 @@ export default function Username ({
 							onChange={(e) => setUsername(e.target.value)}
 							placeholder="Username"
 							autoCapitalize={"none"}
+							autoFocus={true}
 						/>
 
 					</div>
@@ -110,10 +111,10 @@ export default function Username ({
 					type={"submit"}
 					style={{
 						background: "transparent",
-						border: "none !important",
+						borderWidth: 0,
 						fontSize :0,
-						width: "0%",
-						height: "0%"
+						width: "0px",
+						height: "0px",
 					}}
 				>
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{

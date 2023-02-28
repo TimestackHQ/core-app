@@ -112,13 +112,13 @@ export default function InitLogin({
 					disabled={phoneNumber?.length !== 10}
 					style={{
 						background: "transparent",
-						border: "none !important",
+						borderWidth: 0,
 						fontSize :0,
-						width: "0%",
-						height: "0%",
+						width: "0px",
+						height: "0px",
 					}}
 				>
-					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
+					<img alt={""} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
 						bottom: "40%",

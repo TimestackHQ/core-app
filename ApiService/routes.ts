@@ -10,7 +10,7 @@ import {authCheck} from "../shared";
 const router: Router = Router();
 
 router.use("/auth", authRoutes);
-router.use("/events", authCheck, eventsRoutes);
+router.use("/events", eventsRoutes);
 router.use("/people", authCheck, peopleRoutes);
 router.use("/media", mediaRoutes);
 router.use("/profile", authCheck, profileRoutes);

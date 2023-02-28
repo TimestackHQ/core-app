@@ -100,6 +100,7 @@ export default function Code ({
 					onChange={(e) => setCode(e.target.value)}
 					value={code}
 					placeholder="●●●●●●"
+					autoFocus={true}
 				/>
 
 			</div>
@@ -132,10 +133,10 @@ export default function Code ({
 					type={"submit"}
 					style={{
 						background: "transparent",
-						border: "none !important",
+						borderWidth: 0,
 						fontSize :0,
-						width: "0%",
-						height: "0%"
+						width: "0px",
+						height: "0px",
 					}}
 				>
 					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
