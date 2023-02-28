@@ -81,8 +81,7 @@ export default function InitLogin({
 							min="1" max="9999999999"
 							required={true}
 							className={"sign-up-phone-number"}
-							returnKeyType="sendd" // change the key type to "send"
-
+							autoFocus={true}
 							type="tel"
 							style={{
 								padding: 0, margin: 0
