@@ -87,6 +87,7 @@ export default function InitLogin({
 								padding: 0, margin: 0
 
 							}}
+							autoComplete={"tel"}
 							name={"phoneNumber"}
 							value={phoneNumber}
 							onChange={(e) => setPhoneNumber(e.target.value)}

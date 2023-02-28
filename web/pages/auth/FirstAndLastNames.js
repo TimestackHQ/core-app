@@ -74,7 +74,7 @@ export default function FirstAndLastNames ({
 								padding: 0, margin: 0
 
 							}}
-							name={"firstName"}
+							name={"firstname"}
 							value={firstName}
 							onChange={(e) => setFirstName(e.target.value)}
 							placeholder="First name"
@@ -88,7 +88,7 @@ export default function FirstAndLastNames ({
 								padding: 0, margin: 0
 
 							}}
-							name={"lastName"}
+							name={"lastname"}
 							value={lastName}
 							onChange={(e) => setLastName(e.target.value)}
 							placeholder="Last name"

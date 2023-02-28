@@ -83,7 +83,7 @@ export default function Email ({
 								textOverflow: 'ellipsis',
 								whiteSpace: 'nowrap'
 							}}
-							name={"firstName"}
+							name={"email"}
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							placeholder="Email"
