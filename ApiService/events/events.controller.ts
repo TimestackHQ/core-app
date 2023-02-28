@@ -147,7 +147,7 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
         const buffer = await getBuffer(event);
 
-        if (!event.users?.map(u => u._id.toString()).includes(req.user._id.toString())) return res.status(200).json({
+        if (!event.users?.map(u => u._id.toString()).includes(req.user?._id.toString())) return res.status(200).json({
             message: "joinRequired",
             event: {
                 _id: event._id,

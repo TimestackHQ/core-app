@@ -6,7 +6,8 @@ import * as Linking from 'expo-linking';
 import {SafeAreaView, Share, View} from "react-native";
 import * as Contacts from "expo-contacts";
 import ExpoJobQueue from "expo-job-queue";
-import {useEffect} from "react";
+import {useEffect, useRef, useState} from "react";
+
 
 let mediaWatcher = null;
 
@@ -31,10 +32,16 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
 
     useEffect(() => {
-        console.log("URL:", url);
-        if(url) {
-            setUri(url.replace("timestack://", frontendUrl+"/"));
-        }
+
+    }, []);
+
+    useEffect(() => {
+       setTimeout(() => {
+           console.log("URL:", url);
+           if(url) {
+               setUri(url.replace("timestack://", frontendUrl+"/"));
+           }
+       }, 500);
     }, [url]);
 
 
@@ -48,7 +55,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                 injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
                     console.log(event);
-                   if(event.url.endsWith("/join") || event.url.includes("/auth")) {
+                   if(event.url.includes("/join") || event.url.includes("/auth")) {
                        setUri(event.url);
 
                        setViewtype("full");
@@ -104,6 +111,17 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                     if(message.request === "openLink") {
                         console.log("Opening link", message.link);
                         await WebBrowser.openBrowserAsync(message.link)
+                    }
+
+                    if(message.request === "pushNotifications") {
+                        let { status } = await askAsync(Permissions.NOTIFICATIONS);
+
+                        if (status !== PermissionStatus.GRANTED) {
+                            return;
+                        }
+
+                        let token = await Notifications.getExpoPushTokenAsync();
+                        console.log(token);
                     }
 
 

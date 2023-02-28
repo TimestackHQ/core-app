@@ -11,6 +11,7 @@ export interface UserSchema extends mongoose.Document {
     email?: string;
     phoneNumber?: string;
     isConfirmed: boolean;
+    isOnWaitList: boolean;
     birthDate?: Date;
     commonProperties: commonProperties;
     profilePictureSource?: string;
@@ -49,6 +50,10 @@ const UserSchema = new mongoose.Schema({
     isConfirmed: {
         type: Boolean,
         default: false,
+    },
+    isOnWaitList: {
+        type: Boolean,
+        default: true,
     },
     profilePictureSource: {
         type: String,

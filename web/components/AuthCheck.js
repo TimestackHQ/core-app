@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import HTTPClient from "../utils/httpClient";
-import {useRouter} from "next/router";
+import Router, {useRouter} from "next/router";
 import {useDispatch, useSelector} from "react-redux";
 
 export default function AuthCheck({children}) {
@@ -19,15 +19,27 @@ export default function AuthCheck({children}) {
 	useEffect(() => {
 		if(!isAuthPath) HTTPClient("/auth/check", "GET")
 			.then((res) => {
-				setIsValidSession(true);
 				dispatch({type: "SET_USER", payload: {
 					...res.data
 				}});
+				setIsValidSession(true);
 			})
 
 			.catch((err) => {
-				setIsValidSession(true);
-				router.push("/auth");
+				setTimeout(() => {
+					let eventId = window.location.pathname.split("/")[2];
+
+					if(
+						eventId && window.localStorage.getItem("TIMESTACK_TOKEN") &&
+						(err.response?.data?.status === "waitlist" ||
+							err.response?.data?.status === "unconfirmed")
+					){
+						Router.push("/auth?eventId="+eventId);
+					} else {
+						router.push("/auth");
+					}
+				}, 1000);
+
 			})
 	}, [])
 

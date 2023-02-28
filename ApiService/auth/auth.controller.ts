@@ -55,7 +55,7 @@ export async function confirmLogin (req: Request, res: Response, next: NextFunct
             });
         } else {
             return res.status(200).json({
-                message: user.isConfirmed ? "User confirmed" : "User not confirmed",
+                message: user.isConfirmed && !user.isOnWaitList ? "User confirmed" : "User not confirmed",
                 token: await user.generateSessionToken(),
             })
         }
@@ -74,7 +74,7 @@ export async function register (req: Request, res: Response, next: NextFunction)
         const token: any = jwt.verify(authorization, String(process.env.JWT_SECRET));
 
         const user = await Models.User.findById(String(token?._id));
-        if (!user || user.isConfirmed) {
+        if (!user || (user.isConfirmed && !user.isOnWaitList)) {
             return res.status(404).json({
                 message: "User not found"
             });
@@ -125,6 +125,16 @@ export async function register (req: Request, res: Response, next: NextFunction)
             user.isConfirmed = true;
         }
 
+        if(req.body.eventId && user.isOnWaitList) {
+            const event = await Models.Event.findOne({
+                publicId: req.body.eventId,
+            }).select("_id");
+
+            if(event) {
+                user.isOnWaitList = false;
+            }
+        }
+
         await user.save();
 
         return res.status(200).json({
@@ -137,4 +147,14 @@ export async function register (req: Request, res: Response, next: NextFunction)
 
 
 
+}
+
+export const check = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        return res.status(200).json({
+            status: req.user.isOnWaitList ? "waitlist" : req.user.isConfirmed ? "confirmed" : "unconfirmed",
+        });
+    } catch (e) {
+        next(e);
+    }
 }

@@ -2,9 +2,10 @@ import * as React from 'react';
 import FadeIn from "react-fade-in";
 import HTTPClient from "../../utils/httpClient";
 import SignUpProgressBar from "../../components/SignUpProgressBar";
+import Router from "next/router";
 
 export default function Username ({
-      setUserConfirmed, setStep
+      setUserConfirmed, setStep, setStepRaw
 }) {
 
 	const [username, setUsername] = React.useState("");
@@ -14,10 +15,24 @@ export default function Username ({
 		setInterval(() => {
 			inputRef?.current?.focus();
 		}, 100);
+
+		HTTPClient("/auth/check", "GET").catch(err => {
+			if(err.response?.data?.status === "waitlist") {
+				HTTPClient("/auth/register", "POST", {
+					eventId: Router.query?.eventId ? Router.query?.eventId : undefined
+				}).then((res) => {
+					setStepRaw(9);
+				}).catch((_err) => alert("Error"));
+			} else {
+				// setStep(1);
+			}
+		})
+
 	}, []);
 
 	const register = () => HTTPClient("/auth/register", "POST", {
-		username
+		username,
+		eventId: Router.query?.eventId ? Router.query?.eventId : undefined
 	}).then((res) => {
 		window.localStorage.setItem("TIMESTACK_TOKEN", res.data.token);
 		setStep(1);

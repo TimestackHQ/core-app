@@ -1,6 +1,15 @@
 import * as React from "react";
+import {useEffect} from "react";
+import {useRouter} from "next/router";
 
 export default function Step0 ({setStep}) {
+
+	const router = useRouter();
+
+	useEffect(() => {
+		window.localStorage.removeItem("TIMESTACK_TOKEN");
+	}, [])
+
 	return (
 		<div className={"text-center"} style={{
 			backgroundImage: `url("images/timestack city sunset 1.png")`,

@@ -28,6 +28,7 @@ export const registerValidator = (body: unknown): Joi.ValidationResult => {
             email: Joi.string(),
             username: Joi.string(),
             birthDate: Joi.date(),
+            eventId: Joi.string(),
 
         });
         return schema.validate(body);

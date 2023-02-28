@@ -11,15 +11,17 @@ import Step0 from "./Step0";
 import Step1 from "./Step1";
 import Email from "./Email";
 import {useEffect} from "react";
-import Router from "next/router";
+import Router, {useRouter} from "next/router";
 import * as PropTypes from "prop-types";
 import Birthdate from "./Birthdate";
 import Adventure from "./Adventure";
 import Username from "./Username";
+import Step2 from "./Step2";
 
 export default function Login() {
 
 	const dispatch = useDispatch();
+	const router = useRouter();
 
 	const [error, setErrorRaw] = React.useState("");
 	const setError = (err) => {
@@ -28,7 +30,7 @@ export default function Login() {
 			setErrorRaw("");
 		}, 5000);
 	}
-	const [step, setStepRaw] = React.useState(0);
+	const [step, setStepRaw] = React.useState(-1);
 	const setStep = (increment) => {
 		setStepRaw(step + increment);
 		setError("");
@@ -41,6 +43,21 @@ export default function Login() {
 	const [code, setCode] = React.useState("");
 
 	const [userConfirmed , setUserConfirmed] = React.useState(false);
+
+	useEffect(() => {
+		const params = new Proxy(new URLSearchParams(window.location.search), {
+			get: (searchParams, prop) => searchParams.get(prop),
+		});
+
+		let eventId = params.eventId; // "some_value"
+		if(eventId) {
+			setStepRaw(5);
+		} else {
+			setStep(1);
+		}
+
+
+	}, []);
 
 	useEffect(() => {
 		if(userConfirmed) Router.push("/main_ios");
@@ -118,35 +135,40 @@ export default function Login() {
 							<Welcome/>
 						</div> : null}
 
-						{step === 4 && !userConfirmed ? <div>
+						{step === 4 ? <Step2
+							setStep={setStep}
+						/> : null}
+
+						{step === 5 && !userConfirmed ? <div>
 							<Username
 								setStep={setStep}
+								setStepRaw={setStepRaw}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 5 && !userConfirmed ? <div>
+						{step === 6 && !userConfirmed ? <div>
 							<FirstAndLastNames
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 6 && !userConfirmed ? <div>
+						{step === 7 && !userConfirmed ? <div>
 							<Birthdate
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 7 && !userConfirmed ? <div>
+						{step === 8 && !userConfirmed ? <div>
 							<Email
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 8 ? <div>
+						{step === 9 ? <div>
 							<Adventure
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
