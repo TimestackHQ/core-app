@@ -220,11 +220,13 @@ export const updatePeople = async (req: any, res: any, next: any) => {
             })
         }
 
+        const usersToNotify = []
+
         if(req.body.add.length) {
             const usersToAdd = await Models.User.find({
                 _id: {
                     $in: req.body.add,
-                    $nin: event.users,
+                    $nin: [...event.users, ...event.invitees],
                     $ne: req.user._id
                 }
             }).select("_id");
@@ -232,6 +234,11 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                 ...event.invitees.map(id => id.toString()),
                 ...usersToAdd.map((user: any) => user._id.toString())
             ]);
+            usersToNotify.push(
+                ...usersToAdd
+                    .map((user: any) => user._id.toString())
+            );
+
         }
 
 
@@ -248,9 +255,30 @@ export const updatePeople = async (req: any, res: any, next: any) => {
 
         await event.save();
 
-        return res.json({
+        res.json({
             people: event.people(req.user._id)
         });
+
+        await Promise.all(
+            [...usersToNotify].map(async (invitee: any) => {
+                const notification = new Models.Notification({
+                    user: invitee,
+                    title: "New invite",
+                    body: `${req.user.firstName} has invited you to ${event.name}`,
+                    data: {
+                        type: "eventInvite",
+                        payload: {
+                            eventId: event.publicId
+                        }
+                    }
+
+                });
+                await notification.save();
+                await notification.notify();
+            })
+        );
+
+
 
 
     } catch (e) {
