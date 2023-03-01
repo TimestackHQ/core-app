@@ -4,6 +4,7 @@ import {UserSchema} from "../../shared/models/User";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 import {getBuffer, standardEventPopulation} from "./events.tools";
+import mongoose from "mongoose";
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 
@@ -46,19 +47,25 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             }
         });
 
-        // await Promise.all([
-        //     ...users.map(async (user: UserSchema) => {
-        //         await inviteToEvent(event, req.user, user);
-        //     }),
-        //     ...event.nonUsersInvitees.map(async (invitee) => {
-        //         await inviteToEvent(event, req.user, {
-        //             firstName: invitee.firstName,
-        //             lastName: invitee.lastName,
-        //             phoneNumber: String(invitee.phoneNumber),
-        //             email: invitee.email,
-        //         });
-        //     }
-        // )]);
+        // @ts-ignore
+        await Promise.all(
+            [...event.invitees, req.user._id].map(async (invitee: any) => {
+                const notification = new Models.Notification({
+                    user: invitee,
+                    title: "New invite",
+                    body: `${req.user.firstName} has invited you to ${event.name}`,
+                    data: {
+                        type: "eventInvite",
+                        payload: {
+                            eventId: event.publicId
+                        }
+                    }
+
+                });
+                await notification.save();
+                await notification.notify();
+            })
+        );
 
     } catch (e) {
         console.log(e)
@@ -274,7 +281,27 @@ export const joinEvent = async (req: any, res: any, next: any) => {
         event.users.push(req.user._id);
         await event.save();
 
-        return res.sendStatus(200);
+        res.sendStatus(200);
+
+        await Promise.all(
+            [...event.users].map(async (invitee: any) => {
+                const notification = new Models.Notification({
+                    user: invitee,
+                    title: event.name,
+                    body: `${req.user.firstName} joined the event`,
+                    data: {
+                        type: "eventJoin",
+                        payload: {
+                            eventId: event.publicId,
+                            userId: req.user._id
+                        }
+                    }
+
+                });
+                await notification.save();
+                await notification.notify();
+            })
+        );
 
     } catch (e) {
         next(e);
