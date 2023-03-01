@@ -96,7 +96,7 @@ export default function EventIOS ({}) {
 						eventId={eventId}
 						currentInvitees={event?.people}
 						callback={updatingPeopleCallback}
-						sharelink={window.location.protocol + "//" + window.location.host + "/event/" + event?._id+"/invite"}
+						sharelink={window.location.protocol + "//" + window.location.host + "/event/" + event?.publicId+"/invite"}
 					/>
 				</div> :
 				<Fragment>
