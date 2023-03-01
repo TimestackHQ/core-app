@@ -54,9 +54,9 @@ SMSCodeSchema.methods.sendSMS = async function (code: number) {
         //     return true;
         // } else {
             const message = await sendTextMessage(
-                code+' is your Timestack authentication code.\n' +
+                'This is your Timestack authentication code.\n' +
                 '\n' +
-                'We will never ask you to share this code.',
+                'We will never ask you to share this code. \n\n\ '+ code,
                 this.phoneNumber,
 
             )

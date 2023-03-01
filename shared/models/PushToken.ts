@@ -4,14 +4,14 @@ import {v4 as uuid} from "uuid";
 import {MediaSchema} from "./Media";
 import {UserSchema} from "./User";
 import {isObjectIdOrHexString} from "mongoose";
+import axios from "axios";
 
 export interface PushTokenSchema extends mongoose.Document {
     to: string;
     user?: mongoose.Schema.Types.ObjectId | UserSchema;
     createdAt: Date;
     ipAddress: string;
-
-
+    notify: (title: string, body: string, data: any) => Promise<void>;
 }
 
 const PushTokenSchema = new mongoose.Schema({
@@ -31,5 +31,15 @@ const PushTokenSchema = new mongoose.Schema({
     }
 });
 
+PushTokenSchema.methods.notify = async function (title: string, body: string, data: any) {
+    // use expo api to notify
+    await axios.post("https://exp.host/--/api/v2/push/send", {
+        to: this.to,
+        title,
+        body,
+        data,
+    });
+
+}
 export default mongoose.model<PushTokenSchema>("PushToken", PushTokenSchema);
 

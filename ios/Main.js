@@ -100,9 +100,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
         const apiUrl = Constants.expoConfig.extra.apiUrl;
 
-        console.log(expoPushToken)
-
-        axios({
+        if(expoPushToken) axios({
             url: apiUrl + "/v1/auth/notifications/link",
             method: "POST",
             headers: {

@@ -54,6 +54,20 @@ export async function confirmLogin (req: Request, res: Response, next: NextFunct
                 message: "Invalid code"
             });
         } else {
+            const notification = new Models.Notification({
+                user: user._id,
+                title: "New connection to your account",
+                body: "You have logged in to your account from a new device",
+                data: {
+                    type: "login",
+                    payload: {
+                        user: user._id,
+                    }
+                }
+            });
+            await notification.save();
+            await notification.notify();
+
             return res.status(200).json({
                 message: user.isConfirmed && !user.isOnWaitList ? "User confirmed" : "User not confirmed",
                 token: await user.generateSessionToken(),
