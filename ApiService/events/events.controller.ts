@@ -80,8 +80,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
         const events = await Models.Event.find({
             users: {
-                    $in: [req.user._id]
-                }
+                $in: [req.user._id]
             }
         })
             .sort({createdAt: -1})
