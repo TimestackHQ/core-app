@@ -34,3 +34,11 @@ export const registerValidator = (body: unknown): Joi.ValidationResult => {
         return schema.validate(body);
 
 }
+
+export const notificationLinkValidator = (body: unknown): Joi.ValidationResult => {
+
+    const schema = Joi.object({
+        pushToken: Joi.string().required(),
+    });
+    return schema.validate(body);
+}

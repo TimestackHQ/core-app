@@ -7,10 +7,50 @@ import {SafeAreaView, Share, View} from "react-native";
 import * as Contacts from "expo-contacts";
 import ExpoJobQueue from "expo-job-queue";
 import {useEffect, useRef, useState} from "react";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import HTTPClient from "./httpClient";
+import axios from "axios";
+import Constants from "expo-constants";
 
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+    }),
+});
 
-let mediaWatcher = null;
+async function registerForPushNotificationsAsync() {
+    let token;
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+    } else {
+        // alert('Must use physical device for Push Notifications');
+    }
 
+    if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    return token;
+}
 
 function ViewType ({children, type, webviewRef}) {
 
@@ -26,23 +66,62 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
     const url = Linking.useURL();
 
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+
 
     const webviewRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
 
     useEffect(() => {
-
+        registerForPushNotificationsAsync().then(token => {
+            if(!token) {
+                setExpoPushToken("ExponentPushToken[HaK7a_IDmPDQz4DkTJo4U6]");
+            }
+            setExpoPushToken(token)
+        });
     }, []);
 
     useEffect(() => {
        setTimeout(() => {
+
            console.log("URL:", url);
            if(url) {
                setUri(url.replace("timestack://", frontendUrl+"/"));
            }
        }, 500);
     }, [url]);
+
+    const updatePushToken = async () => {
+
+        const apiUrl = Constants.expoConfig.extra.apiUrl;
+
+        console.log(expoPushToken)
+
+        axios({
+            url: apiUrl + "/v1/auth/notifications/link",
+            method: "POST",
+            headers: {
+                authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
+            },
+            data: {
+                pushToken: expoPushToken
+            }
+        }).then(res => {
+            console.log("Push token updated");
+        }).catch(err => {
+            console.log("Push token update failed");
+            console.log(err.response.data)
+        });
+    }
+
+    useEffect(() => {
+        updatePushToken()
+    }, [expoPushToken, ]);
 
 
     return (
@@ -90,6 +169,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                     if(message.request === "session") {
                         console.log("Setting session");
                         await AsyncStorage.setItem('@session', message.session);
+                        updatePushToken();
                     }
 
                     if(message.request === "uploadQueue") {

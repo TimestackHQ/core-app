@@ -158,3 +158,35 @@ export const check = (req: Request, res: Response, next: NextFunction) => {
         next(e);
     }
 }
+
+export async function notificationLink (req: Request, res: Response, next: NextFunction) {
+    try {
+        const {authorization} = req.headers;
+
+        let userId: string | null;
+        try {
+            const token: any = jwt.verify(String(authorization).replace("Bearer ", ""), String(process.env.JWT_SECRET));
+            userId = String(token?._id);
+        } catch (e) {
+            userId = null;
+        }
+
+        await Models.PushToken.updateOne({
+            to: req.body.pushToken
+        }, {
+            $set: {
+                user: userId,
+            to: req.body.pushToken,
+            }
+        }, {
+            upsert: true,
+        });
+
+        return res.status(200).json({
+            message: "Push token updated",
+        });
+
+    } catch (e) {
+        next(e);
+    }
+}
