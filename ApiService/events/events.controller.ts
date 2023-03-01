@@ -79,13 +79,10 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
     try {
 
         const events = await Models.Event.find({
-            $or: [{
-                users: {
+            users: {
                     $in: [req.user._id]
                 }
-            }, {
-                createdBy: req.user._id
-            }],
+            }
         })
             .sort({createdAt: -1})
             .populate(standardEventPopulation)
