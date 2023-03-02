@@ -262,7 +262,8 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                     data: {
                         type: "eventInvite",
                         payload: {
-                            eventId: event.publicId
+                            eventId: event.publicId,
+                            url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
                         }
                     }
 
@@ -307,7 +308,7 @@ export const joinEvent = async (req: any, res: any, next: any) => {
         res.sendStatus(200);
 
         await Promise.all(
-            [...event.users].map(async (invitee: any) => {
+            [...event.users].filter(userId => userId.toString() !== req.user._id.toString()).map(async (invitee: any) => {
                 const notification = new Models.Notification({
                     user: invitee,
                     title: event.name,
