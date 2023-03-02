@@ -213,21 +213,23 @@ export default function EventIOS ({}) {
 											</div>
 										})}
 										{/*<iframe width={"100px"} src={"file:///Users/achrafghellach/Library/Developer/CoreSimulator/Devices/AD021B08-2726-4690-8BF8-4C40A2D254F9/data/Containers/Data/Application/B7B34F23-D762-46D6-A861-7609F4AFAF14/Library/Caches/tmp/3836dad8-62ac-4db9-8b4e-7a9238a28895.jpg"}/>*/}
-										{uploadQueue.map((media, index) => {
-											return media.uri
-											// <div key={index} className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>
-											// 	<LazyLoadImage src={media.uri}
-											// 	               style={{objectFit: "cover", margin: 0, padding: 0}}
-											// 	               alt={media.uri}
-											// 	               width={"100%"} height={"200px"}
-											// 	/>
-											//
-											// </div>
-										})}
+										{/*{uploadQueue.map((media, index) => {*/}
+										{/*	return media.uri*/}
+										{/*	// <div key={index} className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>*/}
+										{/*	// 	<LazyLoadImage src={media.uri}*/}
+										{/*	// 	               style={{objectFit: "cover", margin: 0, padding: 0}}*/}
+										{/*	// 	               alt={media.uri}*/}
+										{/*	// 	               width={"100%"} height={"200px"}*/}
+										{/*	// 	/>*/}
+										{/*	//*/}
+										{/*	// </div>*/}
+										{/*})}*/}
 
 									</div>
 
 								</div>
+								<br/>
+								<br/>
 								<br/>
 
 

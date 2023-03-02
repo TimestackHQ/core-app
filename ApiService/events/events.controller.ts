@@ -1,10 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {inviteToEvent, Models} from "../../shared";
-import {UserSchema} from "../../shared/models/User";
+import {Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 import {getBuffer, standardEventPopulation} from "./events.tools";
-import mongoose from "mongoose";
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 
@@ -303,6 +301,7 @@ export const joinEvent = async (req: any, res: any, next: any) => {
         }
 
         event.users.push(req.user._id);
+        event.invitees = event.invitees.filter((user: any) => user._id.toString() !== req.user._id.toString());
         await event.save();
 
         res.sendStatus(200);
@@ -317,7 +316,8 @@ export const joinEvent = async (req: any, res: any, next: any) => {
                         type: "eventJoin",
                         payload: {
                             eventId: event.publicId,
-                            userId: req.user._id
+                            userId: req.user._id,
+                            url: process.env.FRONTEND_URL + "/event/" + event.publicId
                         }
                     }
 

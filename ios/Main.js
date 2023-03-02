@@ -84,6 +84,12 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
             }
             setExpoPushToken(token)
         });
+
+        const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+            const notification = response.notification.request.content;
+            const url = notification?.data.payload?.url;
+            if(url) setUri(url);
+        });
     }, []);
 
     useEffect(() => {
@@ -127,7 +133,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
             <WebView
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"
-                allowsBackForwardNavigationGestures="true"
+                // allowsBackForwardNavigationGestures="true"
                 source={{ uri: uri ? uri : frontendUrl+'/main_ios'}}
                 injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {

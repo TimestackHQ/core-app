@@ -31,13 +31,15 @@ export default function EventIOS ({}) {
 					if(response.data.message === "joinRequired") {
 						Router.push("/event/"+eventId+"/join");
 					}else {
-						setEvent(response.data.event);
+						setTimeout(() => {
+							setEvent(response.data.event);
+							setLoaded(true);
+						}, 0);
 
 						HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
 							.catch(err => {});
 						HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
 							.catch(err => {});
-						setLoaded(true);
 					}
 
 				})
@@ -135,7 +137,7 @@ export default function EventIOS ({}) {
 
 								<div className={"col-7 position-relative"}>
 									<div className="position-absolute top-0 start-0">
-										<h2 className={"overflow-auto"} style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
+										<h2 style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
 									</div>
 									<div className="position-absolute bottom-0 start-0">
 										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
@@ -164,9 +166,11 @@ export default function EventIOS ({}) {
 							</div>
 							<br/>
 							<div style={{}}>
-								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px", marginRight: "5px"}} src={"/icons/add-people-icon.svg"}/>
+								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px"}} src={"/icons/add-people-icon.svg"}/>
 								{event?.people.map((invitee, index) => {
-									return <ProfilePicture key={index} width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
+									return <div style={{display: "inline", paddingLeft: "10px"}}>
+										<ProfilePicture key={index} width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
+									</div>
 								})}
 
 							</div>
@@ -183,15 +187,12 @@ export default function EventIOS ({}) {
 						</div> :
 
 
-						<div>
-
-
-
+						<div className={"container"}>
 
 							<div className={"row"}>
-								<div className={"col-5"}>
+								<div className={"col-5"} style={{height: "200px"}}>
 									<ContentLoader height={"100%"} width={370}>
-										<rect x="10" y="" rx="20" ry="10" width="42%" height="200px" />
+										<rect x="10" y="" rx="20" ry="10" width="35%" height="200px" />
 									</ContentLoader>
 									<br/>
 									<br/>
@@ -199,37 +200,56 @@ export default function EventIOS ({}) {
 								</div>
 								<div className={"col-7 position-relative"}>
 									<div className="position-absolute top-0 start-0">
-										<h2 className={"overflow-auto"} style={{marginLeft: "4px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
+										<h2 style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
+									</div>
+									<div className="position-absolute bottom-0 start-0">
+										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}></p>
+										<p style={{fontSize: "15px", marginLeft: "2px"}}></p>
 									</div>
 								</div>
 
+
+							</div>
+
+							<br/>
+
+							<div className={"row"}>
 								<div className={"col-4 text-center"}>
-									<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
+									<h5 style={{margin: 0}}><br/></h5>
+									<h5 style={{color: "gray"}}>People</h5>
 								</div>
 
 								<div className={"col-4 text-center"}>
-									<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
+									<h5 style={{margin: 0}}><br/></h5>
+									<h5 style={{color: "gray"}}>Memories</h5>
 								</div>
 
 								<div className={"col-4 text-center"}>
+									<h5 style={{margin: 0}}><br/></h5>
 									<h5 style={{color: "gray"}}>Revisits</h5>
 								</div>
 							</div>
+
+							<div style={{height: "5px"}}/>
 
 							<ContentLoader
 								width={500}
 								height={100}
 								backgroundColor="#f3f3f3"
 								foregroundColor="#ecebeb"
+								style={{marginLeft: "0"}}
 							>
-								<circle cx="35" cy="38" r="25" />
-								<circle cx="95" cy="38" r="25" />
-								<circle cx="155" cy="38" r="25" />
-								<circle cx="215" cy="38" r="25" />
-								<circle cx="215" cy="38" r="25" />
-								<circle cx="275" cy="38" r="25" />
+								<circle cx="26" cy="40" r="23" />
+								<circle cx="80" cy="40" r="23" />
+								<circle cx="134" cy="40" r="23" />
+								<circle cx="188" cy="40" r="23" />
+								<circle cx="242" cy="40" r="23" />
+
 							</ContentLoader>
+
 						</div>
+
+
 					}
 				</Fragment>
 			}

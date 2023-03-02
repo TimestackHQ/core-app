@@ -12,7 +12,7 @@ export default function MainIOS () {
 	useEffect(() => {
 		HTTPClient("/events", "GET").then((res) => {
 			setEvents(res.data.events);
-		}).catch(err => {})
+		}).catch(err => {});
 	}, [])
 
 	const router = useRouter();
@@ -25,7 +25,7 @@ export default function MainIOS () {
 
 	return (
 		<IOS main={true}>
-			<FadeIn className="container">
+			<div className="container">
 				<h1>My Timewall</h1>
 				<div className="row" style={{paddingTop: "20px"}}>
 					<div className={"col-12"} style={{borderRightColor: "black", borderWidth: "10px"}}>
@@ -36,7 +36,7 @@ export default function MainIOS () {
 
 
 				</div>
-			</FadeIn>
+			</div>
 		</IOS>
 	);
 }

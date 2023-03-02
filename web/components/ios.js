@@ -4,6 +4,7 @@ import FadeIn from "react-fade-in";
 import Router, {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import ProfilePicture from "./ProfilePicture";
+import NativeBridge, {shareLink, shareRawLink} from "../utils/nativeBridge";
 
 export const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
@@ -59,10 +60,7 @@ export default function IOS ({
 									return <img
 										key={index}
 										onClick={() => {
-											window.ReactNativeWebView?.postMessage(JSON.stringify({
-												request: "shareLink",
-												link: button.href
-											}));
+											shareRawLink(button.href);
 										}}
 										style={{marginLeft: "20px"}}
 										src={icons?.[button.icon]}

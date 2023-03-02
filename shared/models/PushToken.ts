@@ -38,6 +38,7 @@ PushTokenSchema.methods.notify = async function (title: string, body: string, da
         title,
         body,
         data,
+        badge: 1,
     });
 
 }
