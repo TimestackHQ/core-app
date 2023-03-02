@@ -168,8 +168,8 @@ export default function EventIOS ({}) {
 							<div style={{}}>
 								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px"}} src={"/icons/add-people-icon.svg"}/>
 								{event?.people.map((invitee, index) => {
-									return <div style={{display: "inline", paddingLeft: "10px"}}>
-										<ProfilePicture key={index} width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
+									return <div key={index} style={{display: "inline", paddingLeft: "10px"}}>
+										<ProfilePicture width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
 									</div>
 								})}
 
