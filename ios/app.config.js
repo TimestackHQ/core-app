@@ -20,7 +20,26 @@ module.exports = {
           "package": "min-gpl",
         }
       }
-    ]],
+    ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 31,
+            "targetSdkVersion": 31,
+            "minSdkVersion": 24,
+            "buildToolsVersion": "31.0.0",
+            "packagingOptions": {
+              "pickFirst": [
+                "lib/arm64-v8a/libc++_shared.so",
+                "lib/armeabi-v7a/libc++_shared.so",
+                "lib/x86/libc++_shared.so",
+                "lib/x86_64/libc++_shared.so"
+              ]
+            }
+          }
+        }
+      ]],
     "assetBundlePatterns": [
       "**/*"
     ],

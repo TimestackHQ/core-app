@@ -6,6 +6,7 @@ import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
 import FadeIn from "react-fade-in";
 import {useDispatch, useSelector} from "react-redux";
+import {openLink, shareRawLink} from "../../utils/nativeBridge";
 
 export default function Index() {
 
@@ -64,7 +65,7 @@ export default function Index() {
 					<div className={"col-12 text-center"}>
 						<br/>
 						<h5>{user?.firstName} {user?.lastName}</h5>
-						<h6>@overcomputed</h6>
+						<h6>@{user?.username}</h6>
 						{/*<hr/>*/}<br/>
 						<ul className="list-group text-start" >
 							<li className="list-group-item"
@@ -97,12 +98,18 @@ export default function Index() {
 						<br/>
 						<ul className="list-group text-start">
 							<li className="list-group-item"
+							    onClick={() => {
+									openLink("https://bit.ly/timestack-terms")
+								}}
 							    style={{
 								    height: "50px",
 								    display: 'flex',
 								    alignItems: 'center'
 							    }}><b>Terms of Use</b></li>
 							<li className="list-group-item"
+							    onClick={() => {
+								    openLink("https://bit.ly/timestack-privacy")
+							    }}
 							    style={{
 								    height: "50px",
 								    display: 'flex',
@@ -110,6 +117,9 @@ export default function Index() {
 							    }}><b>Privacy Policy</b></li>
 
 							<li className="list-group-item"
+							    onClick={() => {
+								    openLink("https://bit.ly/timestack-about-us")
+							    }}
 							    style={{
 								    height: "50px",
 								    display: 'flex',
@@ -127,7 +137,7 @@ export default function Index() {
 						</ul>
 						<br/><br/>
 						<div className={"col-12 text-center"} style={{color: "gray", lineHeight: "20px"}}>
-							0.0.5
+							{window.localStorage?.appVersion}
 							<br/>
 								Make great memories
 

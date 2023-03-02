@@ -1,9 +1,5 @@
 import * as React from "react";
-
-const openLink = link => window.ReactNativeWebView?.postMessage(JSON.stringify({
-	request: "openLink",
-	link
-}));
+import {openLink} from "../../utils/nativeBridge";
 
 export default function Step1 ({setStep}) {
 	return (

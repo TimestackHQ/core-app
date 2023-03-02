@@ -135,7 +135,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                 allowsInlineMediaPlayback="true"
                 // allowsBackForwardNavigationGestures="true"
                 source={{ uri: uri ? uri : frontendUrl+'/main_ios'}}
-                injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
+                injectedJavaScript={`window.localStorage.setItem("appVersion", "0.0.15-dev");const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
                     console.log(event);
                    if(event.url.includes("/join") || event.url.includes("/auth")) {

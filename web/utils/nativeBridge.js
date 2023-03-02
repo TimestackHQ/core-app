@@ -12,3 +12,8 @@ export function shareLink (link) {
 export function shareRawLink (link) {
 	NativeBridge("shareLink", {link});
 }
+
+export const openLink = link => window.ReactNativeWebView?.postMessage(JSON.stringify({
+	request: "openLink",
+	link
+}));

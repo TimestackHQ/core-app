@@ -19,6 +19,7 @@ export interface UserSchema extends mongoose.Document {
     checkSMSCode: (code: string) => Promise<boolean>;
     generateSessionToken: () => Promise<string>;
     pushEvent: (eventName: ("profileUpdate"), payload: any) => void;
+    setUsername: (username: string) => void;
 }
 
 const UserSchema = new mongoose.Schema({
@@ -118,6 +119,10 @@ UserSchema.methods.pushEvent = function (eventName: string, payload: string) {
         createdAt: new Date(),
     });
 
+}
+
+UserSchema.methods.setUsername = function (username: string) {
+    this.username = username.replace(/\s/g,'').toLowerCase();
 }
 
 export default mongoose.model<UserSchema>("User", UserSchema);

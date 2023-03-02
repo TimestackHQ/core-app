@@ -126,7 +126,7 @@ export async function register (req: Request, res: Response, next: NextFunction)
                     message: "This username is taken"
                 });
             }
-            user.username = req.body.username;
+            req.user.setUsername(req.body.username);
         }
 
         if(
