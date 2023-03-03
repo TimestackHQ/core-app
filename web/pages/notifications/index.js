@@ -101,7 +101,7 @@ export default function NotificationsPage() {
 							}
 						>
 							{notifications?.map((notification, index) => {
-									return <div>
+									return <div key={index}>
 									<h5>{notification.title}</h5>
 									<p>{notification.body}</p>
 									<hr/>
