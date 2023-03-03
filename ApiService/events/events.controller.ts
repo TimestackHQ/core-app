@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {Models} from "../../shared";
+import {GCP, Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 import {getBuffer, standardEventPopulation} from "./events.tools";
@@ -384,7 +384,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             media: 1,
         }).populate({
             path: "media",
-            select: "-_id publicId",
+            select: "_id publicId snapshot thumbnail createdAt",
             options: {
                 sort: {
                     createdAt: -1
@@ -399,7 +399,15 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
         }
 
         res.json({
-            media: event.media.map((file: any) => file.publicId)
+            media: await Promise.all(event.media.map(async (media: any) => {
+                return {
+                    _id: media._id,
+                    publicId: media.publicId,
+                    snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
+                    thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+                    createdAt: media.createdAt
+                }
+            }))
         });
 
 

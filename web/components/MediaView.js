@@ -7,21 +7,14 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 
-export default function MediaView ({publicId}) {
+export default function MediaView ({media}) {
+
+	console.log(media)
 
 
-	const [uri, setUri] = useState("");
+	const uri = media.snapshot ? media.snapshot : media?.thumbnail;
 
-	useEffect(() => {
-		HTTPClient("/media/"+publicId+"?thumbnail=true").then(res => {
-			setUri(res.data)
-		}).catch(() => {
-			HTTPClient("/media/"+publicId+"?snapshot=true").then(res => setUri(res.data))
-				.catch(err => {
-
-				})
-		});
-	}, [publicId])
+	console.log(uri)
 
 	// if(!uri) return <ContentLoader
 	// 	width={"100%"}

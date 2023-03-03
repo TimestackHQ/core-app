@@ -48,10 +48,10 @@ export default function Gallery ({eventId}) {
 					<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
 				}
 			>
-				{gallery?.map((publicId, i) => {
+				{gallery?.map((media, i) => {
 					return (
 						<div key={i} className={"col-4"} style={{margin: 0, padding: 1}}>
-							<MediaView publicId={publicId}/>
+							<MediaView media={media}/>
 						</div>
 					);
 				})}
