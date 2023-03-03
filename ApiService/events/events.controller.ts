@@ -112,6 +112,49 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
 }
 
+export async function getAllInvites (req: Request, res: Response, next: NextFunction) {
+    try {
+        const events = await Models.Event.find({
+            invitees: {
+                $in: [req.user._id]
+            }
+        }).populate([{
+            path: "cover",
+            select: "publicId thumbnail snapshot"
+        }, {
+            path: "users",
+            select: "profilePictureSource"
+        }, {
+            path: "invitees",
+            select: "profilePictureSource"
+        }])
+            .sort({createdAt: -1})
+
+        res.json({
+            events: await Promise.all(events.map(async (event, i) => {
+
+                let buffer = undefined;
+                if(i < 4) {
+                    buffer = await getBuffer(event);
+                }
+
+                return {
+                    name: event.name,
+                    cover: event.cover?.publicId,
+                    peopleCount : event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
+                    users: undefined,
+                    invitees: undefined,
+                    nonUsersInvitees: undefined,
+                    people: event.people(req.user._id),
+                    buffer
+                }
+            }))
+        })
+    } catch (err) {
+        next(err);
+    }
+}
+
 export async function getEvent (req: Request, res: Response, next: NextFunction) {
 
     try {
