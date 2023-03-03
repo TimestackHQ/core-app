@@ -139,6 +139,8 @@ export async function getAllInvites (req: Request, res: Response, next: NextFunc
                 }
 
                 return {
+                    _id: event._id,
+                    publicId: event.publicId,
                     name: event.name,
                     cover: event.cover?.publicId,
                     peopleCount : event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
@@ -373,5 +375,44 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
     } catch (e) {
         next(e);
+    }
+}
+
+export const mediaList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const event = await Models.Event.findOne({
+            $or: [
+                {
+                    publicId: req.params.eventId
+                },
+                {
+                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                }
+            ]
+        }).select({
+            media: 1,
+        }).populate({
+            path: "media",
+            select: "-_id publicId",
+            options: {
+                sort: {
+                    createdAt: -1
+                },
+                limit: 12,
+                skip: req.query?.skip ? Number(req.query.skip) : 0
+            }
+        });
+
+        if (!event) {
+            return res.sendStatus(404);
+        }
+
+        res.json({
+            media: event.media.map((file: any) => file.publicId)
+        });
+
+
+    } catch (Err) {
+        next(Err);
     }
 }

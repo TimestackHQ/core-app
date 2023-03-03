@@ -15,6 +15,7 @@ export default function EventIOS ({}) {
 
 	const rawUploadQueue = useSelector(state => state.uploadQueue);
 	const [event, setEvent] = useState(null);
+	const [media, setMedia] = useState([]);
 	const [uploadQueue, setUploadQueue] = useState([]);
 
 
@@ -177,11 +178,9 @@ export default function EventIOS ({}) {
 
 
 							<br/>
-							<div className={"row"}>
-								{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
+							{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
 
-								<Gallery gallery={event?.media}/>
-							</div>
+							<Gallery eventId={event?._id}/>
 							<br/>
 							<br/>
 						</div> :

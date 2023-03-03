@@ -48,10 +48,10 @@ export default function MediaView ({publicId}) {
 	// 	</video>
 	// );
 	return (
-		<LazyLoadImage src={uri}
+		<img src={uri}
            style={{objectFit: "cover", margin: 0, padding: 0}}
            alt="Image Alt"
-           width={"100%"} height={"200px"}
+           width={"100%"} height={"180px"}
 		/>
 	);
 }
