@@ -74,17 +74,17 @@ export default function NotificationsPage() {
 
 				</div>
 				<div className={"row"} style={{padding: "5px", paddingTop: "5px", paddingRight: "0px"}}>
-					<div className={"col-6"} style={{
+					{invites.length !== 0 ? <div className={"col-6"} style={{
 						marginTop: "5px",
 						margin: 0
 
 					}}>
 						<h5 style={{paddingTop: "5px"}}>{invites.length} {invites.length === 1 ? "New event" : "New events"}</h5>
-					</div>
-					<div className={"col-6"} >
+					</div>: null}
+					{invites.length !== 0 ? <div className={"col-6"} >
 						<button className={"btn btn-dark btn-sm white-shadow"} style={{float: "right", fontWeight: "500", width: "100px", marginRight: "5px"}}>Join all</button>
-					</div>
-					<hr style={{marginLeft: "10px", marginRight: "10px", marginTop: "5px", width: "92%"}}/>
+					</div>: null}
+					{invites.length !== 0 ? <hr style={{marginLeft: "10px", marginRight: "10px", marginTop: "5px", width: "92%"}}/> : null}
 					<div className={"col-12"} style={{
 						paddingTop: "-50px",
 						marginRight: "-5px",
