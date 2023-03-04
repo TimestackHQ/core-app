@@ -123,7 +123,7 @@ export default function NotificationsPage() {
 												<b style={{fontSize: "12px", display: "flex", justifyContent: "flex-end"}}>{timeAgo.format(moment(notification.createdAt).toDate(), "mini")}</b>
 											</div>
 											<div className={"col-1"} style={{marginLeft: "-20px"}}>
-												<div style={{backgroundColor: "#E41E1E", width: "5px", height: "5px", borderRadius: "10px", marginLeft: "62px", marginTop: "20px"}}/>
+												<div style={{backgroundColor: notification?.acknowledgedAt ? "white" : "#E41E1E", width: "5px", height: "5px", borderRadius: "10px", marginLeft: "62px", marginTop: "20px"}}/>
 												<img src={notification.eventCover} style={{width: "40px", height: "55px", borderRadius: "4px", marginTop: "-35px", marginLeft: "15px"}}/>
 
 											</div>

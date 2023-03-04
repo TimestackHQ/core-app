@@ -54,3 +54,32 @@ export async function get (req: Request, res: Response, next: NextFunction) {
     }
 
 }
+
+export async function markAsRead (req: Request, res: Response, next: NextFunction) {
+    try {
+        const {notificationIds} = req.body;
+
+        const query: any = {
+            user: req.user._id,
+        };
+
+        if(notificationIds.length > 0) {
+            query["_id"] = {
+                $in: notificationIds
+            }
+        }
+
+        console.log(query)
+
+        await Models.Notification.updateMany(query, {
+            $set: {
+                acknowledgedAt: new Date()
+            }
+        });
+
+        res.sendStatus(200);
+
+    } catch (e) {
+        next(e);
+    }
+}
