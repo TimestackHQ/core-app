@@ -55,7 +55,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
                     data: {
                         type: "eventInvite",
                         payload: {
-                            eventId: event.publicId
+                            eventId: event._id
                         }
                     }
 
@@ -173,8 +173,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 ]}
             ],
         }).populate([
-            ...standardEventPopulation
-        ]).select("-media -events");
+            ...standardEventPopulation,
+        ]).select("-events");
 
         if (!event) {
             return res.status(404).json({
@@ -209,10 +209,9 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
         res.json({
             event: {
                 ...event.toJSON(),
-                // media: event.media.map(file => file?.publicId),
                 cover: event.cover?.publicId,
                 peopleCount : event.users.length + event.invitees.length + event.nonUsersInvitees.length,
-                // mediaCount: event.media.length,
+                mediaCount: event.media.length,
                 users: undefined,
                 invitees: undefined,
                 nonUsersInvitees: undefined,
@@ -298,7 +297,8 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                     data: {
                         type: "eventInvite",
                         payload: {
-                            eventId: event.publicId,
+                            eventId: event._id,
+                            userId: req.user._id,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
                         }
                     }

@@ -200,3 +200,10 @@ input::-webkit-inner-spin-button {
 }
 
 div#preload { display: none; }
+
+.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+}

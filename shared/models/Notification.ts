@@ -5,6 +5,7 @@ import {MediaSchema} from "./Media";
 import {UserSchema} from "./User";
 import {isObjectIdOrHexString} from "mongoose";
 import {PushToken} from "./index";
+import {EventSchema} from "./Event";
 
 export interface NotificationSchema extends mongoose.Document {
     user?: mongoose.Schema.Types.ObjectId | UserSchema;
@@ -12,7 +13,10 @@ export interface NotificationSchema extends mongoose.Document {
     body: string;
     data: {
         type: string;
-        payload: any;
+        payload: {
+            eventId?: mongoose.Schema.Types.ObjectId & EventSchema;
+            userId?: mongoose.Schema.Types.ObjectId & UserSchema;
+        };
     };
     acknowledgedAt?: Date;
     createdAt: Date;
@@ -40,8 +44,16 @@ const NotificationSchema = new mongoose.Schema({
             required: true,
         },
         payload: {
-            type: mongoose.Schema.Types.Mixed,
-            required: false,
+            eventId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Event",
+                required: false,
+            },
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                required: false,
+            }
         }
     },
 

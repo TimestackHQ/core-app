@@ -23,6 +23,7 @@
     "bootstrap": "^5.2.2",
     "chrono-node": "^2.5.0",
     "inline-style-prefixer": "^7.0.0",
+    "javascript-time-ago": "^2.5.9",
     "joi": "^17.7.0",
     "joi-phone-number": "^5.1.1",
     "jwt-decode": "^3.1.2",
