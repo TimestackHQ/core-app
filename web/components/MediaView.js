@@ -41,9 +41,10 @@ export default function MediaView ({media}) {
 	// 	</video>
 	// );
 	return (
-		<img src={uri}
+		<LazyLoadImage src={uri}
            style={{objectFit: "cover", margin: 0, padding: 0}}
            alt="Image Alt"
+           threshold={1000}
            width={"100%"} height={"180px"}
 		/>
 	);

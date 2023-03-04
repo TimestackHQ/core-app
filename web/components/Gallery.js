@@ -27,7 +27,7 @@ export default function Gallery ({eventId}) {
 				dataLength={gallery.length} //This is important field to render the next data
 				next={getGallery}
 				hasMore={moreToLoad}
-				loader={<h4>Loading...</h4>}
+				loader={<h4></h4>}
 				endMessage={
 					<p style={{ textAlign: 'center' }}>
 						<b></b>
