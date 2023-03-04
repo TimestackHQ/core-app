@@ -36,7 +36,7 @@ export default function App() {
 
                 for await (const media of _.uniq(result.assets)) {
 
-                    ExpoJobQueue.addJob("mediaQueue", {
+                    ExpoJobQueue.addJob("mediaQueueV2", {
                         ...media,
                         eventId
                     })

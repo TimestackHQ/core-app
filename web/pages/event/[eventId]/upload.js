@@ -206,12 +206,12 @@ export default function EventIOS ({}) {
 
 											<img onClick={upload} style={{objectFit: "cover", margin: 0, padding: 0}} alt={"Cassis 2022"} height={"200px"} width={"100%"} src={"/images/add-media.png"}/>
 										</div>
-										{uploadedMedia?.map((mediaId, index) => {
-											return <div key={index} className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>
-												<MediaView publicId={mediaId} />
+										{/*{uploadedMedia?.map((mediaId, index) => {*/}
+										{/*	return <div key={index} className={"col-4"} style={{margin: 0, paddingLeft: 1, paddingRight: 1, height: "200px", padding: 0}}>*/}
+										{/*		<MediaView publicId={mediaId} />*/}
 
-											</div>
-										})}
+										{/*	</div>*/}
+										{/*})}*/}
 										{/*<iframe width={"100px"} src={"file:///Users/achrafghellach/Library/Developer/CoreSimulator/Devices/AD021B08-2726-4690-8BF8-4C40A2D254F9/data/Containers/Data/Application/B7B34F23-D762-46D6-A861-7609F4AFAF14/Library/Caches/tmp/3836dad8-62ac-4db9-8b4e-7a9238a28895.jpg"}/>*/}
 										{/*{uploadQueue.map((media, index) => {*/}
 										{/*	return media.uri*/}
