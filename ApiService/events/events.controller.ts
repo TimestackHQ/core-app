@@ -389,7 +389,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 sort: {
                     createdAt: -1
                 },
-                limit: 12,
+                limit: 50,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
         });
@@ -399,7 +399,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
         }
 
         res.json({
-            media: await Promise.all(event.media.map(async (media: any) => {
+            media: (await Promise.all(event.media.map(async (media: any) => {
                 return {
                     _id: media._id,
                     publicId: media.publicId,
@@ -407,7 +407,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                     createdAt: media.createdAt
                 }
-            }))
+            }))).sort((a: any, b: any) => b.createdAt - a.createdAt)
         });
 
 
