@@ -65,12 +65,6 @@ export default function NotificationsPage() {
 						return <EventPad event={event} key={index}/>
 
 					})}
-					{invites?.map((event, index) => {
-						return <EventPad event={event} key={index}/>
-
-					})}{invites?.map((event, index) => {
-					return <EventPad event={event} key={index}/>
-
 				})}
 
 				</div>
@@ -123,7 +117,7 @@ export default function NotificationsPage() {
 												<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
 											</div>
 											<div className={"col-8"} style={{marginLeft: "-10px", marginTop: "5px"}}>
-												<h6 style={{fontSize: "14px"}}>Flavia Voiculescu added 17 new photos to Night at the cottage...</h6>
+												<h6 style={{fontSize: "14px", width: "90%"}}>{notification.title}: {notification.body}</h6>
 											</div>
 											<div className={"col-1"} style={{marginLeft: "-35px", height: "100%", color: "gray", marginTop: "12px", display: "flex", justifyContent: "flex-end"}}>
 												<b style={{fontSize: "12px", display: "flex", justifyContent: "flex-end"}}>{timeAgo.format(moment(notification.createdAt).toDate(), "mini")}</b>
