@@ -27,6 +27,11 @@ export default function NotificationsPage() {
 	const getNotifications = () => HTTPClient(`/notifications?skip=${notifications?.length}`, "GET").then((res) => {
 		setNotifications([...notifications, ...res.data]);
 		setLoaded(true);
+		if (res.data.length !== 0) {
+			HTTPClient("/notifications/read", "POST", {
+				notificationIds: []
+			}).then((res) => {})
+		}
 	});
 
 	React.useEffect(() => {

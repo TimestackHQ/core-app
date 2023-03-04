@@ -104,8 +104,12 @@ export default function IOS ({
 									{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
 									<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
 								</Link>
+
 								<Link className="col-2 text-center" href={"/notifications"}>
-									<img style={{marginLeft: "5px", marginTop: "5px"}} src={"/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
+
+									<img style={{marginLeft: "5px", marginTop: "5px"}}
+									     src={Router.pathname.includes("/notifications") ? "/icons/notifications_FILL1_wght300_GRAD0_opsz48.svg" : "/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"}
+									     width={"30px"}/>
 								</Link>
 								<Link className="col-3 left" href={"/profile"}>
 									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px", objectFit: "cover"}} src={user.profilePictureSource ? user.profilePictureSource :"/icons/contact.svg"} width={"30px"} height={"30px"}/>
