@@ -23,7 +23,8 @@ export default function Gallery ({eventId}) {
 	return (
 		<React.Fragment>
 			<InfiniteScroll
-				className={"row"}
+				id="preload"
+				className={"row "}
 				dataLength={gallery.length} //This is important field to render the next data
 				next={getGallery}
 				hasMore={moreToLoad}

@@ -192,3 +192,5 @@ input::-webkit-inner-spin-button {
     outline: none;
     box-shadow: none;
 }
+
+div#preload { display: none; }

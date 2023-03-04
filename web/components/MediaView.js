@@ -42,7 +42,7 @@ export default function MediaView ({media}) {
 	// );
 	return (
 		<LazyLoadImage src={uri}
-           style={{objectFit: "cover", margin: 0, padding: 0}}
+           style={{objectFit: "cover", margin: 0, padding: 0, backgroundColor: "#efefef"}}
            alt="Image Alt"
            threshold={1000}
            width={"100%"} height={"180px"}
