@@ -183,6 +183,7 @@ export default function EventIOS ({}) {
 							<Gallery eventId={event?._id}/>
 							<br/>
 							<br/>
+							<br/>
 						</div> :
 
 

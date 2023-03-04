@@ -6,7 +6,7 @@ import Router from "next/router";
 export default function EventInviteNotification ({notification, timeAgo}) {
 	const payload = notification.data.payload;
 	return (
-		<div onClick={() => window.location.href = payload.url} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px"}}>
+		<div onClick={() => window.location.href = payload.url} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
 			<div className={"col-2"}>
 				<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
 			</div>

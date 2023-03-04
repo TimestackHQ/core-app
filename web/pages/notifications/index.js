@@ -126,6 +126,7 @@ export default function NotificationsPage() {
 							releaseToRefreshContent={
 								<h3 style={{ textAlign: 'center' }}></h3>
 							}
+							style={{overflowX: "hidden", overflow: "scroll", height: "100%", width: "100%", "::-webkit-scrollbar": { width: "0px", height: "0px" }}}
 						>
 							{notifications?.map((notification, index) =>    {
 								const type = notification.data.type;
@@ -136,12 +137,14 @@ export default function NotificationsPage() {
 									timeAgo={ago}
 								/>;
 								return <EventInviteNotification
+									style={{overflowX: "hidden"}}
 									key={index}
 									notification={notification}
 									timeAgo={ago}
 								/>
 							})}
 						</InfiniteScroll>
+						<br/><br/><br/><br/>
 					</div>
 
 				</div>
