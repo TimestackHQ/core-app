@@ -9,7 +9,7 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 
 export default function uploadWorker () {
 	try {
-		ExpoJobQueue.addWorker("mediaQueue", async (media) => {
+		ExpoJobQueue.addWorker("mediaQueueV2", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -52,7 +52,7 @@ export default function uploadWorker () {
 
 			})
 		}, {
-			concurrency: 5,
+			concurrency: 1,
 		})
 	} catch(err) {
 		console.log(err);
