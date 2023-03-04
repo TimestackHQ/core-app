@@ -50,7 +50,9 @@ export default function Gallery ({eventId}) {
 				}
 				style={{
 					overflowY: "scroll",
-					"-webkit-overflow-scrolling": "touch"
+					"-webkit-overflow-scrolling": "touch",
+					"-webkit-transform": "translateZ(0px)"
+
 				}}
 			>
 				{gallery?.map((media, i) => {
