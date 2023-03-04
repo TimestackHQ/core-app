@@ -48,6 +48,10 @@ export default function Gallery ({eventId}) {
 				releaseToRefreshContent={
 					<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
 				}
+				style={{
+					overflowY: "scroll",
+					"-webkit-overflow-scrolling": "touch"
+				}}
 			>
 				{gallery?.map((media, i) => {
 					return (
