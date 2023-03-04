@@ -12,6 +12,9 @@ import TimeAgo from 'javascript-time-ago'
 // English.
 import en from 'javascript-time-ago/locale/en'
 import moment from "moment/moment";
+import EventInviteNotification from "../../components/notifications/EventInviteNotification";
+import NewLoginNotification from "../../components/notifications/NewLoginNotification";
+import {useDispatch} from "react-redux";
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US')
@@ -19,6 +22,7 @@ const timeAgo = new TimeAgo('en-US')
 
 export default function NotificationsPage() {
 
+	const dispatch = useDispatch();
 	const [invites, setInvites] = React.useState([]);
 	const [notifications, setNotifications] = React.useState([]);
 	const [loaded, setLoaded] = React.useState(false);
@@ -30,7 +34,15 @@ export default function NotificationsPage() {
 		if (res.data.length !== 0) {
 			HTTPClient("/notifications/read", "POST", {
 				notificationIds: []
-			}).then((res) => {})
+			}).then((res) => {
+				HTTPClient("/notifications/count", "GET")
+					.then(res => {
+						dispatch({
+							type: "SET_NOTIFICATION_COUNT",
+							payload: res.data.count
+						});
+					})
+			})
 		}
 	});
 
@@ -59,7 +71,7 @@ export default function NotificationsPage() {
 				<div className="row flex-nowrap " style={{
 					// position: "absolute",
 					// top: "40px",
-					marginTop: "-40px",
+					marginTop: "-30px",
 					padding: "5px",
 					paddingRight: "0px",
 					borderRightColor: "black",
@@ -115,26 +127,19 @@ export default function NotificationsPage() {
 								<h3 style={{ textAlign: 'center' }}></h3>
 							}
 						>
-							{notifications?.map((notification, index) => {
-									return (
-										<div className={"row"} key={index} style={{paddingBottom: "3px", paddingTop: "10px"}}>
-											<div className={"col-2"}>
-												<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
-											</div>
-											<div className={"col-8"} style={{marginLeft: "-10px", marginTop: "5px"}}>
-												<h6 style={{fontSize: "14px", width: "90%"}}>{notification.title}: {notification.body}</h6>
-											</div>
-											<div className={"col-1"} style={{marginLeft: "-35px", height: "100%", color: "gray", marginTop: "12px", display: "flex", justifyContent: "flex-end"}}>
-												<b style={{fontSize: "12px", display: "flex", justifyContent: "flex-end"}}>{timeAgo.format(moment(notification.createdAt).toDate(), "mini")}</b>
-											</div>
-											<div className={"col-1"} style={{marginLeft: "-20px"}}>
-												<div style={{backgroundColor: notification?.acknowledgedAt ? "white" : "#E41E1E", width: "5px", height: "5px", borderRadius: "10px", marginLeft: "62px", marginTop: "20px"}}/>
-												<img src={notification.eventCover} style={{width: "40px", height: "55px", borderRadius: "4px", marginTop: "-35px", marginLeft: "15px"}}/>
-
-											</div>
-
-										</div>
-									);
+							{notifications?.map((notification, index) =>    {
+								const type = notification.data.type;
+								const ago = timeAgo.format(moment(notification.createdAt).toDate(), "mini")
+								if(type === "login") return <NewLoginNotification
+									key={index}
+									notification={notification}
+									timeAgo={ago}
+								/>;
+								return <EventInviteNotification
+									key={index}
+									notification={notification}
+									timeAgo={ago}
+								/>
 							})}
 						</InfiniteScroll>
 					</div>

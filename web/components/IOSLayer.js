@@ -1,5 +1,6 @@
 import {useDispatch} from "react-redux";
 import {useEffect} from "react";
+import HTTPClient from "../utils/httpClient";
 
 let mediaWatcher = null;
 
@@ -18,21 +19,40 @@ export default function IOSLayer ({children}) {
 		}, 1000);
 	}, []);
 
+	const notificationsCountUpdate = () => HTTPClient("/notifications/count", "GET")
+		.then(res => {
+			dispatch({
+				type: "SET_NOTIFICATION_COUNT",
+				payload: res.data.count
+			});
+		})
+
 	useEffect(() => {
-		window.addEventListener("message", async messageRaw => {
+		notificationsCountUpdate();
+		window?.addEventListener("message", messageRaw => {
 			try {
-				const message = JSON.parse(messageRaw.data);
-				if (message.response === "uploadQueue") {
+				const message = messageRaw?.data ? JSON.parse(messageRaw?.data) : null;
+				if(message.response === "notificationsCount") {
+					try {
+						notificationsCountUpdate();
+					}catch(err){
+
+					}
+				}
+				else if (message.response === "uploadQueue") {
 					dispatch({
 						type: "SET_UPLOAD_QUEUE",
 						payload: message.data
 					})
 				}
-			} catch (e) {
+
+			} catch (err) {
+				console.log(err);
 			}
 
 		});
 	}, []);
+
 
 	return children;
 }

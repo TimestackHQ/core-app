@@ -52,15 +52,6 @@ async function registerForPushNotificationsAsync() {
     return token;
 }
 
-function ViewType ({children, type, webviewRef}) {
-
-
-    if(type === "safe") {
-        return <SafeAreaView  style={{flex: 1, flexDirection: 'row'}}>{children}</SafeAreaView>
-    }
-    return <View  style={{flex: 1, flexDirection: 'row'}}>{children}</View>
-}
-
 
 export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
@@ -86,10 +77,22 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
         });
 
         const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+
+            console.log("received notification response");
+
+            // processed notification link
             const notification = response.notification.request.content;
             const url = notification?.data.payload?.url;
             if(url) setUri(url);
+
+            //updates webview child
+            webviewRef.current.postMessage(JSON.stringify({
+                response: "notificationsCount",
+            }));
         });
+
+        return () => subscription.remove();
+
     }, []);
 
     useEffect(() => {
@@ -129,7 +132,7 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
 
     return (
-        <ViewType webviewRef={webviewRef} type={viewtype}>
+        <View style={{flex: 1, flexDirection: 'row'}}>
             <WebView
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"
@@ -212,6 +215,6 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                 }}
                 ref={webviewRef}
             />
-        </ViewType>
+        </View>
     );
 }

@@ -16,6 +16,8 @@ export interface NotificationSchema extends mongoose.Document {
         payload: {
             eventId?: mongoose.Schema.Types.ObjectId & EventSchema;
             userId?: mongoose.Schema.Types.ObjectId & UserSchema;
+            eventName?: string;
+            userName?: string;
         };
     };
     acknowledgedAt?: Date;
@@ -44,6 +46,10 @@ const NotificationSchema = new mongoose.Schema({
             required: true,
         },
         payload: {
+            url: {
+                type: String,
+                required: false,
+            },
             eventId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Event",
@@ -52,6 +58,14 @@ const NotificationSchema = new mongoose.Schema({
             userId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
+                required: false,
+            },
+            eventName: {
+                type: String,
+                required: false,
+            },
+            userName: {
+                type: String,
                 required: false,
             }
         }

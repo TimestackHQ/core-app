@@ -22,11 +22,12 @@ export default function IOS ({
 	const router = useRouter();
 
 	const user = useSelector(state => state.user);
+	const notificationCount = useSelector(state => state.notificationCount);
 
 	return (
 		<div style={{backgroundColor: "white"}}>
 			{main ? <FadeIn >
-					<header style={{backgroundColor: "white", paddingBottom: "8px"}} className="d-flex flex-wrap mb-4 row fixed-top ">
+					<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: "50px"}} className="d-flex flex-wrap mb-4 row fixed-top ">
 
 						<div className={"col-2"}>
 							<img style={{marginLeft: "20px"}} src="/icons/logo blacktimestack.svg" alt="logo" width="25px"/>
@@ -46,7 +47,7 @@ export default function IOS ({
 					<br/>
 				</FadeIn>
 				: <FadeIn >
-					<header style={{backgroundColor: "white", paddingBottom: "8px"}} className="d-flex flex-wrap mb-4 row fixed-top ">
+					<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: "50px"}} className="d-flex flex-wrap mb-4 row fixed-top ">
 						<div className={"col-6"}>
 							{buttons?.filter(button => button.position === "left").map((button, index) => {
 								return <div onClick={() => button.href === "back" ? Router.back() : router.push(button.href)} style={{whiteSpace: "nowrap"}} key={index} href={button.href}>
@@ -81,11 +82,11 @@ export default function IOS ({
 				</FadeIn>
 			}
 
-
+				<div style={{height: "40px"}}/>
 				{children}
 
 
-				{!hideNavbar ? <div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", marginBottom: "0px"}}>
+				{!hideNavbar ? <div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", paddingBottom: "40px"}}>
 					<div className="container">
 						{/*<FadeIn>*/}
 							<div className="row">
@@ -107,9 +108,25 @@ export default function IOS ({
 
 								<Link className="col-2 text-center" href={"/notifications"}>
 
-									<img style={{marginLeft: "5px", marginTop: "5px"}}
-									     src={Router.pathname.includes("/notifications") ? "/icons/notifications_FILL1_wght300_GRAD0_opsz48.svg" : "/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"}
-									     width={"30px"}/>
+									<div type="button" className="position-relative">
+										<img style={{marginLeft: "5px", marginTop: "5px"}}
+										     src={Router.pathname.includes("/notifications") ? "/icons/notifications_FILL1_wght300_GRAD0_opsz48.svg" : "/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"}
+										     width={"30px"}/>
+										{notificationCount !== 0 ? <span
+											style={{
+												margin: "10px",
+												paddingLeft: notificationCount < 10 ? "6px" : "3px",
+												marginBottom: "90px",
+												fontSize: "11px",
+												backgroundColor: "#E41E1E",
+												textAlign: "center",
+												width: "18px", height: "18px", borderRadius: "100%"}}
+											className="position-absolute top-0 start-50 translate-middle badge">
+										    {notificationCount < 10 ? notificationCount : "9+"}
+										    <span className="visually-hidden">unread notifications</span>
+										  </span> : null}
+									</div>
+
 								</Link>
 								<Link className="col-3 left" href={"/profile"}>
 									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px", objectFit: "cover"}} src={user.profilePictureSource ? user.profilePictureSource :"/icons/contact.svg"} width={"30px"} height={"30px"}/>

@@ -9,6 +9,9 @@ const rootReducer = (oldState = {}, action) => {
 	else if (type === "SET_UPLOAD_QUEUE") {
 		state = {...state, uploadQueue: action.payload};
 	}
+	else if (type === "SET_NOTIFICATION_COUNT") {
+		state = {...state, notificationCount: action.payload};
+	}
 
 	return {...state};
 };

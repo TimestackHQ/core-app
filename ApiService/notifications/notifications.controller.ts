@@ -43,16 +43,28 @@ export async function get (req: Request, res: Response, next: NextFunction) {
                         notification?.data?.payload?.eventId?.cover?.thumbnail ?
                             await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
                             null,
-
-
-                // data: await GCP.get(notification.data)
             }
-        }))));
+        }))).sort((a, b) => {
+            return b.createdAt - a.createdAt;
+        }));
 
     } catch (e) {
         next(e);
     }
 
+}
+
+export async function count (req: Request, res: Response, next: NextFunction) {
+    try {
+        const count = await Models.Notification.countDocuments({
+            user: req.user._id,
+            acknowledgedAt: null
+        });
+
+        res.status(200).json({count});
+    } catch (e) {
+        next(e);
+    }
 }
 
 export async function markAsRead (req: Request, res: Response, next: NextFunction) {

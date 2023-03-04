@@ -9,12 +9,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function MediaView ({media}) {
 
-	console.log(media)
-
-
 	const uri = media.snapshot ? media.snapshot : media?.thumbnail;
-
-	console.log(uri)
 
 	// if(!uri) return <ContentLoader
 	// 	width={"100%"}

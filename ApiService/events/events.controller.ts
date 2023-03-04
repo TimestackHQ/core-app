@@ -55,7 +55,10 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
                     data: {
                         type: "eventInvite",
                         payload: {
-                            eventId: event._id
+                            eventId: event._id,
+                            userName: req.user.firstName,
+                            eventName: event.name,
+                            url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
                         }
                     }
 
@@ -298,7 +301,8 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                         type: "eventInvite",
                         payload: {
                             eventId: event._id,
-                            userId: req.user._id,
+                            userName: req.user.firstName,
+                            eventName: event.name,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
                         }
                     }
@@ -354,6 +358,7 @@ export const joinEvent = async (req: any, res: any, next: any) => {
                         payload: {
                             eventId: event.publicId,
                             userId: req.user._id,
+                            userName: req.user.firstName,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId
                         }
                     }

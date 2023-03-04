@@ -137,5 +137,5 @@ export default function EventIOS ({}) {
 			</div>
 		// </div>
 
-	) : null;
+	) : <div style={{backgroundColor: "black"}}/>;
 }
