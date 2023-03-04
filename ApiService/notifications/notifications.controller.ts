@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {GCP, Models} from "../../shared";
+import {NotificationSchema} from "../../shared/models/Notification";
 import * as jwt from "jsonwebtoken";
 import {v4} from "uuid";
 
@@ -44,7 +45,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
                             await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
                             null,
             }
-        }))).sort((a, b) => {
+        }))).sort((a: any, b: any) => {
             return b.createdAt - a.createdAt;
         }));
 
