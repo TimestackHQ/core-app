@@ -60,12 +60,12 @@ export default function NotificationsPage() {
 					borderRightColor: "black",
 					borderWidth: "10px",
 					overflowX: "scroll",
+					"::-webkit-scrollbar": { width: "0px", height: "0px" }
 				}}>
 					{invites?.map((event, index) => {
 						return <EventPad event={event} key={index}/>
 
 					})}
-				})}
 
 				</div>
 				<div className={"row"} style={{padding: "5px", paddingTop: "5px", paddingRight: "0px"}}>
@@ -104,10 +104,10 @@ export default function NotificationsPage() {
 							pullDownToRefresh
 							pullDownToRefreshThreshold={10}
 							pullDownToRefreshContent={
-								<h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+								<h3 style={{ textAlign: 'center' }}></h3>
 							}
 							releaseToRefreshContent={
-								<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+								<h3 style={{ textAlign: 'center' }}></h3>
 							}
 						>
 							{notifications?.map((notification, index) => {
