@@ -3,6 +3,7 @@ import HTTPClient from "../utils/httpClient";
 import React, {useEffect} from "react";
 import Image from "next/image";
 import {CleanUpPhoneNumber} from "../utils/phoneNumber";
+import ProfilePicture from "./ProfilePicture";
 
 export default function AddPeopleScreen ({currentInvitees, sharelink, callback}) {
 
@@ -168,10 +169,11 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 												}
 											}}>
 												<div className={"col-3"}>
-													<img
-														width="80%"
+													<ProfilePicture
+														width="40px"
+														height="40px"
 														style={{borderRadius: "60px", marginRight: "5px"}}
-														src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}
+														location={invitee?.profilePictureSource}
 													/>
 												</div>
 												<div className={"col-7"} style={{paddingLeft: "0px"}}>
@@ -206,10 +208,11 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 												}
 											}}>
 												<div className={"col-3"}>
-													<img
-														width="80%"
+													<ProfilePicture
+														width="45px"
+														height="45px"
 														style={{borderRadius: "60px", marginRight: "5px"}}
-														src={user?.profilePictureSource ? user?.profilePictureSource : "/icons/contact.svg"}
+														location={user?.profilePictureSource}
 													/>
 												</div>
 												<div className={"col-8"} style={{paddingLeft: "0px"}}>
