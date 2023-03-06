@@ -255,7 +255,10 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 													<p style={{color: "gray", marginBottom: "0px"}}>{contact?.phoneNumbers?.[0]?.number}</p>
 												</div>
 												<div className={"col-4 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
-													<button style={{width: "90%"}} className={"btn btn-sm btn-outline-dark"}>
+													<button onClick={() => window.ReactNativeWebView?.postMessage(JSON.stringify({
+														request: "shareLink",
+														link: sharelink
+													}))} style={{width: "90%"}} className={"btn btn-sm btn-outline-dark"}>
 														Invite
 													</button>
 												</div>
