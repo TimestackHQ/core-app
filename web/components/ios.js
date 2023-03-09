@@ -4,7 +4,7 @@ import FadeIn from "react-fade-in";
 import Router, {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import ProfilePicture from "./ProfilePicture";
-import NativeBridge, {shareLink, shareRawLink} from "../utils/nativeBridge";
+import NativeBridge, {shareLink, shareRawLink, modalView} from "../utils/nativeBridge";
 
 export const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
@@ -101,10 +101,10 @@ export default function IOS ({
 								<div className="col-2">
 									<img style={{marginTop: "5px"}} src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
 								</div>
-								<Link className="col-2 text-center" href={timestackButtonLink ? timestackButtonLink : "/new"}>
+								<div className="col-2 text-center" onClick={() => modalView("upload", timestackButtonLink)}>
 									{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
 									<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
-								</Link>
+								</div>
 
 								<Link className="col-2 text-center" href={"/notifications"}>
 

@@ -1,16 +1,16 @@
 import axios from "axios";
-
-export const restOrigin = "http://localhost:4000/v1";
-
-export default function HTTPClient (path, method, data, headers) {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+export default async function HTTPClient (path, method, data, headers) {
+	console.log(Constants.expoConfig.extra.apiUrl+path)
 	return axios({
 		method: method,
-		url: restOrigin+path,
+		url: Constants.expoConfig.extra.apiUrl+"/v1"+path,
 		data: data,
 		headers: {
 			"Content-Type": "application/json",
 			"Accept": "application/json",
-			"Authorization": "Bearer " + window.localStorage.getItem("TIMESTACK_TOKEN") || "",
+			"Authorization": "Bearer " + await AsyncStorage.getItem('@session') || "",
 			...headers
 		}
 	})

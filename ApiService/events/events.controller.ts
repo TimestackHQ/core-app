@@ -389,12 +389,15 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             media: 1,
         }).populate({
             path: "media",
-            select: "_id publicId snapshot thumbnail createdAt",
+            select: "_id publicId snapshot thumbnail createdAt user",
+            match: {
+                user: req.query.me ? req.user._id : undefined
+            },
             options: {
                 sort: {
                     createdAt: -1
                 },
-                limit: 50,
+                limit: req.params?.limit ? Number(req.params.limit) : 25,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
         });
@@ -410,7 +413,8 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     publicId: media.publicId,
                     snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
                     thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
-                    createdAt: media.createdAt
+                    createdAt: media.createdAt,
+                    user: media.user
                 }
             }))).sort((a: any, b: any) => b.createdAt - a.createdAt)
         });
@@ -418,5 +422,22 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
 
     } catch (Err) {
         next(Err);
+    }
+}
+
+export async function byMe (req: Request, res: Response, next: NextFunction) {
+    try {
+
+        const media = await Models.Media.find({
+            user: req.user._id,
+            event: req.params.eventId
+        })
+            .countDocuments();
+
+        return res.json(media);
+
+    } catch(err) {
+        console.log(err);
+        next(err);
     }
 }

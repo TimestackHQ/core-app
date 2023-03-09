@@ -27,6 +27,7 @@ export default function EventIOS ({}) {
 
 	useEffect(() => {
 
+		const fetchEvent = () => {
 			HTTPClient("/events/"+eventId, "GET")
 				.then((response) => {
 					if(response.data.message === "joinRequired") {
@@ -47,12 +48,31 @@ export default function EventIOS ({}) {
 				.catch((error) => {
 					// window.location.href = "/main_ios";
 				});
+		}
+
+		fetchEvent();
+
+		window?.addEventListener("message", messageRaw => {
+			try {
+				const message = messageRaw?.data ? JSON.parse(messageRaw?.data) : null;
+				if(message.response === "modalDismissed") {
+					try {
+						fetchEvent();
+					}catch(err){
+
+					}
+				}
+			} catch (err) {
+				console.log(err);
+			}
+
+		});
 
 
 	}, []);
 
 	useEffect(() => {
-		setUploadQueue(rawUploadQueue.filter(upload => upload.eventId.toString() === event?._id.toString()));
+		// setUploadQueue(rawUploadQueue.filter(upload => upload?.eventId.toString() === event?._id.toString()));
 	}, [event, rawUploadQueue])
 
 	const updatingPeopleCallback = async (people) => {
@@ -92,7 +112,7 @@ export default function EventIOS ({}) {
 				position: "right",
 				share: true
 			}
-		]} timestackButtonLink={"./"+event?._id+"/upload"}>
+		]} timestackButtonLink={{eventId: event?._id, event:event}}>
 			{updatingPeople
 				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
 					<AddPeopleScreen

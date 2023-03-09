@@ -17,3 +17,9 @@ export const openLink = link => window.ReactNativeWebView?.postMessage(JSON.stri
 	request: "openLink",
 	link
 }));
+
+export const modalView = (type, payload) => window.ReactNativeWebView?.postMessage(JSON.stringify({
+	request: "modalView",
+	type,
+	payload
+}));

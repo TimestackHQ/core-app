@@ -16,6 +16,21 @@ export default function Gallery ({eventId}) {
 
 	React.useEffect(() => {
 		getGallery().then(_r => {});
+		window?.addEventListener("message", messageRaw => {
+			try {
+				const message = messageRaw?.data ? JSON.parse(messageRaw?.data) : null;
+				if(message.response === "modalDismissed") {
+					try {
+						getGallery();
+					}catch(err){
+
+					}
+				}
+			} catch (err) {
+				console.log(err);
+			}
+
+		});
 	}, []);
 
 

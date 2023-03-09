@@ -3,7 +3,7 @@ import { WebView } from 'react-native-webview';
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from 'expo-linking';
-import {SafeAreaView, Share, View} from "react-native";
+import {SafeAreaView, Share, TouchableOpacity, View, Text, StatusBar} from "react-native";
 import * as Contacts from "expo-contacts";
 import ExpoJobQueue from "expo-job-queue";
 import {useEffect, useRef, useState} from "react";
@@ -12,6 +12,9 @@ import * as Notifications from 'expo-notifications';
 import HTTPClient from "./httpClient";
 import axios from "axios";
 import Constants from "expo-constants";
+import { ModalView } from 'react-native-ios-modal';
+import Upload from "./screens/Upload";
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -53,7 +56,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 
-export default function Main({pickImage, frontendUrl, queueUpdated}) {
+export default function Main({frontendUrl, queueUpdated}) {
 
     const url = Linking.useURL();
 
@@ -65,8 +68,14 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
 
     const webviewRef = React.createRef();
+    const modalRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
+    const [barStyle, setBarStyle] = React.useState("light-content");
+    const [modalData, setModalData] = React.useState({
+        type: null,
+        payload: null
+    });
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
@@ -133,6 +142,16 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
     return (
         <View style={{flex: 1, flexDirection: 'row'}}>
+
+            <ModalView onModalWillDismiss={() => {
+                webviewRef.current.postMessage(JSON.stringify({
+                    response: "modalDismissed",
+                }))}
+            } ref={modalRef}>
+
+                {modalData.type === "upload" ? <Upload payload={modalData.payload}/> : null}
+
+            </ModalView>
             <WebView
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"
@@ -154,6 +173,17 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
 
                     const message = JSON.parse(event.nativeEvent.data);
 
+                    if(message.request === "modalView") {
+
+                        setModalData({
+                            type: message.type,
+                            payload: message.payload
+                        });
+
+                        modalRef.current.setVisibility(true);
+
+                    }
+
                     if(message.request === "allContacts"){
                         console.log("Providing all contacts")
                         const { status } = await Contacts.requestPermissionsAsync();
@@ -167,10 +197,6 @@ export default function Main({pickImage, frontendUrl, queueUpdated}) {
                             }));
 
                         }
-                    }
-
-                    if(message.request === "uploadMedia") {
-                        await pickImage(message.eventId, webviewRef);
                     }
 
                     if(message.request === "session") {
