@@ -300,6 +300,8 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
 }
 
+
+
 export async function getUploadedMedia (req: Request, res: Response, next: NextFunction) {
     try {
 
@@ -337,6 +339,23 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
 
     } catch(err) {
         console.log(err);
+        next(err);
+    }
+}
+
+export async function deleteMemories (req: Request, res: Response, next: NextFunction) {
+    try {
+
+        // const event = await Models.Event.findOne({
+        //     _id: req.params.eventId,
+        //     users: {
+        //         $in: [req.user._id]
+        //     }
+        // }).select();
+
+
+
+    } catch(err) {
         next(err);
     }
 }

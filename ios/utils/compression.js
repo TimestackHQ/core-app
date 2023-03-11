@@ -20,6 +20,7 @@ const getResultPath = async () => {
 
 export async function processVideo (mediaId, mediaUri, fps, compression, height, duration) {
 
+
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
@@ -32,7 +33,19 @@ export async function processVideo (mediaId, mediaUri, fps, compression, height,
 		`${path}${mediaId}.mp4 ` +
 		`-y`;
 
-	await FFmpegKit.execute(command);
+	try {
+		await new Promise((resolve) => {
+			FFmpegKit.execute(command)
+				.then((result) => {
+					resolve(result);
+				})
+				.catch((err) => {
+					throw err;
+				});
+		});
+	} catch (err) {
+		console.log(err);
+	}
 	return `${path}${mediaId}.mp4`;
 
 }
@@ -42,10 +55,22 @@ export async function generateScreenshot (mediaId, mediaUri) {
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
-		`-ss 00:00:00 -vf "thumbnail,scale=-1:800" -vframes 1 ${path}${mediaId}.jpg ` +
+		`-ss 00:00:00 -vf "thumbnail,scale=-1:500" -vframes 1 ${path}${mediaId}.jpg ` +
 		`-y`;
 
-	await FFmpegKit.execute(command);
+	try {
+		await new Promise((resolve) => {
+			FFmpegKit.execute(command)
+				.then((result) => {
+					resolve(result);
+				})
+				.catch((err) => {
+					throw err;
+				});
+		});
+	} catch (err) {
+		console.log(err);
+	}
 	return `${path}${mediaId}.jpg`;
 
 }
@@ -62,7 +87,19 @@ export async function processPhoto (mediaId, mediaUri, compression) {
 		`${path}${mediaId}.jpg ` +
 		`-y`;
 
-	await FFmpegKit.execute(command);
+	try {
+		await new Promise((resolve) => {
+			FFmpegKit.execute(command)
+				.then((result) => {
+					resolve(result);
+				})
+				.catch((err) => {
+					throw err;
+				});
+		});
+	} catch (err) {
+		console.log(err);
+	}
 	return `${path}${mediaId}.jpg`;
 
 }

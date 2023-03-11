@@ -11,3 +11,12 @@ export const getUploadedMediaValidator = (body: unknown): Joi.ValidationResult =
 
 };
 
+export const deleteMemoriesValidator = (body: unknown): Joi.ValidationResult => {
+
+    const schema = Joi.object({
+        ids: isObjectIdJoiValidator.required(),
+    });
+    return schema.validate(body);
+
+}
+

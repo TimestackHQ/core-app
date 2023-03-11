@@ -1,4 +1,14 @@
-import {View, Text, StatusBar, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList} from "react-native";
+import {
+	View,
+	Text,
+	StatusBar,
+	StyleSheet,
+	Image,
+	ScrollView,
+	TouchableOpacity,
+	FlatList,
+	TouchableWithoutFeedback, Alert
+} from "react-native";
 import * as React from "react";
 import HTTPClient from "../httpClient";
 import {useEffect} from "react";
@@ -6,31 +16,13 @@ import * as ImagePicker from "expo-image-picker";
 import * as _ from "lodash";
 import ExpoJobQueue from "expo-job-queue";
 import Video from 'react-native-video';
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		flexDirection: 'column',
-		alignItems: 'stretch',
-		backgroundColor: '#fff',
-	},
-	column: {
-		flex: 1,
-	},
-	gridContainer: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-	},
-	item: {
-		width: '33%', // 30% to account for space between items
-		backgroundColor: 'gray',
-		height: 180,
-		margin: 0.5
-	},
-});
+import UploadViewFlatList from "../Components/UploadViewFlatList";
+import FastImage from "react-native-fast-image";
 
 export default function Upload ({payload}) {
+
+	const [importing, setImporting] = React.useState(false);
+	const [selecting, setSelecting] = React.useState(false);
 
 	const [event, setEvent] = React.useState(payload.event);
 	const [totalMediaCount, setTotalMediaCount] = React.useState(payload.event.mediaCount);
@@ -39,9 +31,10 @@ export default function Upload ({payload}) {
 
 	const [pendingMedia, setPendingMedia] = React.useState([]);
 	const [media, setMedia] = React.useState([]);
-	const [importing, setImporting] = React.useState(false);
 
-	const fetchMedia = async () => {
+	const selectedMedia = React.useRef([]);
+
+	const fetchMedia = () => {
 		HTTPClient("/events/"+payload?.eventId+"/media?me=true&limit=9&skip="+media.length).then(res => {
 			setMedia([...media, ...res.data.media])
 		})
@@ -62,14 +55,13 @@ export default function Upload ({payload}) {
 		fetchMedia();
 
 
-
 	}, []);
 
 	useEffect(() => {
 
 		const queue = setInterval(async () => {
 			setPendingMedia((await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload)));
-		}, 1000);
+		}, 100);
 
 		return () => {
 			clearInterval(queue);
@@ -78,7 +70,18 @@ export default function Upload ({payload}) {
 
 	useEffect(() => {
 		HTTPClient("/events/"+payload?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
-	}, [pendingMedia])
+	}, [pendingMedia]);
+
+	const selectMedia = (_id, state) => {
+		setMedia(media.map(m => {
+			if(m._id === _id) {
+				return {
+					...m,
+					selected: state
+				}
+			}
+			return m;
+	}))}
 
 	const pickImage = async (eventId) => {
 
@@ -97,7 +100,7 @@ export default function Upload ({payload}) {
 
 				for await (const media of _.uniq(result.assets)) {
 
-					ExpoJobQueue.addJob("mediaQueueV3", {
+					ExpoJobQueue.addJob("mediaQueueV5", {
 						...media,
 						eventId
 					})
@@ -108,11 +111,12 @@ export default function Upload ({payload}) {
 
 			}
 
-
 		}catch(err) {
 			console.log(err, "err")
 		}
 
+		setMedia([]);
+		fetchMedia();
 		setImporting(false);
 
 	};
@@ -149,76 +153,147 @@ export default function Upload ({payload}) {
 						marginTop: 10,
 
 						color: "gray",
-						flex: 6
+						flex: 1
 					}}>
-						{selfMediaCount} Memories by me <Text style={{
-							fontFamily: 'Red Hat Display Regular',
-							fontSize: 14,
-							fontWeight: "300",
-							margin: 10,
-							marginLeft: 100,
-							color: "#E4D017",
-							flex: 5
-						}}> {pendingMedia.length} Uploading {importing ?<Text style={{
-						fontFamily: 'Red Hat Display Semi Bold',
-						fontSize: 15,
-						fontWeight: "300",
-						margin: 10,
-						marginLeft: 100,
-						color: "green",
-						flex: 5
-					}}> Importing...
-					</Text> : null}
-						</Text>
+						{selfMediaCount} Memories by me
 					</Text>
+					<TouchableOpacity
+						onPress={() =>{
+							setSelecting(!selecting);
+							if(!selecting) {
+								setMedia(media.map(m => {
+									return {
+										...m,
+										selected: false
+									}
+								}))
+							}
+						}}
+					>
+						<Text
+							style={{
+								fontFamily: 'Red Hat Display Regular',
+								fontSize: 15,
+								fontWeight: "300",
+								marginTop: 10,
+								color: "black",
+								flex: 1
+							}}>
+							{selecting ? "Cancel" : "Select"}
+						</Text>
+					</TouchableOpacity>
 
 				</View>
 
+				<View style={{padding: 0, margin: 0}}>
+					{importing || pendingMedia.length !== 0 ? <FlatList
+						data={[
+							"loader",
+							...pendingMedia,
+						]}
+						numColumns={3}
+						renderItem={((raw) => {
+							const media = raw.item;
+							if(media === "loader") return <View onTouchStart={async () => await pickImage(payload.eventId)} style={styles.item}>
+								<Image alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={require("../assets/add-media.png")}/>
 
-						<FlatList
-							data={[
-								"loader",
-								...pendingMedia,
-								...media,
-							]}
-							numColumns={3}
-							renderItem={((raw) => {
-								const media = raw.item;
-								if(media === "loader") return <View onTouchStart={async () => await pickImage(payload.eventId)} style={styles.item}>
-									<Image alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={require("../assets/add-media.png")}/>
+							</View>;
+							if(media?.type) return <View style={{...styles.item, backgroundColor: "white"}}>
+								{media.type === "video" ?
+									<Video
+										source={{fileCopyUri: media.uri}}
+										muted={true}
+										resizeMode="cover"
+										style={{
+											width: "100%",
+											height: "100%",
+											opacity: 0.5
+										}}
+									/>
+									: <Image  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180, opacity: 0.5}} source={{uri: media.uri}}/>
+								}
+							</View>
+						})}
+						keyExtractor={(item, index) => index.toString()}
+						onEndReached={() => fetchMedia()}
+						onEndReachedThreshold={0.5}
 
-								</View>;
-								if(media?.type) return <View style={{...styles.item, backgroundColor: "white"}}>
-									{media.type === "video" ?
-										<Video
-											source={{uri: media.uri}}
-											muted={true}
-											resizeMode="cover"
-											style={{
-												width: "100%",
-												height: "100%",
-												opacity: 0.5
-											}}
-										/>
-										: <Image  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180, opacity: 0.5}} source={{uri: media.uri}}/>
-									}
-								</View>
-								return <View style={{...styles.item, backgroundColor: "white"}}>
-									<Image alt={"Cassis 2022"}
-									       style={{borderRadius: 0, width: "100%", height: 180}}
-									       source={{uri: media.thumbnail}}/>
-								</View>;
-							})}
-							keyExtractor={(item, index) => index.toString()}
-							onEndReached={() => fetchMedia()}
-							onEndReachedThreshold={0.5}
+					/> : <View style={{flexDirection: "column", margin: 0, padding: 0}}>
 
+						<UploadViewFlatList
+							// style={{flex: 1, height: "90px"}}
+							selecting={selecting}
+							selectMedia={selectMedia}
+							eventId={payload.eventId}
+							media={media}
+							fetchMedia={fetchMedia}
+							pickImage={pickImage}
 						/>
+
+
+					</View>}
+
+					{selecting ? <View style={{flex: 10, flexDirection: "row", height: "100%", margin:0}}>
+
+						<View style={{flex: 1}}>
+						</View>
+						<View style={{flex: 4, marginTop: 15, alignItems: "center"}}>
+							<Text style={{ fontFamily: 'Red Hat Display Semi Bold', marginLeft: -20, fontSize: 18, fontWeight: "600", margin: 0, padding: -30, paddingLeft: 20 }}>
+								{media.filter(m => m.selected).length} {media.filter(m => m.selected).length !== 1 ? "Memories" : "Memory"} Selected
+							</Text>
+						</View>
+						<View style={{flex: 1, alignItems: "center", marginTop: 11, marginRight: 15}}>
+							<TouchableWithoutFeedback style={{width: "100%"}} onPress={() => {
+								const length = media.filter(m => m.selected).length;
+								if(length) Alert.alert('Delete memories', `Do you want to delete ${length} memories.`, [
+									{
+										text: 'Cancel',
+										onPress: () => console.log('Cancel Pressed'),
+										style: 'cancel',
+									},
+									{text: 'OK', onPress: () => console.log('OK Pressed')},
+								]);}
+							}>
+								<Image alt={"Cassis 2022"} style={{borderRadius: 0, width: 30, height: 30, opacity: media.filter(m => m.selected).length ? 1 : 0.5}} source={require("../assets/icons/Remove.png")} />
+
+							</TouchableWithoutFeedback>
+						</View>
+
+					</View> : null}
+
+
+
+				</View>
+
 			</View>
 
 
 		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'stretch',
+		backgroundColor: '#fff',
+		margin: 0
+	},
+	column: {
+		flex: 1,
+	},
+	gridContainer: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+	},
+	item: {
+		width: '33%', // 30% to account for space between items
+		backgroundColor: 'gray',
+		height: 180,
+		margin: 0.5
+	},
+});
 
 

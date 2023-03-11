@@ -10,7 +10,7 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default function uploadWorker () {
 	try {
 
-		ExpoJobQueue.addWorker("mediaQueueV3", async (media) => {
+		ExpoJobQueue.addWorker("mediaQueueV5", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -27,7 +27,7 @@ export default function uploadWorker () {
 
 					else {
 						const imagePath = await processPhoto(mediaId, media.uri, 10);
-						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 41);
+						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 80);
 						mediaList.push(imagePath, thumbnailPath);
 					}
 
@@ -39,15 +39,29 @@ export default function uploadWorker () {
 						formData.append('snapshot', {uri: mediaList[2], name: mediaList[2].split("/").pop()});
 					}
 
-					await axios.post(apiUrl+"/v1/media/" + media.eventId, formData, {
-						headers: {
-							authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
-						}
-					});
+					try {
+						axios.post(apiUrl+"/v1/media/" + media.eventId, formData, {
+							headers: {
+								authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
+							}
+						})
+							.then((res) => {
+								console.log(res.data);
+							})
+							.catch((err) => {
+								console.log(err);
+							})
+
+					} catch (err) {
+						console.log(err);
+					}
+
 
 					resolve(true);
 
 				} catch (err) {
+
+					console.log("FAILED")
 
 				}
 

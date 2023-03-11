@@ -389,15 +389,17 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             media: 1,
         }).populate({
             path: "media",
-            select: "_id publicId snapshot thumbnail createdAt user",
+            select: "_id publicId snapshot thumbnail createdAt user type",
             match: {
-                user: req.query.me ? req.user._id : undefined
+                user: req.query.me ? req.user._id : {
+                    $exists: true
+                }
             },
             options: {
                 sort: {
                     createdAt: -1
                 },
-                limit: req.params?.limit ? Number(req.params.limit) : 25,
+                limit: req.query?.limit ? Number(req.query.limit) : 25,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
         });
@@ -414,6 +416,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
                     thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                     createdAt: media.createdAt,
+                    type: media.type.split("/")[0],
                     user: media.user
                 }
             }))).sort((a: any, b: any) => b.createdAt - a.createdAt)

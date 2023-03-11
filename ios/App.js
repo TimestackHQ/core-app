@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Navigation } from "react-native-navigation";
 import Main from "./Main";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
