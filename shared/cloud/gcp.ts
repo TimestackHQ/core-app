@@ -54,3 +54,11 @@ export const download = async (publicId: string): Promise<Buffer> => {
 
     return (await file.download())[0];
 }
+
+export const deleteFile = async (publicId: string): Promise<void> => {
+    const file = storage
+        .bucket(String(process.env.GCP_STORAGE_BUCKET))
+        .file(publicId);
+
+    await file.delete();
+}

@@ -346,14 +346,58 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
 export async function deleteMemories (req: Request, res: Response, next: NextFunction) {
     try {
 
-        // const event = await Models.Event.findOne({
-        //     _id: req.params.eventId,
-        //     users: {
-        //         $in: [req.user._id]
-        //     }
-        // }).select();
+        if(!(await Models.Event.countDocuments({
+            _id: req.params.eventId,
+            users: {
+                $in: [req.user._id]
+            }
+        }))) return res.sendStatus(404);
+
+        const media = await Models.Media.find({
+            _id: {
+                $in: req.body.ids
+            },
+            user: req.user._id,
+        });
+
+        console.log(media);
+
+        await Models.Event.updateOne({
+            _id: req.params.eventId,
+            users: {
+                $in: [req.user._id]
+            },
+        }, {
+            $pull: {
+                media: {
+                    $in: media.map(m => m._id)
+                }
+            }
+        });
+
+        try {
+            await Promise.all(media.map(async m => {
+                await GCP.deleteFile(m.storageLocation);
+                if(m.thumbnail) await GCP.deleteFile(m.thumbnail);
+                if(m.snapshot) await GCP.deleteFile(m.snapshot);
+                await Models.Media.deleteOne({
+                    _id: m._id
+                });
+            }));
+        } catch(Err) {
+            console.log(Err);
+        }
 
 
+        await Models.Media.deleteMany({
+            _id: {
+                $in: media.map(m => m._id)
+            },
+            user: req.user._id,
+        });
+
+
+        return res.sendStatus(200);
 
     } catch(err) {
         next(err);

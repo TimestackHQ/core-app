@@ -251,7 +251,13 @@ export default function Upload ({payload}) {
 										onPress: () => console.log('Cancel Pressed'),
 										style: 'cancel',
 									},
-									{text: 'OK', onPress: () => console.log('OK Pressed')},
+									{text: 'OK', onPress: () => HTTPClient("/media/"+event._id+"/delete", "POST", {ids: media.filter(m => m.selected).map(m => m._id)}).then(() => {
+										setMedia(media.filter(m => !m.selected));
+										setSelecting(false);
+										setMedia(media.filter(m => !m.selected));
+									}).catch(err => {
+										alert("Error deleting memories. Please try again.")
+									})},
 								]);}
 							}>
 								<Image alt={"Cassis 2022"} style={{borderRadius: 0, width: 30, height: 30, opacity: media.filter(m => m.selected).length ? 1 : 0.5}} source={require("../assets/icons/Remove.png")} />
