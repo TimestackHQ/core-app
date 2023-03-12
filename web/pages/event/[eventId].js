@@ -73,7 +73,9 @@ export default function EventIOS ({}) {
 
 		});
 
-
+		window.onscroll = function (e) {
+			setViewMenu(false);
+		}
 
 
 	}, []);
@@ -225,7 +227,7 @@ export default function EventIOS ({}) {
 						</div> :
 
 
-						<div className={"container"}>
+						<div className={"container"} onScroll={() => setViewMenu(false)}>
 
 							<div className={"row"}>
 								<div className={"col-5"} style={{height: "200px"}}>
