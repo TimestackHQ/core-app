@@ -17,10 +17,10 @@ export default function MainIOS () {
 
 	const router = useRouter();
 
-	window.ReactNativeWebView?.postMessage(JSON.stringify({
-		request: "session",
-		session: window.localStorage.getItem("TIMESTACK_TOKEN")
-	}));
+	// window.ReactNativeWebView?.postMessage(JSON.stringify({
+	// 	request: "session",
+	// 	session: window.localStorage.getItem("TIMESTACK_TOKEN")
+	// }));
 
 
 	return (

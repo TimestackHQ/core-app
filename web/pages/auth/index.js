@@ -17,6 +17,7 @@ import Birthdate from "./Birthdate";
 import Adventure from "./Adventure";
 import Username from "./Username";
 import Step2 from "./Step2";
+import {notifyNativeOfSession} from "../../utils/nativeBridge";
 
 export default function Login() {
 
@@ -60,7 +61,9 @@ export default function Login() {
 	}, []);
 
 	useEffect(() => {
-		if(userConfirmed) Router.push("/main_ios");
+		notifyNativeOfSession();
+		setStep(1);
+		// if(userConfirmed) Router.push("/main_ios");
 	}, [userConfirmed]);
 
 
@@ -101,13 +104,9 @@ export default function Login() {
 				<div className="row justify-content-center align-items-center ">
 					<div className="col-lg-5 col-sm-10 text-center ">
 
-
-
 						{step === 0 ? <Step0
 							setStep={setStep}
 						/> : null}
-
-
 
 						{step === 1 ? <InitLogin
 							setStep={setStep}
@@ -116,6 +115,7 @@ export default function Login() {
 							initLogin={initLogin}
 							error={error}
 						/> : null}
+
 						{step === 2 ? <Code
 							code={code}
 							setCode={setCode}

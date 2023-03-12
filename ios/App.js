@@ -1,13 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Image, View} from "react-native";
+import {Image, TouchableOpacity, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
+import {useEffect, useState} from "react";
+import HTTPClient from "./httpClient";
+import Updates from "react-native/Libraries/Utilities/DevSettings";
+import HomeStackScreen from "./stacks/HomeStack";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -24,16 +29,12 @@ function Viewer({baseRoute}) {
         );
 }
 
-function HomeScreen() {
-    return <Viewer baseRoute={"/main_ios"}/>
-}
-
 function FutureScreen() {
     return <Viewer baseRoute={"/main_ios"}/>
 }
 
 function AddScreen() {
-    return <Viewer baseRoute={"/main_ios"}/>
+    return <Viewer baseRoute={"/new"}/>
 }
 
 function NotificationsScreen() {
@@ -44,14 +45,56 @@ function ProfileScreen() {
     return <Viewer baseRoute={"/profile"}/>
 }
 
+
 export default function App() {
-    return (
-        <NavigationContainer><MyTabs/></NavigationContainer>
-    );
+
+    const [authenticated, setAuthenticated] = useState(false);
+    const [currentSession, setCurrentSession] = useState(null);
+
+    useEffect(() => {
+        new Promise(async (resolve, reject) => {
+            const session = AsyncStorage.getItem("@session");
+            HTTPClient("/auth/check", "GET")
+                .then((_res) => {
+
+                    setAuthenticated(true);
+
+                })
+        }).then(_r => {});
+    }, [currentSession]);
+
+    // useEffect(() => {
+    //     const timer = setInterval(() => {
+    //         const session = AsyncStorage.getItem("@session");
+    //         console.log(session?._z, currentSession?._z);
+    //         if(session?._z != currentSession?._z) {
+    //             setCurrentSession(session);
+    //         }
+    //     }, 100);
+    //     return () => clearInterval(timer);
+    // })
+
+    const setSession = async (session) => {
+        console.log("SETTING SESSION");
+        await AsyncStorage.setItem('@session', session);
+        setCurrentSession(session);
+        Updates.reload();
+    }
+
+    return authenticated ? (
+        <NavigationContainer><Nav/></NavigationContainer>
+    ) : <Main
+        baseRoute={"/auth"}
+        apiUrl={apiUrl}
+        frontendUrl={frontendUrl}
+        setSession={setSession}
+    />;
 }
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
+function Nav() {
+
+
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
 
@@ -74,14 +117,14 @@ function MyTabs() {
                 showLabel: false,
                 headerShown: false,
                 tabBarStyle: {
-                    padding: 10, // Increase the vertical margin of the tab bar,
+                    padding: 20, // Increase the vertical margin of the tab bar,
                     borderWidth: 0,
                 },
             }}
         >
             <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={HomeStackScreen}
                 options={{
                     style: {
                         marginVertical: 10, // Increase the vertical margin of the tab bar
@@ -105,9 +148,20 @@ function MyTabs() {
                     }
                 }}
             />
+
             <Tab.Screen
                 name="Add"
                 component={AddScreen}
+                // options={(tab)=> {
+                //     console.log(tab);
+                //     const navigation = tab.navigation;
+                //     return ({
+                //         tabBarButton:props => <TouchableOpacity style={{backgroundColor: "red"}} {...props} onPress={()=>navigation.navigate('SignIn')}>
+                //             <Image style={{width: 40, height: 40, marginTop: 10}} source={require("./assets/icons/nav/add_white.png")}/>
+                //         </TouchableOpacity>,
+                //         tabBarLabel: '',
+                //     })
+                // }}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {

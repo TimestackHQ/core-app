@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
+import { NativeModules } from "react-native";
+
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from 'expo-linking';
@@ -14,7 +16,6 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { ModalView } from 'react-native-ios-modal';
 import Upload from "./screens/Upload";
-
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -56,7 +57,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 
-export default function Main({baseRoute, frontendUrl, queueUpdated}) {
+export default function Main({baseRoute, frontendUrl, queueUpdated, navigation}) {
 
     const url = Linking.useURL();
 
@@ -186,6 +187,20 @@ export default function Main({baseRoute, frontendUrl, queueUpdated}) {
 
                     }
 
+                    if(message.request === "navigate") {
+                        console.log(message);
+                        if(navigation) {
+                            navigation.navigate(message.payload[0], message.payload[1]);
+                        }
+                    }
+
+                    if(message.request === "navigateBack") {
+                        console.log(message);
+                        if(navigation) {
+                            navigation.goBack();
+                        }
+                    }
+
                     if(message.request === "allContacts"){
                         console.log("Providing all contacts")
                         const { status } = await Contacts.requestPermissionsAsync();
@@ -202,8 +217,16 @@ export default function Main({baseRoute, frontendUrl, queueUpdated}) {
                     }
 
                     if(message.request === "session") {
-                        console.log("Setting session");
-                        await AsyncStorage.setItem('@session', message.session);
+
+                        console.log(message)
+                        console.log("========> Setting session");
+                        const session = await AsyncStorage.getItem("@session");
+                        if(String(session) !== String(message.session)) {
+                            await AsyncStorage.setItem("@session", message.session ? message.session : "");
+                            NativeModules.DevSettings.reload();
+
+                        }
+
                         updatePushToken();
                     }
 
@@ -237,6 +260,10 @@ export default function Main({baseRoute, frontendUrl, queueUpdated}) {
 
                         let token = await Notifications.getExpoPushTokenAsync();
                         console.log(token);
+                    }
+
+                    if(message.request === "eventButtonAction") {
+                        await AsyncStorage.setItem("@eventButtonAction", message.eventId);
                     }
 
 

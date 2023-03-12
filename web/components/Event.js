@@ -4,6 +4,7 @@ import HTTPClient, {restOrigin} from "../utils/httpClient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
 import {LazyLoadImage} from "react-lazy-load-image-component";
 import Image from "next/image";
+import {NativeNavigate} from "../utils/nativeBridge";
 
 export default function EventCard ({
 	                                   event
@@ -22,7 +23,14 @@ export default function EventCard ({
 	}, [])
 
 	return (
-		<div onClick={() => router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)} className={"card "} style={{
+		<div onClick={() => {
+			NativeNavigate("Event", {
+				eventId: event.publicId,
+				eventName: event.name,
+				eventLocation: event.location
+			})
+			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
+		}} className={"card "} style={{
 			backgroundColor: "white",
 			boxShadow: "rgba(100, 100, 111, 0.1) 0px 3px 29px 0px",
 			borderRadius: "15px",

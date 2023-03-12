@@ -23,3 +23,24 @@ export const modalView = (type, payload) => window.ReactNativeWebView?.postMessa
 	type,
 	payload
 }));
+
+export const notifyNativeOfSession = () => {
+	window.ReactNativeWebView.postMessage(JSON.stringify({
+		request: "session",
+		session: window.localStorage.getItem("TIMESTACK_TOKEN")
+	}));
+}
+
+export const NativeNavigate = (screen, params) => window.ReactNativeWebView.postMessage(JSON.stringify({
+	request: "navigate",
+	payload: [screen, params]
+}));
+
+export const NativeNavigateBack = () => window.ReactNativeWebView.postMessage(JSON.stringify({
+	request: "navigateBack"
+}));
+
+export const EventButtonAction = (eventId) => window.ReactNativeWebView.postMessage(JSON.stringify({
+	request: "eventButtonAction",
+	eventId: eventId
+}));

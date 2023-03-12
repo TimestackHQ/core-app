@@ -7,11 +7,15 @@ import AddPeopleScreen from "../../components/AddPeopleScreen";
 import ContentLoader from "react-content-loader";
 import {useSelector} from "react-redux";
 import ProfilePicture from "../../components/ProfilePicture";
+import {EventButtonAction, modalView} from "../../utils/nativeBridge";
+import {Fade} from "@mui/material";
+import FadeIn from "react-fade-in";
 
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
 	const [loaded, setLoaded] = useState(false);
+	const [viewMenu, setViewMenu] = useState(false);
 
 	const rawUploadQueue = useSelector(state => state.uploadQueue);
 	const [event, setEvent] = useState(null);
@@ -33,6 +37,7 @@ export default function EventIOS ({}) {
 					if(response.data.message === "joinRequired") {
 						Router.push("/event/"+eventId+"/join");
 					}else {
+						EventButtonAction(event?._id);
 						setTimeout(() => {
 							setEvent(response.data.event);
 							setLoaded(true);
@@ -69,6 +74,8 @@ export default function EventIOS ({}) {
 		});
 
 
+
+
 	}, []);
 
 	useEffect(() => {
@@ -77,14 +84,10 @@ export default function EventIOS ({}) {
 
 	const updatingPeopleCallback = async (people) => {
 
-		console.log(people, event.people);
-
 		const add = people.filter(person => !event.people.map(p => p._id).includes(person));
 		const remove = event.people
 			.filter(person =>  !people.includes(person._id))
 			.map(person => person._id);
-
-		console.log(remove)
 
 		HTTPClient("/events/"+event._id+"/people", "PUT", {
 			add, remove
@@ -97,13 +100,15 @@ export default function EventIOS ({}) {
 		});
 
 
+
+
 	}
 
 	return (
 		<IOS buttons={[
 			{
 				icon: "leftArrow",
-				href: "/main_ios",
+				nativeNavigation: "back",
 				position: "left"
 			},
 			{
@@ -113,6 +118,7 @@ export default function EventIOS ({}) {
 				share: true
 			}
 		]} timestackButtonLink={{eventId: event?._id, event:event}}>
+
 			{updatingPeople
 				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
 					<AddPeopleScreen
@@ -125,6 +131,19 @@ export default function EventIOS ({}) {
 				<Fragment>
 					{loaded ? <div className={"container"}>
 
+							<div style={{zIndex: 1, position: "fixed", bottom: 15, left: 15}}>
+								<img onClick={() => setViewMenu(!viewMenu)} style={{marginRight: 10}} src={viewMenu ? "/icons/action_button_x.png" : "/icons/action_button.png"} height={43}/>
+								{viewMenu ? <Fragment>
+									<img onClick={() => {
+										setUpdatingPeople(true);
+										setViewMenu(false);
+									}} style={{marginRight: 10}} src={"/icons/add_people.png"} height={43}/>
+									<img onClick={() => {
+										modalView("upload", {eventId: event?._id, event:event})
+										setViewMenu(false);
+									}} src={"/icons/add_upload.png"} height={43}/>
+								</Fragment> : null}
+							</div>
 							<div className={" row"}>
 								<div className={"col-5"} autofocus={true}>
 									<div style={{
@@ -187,7 +206,6 @@ export default function EventIOS ({}) {
 							</div>
 							<br/>
 							<div style={{}}>
-								<img onClick={() => setUpdatingPeople(true)} style={{width: "45px", borderRadius: "25px"}} src={"/icons/add-people-icon.svg"}/>
 								{event?.people.map((invitee, index) => {
 									return <div key={index} style={{display: "inline", paddingLeft: "10px"}}>
 										<ProfilePicture width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
