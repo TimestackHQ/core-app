@@ -56,7 +56,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 
-export default function Main({frontendUrl, queueUpdated}) {
+export default function Main({baseRoute, frontendUrl, queueUpdated}) {
 
     const url = Linking.useURL();
 
@@ -65,12 +65,14 @@ export default function Main({frontendUrl, queueUpdated}) {
     const notificationListener = useRef();
     const responseListener = useRef();
 
+    console.log(frontendUrl+baseRoute)
+
 
 
     const webviewRef = React.createRef();
     const modalRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
-    const [uri , setUri] = React.useState(frontendUrl+'/main_ios');
+    const [uri , setUri] = React.useState(null);
     const [barStyle, setBarStyle] = React.useState("light-content");
     const [modalData, setModalData] = React.useState({
         type: null,
@@ -156,7 +158,7 @@ export default function Main({frontendUrl, queueUpdated}) {
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"
                 // allowsBackForwardNavigationGestures="true"
-                source={{ uri: uri ? uri : frontendUrl+'/main_ios'}}
+                source={{ uri: uri ? uri : frontendUrl+baseRoute}}
                 injectedJavaScript={`window.localStorage.setItem("appVersion", "0.0.15-1");const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
                     console.log(event);

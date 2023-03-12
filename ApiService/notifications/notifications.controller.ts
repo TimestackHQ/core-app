@@ -27,7 +27,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
                 path: "data.payload.userId",
                 select: "profilePictureSource",
             }
-        ]).skip(Number(skip)).limit(10);
+        ]).sort({createdAt: -1}).skip(Number(skip)).limit(15);
 
 
 
@@ -44,6 +44,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
                         notification?.data?.payload?.eventId?.cover?.thumbnail ?
                             await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
                             null,
+                createdAt: notification.createdAt
             }
         }))).sort((a: any, b: any) => {
             return b.createdAt - a.createdAt;

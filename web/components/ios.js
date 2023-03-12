@@ -86,58 +86,7 @@ export default function IOS ({
 				{children}
 
 
-				{!hideNavbar ? <div className="footer fixed-bottom" style={{backgroundColor: "white", paddingTop: "5px", paddingBottom: "40px"}}>
-					<div className="container">
-						{/*<FadeIn>*/}
-							<div className="row">
-								<Link className="col-3" href={"/main_ios"}>
-									<img
-										style={{marginLeft: "30px", marginTop: "5px"}}
-										className={"float-right"}
-										src={Router.pathname === "/main_ios" ? "/icons/home-black.svg" : "/icons/home_FILL0_wght300_GRAD0_opsz48.svg"}
-										width={"30px"}
-									/>
-								</Link>
-								<div className="col-2">
-									<img style={{marginTop: "5px"}} src={"/icons/calendar_view_day_FILL0_wght300_GRAD0_opsz48.svg"} width={"30px"}/>
-								</div>
-								<div className="col-2 text-center" onClick={() => modalView("upload", timestackButtonLink)}>
-									{/*<img src={"/icons/TimePortal Black No Add.svg"} height={"30px"}/>*/}
-									<img src={Router.pathname === "/new" ? "/icons/new-black.svg" : "/icons/add_circle_FILL0_wght300_GRAD0_opsz48.svg"} height={"40px"}/>
-								</div>
-
-								<Link className="col-2 text-center" href={"/notifications"}>
-
-									<div type="button" className="position-relative">
-										<img style={{marginLeft: "5px", marginTop: "5px"}}
-										     src={Router.pathname.includes("/notifications") ? "/icons/notifications_FILL1_wght300_GRAD0_opsz48.svg" : "/icons/notifications_FILL0_wght300_GRAD0_opsz48.svg"}
-										     width={"30px"}/>
-										{notificationCount !== 0 ? <span
-											style={{
-												margin: "10px",
-												paddingLeft: notificationCount < 10 ? "6px" : "3px",
-												marginBottom: "90px",
-												fontSize: "11px",
-												backgroundColor: "#E41E1E",
-												textAlign: "center",
-												width: "18px", height: "18px", borderRadius: "100%"}}
-											className="position-absolute top-0 start-50 translate-middle badge">
-										    {notificationCount < 10 ? notificationCount : "9+"}
-										    <span className="visually-hidden">unread notifications</span>
-										  </span> : null}
-									</div>
-
-								</Link>
-								<Link className="col-3 left" href={"/profile"}>
-									<img style={{marginLeft: "10px", border:Router.pathname.startsWith("/profile") ? "2px solid black" : "2px solid white", marginTop: "5px", borderRadius: "100px", objectFit: "cover"}} src={user.profilePictureSource ? user.profilePictureSource :"/icons/contact.svg"} width={"30px"} height={"30px"}/>
-								</Link>
-							</div>
-						{/*</FadeIn>*/}
-
-					</div>
-
-
-				</div> : null}
+			
 
 		</div>
 
