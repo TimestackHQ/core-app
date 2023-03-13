@@ -7,8 +7,8 @@ import Image from "next/image";
 import {NativeNavigate} from "../utils/nativeBridge";
 
 export default function EventCard ({
-	                                   event
-                                   }) {
+   event
+}) {
 
 	const router = useRouter();
 

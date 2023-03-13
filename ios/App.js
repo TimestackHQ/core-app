@@ -12,7 +12,13 @@ import uploadWorker from "./uploadWorker";
 import Main from "./Main";
 import {useEffect, useState} from "react";
 import HTTPClient from "./httpClient";
-import HomeStackScreen from "./stacks/HomeStack";
+import {
+    AddStackScreen,
+    FutureStackScreen,
+    HomeStackScreen,
+    NotificationsStackScreen,
+    ProfileStackScreen
+} from "./stacks";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -26,14 +32,14 @@ const setSession = async (session) => {
 }
 
 function Viewer({baseRoute, navigation}) {
-        return (
-            <Main
-                baseRoute={baseRoute}
-                apiUrl={apiUrl}
-                navigation={navigation}
-                frontendUrl={frontendUrl}
-            />
-        );
+    return (
+        <Main
+            baseRoute={baseRoute}
+            apiUrl={apiUrl}
+            navigation={navigation}
+            frontendUrl={frontendUrl}
+        />
+    );
 }
 
 function Invite ({navigation, route}) {
@@ -76,24 +82,6 @@ function CoreStackScreen() {
                 })
         }).then(_r => {});
     }, [currentSession]);
-
-    // useEffect(() => {
-    //     const timer = setInterval(() => {
-    //         const session = AsyncStorage.getItem("@session");
-    //         console.log(session?._z, currentSession?._z);
-    //         if(session?._z != currentSession?._z) {
-    //             setCurrentSession(session);
-    //         }
-    //     }, 100);
-    //     return () => clearInterval(timer);
-    // })
-
-    const setSession = async (session) => {
-        console.log("SETTING SESSION");
-        await AsyncStorage.setItem('@session', session);
-        setCurrentSession(session);
-        Updates.reload();
-    }
 
     return (
         <CoreStack.Navigator initialRouteName={"Main"} screenOptions={{
@@ -143,7 +131,7 @@ function Nav() {
             }}
         >
             <Tab.Screen
-                name="Home"
+                name="HomeStack"
                 component={HomeStackScreen}
                 options={{
                     style: {
@@ -157,8 +145,8 @@ function Nav() {
                 }}
             />
             <Tab.Screen
-                name="Events"
-                component={FutureScreen}
+                name="EventsStack"
+                component={FutureStackScreen}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
@@ -170,8 +158,8 @@ function Nav() {
             />
 
             <Tab.Screen
-                name="Add"
-                component={AddScreen}
+                name="AddStack"
+                component={AddStackScreen}
                 // options={(tab)=> {
                 //     console.log(tab);
                 //     const navigation = tab.navigation;
@@ -192,8 +180,8 @@ function Nav() {
                 }}
             />
             <Tab.Screen
-                name="Notifications"
-                component={NotificationsScreen}
+                name="NotificationsStack"
+                component={NotificationsStackScreen}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
@@ -204,8 +192,8 @@ function Nav() {
                 }}
             />
             <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
+                name="ProfileStack"
+                component={ProfileStackScreen}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
@@ -223,18 +211,3 @@ function Nav() {
 }
 
 
-function FutureScreen({navigation}) {
-    return <Viewer navigation={navigation} baseRoute={"/main_ios"}/>
-}
-
-function AddScreen({navigation}) {
-    return <Viewer navigation={navigation} baseRoute={"/new"}/>
-}
-
-function NotificationsScreen({navigation}) {
-    return <Viewer navigation={navigation} baseRoute={"/notifications"}/>
-}
-
-function ProfileScreen({navigation}) {
-    return <Viewer navigation={navigation}  baseRoute={"/profile"}/>
-}

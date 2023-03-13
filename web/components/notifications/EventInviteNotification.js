@@ -8,11 +8,8 @@ export default function EventInviteNotification ({notification, timeAgo}) {
 	const payload = notification.data.payload;
 	return (
 		<div onClick={() => {
-			NativeNavigate("Home", {
-				// screen: "Event",
-				// params: {
-				// 	eventId: payload.eventId
-				// },
+			NativeNavigate("Event",{
+				eventId: payload.eventId._id
 			})
 			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
 		}} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>

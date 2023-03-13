@@ -8347,7 +8347,7 @@ internal-slot@^1.0.4:
     has "^1.0.3"
     side-channel "^1.0.4"
 
-invariant@*, invariant@2.2.4, invariant@^2.2.4:
+invariant@*, invariant@2.2.4, invariant@>=2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -12811,6 +12811,13 @@ react-native@0.70.5:
     use-sync-external-store "^1.0.0"
     whatwg-fetch "^3.0.0"
     ws "^6.1.4"
+
+react-navigation-header-buttons@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-header-buttons/-/react-navigation-header-buttons-10.0.0.tgz#a685352dfa6a6c62df7c81a5599ecbb37fe7bf43"
+  integrity sha512-45jLyyMB/2uMmDm+SWcUrDJLXxiVeaVtbHf1cgmzt4eS/C1AxOyG1pimIFxQK8EoDbZDV24mqAX13/UCwqhWpw==
+  dependencies:
+    invariant ">=2"
 
 react-navigation-stack@^2.10.4:
   version "2.10.4"

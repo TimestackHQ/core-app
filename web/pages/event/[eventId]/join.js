@@ -5,6 +5,7 @@ import axios from "axios";
 import FadeIn from "react-fade-in";
 import Link from "next/link";
 import ProfilePicture from "../../../components/ProfilePicture";
+import {NativeNavigateBack} from "../../../utils/nativeBridge";
 
 export default function EventIOS ({}) {
 
@@ -111,7 +112,7 @@ export default function EventIOS ({}) {
 							<div className={"col-12 row"} style={{marginTop: "10vh","position":"fixed","bottom":"8%"}}>
 								<div className={"col-2"} style={{"height":"40px", "width":"50%"}}>
 									<FadeIn delay={600}>
-										<button onClick={() => Router.push("/notifications")}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "40px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+										<button onClick={NativeNavigateBack}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "40px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 											<div className={"white-shadow"}>
 												<b>X</b>
 											</div>

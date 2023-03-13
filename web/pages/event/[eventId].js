@@ -106,19 +106,7 @@ export default function EventIOS ({}) {
 	}
 
 	return (
-		<IOS buttons={[
-			{
-				icon: "leftArrow",
-				nativeNavigation: "back",
-				position: "left"
-			},
-			{
-				icon: "share",
-				href: window.location.protocol + "//" + window.location.host + "/event/" + event?._id+"/invite",
-				position: "right",
-				share: true
-			}
-		]} timestackButtonLink={{eventId: event?._id, event:event}}>
+		<div>
 
 			{updatingPeople
 				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
@@ -145,7 +133,7 @@ export default function EventIOS ({}) {
 									}} src={"/icons/add_upload.png"} height={43}/>
 								</Fragment> : null}
 							</div>
-							<div className={" row"}>
+							<div className={"row"} style={{marginTop: 20}}>
 								<div className={"col-5"} autofocus={true}>
 									<div style={{
 										backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
@@ -297,6 +285,6 @@ export default function EventIOS ({}) {
 					}
 				</Fragment>
 			}
-		</IOS>
+		</div>
 	);
 }

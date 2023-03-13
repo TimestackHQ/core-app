@@ -17,6 +17,7 @@ export default function IOSLayer ({children}) {
 				request: "uploadQueue",
 			}));
 		}, 1000);
+		return () => clearInterval(mediaWatcher);
 	}, []);
 
 	const notificationsCountUpdate = () => HTTPClient("/notifications/count", "GET")

@@ -60,18 +60,18 @@ export default function NotificationsPage() {
 	return (
 		<IOS buttons={
 			[
-				{
-					icon: "leftArrow",
-					href: "/main_ios",
-					position: "left"
-				},
+				// {
+				// 	icon: "leftArrow",
+				// 	href: "/main_ios",
+				// 	position: "left"
+				// },
 			]
 		}>
 			{loaded ? <div className="container">
 				<div className="row flex-nowrap " style={{
 					// position: "absolute",
 					// top: "40px",
-					marginTop: "-30px",
+					marginTop: "-60px",
 					padding: "5px",
 					paddingRight: "0px",
 					borderRightColor: "black",
