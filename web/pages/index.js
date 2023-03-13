@@ -38,7 +38,7 @@ function Landing () {
 							<a href="https://timestack.notion.site/Privacy-ee3f202a9c654db0beca22753f41ebd3" className="navigation-item w-nav-link">Privacy</a>
 							<a href="https://timestack.notion.site/Terms-of-Service-af4ae609b724485bb988d74dbee309ab" className="navigation-item w-nav-link">Terms</a>
 							<a href="https://timestack.notion.site/Investors-bde35ce483f9469ca125ca75070663e9" className="navigation-item w-nav-link">Investors</a>
-							<a href="https://timestack.notion.site/Contact-71f075977f1242259cff3aaa0e4f2bc2" className="navigation-item w-nav-link">Contact</a>
+							<a href="https://timestack.world/contact" className="navigation-item w-nav-link">Contact</a>
 						</nav>
 						<div className="menu-button w-nav-button"><img src="images/menu-icon_1menu-icon.png" width={22} alt="" className="menu-icon" /></div>
 					</div>
