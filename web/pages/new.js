@@ -87,9 +87,12 @@ export default function Home() {
 									setEndsAt("");
 									setInvitees([]);
 									setCover(null);
-									NativeNavigate("Event", {
-										eventId: res.data.event._id,
-										eventName: res.data.event.name,
+									NativeNavigate("HomeStack", {
+										screen: "Event",
+										params: {
+											eventId: res.data.event._id,
+												eventName: res.data.event.name,
+										}
 									})
 								}).catch((err) => {
 									alert(err);

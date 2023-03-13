@@ -58,20 +58,11 @@ export default function NotificationsPage() {
 
 
 	return (
-		<IOS buttons={
-			[
-				// {
-				// 	icon: "leftArrow",
-				// 	href: "/main_ios",
-				// 	position: "left"
-				// },
-			]
-		}>
+		<div>
 			{loaded ? <div className="container">
 				<div className="row flex-nowrap " style={{
 					// position: "absolute",
 					// top: "40px",
-					marginTop: "-60px",
 					padding: "5px",
 					paddingRight: "0px",
 					borderRightColor: "black",
@@ -118,11 +109,6 @@ export default function NotificationsPage() {
 								setNotifications([]);
 								getNotifications();
 							}}
-							pullDownToRefresh
-							pullDownToRefreshThreshold={10}
-							pullDownToRefreshContent={
-								<h3 style={{ textAlign: 'center' }}></h3>
-							}
 							releaseToRefreshContent={
 								<h3 style={{ textAlign: 'center' }}></h3>
 							}
@@ -149,6 +135,6 @@ export default function NotificationsPage() {
 
 				</div>
 			</div> : <NotificationsPageSuspense/>}
-		</IOS>
+		</div>
 	);
 }

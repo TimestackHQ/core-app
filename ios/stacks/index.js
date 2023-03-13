@@ -22,7 +22,7 @@ function Viewer({baseRoute, navigation}) {
 function HomeScreen({navigation, route}) {
 
 	const [refreshing, setRefreshing] = React.useState(false);
-	const [id, setId] = React.useState("");
+	const [id, setId] = React.useState("null");
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
@@ -39,7 +39,7 @@ function HomeScreen({navigation, route}) {
 			contentContainerStyle={{flexGrow: 1}}
 			style={{flex: 1, height: "100%", backgroundColor: "white"}}
 		>
-			<Viewer onStyle={{flex: 1}} baseRoute={"/main_ios?id"+id} navigation={navigation}/>
+			<Viewer onStyle={{flex: 1}} baseRoute={"/main_ios?id="+id} navigation={navigation}/>
 		</ScrollView>
 	</SafeAreaView>
 }
@@ -57,7 +57,29 @@ function AddScreen({navigation}) {
 }
 
 function NotificationsScreen({navigation}) {
-	return <Viewer navigation={navigation} baseRoute={"/notifications"}/>
+
+	const [refreshing, setRefreshing] = React.useState(false);
+	const [id, setId] = React.useState("null");
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setId(Math.random().toString(36).substring(7));
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
+	}, []);
+
+	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
+		<ScrollView
+			// scrollEnabled={false}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+			contentContainerStyle={{flexGrow: 1}}
+			style={{flex: 1, height: "100%", backgroundColor: "white"}}
+		>
+			<Viewer navigation={navigation} baseRoute={"/notifications?id="+id}/>
+		</ScrollView>
+	</SafeAreaView>
+
 }
 
 function ProfileScreen({navigation}) {

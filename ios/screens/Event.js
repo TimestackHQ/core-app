@@ -40,7 +40,7 @@ export default function Event () {
 	const navigation = useNavigation();
 
 	const [refreshing, setRefreshing] = React.useState(false);
-	const [id, setId] = React.useState("");
+	const [id, setId] = React.useState("null");
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
