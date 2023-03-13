@@ -14,6 +14,7 @@ import FadeIn from "react-fade-in";
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
+	const user = useSelector(state => state.user);
 	const [loaded, setLoaded] = useState(false);
 	const [viewMenu, setViewMenu] = useState(false);
 
@@ -200,6 +201,9 @@ export default function EventIOS ({}) {
 							</div>
 							<br/>
 							<div style={{}}>
+								<div style={{display: "inline", paddingLeft: "10px"}}>
+									<ProfilePicture width={"45px"} height={"45px"} location={user?.profilePictureSource}/>
+								</div>
 								{event?.people.map((invitee, index) => {
 									return <div key={index} style={{display: "inline", paddingLeft: "10px"}}>
 										<ProfilePicture width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
@@ -219,7 +223,7 @@ export default function EventIOS ({}) {
 						</div> :
 
 
-						<div className={"container"} onScroll={() => setViewMenu(false)}>
+						<div style={{marginTop: 20}} className={"container"} onScroll={() => setViewMenu(false)}>
 
 							<div className={"row"}>
 								<div className={"col-5"} style={{height: "200px"}}>

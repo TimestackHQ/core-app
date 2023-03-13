@@ -28,7 +28,7 @@ export default function IOS ({
 		<div style={{backgroundColor: "white"}}>
 
 			{main ? <FadeIn >
-					<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: "50px"}} className="d-flex flex-wrap mb-4 row fixed-top ">
+					<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: 12}} className="d-flex flex-wrap mb-4 row fixed-top ">
 
 						<div className={"col-2"}>
 							<img style={{marginLeft: "20px"}} src="/icons/logo blacktimestack.svg" alt="logo" width="25px"/>
@@ -43,8 +43,6 @@ export default function IOS ({
 							/>
 						</div>
 					</header>
-					<br/>
-					<br/>
 					<br/>
 				</FadeIn>
 				: <FadeIn >

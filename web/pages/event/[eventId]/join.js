@@ -5,7 +5,8 @@ import axios from "axios";
 import FadeIn from "react-fade-in";
 import Link from "next/link";
 import ProfilePicture from "../../../components/ProfilePicture";
-import {NativeNavigateBack} from "../../../utils/nativeBridge";
+import {NativeNavigate, NativeNavigateBack} from "../../../utils/nativeBridge";
+import {Navigate} from "react-big-calendar";
 
 export default function EventIOS ({}) {
 
@@ -48,7 +49,13 @@ export default function EventIOS ({}) {
 		HTTPClient("/events/"+eventId+"/join", "POST")
 			.then((response) => {
 				setJoined(true);
-				Router.push("/event/"+eventId);
+				NativeNavigate("NotificationsStack", {
+					screen: "Event",
+					params: {
+						eventId: eventId,
+						eventName: event.name
+					}
+				})
 			})
 			.catch((error) => {
 				alert("Error joining event. Please try again later.");

@@ -144,7 +144,7 @@ export default function NotificationsPage() {
 								/>
 							})}
 						</InfiniteScroll>
-						<br/><br/><br/><br/>
+
 					</div>
 
 				</div>

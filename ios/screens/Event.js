@@ -1,4 +1,14 @@
-import {View, Text, SafeAreaView, Alert, Button, TouchableWithoutFeedback, TouchableOpacity, Image} from "react-native";
+import {
+	View,
+	Text,
+	SafeAreaView,
+	Alert,
+	Button,
+	TouchableWithoutFeedback,
+	TouchableOpacity,
+	Image,
+	ScrollView, Share
+} from "react-native";
 import { useRoute, useNavigation } from '@react-navigation/native';
 import HTTPClient from "../httpClient";
 import {useEffect, useState} from "react";
@@ -42,7 +52,12 @@ export default function Event () {
 			headerRight: () => (
 
 				<HeaderButtons>
-					<TouchableOpacity>
+					<TouchableOpacity onPress={async () => {
+						await Share.share({
+							url: frontendUrl + "/event/" + route.params.eventId+"/invite",
+							title: "Timestack"
+						});}
+					}>
 						<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
 					</TouchableOpacity>
 					<OverflowMenu
@@ -64,41 +79,50 @@ export default function Event () {
 		});
 
 
-		HTTPClient("/events/"+route.params.eventId, "GET")
-			.then((response) => {
-
-				if(response.data.message === "joinRequired") {
-					// Router.push("/event/"+eventId+"/join");
-				}else {
-					setEvent(response.data.event);
-					setLoaded(true);
-
-					HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
-						.catch(err => {});
-					HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
-						.catch(err => {});
-				}
-
-			})
-			.catch((error) => {
-				Alert.alert("Error", "Could not load event", [
-					{
-						text: "OK",
-						onPress: () => {
-							navigation.goBack();
-						}
-					}
-				])
-				console.log(error);
-				// window.location.href = "/main_ios";
-			});
+		// HTTPClient("/events/"+route.params.eventId, "GET")
+		// 	.then((response) => {
+		//
+		// 		if(response.data.message === "joinRequired") {
+		// 			// Router.push("/event/"+eventId+"/join");
+		// 		}else {
+		// 			setEvent(response.data.event);
+		// 			setLoaded(true);
+		//
+		// 			HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
+		// 				.catch(err => {});
+		// 			HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
+		// 				.catch(err => {});
+		// 		}
+		//
+		// 	})
+		// 	.catch((error) => {
+		// 		Alert.alert("Error", "Could not load event", [
+		// 			{
+		// 				text: "OK",
+		// 				onPress: () => {
+		// 					navigation.goBack();
+		// 				}
+		// 			}
+		// 		])
+		// 		console.log(error);
+		// 		// window.location.href = "/main_ios";
+		// 	});
 	};
 
 	useEffect(() => {
 		fetchEvent();
 	}, [])
 
-	return <SafeAreaView style={{backgroundColor: "white", flex: 1}}>
+	return <View style={{backgroundColor: "white", flex: 1, flexDirection: "column"}}>
+
+			<Main
+				baseRoute={"/event/"+route.params.eventId+"?name="+route.params.eventName}
+				apiUrl={apiUrl}
+				frontendUrl={frontendUrl}
+				navigation={navigation}
+			/>
+		</View>
+
 		{/*<Picker>*/}
 		{/*	{options.map((option) => (*/}
 		{/*		<Picker.Item*/}
@@ -109,12 +133,6 @@ export default function Event () {
 		{/*	))}*/}
 		{/*</Picker>*/}
 		{/*<Text>{event?.name}</Text>*/}
-		<Main
-			baseRoute={"/event/"+route.params.eventId}
-			apiUrl={apiUrl}
-			frontendUrl={frontendUrl}
-			navigation={navigation}
-	/></SafeAreaView>
 
 
 

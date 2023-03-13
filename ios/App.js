@@ -127,6 +127,7 @@ function Nav() {
                 tabBarStyle: {
                     padding: 20, // Increase the vertical margin of the tab bar,
                     borderWidth: 0,
+                    margin: 0
                 },
             }}
         >
@@ -173,8 +174,8 @@ function Nav() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width: 40, height: 40}} source={require("./assets/icons/nav/add_black.png")}/>
-                        return <Image style={{width: 40, height: 40}} source={require("./assets/icons/nav/add_white.png")}/>
+                        if(focused) return <Image style={{width:40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
+                        return <Image style={{width: 40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
 
                     }
                 }}

@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Upload from "../screens/Upload";
 import {ModalView} from "react-native-ios-modal";
 import * as React from "react";
-import {View, Text, Button} from "react-native";
+import {View, Text, Button, ScrollView, RefreshControl, SafeAreaView} from "react-native";
 import {useEffect} from "react";
 import Event from "../screens/Event";
 const apiUrl = Constants.expoConfig.extra.apiUrl;
@@ -20,7 +20,28 @@ function Viewer({baseRoute, navigation}) {
 	);
 }
 function HomeScreen({navigation, route}) {
-	return <Viewer onStyle={{flex: 1}} baseRoute={"/main_ios"} navigation={navigation}/>
+
+	const [refreshing, setRefreshing] = React.useState(false);
+	const [id, setId] = React.useState("");
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setId(Math.random().toString(36).substring(7));
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 2000);
+	}, []);
+
+	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
+		<ScrollView
+			// scrollEnabled={false}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+			contentContainerStyle={{flexGrow: 1}}
+			style={{flex: 1, height: "100%", backgroundColor: "white"}}
+		>
+			<Viewer onStyle={{flex: 1}} baseRoute={"/main_ios?id"+id} navigation={navigation}/>
+		</ScrollView>
+	</SafeAreaView>
 }
 
 function EventScreen({navigation, route}) {
@@ -76,24 +97,7 @@ export function FutureStackScreen() {
 }
 
 export function AddStackScreen() {
-
-	const modalRef = React.createRef();
-
-	useEffect(() => {
-		console.log(modalRef);
-		if(modalRef.current) modalRef.current.setVisibility(true);
-	})
-
-
-	return <View>
-		<ModalView  ref={modalRef}>
-			<View>
-				<Text>Hey</Text>
-			</View>
-
-
-		</ModalView>
-	</View>
+	return <CoreStackScreen initialRouteName="Add"/>
 }
 
 export function NotificationsStackScreen() {

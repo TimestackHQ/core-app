@@ -3,6 +3,7 @@ import HTTPClient from "../utils/httpClient";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Link from "next/link";
 import Router from "next/router";
+import {NativeNavigate} from "../utils/nativeBridge";
 
 export default function EventPad ({event}) {
 
@@ -18,7 +19,9 @@ export default function EventPad ({event}) {
 	}, []);
 
 	return (
-		<div onClick={() => Router.push(`/event/`+event.publicId+`/join`)} className={"text-center"} style={{
+		<div onClick={() => NativeNavigate("Invite",{
+			eventId: event._id
+		})} className={"text-center"} style={{
 			backgroundImage: `url("${uri}")`,
 			backgroundSize: "cover",
 			backgroundPosition: "center",

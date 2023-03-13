@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import HTTPClient from "../utils/httpClient";
 import IOS from "../components/ios";
 import CoverPicture from "../components/CoverPicture";
+import {NativeNavigate} from "../utils/nativeBridge";
 
 const buttonStyle = {
 	borderRadius: "0px",
@@ -80,7 +81,16 @@ export default function Home() {
 									invitees,
 									cover: coverUpload.data.media.publicId,
 								}, ).then(res => {
-									router.push("/event/"+res.data.event._id);
+									setName("");
+									setLocation("");
+									setStartsAt("");
+									setEndsAt("");
+									setInvitees([]);
+									setCover(null);
+									NativeNavigate("Event", {
+										eventId: res.data.event._id,
+										eventName: res.data.event.name,
+									})
 								}).catch((err) => {
 									alert(err);
 								})

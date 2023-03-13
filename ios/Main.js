@@ -66,8 +66,11 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
     const notificationListener = useRef();
     const responseListener = useRef();
 
-    console.log(frontendUrl+baseRoute)
+    console.log(frontendUrl+baseRoute);
 
+    useEffect(() => {
+        webviewRef.current.reload();
+    }, [baseRoute]);
 
 
     const webviewRef = React.createRef();
@@ -144,7 +147,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
 
 
     return (
-        <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={{flex: 1, flexDirection: 'row', flexGrow: 1}}>
 
             <ModalView onModalWillDismiss={() => {
                 webviewRef.current.postMessage(JSON.stringify({
