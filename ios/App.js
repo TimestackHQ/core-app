@@ -1,17 +1,17 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Image, TouchableOpacity, View} from "react-native";
+import {Image} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
+import Updates from "react-native/Libraries/Utilities/DevSettings";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
 import {useEffect, useState} from "react";
 import HTTPClient from "./httpClient";
-import Updates from "react-native/Libraries/Utilities/DevSettings";
 import HomeStackScreen from "./stacks/HomeStack";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
@@ -29,23 +29,9 @@ function Viewer({baseRoute}) {
         );
 }
 
-function FutureScreen() {
-    return <Viewer baseRoute={"/main_ios"}/>
+function Invite ({navigation, route}) {
+    return <Viewer baseRoute={"/event/"+route.params.eventId+"/join"}/>
 }
-
-function AddScreen() {
-    return <Viewer baseRoute={"/new"}/>
-}
-
-function NotificationsScreen() {
-    return <Viewer baseRoute={"/notifications"}/>
-}
-
-function ProfileScreen() {
-    return <Viewer baseRoute={"/profile"}/>
-}
-
-
 export default function App() {
 
     const [authenticated, setAuthenticated] = useState(false);
@@ -82,7 +68,7 @@ export default function App() {
     }
 
     return authenticated ? (
-        <NavigationContainer><Nav/></NavigationContainer>
+        <NavigationContainer><CoreStackScreen/></NavigationContainer>
     ) : <Main
         baseRoute={"/auth"}
         apiUrl={apiUrl}
@@ -90,11 +76,22 @@ export default function App() {
         setSession={setSession}
     />;
 }
+
+const CoreStack = createNativeStackNavigator();
+function CoreStackScreen() {
+    return (
+        <CoreStack.Navigator screenOptions={{
+            headerShown: false
+        }}>
+            <CoreStack.Screen name="Main" component={Nav} />
+            <CoreStack.Screen name="Invite" component={Invite} />
+        </CoreStack.Navigator>
+    );
+}
+
+
 const Tab = createBottomTabNavigator();
-
 function Nav() {
-
-
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
 
@@ -200,4 +197,21 @@ function Nav() {
 
 
     );
+}
+
+
+function FutureScreen() {
+    return <Viewer baseRoute={"/main_ios"}/>
+}
+
+function AddScreen() {
+    return <Viewer baseRoute={"/new"}/>
+}
+
+function NotificationsScreen() {
+    return <Viewer baseRoute={"/notifications"}/>
+}
+
+function ProfileScreen() {
+    return <Viewer baseRoute={"/profile"}/>
 }

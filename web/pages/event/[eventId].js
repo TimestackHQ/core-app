@@ -7,7 +7,7 @@ import AddPeopleScreen from "../../components/AddPeopleScreen";
 import ContentLoader from "react-content-loader";
 import {useSelector} from "react-redux";
 import ProfilePicture from "../../components/ProfilePicture";
-import {EventButtonAction, modalView} from "../../utils/nativeBridge";
+import {EventButtonAction, modalView, NativeNavigate} from "../../utils/nativeBridge";
 import {Fade} from "@mui/material";
 import FadeIn from "react-fade-in";
 
@@ -21,7 +21,6 @@ export default function EventIOS ({}) {
 	const [event, setEvent] = useState(null);
 	const [media, setMedia] = useState([]);
 	const [uploadQueue, setUploadQueue] = useState([]);
-
 
 	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
@@ -159,8 +158,12 @@ export default function EventIOS ({}) {
 										<img
 
 											onClick={() => {
-												Router.push("/event/"+event?._id+"/join")}
-											}
+												NativeNavigate("Invite", {
+													eventId: event._id,
+													eventName: event.name,
+													eventLocation: event.location
+												})
+											}}
 											src={uri}
 											effect="blur"
 											loading={"lazy"}

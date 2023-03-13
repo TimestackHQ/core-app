@@ -2,11 +2,20 @@ import ProfilePicture from "../ProfilePicture";
 import moment from "moment";
 import React from "react";
 import Router from "next/router";
+import {NativeNavigate} from "../../utils/nativeBridge";
 
 export default function EventInviteNotification ({notification, timeAgo}) {
 	const payload = notification.data.payload;
 	return (
-		<div onClick={() => window.location.href = payload.url} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
+		<div onClick={() => {
+			NativeNavigate("Home", {
+				// screen: "Event",
+				// params: {
+				// 	eventId: payload.eventId
+				// },
+			})
+			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
+		}} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
 			<div className={"col-2"}>
 				<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
 			</div>
