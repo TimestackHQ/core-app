@@ -12,6 +12,7 @@ export default function AuthCheck({children}) {
 
 	const router = useRouter();
 	const isAuthPath = router.pathname.includes("/auth") ||
+		router.pathname === "/contact" ||
 		router.pathname ===  "/" ||
 		router.pathname.endsWith("/invite");
 
