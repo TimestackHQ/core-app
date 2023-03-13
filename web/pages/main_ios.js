@@ -32,14 +32,6 @@ export default function MainIOS () {
 						{events?.map((event, index) => {
 							return <EventCard event={event} key={index}/>
 						})}
-						<br/>
-						<br/>
-						<br/>
-						<br/>
-
-
-
-
 					</div>
 
 

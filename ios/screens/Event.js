@@ -7,7 +7,7 @@ import {
 	TouchableWithoutFeedback,
 	TouchableOpacity,
 	Image,
-	ScrollView, Share
+	ScrollView, Share, RefreshControl
 } from "react-native";
 import { useRoute, useNavigation } from '@react-navigation/native';
 import HTTPClient from "../httpClient";
@@ -15,6 +15,7 @@ import {useEffect, useState} from "react";
 import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
 import Main from "../Main";
 import Constants from "expo-constants";
+import * as React from "react";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -37,6 +38,17 @@ export default function Event () {
 
 	const route = useRoute();
 	const navigation = useNavigation();
+
+	const [refreshing, setRefreshing] = React.useState(false);
+	const [id, setId] = React.useState("");
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setId(Math.random().toString(36).substring(7));
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
+	}, []);
 
 	const [event, setEvent] = useState(null);
 	const [loaded, setLoaded] = useState(false);
@@ -113,26 +125,22 @@ export default function Event () {
 		fetchEvent();
 	}, [])
 
-	return <View style={{backgroundColor: "white", flex: 1, flexDirection: "column"}}>
+	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
+		<ScrollView
+			// scrollEnabled={false}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+			contentContainerStyle={{flexGrow: 1}}
+			style={{flex: 1, height: "100%", backgroundColor: "white"}}
+		>
 
 			<Main
-				baseRoute={"/event/"+route.params.eventId+"?name="+route.params.eventName}
+				baseRoute={"/event/"+route.params.eventId+"?id="+id+"&name="+route.params.eventName}
 				apiUrl={apiUrl}
 				frontendUrl={frontendUrl}
 				navigation={navigation}
 			/>
-		</View>
-
-		{/*<Picker>*/}
-		{/*	{options.map((option) => (*/}
-		{/*		<Picker.Item*/}
-		{/*			key={option.value}*/}
-		{/*			label={option.label}*/}
-		{/*			value={option.value}*/}
-		{/*		/>*/}
-		{/*	))}*/}
-		{/*</Picker>*/}
-		{/*<Text>{event?.name}</Text>*/}
+		</ScrollView>
+	</SafeAreaView>
 
 
 

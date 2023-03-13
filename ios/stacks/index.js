@@ -29,7 +29,7 @@ function HomeScreen({navigation, route}) {
 		setId(Math.random().toString(36).substring(7));
 		setTimeout(() => {
 			setRefreshing(false);
-		}, 2000);
+		}, 1000);
 	}, []);
 
 	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
