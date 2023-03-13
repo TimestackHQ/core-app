@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import HTTPClient from "../utils/httpClient";
 import Router, {useRouter} from "next/router";
 import {useDispatch, useSelector} from "react-redux";
+import {NativeNavigate} from "../utils/nativeBridge";
 
 export default function AuthCheck({children}) {
 
@@ -34,8 +35,11 @@ export default function AuthCheck({children}) {
 						err.response?.data?.status === "unconfirmed")
 				){
 					await Router.push("/auth?eventId="+eventId);
+					await NativeNavigate("Auth", []);
 				} else {
 					await Router.push("/auth");
+					await NativeNavigate("Auth", []);
+
 				}
 
 				setIsValidSession(true);

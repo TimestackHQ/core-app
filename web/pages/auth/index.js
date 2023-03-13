@@ -17,7 +17,7 @@ import Birthdate from "./Birthdate";
 import Adventure from "./Adventure";
 import Username from "./Username";
 import Step2 from "./Step2";
-import {notifyNativeOfSession} from "../../utils/nativeBridge";
+import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
 
 export default function Login() {
 
@@ -63,7 +63,7 @@ export default function Login() {
 	useEffect(() => {
 		notifyNativeOfSession();
 		setStep(1);
-		// if(userConfirmed) Router.push("/main_ios");
+		if(userConfirmed) NativeResetStack();
 	}, [userConfirmed]);
 
 

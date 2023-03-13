@@ -19,22 +19,47 @@ const frontendUrl = Constants.expoConfig.extra.frontendUrl;
 
 uploadWorker();
 
-function Viewer({baseRoute}) {
+const setSession = async (session) => {
+    console.log("SETTING SESSION");
+    await AsyncStorage.setItem('@session', session);
+    Updates.reload();
+}
+
+function Viewer({baseRoute, navigation}) {
         return (
             <Main
                 baseRoute={baseRoute}
                 apiUrl={apiUrl}
+                navigation={navigation}
                 frontendUrl={frontendUrl}
             />
         );
 }
 
 function Invite ({navigation, route}) {
-    return <Viewer baseRoute={"/event/"+route.params.eventId+"/join"}/>
+    return <Viewer navigation={navigation} baseRoute={"/event/"+route.params.eventId+"/join"}/>
+}
+
+function AuthScreen({navigation, route}) {
+
+    return <Main
+            baseRoute={"/auth"}
+            apiUrl={apiUrl}
+            frontendUrl={frontendUrl}
+            setSession={setSession}
+            navigation={navigation}
+        />;
 }
 export default function App() {
 
-    const [authenticated, setAuthenticated] = useState(false);
+    return <NavigationContainer><CoreStackScreen/></NavigationContainer>;
+
+}
+
+const CoreStack = createNativeStackNavigator();
+function CoreStackScreen() {
+
+    const [authenticated, setAuthenticated] = useState(true);
     const [currentSession, setCurrentSession] = useState(null);
 
     useEffect(() => {
@@ -45,6 +70,9 @@ export default function App() {
 
                     setAuthenticated(true);
 
+                })
+                .catch((_err) => {
+                    setAuthenticated(false);
                 })
         }).then(_r => {});
     }, [currentSession]);
@@ -67,24 +95,19 @@ export default function App() {
         Updates.reload();
     }
 
-    return authenticated ? (
-        <NavigationContainer><CoreStackScreen/></NavigationContainer>
-    ) : <Main
-        baseRoute={"/auth"}
-        apiUrl={apiUrl}
-        frontendUrl={frontendUrl}
-        setSession={setSession}
-    />;
-}
-
-const CoreStack = createNativeStackNavigator();
-function CoreStackScreen() {
     return (
-        <CoreStack.Navigator screenOptions={{
-            headerShown: false
+        <CoreStack.Navigator initialRouteName={"Main"} screenOptions={{
+            headerShown: false,
+            animationEnabled: false,
+            gestureEnabled: false
         }}>
             <CoreStack.Screen name="Main" component={Nav} />
-            <CoreStack.Screen name="Invite" component={Invite} />
+            <CoreStack.Screen name="Invite" navigationOptions={{
+                animationEnabled: false
+            }} component={Invite} />
+            <CoreStack.Screen name="Auth" navigationOptions={{
+                animationEnabled: false
+            }} component={AuthScreen} />
         </CoreStack.Navigator>
     );
 }
@@ -200,18 +223,18 @@ function Nav() {
 }
 
 
-function FutureScreen() {
-    return <Viewer baseRoute={"/main_ios"}/>
+function FutureScreen({navigation}) {
+    return <Viewer navigation={navigation} baseRoute={"/main_ios"}/>
 }
 
-function AddScreen() {
-    return <Viewer baseRoute={"/new"}/>
+function AddScreen({navigation}) {
+    return <Viewer navigation={navigation} baseRoute={"/new"}/>
 }
 
-function NotificationsScreen() {
-    return <Viewer baseRoute={"/notifications"}/>
+function NotificationsScreen({navigation}) {
+    return <Viewer navigation={navigation} baseRoute={"/notifications"}/>
 }
 
-function ProfileScreen() {
-    return <Viewer baseRoute={"/profile"}/>
+function ProfileScreen({navigation}) {
+    return <Viewer navigation={navigation}  baseRoute={"/profile"}/>
 }

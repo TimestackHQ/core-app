@@ -40,6 +40,10 @@ export const NativeNavigateBack = () => window.ReactNativeWebView.postMessage(JS
 	request: "navigateBack"
 }));
 
+export const NativeResetStack = () => window.ReactNativeWebView.postMessage(JSON.stringify({
+	request: "resetStack"
+}));
+
 export const EventButtonAction = (eventId) => window.ReactNativeWebView.postMessage(JSON.stringify({
 	request: "eventButtonAction",
 	eventId: eventId

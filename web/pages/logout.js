@@ -1,10 +1,11 @@
 import {useEffect} from "react";
-import {notifyNativeOfSession} from "../utils/nativeBridge";
+import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../utils/nativeBridge";
 
 export default function Logout() {
   useEffect(() => {
 	  window.localStorage.removeItem("TIMESTACK_TOKEN");
 	  notifyNativeOfSession();
+	  NativeNavigate("Auth");
 	  window.location.href = "/auth";
   }, []);
 

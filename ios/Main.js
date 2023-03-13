@@ -201,6 +201,20 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         }
                     }
 
+                    if(message.request === "resetStack") {
+                        console.log(message);
+                        if(navigation) {
+                            navigation.replace(
+                                'Main', // same screen
+                                null, // no params
+                                null, // no "sub-action"
+                                // key for new screen. i just use a random number but you could
+                                // generate a uuid or whatever
+                                Math.random().toString()
+                            );
+                        }
+                    }
+
                     if(message.request === "allContacts"){
                         console.log("Providing all contacts")
                         const { status } = await Contacts.requestPermissionsAsync();
@@ -221,11 +235,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         console.log(message)
                         console.log("========> Setting session");
                         const session = await AsyncStorage.getItem("@session");
-                        if(String(session) !== String(message.session)) {
-                            await AsyncStorage.setItem("@session", message.session ? message.session : "");
-                            NativeModules.DevSettings.reload();
-
-                        }
 
                         updatePushToken();
                     }

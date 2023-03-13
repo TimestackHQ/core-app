@@ -161,7 +161,8 @@ export default function EventIOS ({}) {
 												NativeNavigate("Invite", {
 													eventId: event._id,
 													eventName: event.name,
-													eventLocation: event.location
+													eventLocation: event.location,
+													disabledAnimation: true
 												})
 											}}
 											src={uri}
