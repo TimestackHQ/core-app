@@ -2,7 +2,7 @@
   "build": {
     "preview": {
       "ios": {
-        "developmentClient": true,
+        "distribution": "internal",
         "resourceClass": "m1-medium"
       },
       "android": {
@@ -10,7 +10,10 @@
       }
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
     },
     "development-simulator": {
       "developmentClient": true,

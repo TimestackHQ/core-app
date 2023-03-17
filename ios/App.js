@@ -5,8 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
-import Updates from "react-native/Libraries/Utilities/DevSettings";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {createStackNavigator} from "@react-navigation/stack";
 
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
@@ -28,7 +27,6 @@ uploadWorker();
 const setSession = async (session) => {
     console.log("SETTING SESSION");
     await AsyncStorage.setItem('@session', session);
-    Updates.reload();
 }
 
 function Viewer({baseRoute, navigation}) {
@@ -62,7 +60,7 @@ export default function App() {
 
 }
 
-const CoreStack = createNativeStackNavigator();
+const CoreStack = createStackNavigator();
 function CoreStackScreen() {
 
     const [authenticated, setAuthenticated] = useState(true);
@@ -84,18 +82,18 @@ function CoreStackScreen() {
     }, [currentSession]);
 
     return (
-        <CoreStack.Navigator initialRouteName={"Main"} screenOptions={{
+        <CoreStack.Navigator screenOptions={{
             headerShown: false,
             animationEnabled: false,
             gestureEnabled: false
         }}>
             <CoreStack.Screen name="Main" component={Nav} />
-            <CoreStack.Screen name="Invite" navigationOptions={{
-                animationEnabled: false
-            }} component={Invite} />
             <CoreStack.Screen name="Auth" navigationOptions={{
                 animationEnabled: false
             }} component={AuthScreen} />
+            <CoreStack.Screen name="Invite" navigationOptions={{
+                animationEnabled: false
+            }} component={Invite} />
         </CoreStack.Navigator>
     );
 }

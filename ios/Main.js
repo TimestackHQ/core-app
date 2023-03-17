@@ -244,7 +244,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
 
                     if(message.request === "uploadQueue") {
                         console.log("Sending back queue");
-                        webviewRef.current.postMessage(JSON.stringify({
+                        webviewRef.current?.postMessage(JSON.stringify({
                             response: "uploadQueue",
                             data: (await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload))
                         }));

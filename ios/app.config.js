@@ -3,7 +3,7 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.0.14",
+    "version": "0.15.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -75,11 +75,11 @@ module.exports = {
       "frontendUrl": process.env.FRONTEND_URL ? process.env.FRONTEND_URL : "https://timestack.world",
       "apiUrl": process.env.API_URL ? process.env.API_URL : "https://edge.timestack.world",
       "eas": {
-        "projectId": "aa3c70a4-d2ff-4a95-a002-74668153f9d8"
+        "projectId": "e0c26aeb-0710-4a0c-8057-e4415032c70b"
       },
     },
     "updates": {
-      "url": "https://u.expo.dev/aa3c70a4-d2ff-4a95-a002-74668153f9d8",
+      "url": "https://u.expo.dev/e0c26aeb-0710-4a0c-8057-e4415032c70b",
       "fallbackToCacheTimeout": 0
     },
     "runtimeVersion": {
