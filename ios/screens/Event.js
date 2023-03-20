@@ -55,7 +55,6 @@ export default function EventScreen () {
 	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
 
-	console.log(route);
 
 	const fetchEvent = () => {
 
@@ -81,7 +80,11 @@ export default function EventScreen () {
 							</TouchableOpacity>
 						</View>}
 					>
-						<HiddenItem style={{color: "red"}} title="Edit" onPress={() => alert('hidden1')} />
+						<HiddenItem style={{color: "red"}} title="Edit" onPress={() => navigation.navigate("EditEvent", {
+							eventId: route.params.eventId,
+							eventName: route.params.eventName
+						})
+						} />
 						<HiddenItem style={{color: "red"}} title="Leave" onPress={() => alert('hidden1')} />
 						<ReusableHiddenItem onPress={() => alert('hidden2')} />
 					</OverflowMenu>
@@ -120,6 +123,13 @@ export default function EventScreen () {
 		// 		// window.location.href = "/main_ios";
 		// 	});
 	};
+
+	useEffect(() => {
+		if(route.params?.updated) {
+			fetchEvent();
+		}
+
+	}, [route.params])
 
 	useEffect(() => {
 		fetchEvent();

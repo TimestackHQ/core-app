@@ -8,6 +8,7 @@ import FutureScreen from "../screens/Future";
 import AddScreen from "../screens/Add";
 import NotificationsScreen from "../screens/Notifications";
 import ProfileScreen from "../screens/Profile";
+import EditEvent from "../screens/EditEvent";
 
 
 
@@ -25,6 +26,7 @@ function CoreStackScreen({initialRouteName = "Main"}){
 		}}>
 			<Index.Screen name="Main" component={HomeScreen} />
 			<Index.Screen options={{headerShown: true}} name="Event" component={EventScreen} />
+			<Index.Screen options={{headerShown: true}} name="EditEvent" component={EditEvent} />
 			<Index.Screen name="Future" component={FutureScreen} />
 			<Index.Screen name="Add" component={AddScreen} />
 			<Index.Screen name="Notifications" component={NotificationsScreen} />

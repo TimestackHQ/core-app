@@ -57,12 +57,15 @@ export default function AddScreen({navigation}) {
 			exif: true,
 			quality: 0,
 		}).then(async result => {
+			console.log(result)
+
 			if (!result.canceled) {
 
 				console.log(result)
 
 				const mediaId = uuid.v4();
 				const media = result.assets[0];
+
 				setCover(media);
 				const uri = media?.type === "video"
 					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
@@ -99,6 +102,17 @@ export default function AddScreen({navigation}) {
 
 	}
 
+	const clear = () => {
+		setName("");
+		setStartDate(new Date());
+		setEndDate(null);
+		setLocation("");
+		setAbout("");
+		setUploadedCover(null);
+		setCover(null);
+		setNextScreen(false)
+	}
+
 	useEffect(() => console.log(keyBoardOpen), [keyBoardOpen]);
 	const createEvent = async () => {
 		HTTPClient("/events", "POST", {
@@ -118,16 +132,7 @@ export default function AddScreen({navigation}) {
 				eventName: event.name,
 				eventLocation: event.location
 			});
-			setTimeout(() => {
-				setName("");
-				setStartDate(new Date());
-				setEndDate(null);
-				setLocation("");
-				setAbout("");
-				setUploadedCover(null);
-				setCover(null);
-				setNextScreen(false)
-			}, 1000);
+			setTimeout(clear, 1000);
 		}).catch((err) => {
 			Alert.alert("Error", "We couldn't create your event. Please try again.");
 			console.log(err.response.data);
@@ -143,7 +148,8 @@ export default function AddScreen({navigation}) {
 				marginLeft: 20,
 				marginRight: 0,
 				position: "relative",
-				top: 0
+				top: 0,
+				zIndex: 100,
 			}}>
 				<KeyboardListener
 					onWillShow={() => { setKeyBoardOpen(true); }}
@@ -155,7 +161,10 @@ export default function AddScreen({navigation}) {
 					position: "absolute",
 					top: 60,
 					left: -10,
-				}} onPress={() => setNextScreen(false)}>
+				}} onPress={() => {
+					setKeyBoardOpen(false);
+					setNextScreen(false)
+				}}>
 					<FastImage source={require("../assets/icons/collection/left-arrow.png")} style={{
 
 						width: 25,
@@ -217,7 +226,10 @@ export default function AddScreen({navigation}) {
 
 					}}
 				>{startDate && endDate ? "To" : "End date"}</Text>: null}
-				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 240, width: "100%"}} onPress={() => setEndDateOpen(true)}>
+				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 240, width: "100%", zIndex: -3000}} onPress={() => {
+					alert("hi")
+					setEndDateOpen(true)
+				}}>
 					<Text
 						multiline={true}
 
@@ -322,7 +334,7 @@ export default function AddScreen({navigation}) {
 						// 'details' is provided when fetchDetails = true
 						console.log(data);
 						console.log(details);
-						setLocation(data.description)
+						setLocation(data.structured_formatting.main_text);
 						setLocationMapsPayload(details)
 					}}
 
@@ -379,8 +391,8 @@ export default function AddScreen({navigation}) {
 					paddingRight: 0,
 					zIndex: 1020
 				}}
-				                  disabled={name === ""}
-				                  onPress={createEvent}
+	                  disabled={name === ""}
+	                  onPress={createEvent}
 
 				>
 					<Text style={{
@@ -395,11 +407,21 @@ export default function AddScreen({navigation}) {
 
 			</SafeAreaView>
 		</KeyboardAvoidingView>
-	</TouchableWithoutFeedback> : <View onTouchStart={Keyboard.dismiss} style={{flex: 1, backgroundColor: "white"}}>
+	</TouchableWithoutFeedback> : <SafeAreaView onTouchStart={Keyboard.dismiss} style={{flex: 1, backgroundColor: "white"}}>
 		<ScrollView style={{flex: 1, height: "100%",
 			
 			Content: "center",
 		}}>
+			{name || cover ? <TouchableOpacity onPress={clear} style={{
+				fontFamily: "Red Hat Display Semi Bold",
+				position: "absolute",
+				top: 20,
+				right: 30
+			}}>
+				<Text>
+					Clear
+				</Text>
+			</TouchableOpacity> : null}
 			<View style={{
 				alignItems: "center",
 				justify: "center",
@@ -407,6 +429,7 @@ export default function AddScreen({navigation}) {
 				justifyContent: 'flex-end',
 				transform: [{ scaleY: -1 }],
 			}}>
+
 					<TextInput
 						defaultValue={name}
 						value={name}
@@ -492,5 +515,5 @@ export default function AddScreen({navigation}) {
 				}}>OKAY</Text>
 			</TouchableOpacity>
 		</View>
-	</View>
+	</SafeAreaView>
 }

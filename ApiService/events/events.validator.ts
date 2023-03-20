@@ -16,6 +16,21 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
 
     return schema.validate(body);
 };
+export const updateEventValidator = (body: unknown): Joi.ValidationResult => {
+
+    const schema = Joi.object({
+        name: Joi.string(),
+        startsAt: Joi.string(),
+        endsAt: Joi.string(),
+        location: Joi.string(),
+        about: Joi.string(),
+        cover: Joi.string(),
+        invitees: Joi.array().items(isObjectIdJoiValidator),
+        locationMapsPayload: Joi.any()
+    });
+
+    return schema.validate(body);
+};
 
 export const updatePeopleValidator = (body: unknown): Joi.ValidationResult => {
     const schema = Joi.object({

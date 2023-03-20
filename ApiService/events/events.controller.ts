@@ -75,6 +75,54 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
 
 }
 
+export async function updateEvent (req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const cover = await Models.Media.findOne({
+            publicId: req.body.cover
+        });
+
+        const event = await Models.Event.findOne({
+            _id: req.params.eventId,
+            users: {
+                $in: [req.user._id]
+            }
+        });
+
+        if (!event) {
+            return res.status(404).json({
+                message: "Event not found"
+            });
+        }
+
+        event.name = req.body?.name ? req.body.name : event?.name;
+        event.startsAt = req.body?.startsAt ? req.body.startsAt : event?.startsAt;
+        event.endsAt = req.body?.endsAt ? req.body.endsAt : event?.endsAt;
+        event.about = req.body?.about ? req.body.about : event?.about;
+        event.location = req.body?.location ? req.body.location : event?.location;
+        event.locationMapsPayload = req.body?.locationMapsPayload ? req.body.locationMapsPayload : event?.locationMapsPayload;
+        event.cover = cover?._id ? cover._id : event?.cover;
+
+
+        await event.save();
+
+        res.json({
+            message: "Event updated",
+            event: {
+                _id: event._id,
+                name: event.name,
+                link: `${process.env.FRONTEND_URL}/event/${event.publicId}`
+            }
+        });
+
+    } catch (e) {
+        console.log(e)
+        next(e);
+    }
+
+}
+
 export async function getAllEvents (req: Request, res: Response, next: NextFunction) {
 
     try {
