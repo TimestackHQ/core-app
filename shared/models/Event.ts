@@ -8,8 +8,10 @@ import {isObjectIdOrHexString} from "mongoose";
 export interface EventSchema extends mongoose.Document {
     name: string;
     startsAt: Date;
-    endsAt: Date;
-    location: string;
+    endsAt?: Date;
+    location?: string;
+    about?: string;
+    locationMapsPayload?: any;
     media: MediaSchema[] & mongoose.Schema.Types.ObjectId[],
     createdBy: mongoose.Types.ObjectId;
     users: mongoose.Types.ObjectId[];
@@ -44,6 +46,10 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: false,
         max: 1000
+    },
+    locationMapsPayload: {
+        type: mongoose.Schema.Types.Mixed,
+        required: false,
     },
     about: {
         type: String,

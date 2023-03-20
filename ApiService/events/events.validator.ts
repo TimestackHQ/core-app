@@ -11,6 +11,7 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
         about: Joi.string(),
         cover: Joi.string(),
         invitees: Joi.array().items(isObjectIdJoiValidator).required(),
+        locationMapsPayload: Joi.any()
     });
 
     return schema.validate(body);

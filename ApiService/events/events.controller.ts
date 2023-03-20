@@ -29,6 +29,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             endsAt: req.body?.endsAt,
             about: req.body?.about,
             location: req.body?.location,
+            locationMapsPayload: req.body?.locationMapsPayload,
             cover: cover?._id,
             users: [req.user._id],
         });

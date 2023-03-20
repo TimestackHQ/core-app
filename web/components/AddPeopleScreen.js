@@ -48,6 +48,7 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 	return (
 		<div className={"container"}>
 			<br/>
+			<br/>
 			<div className="row">
 				<div className={"card "} style={{
 					boxShadow: "rgba(100, 100, 111, 0.5) 0px 10px 50px 0px",

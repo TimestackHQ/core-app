@@ -6,7 +6,6 @@ import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
 import {createStackNavigator} from "@react-navigation/stack";
-import Updates from "react-native/Libraries/Utilities/DevSettings";
 
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
@@ -24,11 +23,9 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
 
 uploadWorker();
-
 const setSession = async (session) => {
     console.log("SETTING SESSION");
     await AsyncStorage.setItem('@session', session);
-    Updates.reload();
 
 }
 
@@ -106,7 +103,7 @@ function Nav() {
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
 
-    const [fontsLoaded] = useFonts({
+    useFonts({
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
         'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
         'Red Hat Display Bold': require('./assets/fonts/RedHatDisplay-Bold.ttf'),

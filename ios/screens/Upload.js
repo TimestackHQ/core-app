@@ -63,13 +63,17 @@ export default function Upload ({payload}) {
 			setPendingMedia((await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload)));
 		}, 100);
 
+		const remoteMedia = setInterval(() => {
+			HTTPClient("/events/"+payload?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
+		}, 2000);
+
 		return () => {
 			clearInterval(queue);
+			clearInterval(remoteMedia);
 		}
 	}, [event]);
 
 	useEffect(() => {
-		HTTPClient("/events/"+payload?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
 	}, [pendingMedia]);
 
 	const selectMedia = (_id, state) => {
@@ -200,7 +204,7 @@ export default function Upload ({payload}) {
 								{media.type === "video" ?
 									<Video
 										repeat={true}
-										source={{fileCopyUri: media.uri}}
+										source={{uri: media.uri}}
 										muted={true}
 										resizeMode="cover"
 										style={{
