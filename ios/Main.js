@@ -237,7 +237,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
 
                         console.log(message)
                         console.log("========> Setting session");
-                        const session = await AsyncStorage.getItem("@session");
+                        await AsyncStorage.setItem("@session", message.session);
 
                         updatePushToken();
                     }

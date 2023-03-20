@@ -19,8 +19,6 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             publicId: req.body.cover
         });
 
-        if(!cover) return res.sendStatus(404);
-
         const event = new Models.Event({
             name: req.body.name,
             createdBy: req.user._id,
@@ -28,9 +26,10 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
                 ...users.map((user: {_id: any}) => user._id.toString())
             ]),
             startsAt: req.body.startsAt,
-            endsAt: req.body.endsAt,
-            location: req.body.location,
-            cover: cover._id,
+            endsAt: req.body?.endsAt,
+            about: req.body?.about,
+            location: req.body?.location,
+            cover: cover?._id,
             users: [req.user._id],
         });
 
@@ -47,7 +46,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
 
         // @ts-ignore
         await Promise.all(
-            [...event.invitees, req.user._id].map(async (invitee: any) => {
+            [...event.invitees].map(async (invitee: any) => {
                 const notification = new Models.Notification({
                     user: invitee,
                     title: "New invite",

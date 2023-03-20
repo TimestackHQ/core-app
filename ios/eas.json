@@ -9,6 +9,16 @@
         "buildType": "apk"
       }
     },
+    "preview-simulator": {
+      "ios": {
+        "simulator": true,
+        "distribution": "internal",
+        "resourceClass": "m1-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "channel": "production",
       "ios": {
@@ -20,7 +30,7 @@
       "distribution": "internal",
       "ios": {
         "simulator": true,
-        "resourceClass": "m1-medium"
+        "resourceClass" : "m1-medium"
       },
       "android": {
         "buildType": "apk"

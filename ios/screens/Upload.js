@@ -85,8 +85,6 @@ export default function Upload ({payload}) {
 
 	const pickImage = async (eventId) => {
 
-		setImporting(true);
-
 		try {
 
 			let result = await ImagePicker.launchImageLibraryAsync({
@@ -201,6 +199,7 @@ export default function Upload ({payload}) {
 							if(media?.type) return <View style={{...styles.item, backgroundColor: "white"}}>
 								{media.type === "video" ?
 									<Video
+										repeat={true}
 										source={{fileCopyUri: media.uri}}
 										muted={true}
 										resizeMode="cover"

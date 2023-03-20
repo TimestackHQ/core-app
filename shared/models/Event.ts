@@ -34,7 +34,7 @@ const EventSchema = new mongoose.Schema({
     },
     startsAt: {
         type: Date,
-        required: false
+        required: true
     },
     endsAt: {
         type: Date,
@@ -44,6 +44,11 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: false,
         max: 1000
+    },
+    about: {
+        type: String,
+        required: false,
+        max: 100000
     },
     media: [{
         type: mongoose.Schema.Types.ObjectId,

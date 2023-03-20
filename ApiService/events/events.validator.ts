@@ -6,8 +6,9 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
     const schema = Joi.object({
         name: Joi.string().required(),
         startsAt: Joi.string().required(),
-        endsAt: Joi.string().required(),
-        location: Joi.string().required(),
+        endsAt: Joi.string(),
+        location: Joi.string(),
+        about: Joi.string(),
         cover: Joi.string(),
         invitees: Joi.array().items(isObjectIdJoiValidator).required(),
     });

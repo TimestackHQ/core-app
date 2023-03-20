@@ -3,9 +3,9 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.15.0",
+    "version": "0.17.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",

@@ -6,6 +6,7 @@ import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
 import {createStackNavigator} from "@react-navigation/stack";
+import Updates from "react-native/Libraries/Utilities/DevSettings";
 
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
@@ -27,6 +28,8 @@ uploadWorker();
 const setSession = async (session) => {
     console.log("SETTING SESSION");
     await AsyncStorage.setItem('@session', session);
+    Updates.reload();
+
 }
 
 function Viewer({baseRoute, navigation}) {
@@ -68,7 +71,6 @@ function CoreStackScreen() {
 
     useEffect(() => {
         new Promise(async (resolve, reject) => {
-            const session = AsyncStorage.getItem("@session");
             HTTPClient("/auth/check", "GET")
                 .then((_res) => {
 

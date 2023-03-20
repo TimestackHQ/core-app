@@ -34,7 +34,7 @@ function ReusableHiddenItem(props) {
 	return null;
 }
 
-export default function Event () {
+export default function EventScreen () {
 
 	const route = useRoute();
 	const navigation = useNavigation();

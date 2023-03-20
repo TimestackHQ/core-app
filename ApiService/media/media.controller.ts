@@ -16,47 +16,32 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
         const file: Express.Multer.File | undefined = req.file;
 
-        let thumbnail: any;
-        let snapshot: any;
-
         const fileId = uuid();
 
-        if(file?.mimetype.split("/")[0] === "image") {
+        // @ts-ignore
+        const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
+        const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
 
-            Logger("Generating thumbnail for image")
-            const thumbnailLocation = await Compress.compressImage(fileId, <Buffer>file?.buffer, 51);
-            const publicId = fileId+".thumb.jpg";
-            await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
-            thumbnail = publicId;
 
-            Logger("Generating snapshot for image")
-
+        await GCP.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
+        if(snapshot) {
+            await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
         }
 
-        if(file?.mimetype.split("/")[0] === "video") {
-            Logger("Generating thumbnail for video")
-            const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 20, 10);
-            const publicId = fileId+".thumb.mp4";
-            await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
-            thumbnail = publicId;
-            const snapshotPublicId = fileId+".snapshot.jpg";
-            await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
-            snapshot = snapshotPublicId;
-        }
 
         const media = new Models.Media({
             publicId: fileId,
             // @ts-ignore
-            original: req.file.filename,
+            storageLocation: thumbnail.originalname,
+            thumbnail: thumbnail.originalname,
+            snapshot: snapshot ? snapshot.originalname : undefined,
             // @ts-ignore
-            storageLocation: thumbnail,
-            snapshot,
-            // @ts-ignore
-            type: req.file.mimetype,
+            type: thumbnail.mimetype,
             group: "cover",
             user: req.user._id,
-            thumbnail,
+            timestamp: new Date(),
         });
+
         await media.save();
 
         res.status(200).json({
@@ -66,24 +51,6 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
                 storageLocation: media.storageLocation,
             },
         });
-
-        if(file?.mimetype.split("/")[0] === "video") {
-            Logger("Uploading media to GCP")
-            const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 31, 30);
-            await GCP.upload(fileId+".mp4", <Buffer>fs.readFileSync(storageLocation));
-            media.storageLocation = fileId+".mp4";
-            media.publicId = media.storageLocation
-        }
-        else if(file?.mimetype.split("/")[0] === "image") {
-            Logger("Uploading media to GCP")
-            const storageLocation = await Compress.compressImage(fileId, <Buffer>file?.buffer, 0);
-            await GCP.upload(fileId+".jpg", <Buffer>fs.readFileSync(storageLocation));
-            media.storageLocation = fileId+".jpg";
-            media.publicId = media.storageLocation
-        }
-
-        Logger("Completed")
-        await media.save();
 
 
 
