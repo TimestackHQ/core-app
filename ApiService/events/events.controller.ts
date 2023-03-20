@@ -123,6 +123,29 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
 
 }
 
+export async function leaveEvent (req: Request, res: Response, next: NextFunction) {
+    try {
+
+        await Models.Event.updateOne({
+            publicId: req.params.eventId,
+            users: {
+                $in: [req.user._id]
+            }
+        }, {
+            $pull: {
+                users: req.user._id
+            }
+        });
+
+        res.json({
+            message: "Left event"
+        });
+
+    } catch(err) {
+        next(err);
+    }
+}
+
 export async function getAllEvents (req: Request, res: Response, next: NextFunction) {
 
     try {

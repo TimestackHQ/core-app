@@ -10,7 +10,7 @@ import {
     getEvent,
     joinEvent,
     mediaList,
-    updatePeople
+    updatePeople, leaveEvent
 } from "./events.controller";
 
 const router: Router = Router()
@@ -19,6 +19,7 @@ router.get("/", authCheck, getAllEvents);
 router.get("/invites", authCheck, getAllInvites);
 router.get("/:eventId", authCheck, getEvent);
 router.put("/:eventId", authCheck, HTTPValidator(updateEventValidator), updateEvent);
+router.post("/:eventId/leave", authCheck, leaveEvent);
 router.get("/:eventId/media", authCheck, mediaList);
 router.post("/", authCheck, HTTPValidator(createEventValidator), createEvent);
 router.put("/:eventId/people", authCheck, HTTPValidator(updatePeopleValidator), updatePeople);

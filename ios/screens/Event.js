@@ -85,7 +85,36 @@ export default function EventScreen () {
 							eventName: route.params.eventName
 						})
 						} />
-						<HiddenItem style={{color: "red"}} title="Leave" onPress={() => alert('hidden1')} />
+						<HiddenItem style={{color: "red"}} title="Leave" onPress={() => {
+							Alert.alert("Leave event", "Are you sure you want to leave this event?", [
+								{
+									text: "Cancel",
+									onPress: () => {},
+									style: "cancel"
+								},
+								{
+									text: "Leave",
+									onPress: () => {
+										HTTPClient("/events/"+route.params.eventId+"/leave", "POST")
+											.then((response) => {
+												navigation.navigate("Main", {
+													updatedId: Math.random().toString(36).substring(7)
+												});
+											})
+											.catch((error) => {
+												Alert.alert("Error", "Could not leave event", [
+													{
+														text: "OK",
+
+													}
+												])
+												console.log(error);
+												// window.location.href = "/main_ios";
+											});
+									}
+								}
+							])
+						}} />
 						<ReusableHiddenItem onPress={() => alert('hidden2')} />
 					</OverflowMenu>
 				</HeaderButtons>

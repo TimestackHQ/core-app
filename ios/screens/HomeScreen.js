@@ -1,5 +1,5 @@
 import {RefreshControl, SafeAreaView, ScrollView} from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import Viewer from "../Components/Viewer";
 
 export default function HomeScreen({navigation, route}) {
@@ -14,6 +14,10 @@ export default function HomeScreen({navigation, route}) {
 			setRefreshing(false);
 		}, 1000);
 	}, []);
+
+	useEffect(() => {
+		onRefresh();
+	}, [route.params?.updatedId]);
 
 	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
 		<ScrollView
