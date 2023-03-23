@@ -158,6 +158,10 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                 {modalData.type === "upload" ? <Upload payload={modalData.payload}/> : null}
 
             </ModalView>
+            {/*<StatusBar*/}
+            {/*    backgroundColor="back"*/}
+            {/*    barStyle="light-content"*/}
+            {/*/>*/}
             <WebView
                 scalesPageToFit={false}
                 allowsInlineMediaPlayback="true"

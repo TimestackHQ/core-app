@@ -18,6 +18,7 @@ import ExpoJobQueue from "expo-job-queue";
 import Video from 'react-native-video';
 import UploadViewFlatList from "../Components/UploadViewFlatList";
 import FastImage from "react-native-fast-image";
+import {launchImageLibrary} from "react-native-image-picker";
 
 export default function Upload ({payload}) {
 
@@ -49,7 +50,7 @@ export default function Upload ({payload}) {
 			})
 			.catch((error) => {
 				console.log(error);
-				window.location.href = "/main_ios";
+				// window.location.href = "/main_ios";
 			});
 
 		fetchMedia();
@@ -91,14 +92,30 @@ export default function Upload ({payload}) {
 
 		try {
 
-			let result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.All,
-				allowsMultipleSelection: true,
-				exif: true,
-				quality: 0,
+			const result = await launchImageLibrary({
+				mediaType: "mixed",
+				selectionLimit: 0,
+				includeExtra: true,
+				videoQuality: "low",
+				// presentationStyle: "overCurrentContext"
 			});
 
-			if (!result.canceled) {
+			if(result?.errorCode === "permission") {
+				Alert.alert("Permission", "Please allow access to your photos and videos in order to upload them.");
+				setImporting(false);
+				return;
+			}
+
+
+
+			// let result = await ImagePicker.launchImageLibraryAsync({
+			// 	mediaTypes: ImagePicker.MediaTypeOptions.All,
+			// 	allowsMultipleSelection: true,
+			// 	exif: true,
+			// 	quality: 0,
+			// });
+
+			if (!result.isCancel) {
 
 				for await (const media of _.uniq(result.assets)) {
 
@@ -126,7 +143,6 @@ export default function Upload ({payload}) {
 
 	return (
 		<View style={styles.container} >
-
 
 			<View style={{flex: 1, margin: 15, flexDirection: "column"}}>
 				<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 30, fontWeight: "600", marginLeft: 10 }}>Upload</Text>

@@ -27,12 +27,14 @@ export default function uploadWorker () {
 
 					else {
 						const imagePath = await processPhoto(mediaId, media.uri, 10);
-						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 80);
+						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 10, 800);
 						mediaList.push(imagePath, thumbnailPath);
 					}
 
 					const formData = new FormData();
-					formData.append('metadata', JSON.stringify(media.exif));
+					formData.append('metadata', JSON.stringify({
+						timestamp: media?.timestamp,
+					}));
 					formData.append('media', {uri: mediaList[0], name: mediaList[0].split("/").pop()});
 					formData.append('thumbnail', {uri: mediaList[1], name: mediaList[1].split("/").pop()});
 					if(media.type === "video") {
@@ -69,7 +71,7 @@ export default function uploadWorker () {
 		}, {
 			concurrency: 1,
 		})
-		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV2")
+		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV5V2")
 	} catch(err) {
 		console.log(err);
 	}

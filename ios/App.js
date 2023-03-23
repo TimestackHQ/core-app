@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {Image} from "react-native";
+import {Image, StatusBar} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
@@ -56,6 +56,8 @@ function AuthScreen({navigation, route}) {
 }
 export default function App() {
 
+    StatusBar.setBarStyle('dark-content', true);
+
     return <NavigationContainer><CoreStackScreen/></NavigationContainer>;
 
 }
@@ -83,6 +85,7 @@ function CoreStackScreen() {
     return (
         <CoreStack.Navigator screenOptions={{
             headerShown: false,
+            headerBackTitleVisible: false,
             animationEnabled: false,
             gestureEnabled: false
         }}>
@@ -121,6 +124,7 @@ function Nav() {
             screenOptions={{
                 showLabel: false,
                 headerShown: false,
+                headerBackTitleVisible: false,
                 tabBarStyle: {
                     padding: 20, // Increase the vertical margin of the tab bar,
                     borderWidth: 0,
@@ -145,6 +149,7 @@ function Nav() {
             <Tab.Screen
                 name="EventsStack"
                 component={FutureStackScreen}
+                c
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {

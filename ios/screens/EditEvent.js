@@ -6,7 +6,7 @@ import {
 	TouchableOpacity,
 	TouchableWithoutFeedback, Alert
 } from "react-native";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import HTTPClient from "../httpClient";
 import FastImage from "react-native-fast-image";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
@@ -19,6 +19,7 @@ import {generateScreenshot, processPhoto, processVideo} from "../utils/compressi
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+import {HeaderButtons} from "react-navigation-header-buttons";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
@@ -45,6 +46,8 @@ export default function EditEvent () {
 	const [nextScreen, setNextScreen] = React.useState(false);
 	const [keyBoardOpen, setKeyBoardOpen] = React.useState(false);
 
+	const submitButtonRef = useRef();
+
 
 
 	function _scrollToInput (reactNode) {
@@ -67,24 +70,27 @@ export default function EditEvent () {
 			});
 
 
-		// navigation.setOptions({
-		//
-		// 	headerRight: () => (
-		//
-		// 		// <HeaderButtons>
-		// 		// 	<TouchableOpacity onPress={updateEvent}>
-		// 		// 		<Text style={{
-		// 		// 			fontFamily: 'Red Hat Display Semi Bold',
-		// 		// 			fontSize: 18,
-		// 		// 		}}>
-		// 		// 			Save
-		// 		// 		</Text>
-		// 		// 	</TouchableOpacity>
-		// 		//
-		// 		// </HeaderButtons>
-		//
-		// 	),
-		// });
+		navigation.setOptions({
+
+			headerBackTitleVisible: true,
+			headerBackTitle: "Cancel",
+
+			// headerRight: () => (
+			//
+			// 	<HeaderButtons>
+			// 		<TouchableOpacity onPress={updateEvent}>
+			// 			<Text style={{
+			// 				fontFamily: 'Red Hat Display Semi Bold',
+			// 				fontSize: 18,
+			// 			}}>
+			// 				Save
+			// 			</Text>
+			// 		</TouchableOpacity>
+			//
+			// 	</HeaderButtons>
+			//
+			// ),
+		});
 	}, []);
 
 	const importCover = async () => {
@@ -160,10 +166,10 @@ export default function EditEvent () {
 				eventId: event._id,
 				eventName: event.name,
 				eventLocation: event.location,
-				updated: true
+				updateId: Math.random()
 			});
 		}).catch((err) => {
-			Alert.alert("Error", "We couldn't create your event. Please try again.");
+			Alert.alert("Error", "We couldn't update your event. Please try again.");
 			console.log(err.response.data);
 		});
 	}
@@ -179,7 +185,7 @@ export default function EditEvent () {
 								}}
 								style={{
 									width: "80%",
-									height: 200,
+									height: 220,
 									margin: 20,
 									marginTop: 0,
 									borderRadius: 10,
@@ -424,11 +430,11 @@ export default function EditEvent () {
 
 				{/*<Text>{route.params?.eventName}</Text>*/}
 			</View>
-		<TouchableOpacity style={{
+		<TouchableOpacity ref={ref => submitButtonRef.current = ref} style={{
 			textAlign: "center",
 			color: "grey",
 			position: "absolute",
-			bottom: -160,
+			bottom: -140,
 			marginTop: 10,
 			marginLeft: 20,
 			width: "90%",

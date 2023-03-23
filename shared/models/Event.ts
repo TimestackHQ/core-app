@@ -129,6 +129,12 @@ EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
     ]
 }
 
+EventSchema.index({
+    name: 'text',
+    location: 'text'
+});
+
+
 // EventSchema.methods.ics = async function (organizer: UserSchema, users: UserSchema[]) {
 //
 //     return ics.createEvent({

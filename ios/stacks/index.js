@@ -16,7 +16,6 @@ const Index = createNativeStackNavigator();
 function CoreStackScreen({initialRouteName = "Main"}){
 	return (
 		<Index.Navigator initialRouteName={initialRouteName} screenOptions={{
-			headerShown: false,
 			headerShadowVisible: false, // applied here
 			headerBackTitleVisible: false,
 			headerTintColor: 'black',
@@ -24,13 +23,13 @@ function CoreStackScreen({initialRouteName = "Main"}){
 			fontcolor: "black",
 			backgroundColor: '#ffffff',
 		}}>
-			<Index.Screen name="Main" component={HomeScreen} />
-			<Index.Screen options={{headerShown: true}} name="Event" component={EventScreen} />
-			<Index.Screen options={{headerShown: true}} name="EditEvent" component={EditEvent} />
-			<Index.Screen name="Future" component={FutureScreen} />
-			<Index.Screen name="Add" component={AddScreen} />
-			<Index.Screen name="Notifications" component={NotificationsScreen} />
-			<Index.Screen name="Profile" component={ProfileScreen} />
+			<Index.Screen options={{headerShown: false}} name="Main" component={HomeScreen} />
+			<Index.Screen options={{headerBackTitleVisible: false}} name="Event" component={EventScreen} />
+			<Index.Screen options={{headerBackTitleVisible: true}} name="EditEvent" component={EditEvent} />
+			<Index.Screen options={{headerShown: false}} name="Future" component={FutureScreen} />
+			<Index.Screen options={{headerShown: false}} name="Add" component={AddScreen} />
+			<Index.Screen options={{headerShown: false}} name="Notifications" component={NotificationsScreen} />
+			<Index.Screen options={{headerShown: false}} name="Profile" component={ProfileScreen} />
 
 		</Index.Navigator>
 	);

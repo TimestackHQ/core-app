@@ -24,6 +24,8 @@ export async function processVideo (mediaId, mediaUri, fps, compression, height,
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
+		`-threads 0 ` +
+		`-err_detect careful ` +
 		`-c:v libx264 ` +
 		`-vf scale=-1:${String(height)} ` +
 		`-preset veryfast ` +
@@ -40,7 +42,7 @@ export async function processVideo (mediaId, mediaUri, fps, compression, height,
 					resolve(result);
 				})
 				.catch((err) => {
-					throw err;
+					// throw err;
 				});
 		});
 	} catch (err) {
@@ -55,6 +57,7 @@ export async function generateScreenshot (mediaId, mediaUri) {
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
+		`-err_detect careful ` +
 		`-ss 00:00:00 -vf "thumbnail,scale=-1:500" -vframes 1 ${path}${mediaId}.jpg ` +
 		`-y`;
 
@@ -65,7 +68,7 @@ export async function generateScreenshot (mediaId, mediaUri) {
 					resolve(result);
 				})
 				.catch((err) => {
-					throw err;
+					// throw err;
 				});
 		});
 	} catch (err) {
@@ -78,11 +81,13 @@ export async function generateScreenshot (mediaId, mediaUri) {
 
 
 
-export async function processPhoto (mediaId, mediaUri, compression) {
+export async function processPhoto (mediaId, mediaUri, compression, size) {
 
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
+		`-err_detect careful ` +
+		`${size ? "-vf scale="+String(size)+":-1,unsharp=5:5:1.0:5:5:0.0" : ""} `+
 		`-q:v ${compression} ` +
 		`${path}${mediaId}.jpg ` +
 		`-y`;
@@ -94,7 +99,7 @@ export async function processPhoto (mediaId, mediaUri, compression) {
 					resolve(result);
 				})
 				.catch((err) => {
-					throw err;
+					// throw err;
 				});
 		});
 	} catch (err) {

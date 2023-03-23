@@ -150,12 +150,24 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
     try {
 
-        const events = await Models.Event.find({
+        const query = req.query?.q ? {
+            $text: { $search: req.query?.q },
             users: {
                 $in: [req.user._id]
             }
-        })
+        } : {
+            users: {
+                $in: [req.user._id]
+            }
+        };
+
+        const skip = req.query.skip ? req.query.skip : 0;
+
+
+        // @ts-ignore
+        const events = await Models.Event.find(query)
             .sort({createdAt: -1})
+            .skip(Number(skip)).limit(10)
             .populate(standardEventPopulation)
             .select("-media")
 

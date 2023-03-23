@@ -59,7 +59,9 @@ export default function EventScreen () {
 	const fetchEvent = () => {
 
 		navigation.setOptions({
-
+			// headerBackTitleVisible: true,
+			// fontColor: "blue",
+			headerShown: true,
 			headerRight: () => (
 
 				<HeaderButtons>
@@ -154,11 +156,11 @@ export default function EventScreen () {
 	};
 
 	useEffect(() => {
-		if(route.params?.updated) {
-			fetchEvent();
+		if(id !== route.params?.updateId) {
+			setId(route.params?.updateId);
 		}
 
-	}, [route.params])
+	}, [route.params, id])
 
 	useEffect(() => {
 		fetchEvent();

@@ -227,7 +227,6 @@ export default function AddScreen({navigation}) {
 					}}
 				>{startDate && endDate ? "To" : "End date"}</Text>: null}
 				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 240, width: "100%", zIndex: -3000}} onPress={() => {
-					alert("hi")
 					setEndDateOpen(true)
 				}}>
 					<Text
@@ -391,7 +390,6 @@ export default function AddScreen({navigation}) {
 					paddingRight: 0,
 					zIndex: 1020
 				}}
-	                  disabled={name === ""}
 	                  onPress={createEvent}
 
 				>
@@ -501,8 +499,16 @@ export default function AddScreen({navigation}) {
 				borderRadius: 35,
 				marginBottom: 20
 			}}
-            disabled={name === ""}
-            onPress={() => setNextScreen(true)}
+            onPress={() => {
+				if (name === "") {
+					Alert.alert("Event name", "Please enter a name for your event", [
+						{
+							text: "OK",
+						}
+					])
+				}
+	            else setNextScreen(true)
+            }}
 
 			>
 				<Text style={{

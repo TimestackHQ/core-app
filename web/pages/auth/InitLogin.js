@@ -16,7 +16,7 @@ export default function InitLogin({
 	useEffect(() => {
 		setInterval(() => {
 			inputRef?.current?.focus();
-		}, 500);
+		}, 100);
 	}, []);
 
 	return (
@@ -62,11 +62,6 @@ export default function InitLogin({
 				<div style={{marginTop: "180px"}}/>
 
 				<br/>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
-				<br/>
 				{/*<div className="input-group mb-3" style={{borderRadius: "1rem"}}>*/}
 				{/*	<button className="btn btn-secondary dropdown-toggle" type="button"*/}
 				{/*	        data-bs-toggle="dropdown" aria-expanded="false">*/}
@@ -86,6 +81,7 @@ export default function InitLogin({
 							min="1" max="9999999999"
 							required={true}
 							className={"sign-up-phone-number"}
+							autoFocus={true}
 							type="tel"
 							style={{
 								padding: 0, margin: 0
@@ -102,7 +98,7 @@ export default function InitLogin({
 
 				<p style={{
 					position: "absolute",
-					bottom: "80px",
+					bottom: "48%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -126,7 +122,7 @@ export default function InitLogin({
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "15px",
+						bottom: "40%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999
