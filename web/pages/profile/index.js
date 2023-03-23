@@ -89,6 +89,7 @@ export default function Index() {
 								}}
 							><b>Profile</b></li>
 							<li className="list-group-item"
+							    onClick={() => Router.push("/profile/account")}
 							    style={{
 								    height: "50px",
 								    display: 'flex',

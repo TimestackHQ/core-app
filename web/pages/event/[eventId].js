@@ -14,7 +14,6 @@ import FadeIn from "react-fade-in";
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
-	const openUpload = Router.query.openUpload;
 	const user = useSelector(state => state.user);
 	const [loaded, setLoaded] = useState(false);
 	const [viewMenu, setViewMenu] = useState(false);
@@ -44,18 +43,40 @@ export default function EventIOS ({}) {
 					if(response.data.message === "joinRequired") {
 						Router.push("/event/"+eventId+"/join");
 					}else {
-						EventButtonAction(event?._id);
+
+						const openModal = () => {
+							setTimeout(() => {
+
+								const searchURL = new URL(window.location.href);
+								let searchParams = new URLSearchParams(searchURL.search);
+								searchParams.set('openUpload', undefined);
+								searchURL.search = searchParams.toString();
+								window.history.replaceState(null, null, searchURL.toString());
+
+								modalView("upload", {eventId: response.data.event?._id, event:response.data.event});								let url = new URL(window.location.href);
+
+							}, 1000);
+						}
+
 						setTimeout(() => {
 							setEvent(response.data.event);
 							setLoaded(true);
-							// alert(openUpload)
-							// if(openUpload) setTimeout(() => openUploadModal(), 2000)
-						}, 0);
+
+							let url = new URL(window.location.href);
+							let searchParams = new URLSearchParams(url.search);
+							let paramValue = searchParams.get('openUpload');
+
+							if(paramValue === "true") {
+								openModal();
+							}
+						})
 
 						HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
 							.catch(err => {});
 						HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
 							.catch(err => {});
+
+
 
 					}
 

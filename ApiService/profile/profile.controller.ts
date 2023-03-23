@@ -7,8 +7,16 @@ export async function get (req: Request, res: Response, next: NextFunction) {
 
     try {
 
+        const user = await Models.User.findOne({
+            _id: req.user._id,
+            $exists: {
+                queuedForDeletionAt: true
+            }
+        }).select("queuedForDeletionAt");
+
         return res.status(200).json({
             ...req.user.toJSON(),
+            queuedForDeletionAt: user?.queuedForDeletionAt
         })
 
     } catch (e) {

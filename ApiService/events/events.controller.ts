@@ -482,7 +482,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 sort: {
                     createdAt: -1
                 },
-                limit: req.query?.limit ? Number(req.query.limit) : 25,
+                limit: req.query?.limit ? Number(req.query.limit) : 12,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
         });

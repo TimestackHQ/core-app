@@ -211,3 +211,41 @@ export async function notificationLink (req: Request, res: Response, next: NextF
         next(e);
     }
 }
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await Models.User.updateOne({
+            _id: req.user._id
+        }, {
+            $set: {
+                queuedForDeletionAt: new Date(),
+            }
+        });
+
+        return res.status(200).json({
+            message: "User scheduled for deletion",
+            queuedForDeletionAt: new Date(),
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
+export const abortDeleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await Models.User.updateOne({
+            _id: req.user._id
+        }, {
+            $unset: {
+                queuedForDeletionAt: 1,
+            }
+        });
+
+        return res.status(200).json({
+            message: "User deletion aborted",
+            queuedForDeletionAt: null,
+        });
+    } catch (e) {
+        next(e);
+    }
+}

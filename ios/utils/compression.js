@@ -86,8 +86,8 @@ export async function processPhoto (mediaId, mediaUri, compression, size) {
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
-		`-err_detect careful ` +
-		`${size ? "-vf scale="+String(size)+":-1,unsharp=5:5:1.0:5:5:0.0" : ""} `+
+		`-err_detect careful ulimit -v 1000000 ` +
+		`${size ? `-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 ` : ""} `+
 		`-q:v ${compression} ` +
 		`${path}${mediaId}.jpg ` +
 		`-y`;

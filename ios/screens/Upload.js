@@ -26,7 +26,7 @@ export default function Upload ({payload}) {
 	const [selecting, setSelecting] = React.useState(false);
 
 	const [event, setEvent] = React.useState(payload.event);
-	const [totalMediaCount, setTotalMediaCount] = React.useState(payload.event.mediaCount);
+	const [totalMediaCount, setTotalMediaCount] = React.useState(payload.event?.mediaCount);
 	const [selfMediaCount, setSelfMediaCount] = React.useState(0);
 	const [uri, setUri] = React.useState(null);
 
@@ -119,7 +119,7 @@ export default function Upload ({payload}) {
 
 				for await (const media of _.uniq(result.assets)) {
 
-					ExpoJobQueue.addJob("mediaQueueV5", {
+					ExpoJobQueue.addJob("mediaQueueV62", {
 						...media,
 						eventId
 					})
@@ -148,7 +148,16 @@ export default function Upload ({payload}) {
 				<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 30, fontWeight: "600", marginLeft: 10 }}>Upload</Text>
 				<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'stretch', marginTop: 10}}>
 					<View style={{flex: 3}}>
-						<Image source={{uri: 'data:image/jpeg;base64,' + (payload.event.buffer)}} style={{width: 80, height: 120, borderRadius: 15}} />
+						<Image
+							source={{uri: 'data:image/jpeg;base64,' + (payload.event.buffer)}}
+							style={{
+								width: 80,
+								height: 120,
+								borderRadius: 15,
+								borderWidth: event?.buffer ? 0 : 1,
+								borderStyle: "solid",
+								borderColor: "black"
+						}} />
 					</View>
 					<View style={{flex: 80}}>
 						<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 20, fontWeight: "600", marginLeft: 10 }}>{event?.name ? event?.name : " "}</Text>
