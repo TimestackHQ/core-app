@@ -13,6 +13,7 @@ export interface UserSchema extends mongoose.Document {
     isConfirmed: boolean;
     isOnWaitList: boolean;
     birthDate?: Date;
+    queuedForDeletionAt?: Date;
     commonProperties: commonProperties;
     profilePictureSource?: string;
     initSMSLogin: () => Promise<boolean>;
@@ -59,6 +60,11 @@ const UserSchema = new mongoose.Schema({
     profilePictureSource: {
         type: String,
         required: false,
+    },
+    queuedForDeletionAt: {
+        type: Date,
+        required: false,
+        select: false
     },
     ...commonProperties,
 });
