@@ -14,6 +14,7 @@ import FadeIn from "react-fade-in";
 export default function EventIOS ({}) {
 
 	const eventId = Router.query.eventId;
+	const openUpload = Router.query.openUpload;
 	const user = useSelector(state => state.user);
 	const [loaded, setLoaded] = useState(false);
 	const [viewMenu, setViewMenu] = useState(false);
@@ -29,6 +30,12 @@ export default function EventIOS ({}) {
 	const [updatingPeople, setUpdatingPeople] = useState(false);
 
 
+	const openUploadModal = () => {
+		modalView("upload", {eventId: event?._id, event:event});
+	}
+
+
+
 	useEffect(() => {
 
 		const fetchEvent = () => {
@@ -41,12 +48,15 @@ export default function EventIOS ({}) {
 						setTimeout(() => {
 							setEvent(response.data.event);
 							setLoaded(true);
+							// alert(openUpload)
+							// if(openUpload) setTimeout(() => openUploadModal(), 2000)
 						}, 0);
 
 						HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setPlaceholder(res.data))
 							.catch(err => {});
 						HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
 							.catch(err => {});
+
 					}
 
 				})
@@ -78,6 +88,7 @@ export default function EventIOS ({}) {
 		}
 
 
+
 	}, []);
 
 	useEffect(() => {
@@ -106,6 +117,7 @@ export default function EventIOS ({}) {
 
 	}
 
+
 	return (
 		<div>
 
@@ -129,7 +141,7 @@ export default function EventIOS ({}) {
 										setViewMenu(false);
 									}} style={{marginRight: 10}} src={"/icons/add_people.png"} height={43}/>
 									<img onClick={() => {
-										modalView("upload", {eventId: event?._id, event:event})
+										openUploadModal();
 										setViewMenu(false);
 									}} src={"/icons/add_upload.png"} height={43}/>
 								</Fragment> : null}
@@ -141,8 +153,11 @@ export default function EventIOS ({}) {
 										backgroundSize: "cover",
 										backgroundRepeat: "no-repeat",
 										backgroundPosition: "center",
-										borderRadius: "15px 15px 15px 15px",
+										borderRadius: "15px",
 										height: "200px",
+										borderWidth: event?.buffer ? "0px" : "2px",
+										borderStyle: "solid",
+										borderColor: "black"
 									}}>
 										<img
 
@@ -163,8 +178,9 @@ export default function EventIOS ({}) {
 
 												// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
 											}}
-											alt={""}
+											// alt={"/images/thumbnail-filler.png"}
 											width={"100%"} height={"200px"}
+											alt={""}
 										/>
 									</div>
 								</div>

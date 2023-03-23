@@ -31,7 +31,7 @@ export default function MainIOS () {
 		// <IOS main={true}>
 		<div style={{backgroundColor: "white"}}>
 			<FadeIn >
-				<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: 12}} className="d-flex flex-wrap mb-4 row fixed-top ">
+				<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: 0}} className="d-flex flex-wrap mb-4 row fixed-top ">
 
 					<div className={"col-2"}>
 						<img style={{marginLeft: "20px"}} src="/icons/logo blacktimestack.svg" alt="logo" width="25px"/>
@@ -52,7 +52,7 @@ export default function MainIOS () {
 				</header>
 				<br/>
 			</FadeIn>
-			<div style={{height: "40px"}}/>
+			<div style={{height: "30px"}}/>
 
 			<div className="container">
 				<h1>My Timewall</h1>

@@ -45,6 +45,9 @@ export default function EventCard ({
 						backgroundPosition: "center",
 						borderRadius: "15px 15px 15px 15px",
 						height: "145px",
+						borderWidth: event?.buffer ? "0px" : "1px",
+						borderStyle: "solid",
+						borderColor: "black"
 					}}>
 						<img
 

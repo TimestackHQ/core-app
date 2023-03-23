@@ -130,7 +130,8 @@ export default function AddScreen({navigation}) {
 			navigation.navigate("Event", {
 				eventId: event._id,
 				eventName: event.name,
-				eventLocation: event.location
+				eventLocation: event.location,
+				openUpload: true
 			});
 			setTimeout(clear, 1000);
 		}).catch((err) => {

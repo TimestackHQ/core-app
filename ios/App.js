@@ -85,7 +85,6 @@ function CoreStackScreen() {
     return (
         <CoreStack.Navigator screenOptions={{
             headerShown: false,
-            headerBackTitleVisible: false,
             animationEnabled: false,
             gestureEnabled: false
         }}>
@@ -124,7 +123,6 @@ function Nav() {
             screenOptions={{
                 showLabel: false,
                 headerShown: false,
-                headerBackTitleVisible: false,
                 tabBarStyle: {
                     padding: 20, // Increase the vertical margin of the tab bar,
                     borderWidth: 0,
@@ -135,6 +133,9 @@ function Nav() {
             <Tab.Screen
                 name="HomeStack"
                 component={HomeStackScreen}
+                screenOptions={{
+                    headerBackTitleVisible: false,
+                }}
                 options={{
                     style: {
                         marginVertical: 10, // Increase the vertical margin of the tab bar

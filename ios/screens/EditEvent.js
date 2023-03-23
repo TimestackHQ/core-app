@@ -72,7 +72,6 @@ export default function EditEvent () {
 
 		navigation.setOptions({
 
-			headerBackTitleVisible: true,
 			headerBackTitle: "Cancel",
 
 			// headerRight: () => (
@@ -189,6 +188,9 @@ export default function EditEvent () {
 									margin: 20,
 									marginTop: 0,
 									borderRadius: 10,
+									borderWidth: event?.buffer ? 0 : 2,
+									borderStyle: "solid",
+									borderColor: "black"
 								}}
 							/>
 						</TouchableWithoutFeedback>

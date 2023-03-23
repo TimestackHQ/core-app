@@ -59,7 +59,6 @@ export default function EventScreen () {
 	const fetchEvent = () => {
 
 		navigation.setOptions({
-			// headerBackTitleVisible: true,
 			// fontColor: "blue",
 			headerShown: true,
 			headerRight: () => (
@@ -175,7 +174,7 @@ export default function EventScreen () {
 		>
 
 			<Main
-				baseRoute={"/event/"+route.params.eventId+"?id="+id+"&name="+route.params.eventName}
+				baseRoute={"/event/"+route.params.eventId+"?id="+id+"&name="+route.params.eventName+"&openUpload="+route.params.openUpload}
 				apiUrl={apiUrl}
 				frontendUrl={frontendUrl}
 				navigation={navigation}
