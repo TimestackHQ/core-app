@@ -55,7 +55,7 @@ export default function MainIOS () {
 			<div style={{height: "40px"}}/>
 
 			<div className="container">
-				<h1>My Timewall {query}</h1>
+				<h1>My Timewall</h1>
 				<div className="row" style={{paddingTop: "20px"}}>
 					<div className={"col-12"} style={{borderRightColor: "black", borderWidth: "10px"}}>
 						{loading ? <React.Fragment>
