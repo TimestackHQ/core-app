@@ -173,7 +173,7 @@ export default function EditEvent () {
 		});
 	}
 
-	return <KeyboardAwareScrollView innerRef={ref => [scrollRef]} style={{backgroundColor: "white"}} behavior="height" enabled>
+	return <KeyboardAwareScrollView innerRef={ref => [scrollRef]} style={{backgroundColor: "white", paddingTop: 20}} behavior="height" enabled>
 			<View style={{backgroundColor: "white", flexDirection: "column"}}>
 				<View style={{flexDirection: "row", flex: 1}}>
 					<View style={{flex: 2}}>
@@ -436,7 +436,7 @@ export default function EditEvent () {
 			textAlign: "center",
 			color: "grey",
 			position: "absolute",
-			bottom: -140,
+			bottom: -200,
 			marginTop: 10,
 			marginLeft: 20,
 			width: "90%",

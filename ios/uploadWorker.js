@@ -10,7 +10,7 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default function uploadWorker () {
 	try {
 
-		ExpoJobQueue.addWorker("mediaQueueV69", async (media) => {
+		ExpoJobQueue.addWorker("mediaQueueV75", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -21,7 +21,7 @@ export default function uploadWorker () {
 					media.type = media.type.split("/")[0];
 
 					if(media.type.split("/")[0] === "video") {
-						const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1920, 600);
+						const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1080, 600);
 						const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
 						const snapshotPath = await generateScreenshot(mediaId, media.uri);
 						mediaList.push(videoPath, thumbnailPath, snapshotPath);
@@ -29,8 +29,8 @@ export default function uploadWorker () {
 					}
 
 					else {
-						const imagePath = await processPhoto(mediaId, media.uri, 10);
-						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 10, 800);
+						const imagePath = await processPhoto(mediaId, media.uri, 10, false);
+						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 10, true);
 						mediaList.push(imagePath, thumbnailPath);
 					}
 
@@ -74,7 +74,7 @@ export default function uploadWorker () {
 		}, {
 			concurrency: 1,
 		})
-		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV69V2")
+		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV75V2")
 	} catch(err) {
 		console.log(err);
 	}

@@ -199,6 +199,8 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         });
 
         await GCP.upload(file.originalname, <Buffer>file.buffer);
+        media.storageLocation = file.originalname;
+        await media.save();
 
     } catch (e) {
         // const file: Express.Multer.File | undefined = req.file;

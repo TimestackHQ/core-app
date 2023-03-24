@@ -81,13 +81,23 @@ export async function generateScreenshot (mediaId, mediaUri) {
 export async function processPhoto (mediaId, mediaUri, compression, size) {
 
 	const path = await getResultPath();
-	const command =
-		`-i ${mediaUri} ` +
+	let command;
+	if(size) {
+		command = `-i ${mediaUri} ` +
+			`-err_detect careful ` +
+			`-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 `+
+			`-q:v ${compression} ` +
+			`${path}${mediaId}.jpg ` +
+			`-y`;
+	} else {
+		command = `-i ${mediaUri} ` +
 		`-err_detect careful ` +
-		`${size ? `-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 ` : ""} `+
+		// `${size !== undefined ? `-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 ` : ""} `+
 		`-q:v ${compression} ` +
 		`${path}${mediaId}.jpg ` +
 		`-y`;
+	}
+
 
 	try {
 		await new Promise((resolve) => {

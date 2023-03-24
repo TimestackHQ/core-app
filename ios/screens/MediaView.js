@@ -74,7 +74,7 @@ export default function MediaView() {
 				{media?.type === "video" ?
 					<Video
 						onAudioBecomingNoisy
-						poster={media?.thumbnail}
+						poster={media?.snapshot}
 						controls={true}
 						source={{uri: media?.storageLocation}}
 						style={{flex: 1, height: "100%"}}
