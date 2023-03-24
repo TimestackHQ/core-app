@@ -1,4 +1,5 @@
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import * as FileSystem from "expo-file-system";
 import {Image, TouchableOpacity, View, Text, Alert} from "react-native";
 import {useEffect, useState} from "react";
 import {useNavigation, useRoute} from "@react-navigation/native";
@@ -6,6 +7,9 @@ import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
 import {getTimezone} from "../utils/time";
 import Video from "react-native-video";
+import FastImage from "react-native-fast-image";
+import ProfilePicture from "../Components/ProfilePicture";
+import * as MediaLibrary from "expo-media-library";
 
 export default function MediaView() {
 	const navigator = useNavigation();
@@ -34,19 +38,18 @@ export default function MediaView() {
 							<Text style={{
 								fontSize: 15, textAlign : "center", fontFamily: "Red Hat Display Semi Bold"
 							}}>
-								{moment(res.data.media.timestamp).tz(String(timezone)).format("MMMM D, YYYY")}
+								{moment.tz(res.data.media.timestamp, String(timezone)).format("MMMM D, YYYY")}
 							</Text>
 							<Text style={{
 								fontSize: 10, textAlign : "center", fontFamily: "Red Hat Display Semi Bold"
 							}}>
-								{moment(res.data.media.timestamp).tz(String(timezone)).format("h:mm A")}
+								{moment.tz(res.data.media.timestamp, String(timezone)).format("h:mm A")}
 							</Text>
 						</View>
 					) : <View>
 						<Text style={{
 							fontSize: 15, textAlign : "center", fontFamily: "Red Hat Display Semi Bold"
 						}}>
-
 						</Text>
 					</View>
 				});
@@ -67,10 +70,7 @@ export default function MediaView() {
 
 	return (
 		<View style={{backgroundColor: "white", flex: 1, flexDirection: "column"}}>
-			<TouchableOpacity style={{flex: 1}} onPress={() => navigator.goBack()}>
-				<Text>Hey</Text>
-			</TouchableOpacity>
-			<View style={{flex: 8}}>
+			<View style={{flex: 9}}>
 				{media?.type === "video" ?
 					<Video
 						onAudioBecomingNoisy
@@ -78,11 +78,45 @@ export default function MediaView() {
 						controls={true}
 						source={{uri: media?.storageLocation}}
 						style={{flex: 1, height: "100%"}}
-						resizeMode="contain"
+						posterResizeMode={"cover"}
+						resizeMode="cover"
 					/>
-					: <Image source={{uri: media?.storageLocation}} style={{height: "90%", width: "100%"}}/>}
+					: <Image
+						source={{uri: media?.storageLocation}}
+						style={{
+							flex: 1, maxHeight: "100%"
+						}}
+					/>
+				}
 			</View>
-			<View style={{flex: 1}}></View>
+			<View style={{flex: 1, margin: 10, alignContent: "center", flexDirection: "row"}}>
+				<View>
+					<ProfilePicture location={media?.user?.profilePictureSource} width={35} height={35}/>
+				</View>
+				<View style={{flexDirection: "row", justifyContent: "space-between"}}>
+					<View style={{flexDirection: "column", justifyContent: "center"}}>
+						<Text style={{fontFamily: "Red Hat Display Semi Bold", fontSize: 17, marginBottom: 40, marginLeft: 10}}>
+							{media?.user?.firstName} {media?.user?.lastName}
+						</Text>
+
+					</View>
+				</View>
+				<TouchableOpacity onPress={async () => {
+					try {
+						const location = await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
+						await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
+						Alert.alert("Success", "Saved to your device.");
+					} catch (err) {
+						alert("Failed to save");
+					}
+				}
+				} style={{position: 'absolute', right: 10, marginTop: 5}} >
+					<FastImage
+						source={require("../assets/icons/download.png")}
+						style={{width: 20, height: 20, marginLeft: 10}}
+					/>
+				</TouchableOpacity>
+			</View>
 		</View>
 	);
 }

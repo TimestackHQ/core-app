@@ -18,6 +18,8 @@ import {
     NotificationsStackScreen,
     ProfileStackScreen
 } from "./stacks";
+import MediaView from "./screens/MediaView";
+import * as React from "react";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -95,6 +97,14 @@ function CoreStackScreen() {
             <CoreStack.Screen name="Invite" navigationOptions={{
                 animationEnabled: false
             }} component={Invite} />
+            {/*<CoreStack.Screen options={{*/}
+            {/*    presentation: "card",*/}
+            {/*    animationTypeForReplace: "pop",*/}
+            {/*    gestureEnabled: true,*/}
+            {/*    gestureDirection: "vertical",*/}
+            {/*    animationEnabled: true,*/}
+            {/*}} name="MediaView" component={MediaView} />*/}
+
         </CoreStack.Navigator>
     );
 }

@@ -110,6 +110,9 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
         const media = await Models.Media.findOne({
             _id: mediaId,
             event: eventId
+        }).populate({
+            path: "user",
+            select: "firstName lastName profilePictureSource"
         });
 
         if (!media) {
@@ -120,11 +123,18 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
             media: {
                 _id: media._id,
                 publicId: media.publicId,
+                fileName: media.storageLocation,
                 storageLocation: await GCP.signedUrl(media?.storageLocation),
                 snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
                 thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                 timestamp: media.metadata.timestamp,
                 type: media.type.split("/")[0],
+                user: {
+                    _id: media.user._id,
+                    firstName: media.user?.firstName,
+                    lastName: media.user?.lastName,
+                    profilePictureSource: media.user?.profilePictureSource
+                }
             }
         });
     } catch (e) {

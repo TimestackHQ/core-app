@@ -1,11 +1,12 @@
 import * as mongoose from "mongoose";
 import {v4 as uuid} from "uuid";
 import {GCP} from "../index";
+import {UserSchema} from "./User";
 
 export interface MediaSchema extends mongoose.Document {
     publicId: string;
     storageLocation: string;
-    user: mongoose.Types.ObjectId;
+    user: mongoose.Types.ObjectId & UserSchema;
     createdAt: Date;
     type: string;
     group: string;

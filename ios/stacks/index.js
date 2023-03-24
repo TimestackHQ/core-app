@@ -1,6 +1,7 @@
 import Main from "../Main";
 import Constants from "expo-constants";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {getFocusedRouteNameFromRoute, useNavigation, useRoute} from '@react-navigation/native';
 import * as React from "react";
 import EventScreen from "../screens/Event";
 import HomeScreen from "../screens/HomeScreen";
@@ -15,6 +16,23 @@ import MediaView from "../screens/MediaView";
 
 const Index = createNativeStackNavigator();
 function CoreStackScreen({initialRouteName = "Main"}){
+
+	const navigation = useNavigation();
+	const route = useRoute();
+
+	React.useLayoutEffect(() => {
+		const routeName = getFocusedRouteNameFromRoute(route);
+		if (routeName === "MediaView"){
+			navigation.setOptions({tabBarStyle: {display: 'none'}});
+		}else {
+			navigation.setOptions({tabBarStyle: {
+					padding: 20, // Increase the vertical margin of the tab bar,
+					borderWidth: 0,
+					margin: 0
+			}});
+		}
+	}, [navigation, route]);
+
 	return (
 		<Index.Navigator initialRouteName={initialRouteName} screenOptions={{
 			headerShadowVisible: false, // applied here
@@ -24,12 +42,13 @@ function CoreStackScreen({initialRouteName = "Main"}){
 			headerBackTitleVisible: false,
 			backgroundColor: '#ffffff',
 
+
 		}}>
 			<Index.Screen options={{headerShown: false, headerBackTitle: "Hey"}} name="Main" component={HomeScreen} />
 
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="EditEvent" component={EditEvent} />
-			<Index.Screen options={{presentation: "fullScreenModal", gestureDirection: "vertical"}} name="MediaView" component={MediaView} />
+			<Index.Screen options={{presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true}} name="MediaView" component={MediaView} />
 			<Index.Screen options={{headerShown: false}} name="Future" component={FutureScreen} />
 			<Index.Screen options={{headerShown: false}} name="Add" component={AddScreen} />
 			<Index.Screen options={{headerShown: false}} name="Notifications" component={NotificationsScreen} />
