@@ -2,6 +2,7 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import * as FileSystem from "expo-file-system";
 import {Image, TouchableOpacity, View, Text, Alert} from "react-native";
 import {useEffect, useState} from "react";
+import Share from "react-native-share";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
@@ -10,6 +11,10 @@ import Video from "react-native-video";
 import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
 import * as MediaLibrary from "expo-media-library";
+import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
+import * as React from "react";
+import uuid from "react-native-uuid";
+import {v4} from "uuid";
 
 export default function MediaView() {
 	const navigator = useNavigation();
@@ -51,7 +56,25 @@ export default function MediaView() {
 							fontSize: 15, textAlign : "center", fontFamily: "Red Hat Display Semi Bold"
 						}}>
 						</Text>
-					</View>
+					</View>,
+
+					headerRight: () => (
+
+						<HeaderButtons>
+							<TouchableOpacity onPress={async () => {
+								await FileSystem.downloadAsync(res.data.media?.storageLocation, FileSystem.documentDirectory + res.data.media?.fileName);
+								await Share.open({
+									title: "Timestack",
+									message: "Timestack " + res.data.media?.type === "video" ? "video" : "photo",
+									url: FileSystem.documentDirectory + res.data.media?.fileName,
+								});
+							}}>
+
+								<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
+							</TouchableOpacity>
+						</HeaderButtons>
+					)
+
 				});
 			})
 			.catch(err => {
@@ -65,6 +88,7 @@ export default function MediaView() {
 					}
 				])
 			});
+
 
 	}, []);
 
