@@ -134,7 +134,6 @@ function Nav() {
                 name="HomeStack"
                 component={HomeStackScreen}
                 screenOptions={{
-                    headerBackTitleVisible: false,
                 }}
                 options={{
                     style: {

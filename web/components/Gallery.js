@@ -2,6 +2,7 @@ import MediaView from "./MediaView";
 import React from "react";
 import HTTPClient from "../utils/httpClient";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {NativeNavigate} from "../utils/nativeBridge";
 
 export default function Gallery ({eventId}) {
 
@@ -68,7 +69,10 @@ export default function Gallery ({eventId}) {
 			>
 				{gallery?.map((media, i) => {
 					return (
-						<div key={i} className={"col-4"} style={{margin: 0, padding: 1}}>
+						<div onClick={() => NativeNavigate("MediaView", {
+							mediaId: media._id,
+							eventId: eventId
+						})} key={i} className={"col-4"} style={{margin: 0, padding: 1}}>
 							<MediaView media={media}/>
 						</div>
 					);

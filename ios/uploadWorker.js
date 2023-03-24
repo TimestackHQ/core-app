@@ -10,7 +10,7 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default function uploadWorker () {
 	try {
 
-		ExpoJobQueue.addWorker("mediaQueueV62", async (media) => {
+		ExpoJobQueue.addWorker("mediaQueueV69", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -18,11 +18,14 @@ export default function uploadWorker () {
 
 					const mediaList = [];
 
-					if(media.type === "video") {
-						const videoPath = await processVideo(mediaId, media.uri, 30, 10, 1080, 600);
+					media.type = media.type.split("/")[0];
+
+					if(media.type.split("/")[0] === "video") {
+						const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1920, 600);
 						const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
 						const snapshotPath = await generateScreenshot(mediaId, media.uri);
 						mediaList.push(videoPath, thumbnailPath, snapshotPath);
+						console.log(mediaList);
 					}
 
 					else {
@@ -71,7 +74,7 @@ export default function uploadWorker () {
 		}, {
 			concurrency: 1,
 		})
-		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV62V2")
+		ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV69V2")
 	} catch(err) {
 		console.log(err);
 	}

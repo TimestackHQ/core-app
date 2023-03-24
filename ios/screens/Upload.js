@@ -119,7 +119,7 @@ export default function Upload ({payload}) {
 
 				for await (const media of _.uniq(result.assets)) {
 
-					ExpoJobQueue.addJob("mediaQueueV62", {
+					ExpoJobQueue.addJob("mediaQueueV69", {
 						...media,
 						eventId
 					})

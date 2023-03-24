@@ -59,8 +59,10 @@ export default function EventScreen () {
 	const fetchEvent = () => {
 
 		navigation.setOptions({
-			// fontColor: "blue",
 			headerShown: true,
+			headerBackTitleStyle: {
+				fontSize: 200,
+			},
 			headerRight: () => (
 
 				<HeaderButtons>

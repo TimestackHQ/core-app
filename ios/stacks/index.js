@@ -9,6 +9,7 @@ import AddScreen from "../screens/Add";
 import NotificationsScreen from "../screens/Notifications";
 import ProfileScreen from "../screens/Profile";
 import EditEvent from "../screens/EditEvent";
+import MediaView from "../screens/MediaView";
 
 
 
@@ -17,15 +18,18 @@ function CoreStackScreen({initialRouteName = "Main"}){
 	return (
 		<Index.Navigator initialRouteName={initialRouteName} screenOptions={{
 			headerShadowVisible: false, // applied here
-			headerBackTitleVisible: false,
 			headerTintColor: 'black',
 			headerTitle: "",
 			fontcolor: "black",
+			headerBackTitleVisible: false,
 			backgroundColor: '#ffffff',
+
 		}}>
-			<Index.Screen options={{headerShown: false}} name="Main" component={HomeScreen} />
-			<Index.Screen options={{headerBackTitleVisible: false}} name="Event" component={EventScreen} />
-			<Index.Screen options={{headerBackTitleVisible: true}} name="EditEvent" component={EditEvent} />
+			<Index.Screen options={{headerShown: false, headerBackTitle: "Hey"}} name="Main" component={HomeScreen} />
+
+			<Index.Screen name="Event" component={EventScreen} />
+			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="EditEvent" component={EditEvent} />
+			<Index.Screen options={{presentation: "fullScreenModal", gestureDirection: "vertical"}} name="MediaView" component={MediaView} />
 			<Index.Screen options={{headerShown: false}} name="Future" component={FutureScreen} />
 			<Index.Screen options={{headerShown: false}} name="Add" component={AddScreen} />
 			<Index.Screen options={{headerShown: false}} name="Notifications" component={NotificationsScreen} />

@@ -24,11 +24,8 @@ export async function processVideo (mediaId, mediaUri, fps, compression, height,
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
-		`-threads 0 ` +
-		`-err_detect careful ` +
 		`-c:v libx264 ` +
 		`-vf scale=-1:${String(height)} ` +
-		`-preset veryfast ` +
 		`-r ${fps} ` +
 		`-crf ${compression} ` +
 		String(duration ? `-t ${duration ? duration : 10} ` : "") +
@@ -86,7 +83,7 @@ export async function processPhoto (mediaId, mediaUri, compression, size) {
 	const path = await getResultPath();
 	const command =
 		`-i ${mediaUri} ` +
-		`-err_detect careful ulimit -v 1000000 ` +
+		`-err_detect careful ` +
 		`${size ? `-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 ` : ""} `+
 		`-q:v ${compression} ` +
 		`${path}${mediaId}.jpg ` +

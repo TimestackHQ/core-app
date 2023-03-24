@@ -95,6 +95,44 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+export const viewMedia = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {eventId, mediaId} = req.params;
+        const event = await Models.Event.countDocuments({
+            _id: eventId,
+            users: {
+                $in: [req.user._id]
+            }
+        });
+        if(!event) {
+            return res.sendStatus(404);
+        }
+        const media = await Models.Media.findOne({
+            _id: mediaId,
+            event: eventId
+        });
+
+        if (!media) {
+            return res.sendStatus(404);
+        }
+
+        return res.json({
+            media: {
+                _id: media._id,
+                publicId: media.publicId,
+                storageLocation: await GCP.signedUrl(media?.storageLocation),
+                snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
+                thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+                timestamp: media.metadata.timestamp,
+                type: media.type.split("/")[0],
+            }
+        });
+    } catch (e) {
+        next(e);
+    }
+
+}
+
 export async function upload (req: Request, res: Response, next: NextFunction) {
 
     try {
