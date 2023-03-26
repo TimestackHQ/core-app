@@ -30,7 +30,7 @@ export default function EventIOS ({}) {
 
 
 	const openUploadModal = () => {
-		modalView("upload", {eventId: event?._id, event:event});
+		 NativeNavigate("Upload", {eventId: event?._id, event:event});
 	}
 
 
