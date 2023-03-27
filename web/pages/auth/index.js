@@ -135,11 +135,7 @@ export default function Login() {
 							<Welcome/>
 						</div> : null}
 
-						{step === 4 ? <Step2
-							setStep={setStep}
-						/> : null}
-
-						{step === 5 ? <div>
+						{step === 4 ? <div>
 							<Username
 								setStep={setStep}
 								setStepRaw={setStepRaw}
@@ -147,28 +143,28 @@ export default function Login() {
 							/>
 						</div> : null}
 
-						{step === 6 ? <div>
+						{step === 5 ? <div>
 							<FirstAndLastNames
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 7 ? <div>
+						{step === 6 ? <div>
 							<Birthdate
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 8 ? <div>
+						{step === 7 ? <div>
 							<Email
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
 						</div> : null}
 
-						{step === 9 ? <div>
+						{step === 8 ? <div>
 							<Adventure
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}

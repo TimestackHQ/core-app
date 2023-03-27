@@ -189,7 +189,6 @@ export default function EditEvent () {
 									marginTop: 0,
 									borderRadius: 10,
 									borderWidth: event?.buffer ? 0 : 2,
-									borderStyle: "solid",
 									borderColor: "black"
 								}}
 							/>

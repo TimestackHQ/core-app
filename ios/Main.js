@@ -59,7 +59,6 @@ async function registerForPushNotificationsAsync() {
 
 export default function Main({baseRoute, frontendUrl, queueUpdated, navigation}) {
 
-    const url = Linking.useURL();
 
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
@@ -110,15 +109,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
 
     }, []);
 
-    useEffect(() => {
-       setTimeout(() => {
-
-           console.log("URL:", url);
-           if(url) {
-               setUri(url.replace("timestack://", frontendUrl+"/"));
-           }
-       }, 500);
-    }, [url]);
 
     const updatePushToken = async () => {
 
@@ -244,14 +234,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         await AsyncStorage.setItem("@session", message.session);
 
                         updatePushToken();
-                    }
-
-                    if(message.request === "uploadQueue") {
-                        console.log("Sending back queue");
-                        webviewRef.current?.postMessage(JSON.stringify({
-                            response: "uploadQueue",
-                            data: (await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload))
-                        }));
                     }
 
                     if(message.request === "shareLink") {

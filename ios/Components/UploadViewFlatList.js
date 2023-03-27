@@ -12,12 +12,13 @@ import FastImage from 'react-native-fast-image'
 import Video from "react-native-video";
 import * as React from "react";
 
-export default function UploadViewFlatList ({eventId, media, fetchMedia, pickImage, selecting, selectMedia}) {
+export default function UploadViewFlatList ({eventId, pendingMedia, media, fetchMedia, pickImage, selecting, selectMedia}) {
 	return (
 		<FlatList
 			style={{height: selecting ? "89%" : "100%"}}
 			data={[
 				"loader",
+				...pendingMedia,
 				...media,
 			]}
 			numColumns={3}
@@ -27,6 +28,11 @@ export default function UploadViewFlatList ({eventId, media, fetchMedia, pickIma
 					{selecting ? null : <FastImage alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={require("../assets/add-media.png")}/>}
 
 				</View>;
+				if(media?.pending) {
+					return <View style={{...styles.item, backgroundColor: "white"}}>
+						<Image  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180, opacity: 0.5}} source={{uri: media?.uri}}/>
+					</View>
+				}
 				return <View style={{...styles.item, opacity: selecting && !media.selected ? 0.5 : 1}} >
 					<View
 						style={{

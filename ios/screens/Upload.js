@@ -19,31 +19,40 @@ import Video from 'react-native-video';
 import UploadViewFlatList from "../Components/UploadViewFlatList";
 import FastImage from "react-native-fast-image";
 import {launchImageLibrary} from "react-native-image-picker";
+import {useFocusEffect, useNavigation, useRoute,} from "@react-navigation/native";
 
-export default function Upload ({payload}) {
+export default function Upload ({}) {
 
-	const [importing, setImporting] = React.useState(false);
+	const navigation = useNavigation();
+
+	const route = useRoute();
+
 	const [selecting, setSelecting] = React.useState(false);
 
-	const [event, setEvent] = React.useState(payload.event);
-	const [totalMediaCount, setTotalMediaCount] = React.useState(payload.event?.mediaCount);
+	const [event, setEvent] = React.useState(route?.params.event);
+	const [totalMediaCount, setTotalMediaCount] = React.useState(route?.params.event?.mediaCount);
 	const [selfMediaCount, setSelfMediaCount] = React.useState(0);
 	const [uri, setUri] = React.useState(null);
 
 	const [pendingMedia, setPendingMedia] = React.useState([]);
+	const [jobsLength, setJobsLength] = React.useState(0);
 	const [media, setMedia] = React.useState([]);
 
 	const selectedMedia = React.useRef([]);
 
-	const fetchMedia = () => {
-		HTTPClient("/events/"+payload?.eventId+"/media?me=true&limit=9&skip="+media.length).then(res => {
-			setMedia([...media, ...res.data.media])
+	const fetchMedia = (flush) => {
+		HTTPClient("/events/"+route?.params?.eventId+"/media?me=true&limit=9&skip="+media.length).then(res => {
+			if(flush){
+				setMedia(res.data.media)
+			}else {
+				setMedia([...media, ...res.data.media])
+			}
 		})
 	}
 
 	useEffect(() => {
 		setPendingMedia([]);
-		HTTPClient("/events/"+payload?.eventId, "GET")
+		HTTPClient("/events/"+route?.params?.eventId, "GET")
 			.then((response) => {
 				setEvent(response.data.event);
 				setTotalMediaCount(response.data.event.mediaCount)
@@ -55,27 +64,49 @@ export default function Upload ({payload}) {
 
 		fetchMedia();
 
+		const queue = async () => {
+			const jobs = (await ExpoJobQueue.getJobs())
+				.map(job => JSON.parse(job.payload))
+				.filter(job => job.eventId.toString() === route?.params?.eventId.toString())
+				.reverse();
+
+			const pendingQueue = [
+				...pendingMedia
+					.map(pending => {
+						return {
+							...pending,
+							processed: true
+						}
+					}),
+				...jobs.map(job => {
+					// if (!pendingMedia.map(pending => pending.uri).includes(job.uri)) {
+						return {
+							...job,
+							processed: false
+						}
+					// }
+				})
+			]
+
+
+			setPendingMedia(pendingQueue);
+
+			queue();
+		}
+
+		queue()
 
 	}, []);
 
 	useEffect(() => {
-
-		const queue = setInterval(async () => {
-			setPendingMedia((await ExpoJobQueue.getJobs()).map(job => JSON.parse(job.payload)));
-		}, 100);
-
 		const remoteMedia = setInterval(() => {
-			HTTPClient("/events/"+payload?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
+			HTTPClient("/events/"+route?.params?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
 		}, 2000);
 
 		return () => {
-			clearInterval(queue);
 			clearInterval(remoteMedia);
 		}
 	}, [event]);
-
-	useEffect(() => {
-	}, [pendingMedia]);
 
 	const selectMedia = (_id, state) => {
 		setMedia(media.map(m => {
@@ -87,56 +118,11 @@ export default function Upload ({payload}) {
 			}
 			return m;
 	}))}
-
 	const pickImage = async (eventId) => {
 
-		try {
-
-			const result = await launchImageLibrary({
-				mediaType: "mixed",
-				selectionLimit: 0,
-				includeExtra: true,
-				videoQuality: "low",
-				// presentationStyle: "overCurrentContext"
-			});
-
-			if(result?.errorCode === "permission") {
-				Alert.alert("Permission", "Please allow access to your photos and videos in order to upload them.");
-				setImporting(false);
-				return;
-			}
-
-
-
-			// let result = await ImagePicker.launchImageLibraryAsync({
-			// 	mediaTypes: ImagePicker.MediaTypeOptions.All,
-			// 	allowsMultipleSelection: true,
-			// 	exif: true,
-			// 	quality: 0,
-			// });
-
-			if (!result.isCancel) {
-
-				for await (const media of _.uniq(result.assets)) {
-
-					ExpoJobQueue.addJob("mediaQueueV75", {
-						...media,
-						eventId
-					})
-
-				}
-
-				ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
-
-			}
-
-		}catch(err) {
-			console.log(err, "err")
-		}
-
-		setMedia([]);
-		fetchMedia();
-		setImporting(false);
+		navigation.navigate("Roll", {
+			eventId
+		});
 
 	};
 
@@ -147,9 +133,9 @@ export default function Upload ({payload}) {
 			<View style={{flex: 1, margin: 15, flexDirection: "column"}}>
 				<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 30, fontWeight: "600", marginLeft: 10 }}>Upload</Text>
 				<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'stretch', marginTop: 10}}>
-					<View style={{flex: 3}}>
+					<View style={{flex: 2}}>
 						<Image
-							source={{uri: 'data:image/jpeg;base64,' + (payload.event.buffer)}}
+							source={{uri: 'data:image/jpeg;base64,' + (route?.params.event.buffer)}}
 							style={{
 								width: 80,
 								height: 120,
@@ -159,12 +145,12 @@ export default function Upload ({payload}) {
 								borderColor: "black"
 						}} />
 					</View>
-					<View style={{flex: 80}}>
+					<View style={{flex: 7}}>
 						<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 20, fontWeight: "600", marginLeft: 10 }}>{event?.name ? event?.name : " "}</Text>
 					</View>
 				</View>
 			</View>
-			<View style={{flex: 12}}>
+			<View style={{flex:3}}>
 				<View style={{
 					borderTopColor: "gray",
 					borderTopWidth: 1,
@@ -173,7 +159,7 @@ export default function Upload ({payload}) {
 					marginBottom: 10,
 					flexDirection: 'row',
 				}}>
-					<Text style={{
+					{pendingMedia.length === 0 ? <Text style={{
 						fontFamily: 'Red Hat Display Regular',
 						fontSize: 14,
 						fontWeight: "300",
@@ -183,7 +169,17 @@ export default function Upload ({payload}) {
 						flex: 1
 					}}>
 						{selfMediaCount} Memories by me
-					</Text>
+					</Text> : <Text style={{
+						fontFamily: 'Red Hat Display Regular',
+						fontSize: 14,
+						fontWeight: "300",
+						marginTop: 10,
+
+						color: "green",
+						flex: 1
+					}}>
+						{pendingMedia.length} Remaining ({Number(pendingMedia.reduce((acc, cur) => acc + cur.fileSize, 0) / (1024 * 1024)).toFixed(2)} MB)
+					</Text>}
 					<TouchableOpacity
 						onPress={() =>{
 							setSelecting(!selecting);
@@ -213,53 +209,27 @@ export default function Upload ({payload}) {
 				</View>
 
 				<View style={{padding: 0, margin: 0}}>
-					{importing || pendingMedia.length !== 0 ? <FlatList
-						data={[
-							"loader",
-							...pendingMedia,
-						]}
-						numColumns={3}
-						renderItem={((raw) => {
-							const media = raw.item;
-							if(media === "loader") return <View onTouchStart={async () => await pickImage(payload.eventId)} style={styles.item}>
-								<Image alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={require("../assets/add-media.png")}/>
-
-							</View>;
-							if(media?.type) return <View style={{...styles.item, backgroundColor: "white"}}>
-								{media.type === "video" ?
-									<Video
-										repeat={true}
-										source={{uri: media.uri}}
-										muted={true}
-										resizeMode="cover"
-										style={{
-											width: "100%",
-											height: "100%",
-											opacity: 0.5
-										}}
-									/>
-									: <Image  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180, opacity: 0.5}} source={{uri: media.uri}}/>
-								}
-							</View>
-						})}
-						keyExtractor={(item, index) => index.toString()}
-						onEndReached={() => fetchMedia()}
-						onEndReachedThreshold={0.5}
-
-					/> : <View style={{flexDirection: "column", margin: 0, padding: 0}}>
+					<View style={{flexDirection: "column", margin: 0, padding: 0}}>
 
 						<UploadViewFlatList
+
 							// style={{flex: 1, height: "90px"}}
 							selecting={selecting}
 							selectMedia={selectMedia}
-							eventId={payload.eventId}
+							eventId={route?.params.eventId}
 							media={media}
+							pendingMedia={pendingMedia.map(m => {
+								return {
+									...m,
+									pending: true
+								}
+							})}
 							fetchMedia={fetchMedia}
 							pickImage={pickImage}
 						/>
 
 
-					</View>}
+					</View>
 
 					{selecting ? <View style={{flex: 10, flexDirection: "row", height: "100%", margin:0}}>
 

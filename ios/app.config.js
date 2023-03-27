@@ -3,7 +3,7 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.17.3",
+    "version": "0.18.2",
     "orientation": "portrait",
     "icon": "./assets/icon3.png",
     "userInterfaceStyle": "light",
@@ -54,9 +54,10 @@ module.exports = {
           "location",
           "fetch"
         ],
-        // "NSPhotoLibraryUsageDescription": "Timestack needs access to your photos to upload them to your event.",
-        // "NSCameraUsageDescription": "Timestack needs access to your camera to take photos and videos.",
-        // "NSLocationWhenInUseUsageDescription": "Timestack needs access to your location to show you events near you.",
+        "NSPhotoLibraryUsageDescription": "Timestack needs access to your photos to upload them to your event.",
+        "NSCameraUsageDescription": "Timestack needs access to your camera to take photos and videos.",
+        "NSLocationWhenInUseUsageDescription": "Timestack needs access to your location to optimize .",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Timestack needs access to your location to show you events near you.",
       }
     },
     "android": {

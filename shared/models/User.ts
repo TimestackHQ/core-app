@@ -35,11 +35,9 @@ const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: false,
-        unique: true,
     },
     email: {
         type: String,
-        unique: true,
     },
     birthDate: {
         type: Date,

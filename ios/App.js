@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {Image, StatusBar} from "react-native";
-import {NavigationContainer} from "@react-navigation/native";
+import {FlatList, Image, StatusBar} from "react-native";
+import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
 import {createStackNavigator} from "@react-navigation/stack";
-
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
 import {useEffect, useState} from "react";
@@ -20,6 +20,7 @@ import {
 } from "./stacks";
 import MediaView from "./screens/MediaView";
 import * as React from "react";
+import * as Linking from "expo-linking";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -115,6 +116,21 @@ function Nav() {
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
 
+    const navigator = useNavigation();
+    const [photos, setPhotos] = useState([]);
+    const url = Linking.useURL();
+
+    useEffect(() => {
+        if(url) {
+            const path = url.replace("timestack://", "");
+            if(path.startsWith("event/")) {
+                navigator.navigate("Invite", {
+                    eventId: path.split("/")[1]
+                });
+            }
+        }
+
+    }, [url]);
     useFonts({
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
         'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
@@ -127,6 +143,12 @@ function Nav() {
         'Red Hat Display Semi Bold': require('./assets/fonts/RedHatDisplay-SemiBold.ttf'),
         'Red Hat Display Semi Bold Italic': require('./assets/fonts/RedHatDisplay-SemiBoldItalic.ttf'),
     });
+
+    // return <FlatList
+    //     data={photos}
+    //     numColumns={3}
+    //     renderItem={({item}) => <Image source={{uri: item.node.image.uri}} style={{width: "33%", height: 100}}/>}
+    // />
 
     return (
         <Tab.Navigator

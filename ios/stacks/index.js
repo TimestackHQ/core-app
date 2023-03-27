@@ -11,6 +11,8 @@ import NotificationsScreen from "../screens/Notifications";
 import ProfileScreen from "../screens/Profile";
 import EditEvent from "../screens/EditEvent";
 import MediaView from "../screens/MediaView";
+import Upload from "../screens/Upload";
+import Roll from "../screens/Roll";
 
 
 
@@ -48,7 +50,11 @@ function CoreStackScreen({initialRouteName = "Main"}){
 
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="EditEvent" component={EditEvent} />
+			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="Upload" component={Upload} />
 			<Index.Screen options={{presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true}} name="MediaView" component={MediaView} />
+			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="Roll" component={Roll} />
+
+
 			<Index.Screen options={{headerShown: false}} name="Future" component={FutureScreen} />
 			<Index.Screen options={{headerShown: false}} name="Add" component={AddScreen} />
 			<Index.Screen options={{headerShown: false}} name="Notifications" component={NotificationsScreen} />
