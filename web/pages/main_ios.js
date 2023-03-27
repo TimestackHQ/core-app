@@ -76,10 +76,7 @@ export default function MainIOS () {
 							loader={<h4></h4>}
 						>
 							{events?.map((event, index) => {
-								return <div style={{
-								}}>
-									<EventCard key={index} event={event}/>
-								</div>
+								return <EventCard key={index} event={event}/>
 							})}
 						</InfiniteScroll>}
 
