@@ -61,6 +61,7 @@ export default function Gallery ({eventId}) {
 					<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
 				}
 				style={{
+					paddingTop: "40px",
 					overflowY: "scroll",
 					"-webkit-overflow-scrolling": "touch",
 					"-webkit-transform": "translateZ(0px)"

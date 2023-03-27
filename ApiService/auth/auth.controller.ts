@@ -146,16 +146,17 @@ export async function register (req: Request, res: Response, next: NextFunction)
             user.isConfirmed = true;
         }
 
-        if(req.body.eventId && user.isOnWaitList) {
-            const event = await Models.Event.findOne({
-                publicId: req.body.eventId,
-            }).select("_id");
+        // if(req.body.eventId && user.isOnWaitList) {
+        //     const event = await Models.Event.findOne({
+        //         publicId: req.body.eventId,
+        //     }).select("_id");
+        //
+        //     if(event) {
+        //         user.isOnWaitList = false;
+        //     }
+        // }
 
-            if(event) {
-                user.isOnWaitList = false;
-            }
-        }
-
+        user.isOnWaitList = false;
         await user.save();
 
         return res.status(200).json({

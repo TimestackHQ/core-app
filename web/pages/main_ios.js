@@ -29,7 +29,7 @@ export default function MainIOS () {
 
 	return (
 		// <IOS main={true}>
-		<div style={{backgroundColor: "white"}}>
+		<div style={{backgroundColor: "white", marginLeft: 0}}>
 			<FadeIn >
 				<header style={{backgroundColor: "white", paddingBottom: "8px", paddingTop: 0}} className="d-flex flex-wrap mb-4 row fixed-top ">
 
@@ -52,12 +52,12 @@ export default function MainIOS () {
 				</header>
 				<br/>
 			</FadeIn>
-			<div style={{height: "30px"}}/>
+			<div style={{height: "28px"}}/>
 
-			<div className="container">
+			<div className="container" >
 				<h1>My Timewall</h1>
-				<div className="row" style={{paddingTop: "20px"}}>
-					<div className={"col-12"} style={{borderRightColor: "black", borderWidth: "10px"}}>
+				<div className="row" style={{paddingTop: "8px"}}>
+
 						{loading ? <React.Fragment>
 							{[0, 1, 2, 3].map((event, index) => {
 								return <div key={index} style={{
@@ -69,20 +69,23 @@ export default function MainIOS () {
 								}}/>
 							})}
 						</React.Fragment> : <InfiniteScroll
+							style={{overflowX: "hidden"}}
 							dataLength={events.length}
 							next={getEvents}
 							hasMore={true}
 							loader={<h4></h4>}
 						>
 							{events?.map((event, index) => {
-								return <EventCard key={index} event={event}/>
+								return <div style={{
+								}}>
+									<EventCard key={index} event={event}/>
+								</div>
 							})}
 						</InfiniteScroll>}
 
 					</div>
 
 
-				</div>
 			</div>
 		</div>
 	);

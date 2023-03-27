@@ -115,7 +115,7 @@ EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
                 ...user.toJSON(),
                 status: "accepted"
             }
-        }).filter((user: any) => user._id.toString() !== userId.toString()),
+        }),//.filter((user: any) => user._id.toString() !== userId.toString()),
         ...this.invitees.map((user: any) => {
             if (isObjectIdOrHexString(user)) return {
                 _id: isObjectIdOrHexString(user) ? user : user._id,

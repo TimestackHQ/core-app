@@ -5,6 +5,7 @@ import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
 import FadeIn from "react-fade-in";
 import Router from "next/router";
+import moment from "moment";
 
 const buttonStyle = {
 	borderRadius: "0px",
@@ -76,15 +77,27 @@ export default function Index() {
 							<button
 								className={"btn btn-primary"}
 								onClick={save}
-								style={{width: "100%", borderRadius: "10px"}}
+								style={{
+									width: "100%",
+									backgroundColor: "black",
+									fontSize: "25px",
+									height: "50px",
+									borderRadius: "2rem",
+									fontWeight: "500",
+									textShadow: "0 0 15px #FFF"
+
+								}}
 							>
 								Save
 							</button>
 							<hr/>
 							<h5>Delete account</h5>
 							<h6>{user?.queuedForDeletionAt ?
-								"You can abort the deletion of your account until " + new Date(user.queuedForDeletionAt).toLocaleString() :
-								"Use the button below to initialize deletion. Your account will stay active for 7 days before it is permenantly deleted. You can abort that process until the buffer period ends."}
+								"You can restore your account until " + moment(user?.queuedForDeletionAt).add(3, "days").format("MMMM Do YYYY, h:mm a") :
+								<p>
+									This action is permanent and cannot be undone. Make sure you have saved any important data before proceeding. <br/><br/>
+									You have 3 days to change your mind before all your personal data is automatically deleted. Other users can’t discover you on Timestack during this time.
+								</p>}
 							</h6>
 							<button onClick={() => {
 								HTTPClient(user.queuedForDeletionAt ? "/auth/account/delete/abort" : "/auth/account/delete", "POST")
@@ -93,8 +106,25 @@ export default function Index() {
 										queuedForDeletionAt: res.data.queuedForDeletionAt
 								}))
 								.catch((err) => alert("An error occurred"));
-							}} className={"btn btn-outline-danger"} style={{width: "50%", borderRadius: "10px"}}>
-								{user?.queuedForDeletionAt ? "Abort deletion" : "Schedule deletion"}
+							}} className={"btn btn-light"}
+
+						        style={{
+									width: "100%",
+							        backgroundColor: user?.queuedForDeletionAt ? "#2e8eff": "#da2626",
+							        borderColor: "transparent",
+							        color: "white",
+							        fontSize: "25px",
+							        height: "50px",
+							        borderRadius: "2rem",
+							        fontWeight: "500",
+							        marginTop: "10px",
+							        textShadow: user?.queuedForDeletionAt ? "0 0 15px #FFF" : undefined
+
+
+						        }}
+
+							>
+								{user?.queuedForDeletionAt ? "Restore account" : "Delete"}
 							</button>
 						</div>
 					</div>

@@ -5,6 +5,7 @@ import { ShimmerThumbnail } from "react-shimmer-effects";
 import {LazyLoadImage} from "react-lazy-load-image-component";
 import Image from "next/image";
 import {NativeNavigate} from "../utils/nativeBridge";
+import ProfilePicture from "./ProfilePicture";
 
 export default function EventCard ({
    event
@@ -31,10 +32,10 @@ export default function EventCard ({
 			})
 			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
 		}} className={"card "} style={{
-			backgroundColor: "white",
-			boxShadow: "rgba(100, 100, 111, 0.1) 0px 3px 29px 0px",
+			backgroundColor: "#fcfbfb",
 			borderRadius: "15px",
-			marginBottom: "15px"
+			marginBottom: "10px",
+			height: "145px"
 		}}>
 			<div className={"row"}>
 				<div className={"col-4"}>
@@ -66,26 +67,55 @@ export default function EventCard ({
 					</div>
 
 				</div>
-				<div className={"col-5"} style={{paddingLeft: "0px"}}>
-					<h6 style={{marginTop: "10px", marginBottom: "0px"}}><b>{event?.name}</b></h6>
-					<p style={{fontSize: "10px", marginBottom: "0px", marginLeft: "1px"}}>{event?.location}</p>
-					<p style={{fontSize: "10px", marginLeft: "1px"}}>June 17 - 21, 2022
+				<div className={"col-6"} style={{paddingLeft: "0px"}}>
+					<h6 style={{marginTop: "10px", marginBottom: "0px", overflowX: "scroll",height: "65px"
+					}}><b>{event?.name}</b></h6>
+					<p style={{fontSize: "12px", marginBottom: "0px", marginLeft: "1px"}}>{event?.location}</p>
+					<p style={{fontSize: "13px", marginLeft: "1px", position: "absolute", bottom: "17px"}}>June 17 - 21, 2022
 					</p>
 					<div style={{position : "absolute",
-						bottom   : 15}}>
-						<img width="100px" style={{width: "20px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/MingXi Profile.jpg"}/>
-						<img width="100px" style={{width: "20px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/Flavia Profile.jpg"}/>
-						<img width="100px" style={{width: "20px", borderRadius: "25px", marginRight: "5px"}} src={"/events/pics/Dostie Profile.jpg"}/>
+						backgroundColor: "#fcfbfb",
+						width: "100%",
+						display: "flex",
+						flexWrap: "wrap",
+						bottom   : 3}}>
+
+						{/*{event.people.map((user, i) => {*/}
+						{/*	return <ProfilePicture style={{marginRight: "5px"}} key={i} width="25px" height={"25px"} location={user.profilePictureSource}/>*/}
+						{/*})}*/}
+
+						{event.people.map((user, i) => {
+							return i === 5 && event?.peopleCount > 6 ? <div key={i} style={{}}>
+								<div style={{
+									backgroundColor: "black",
+									width: "25px",
+									height: "25px",
+									borderRadius: "30px",
+
+								}}>
+									<span style={{
+										zIndex: 1,
+										position: "absolute",
+										marginLeft: event.peopleCount-6 < 10 ? "8px" : "8px",
+										marginTop: "4px",
+										height: "25px", width: "25px",
+										borderRadius: "30px",
+									}}>
+										<p style={{color: "#ffffff", fontSize: 12}}>{event.peopleCount-6}</p>
+									</span>
+									<ProfilePicture style={{marginRight: "5px", opacity: 0.6, marginBottom: 2}} key={i} width="25px" height={"25px"} location={user.profilePictureSource}/>
+								</div>
+							</div> : <ProfilePicture  style={{marginRight: "5px",marginBottom: 2}} key={i} width="25px" height={"25px"} location={user.profilePictureSource}/>
+
+						})}
 
 					</div>
 
 				</div>
-				<div className={"col-3"}>
+				<div className={"col-2"} style={{marginLeft: "0px"}}>
 
-					<p style={{fontSize: "10px", marginTop: "15px", marginLeft: "10px"}}>
-						<img className={"red-apple"} src={"/icons/favorite_FILL0_wght400_GRAD0_opsz48.svg"} alt={"heart"} width={"12px"} style={{marginTop: "0px"}}/> 5<br/>
-						<img className={"red-apple"} src={"/icons/image_FILL0_wght300_GRAD0_opsz48.svg"} alt={"heart"} width={"12px"} style={{marginTop: "0px"}}/> 404
-
+					<p style={{fontSize: "12px", marginTop: "10px"}}>
+						<img className={"red-apple"} src={"/icons/image_FILL0_wght300_GRAD0_opsz48.svg"} alt={"heart"} width={"14px"} style={{marginTop: "0px", marginBottom: "2px"}}/> {event?.mediaCount}
 					</p>
 				</div>
 

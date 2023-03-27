@@ -1,4 +1,4 @@
-import {useEffect, useState, Fragment} from 'react';
+import React, {useEffect, useState, Fragment} from 'react';
 import IOS from "../../components/ios";
 import HTTPClient from "../../utils/httpClient";
 import Router from "next/router";
@@ -140,7 +140,7 @@ export default function EventIOS ({}) {
 
 
 	return (
-		<div>
+		<div style={{backgroundColor: "white", marginLeft: 0}}>
 
 			{updatingPeople
 				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
@@ -208,12 +208,23 @@ export default function EventIOS ({}) {
 
 
 								<div className={"col-7 position-relative"}>
-									<div className="position-absolute top-0 start-0">
-										<h2 style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{event?.name}</b></h2>
+									<div className="position-absolute top-0 start-0" style={{width: "100%",}}>
+										<h3 style={{
+											marginLeft: "2px",
+											marginBottom: "0px",
+											lineHeight: "1",
+											overflowX: "hidden",
+											maxHeight: "145px",
+											overflowWrap: "break-word",
+											width: "220px",
+										}}><b>
+											{event?.name}
+										</b>
+										</h3>
 									</div>
 									<div className="position-absolute bottom-0 start-0">
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>{event?.location}</p>
-										<p style={{fontSize: "15px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
+										<p style={{fontSize: "15px", marginBottom: "-5px", marginLeft: "2px", marginTop: "10px"}}>{event?.location}</p>
+										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
 									</div>
 
 								</div>
@@ -237,13 +248,11 @@ export default function EventIOS ({}) {
 								</div>
 							</div>
 							<br/>
-							<div style={{}}>
-								<div style={{display: "inline", paddingLeft: "10px"}}>
-									<ProfilePicture width={"45px"} height={"45px"} location={user?.profilePictureSource}/>
-								</div>
-								{event?.people.map((invitee, index) => {
-									return <div key={index} style={{display: "inline", paddingLeft: "10px"}}>
-										<ProfilePicture width={"45px"} height={"45px"} location={invitee?.profilePictureSource}/>
+							<div className={"row flex-nowrap"} style={{position: "absolute", overflowX: "scroll", width: "100%", overflowY: "none", height: "80px", paddingBottom: "20px"}}>
+
+								{event.people.map((user, index) => {
+									return <div key={index} style={{display: "inline", paddingLeft: "10px",width: "55px"}}>
+										<ProfilePicture width={"45px"} height={"45px"} location={user?.profilePictureSource}/>
 									</div>
 								})}
 

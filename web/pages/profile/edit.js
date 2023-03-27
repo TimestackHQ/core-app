@@ -86,30 +86,19 @@ export default function Index() {
 								</div>
 							</div>
 							<br/>
-							<div className={"row"}>
-								<div className={"col-4"} style={{paddingTop: "8px", marginRight: 0, paddingRight: 0}}>
-									Phone Number
-								</div>
-								<div className={"col-8"}>
-									<input style={buttonStyle} className={"form-control crud_input"} value={user?.phoneNumber} onChange={(e) => setUser({...user, lastName: e.target.value})} required/>
-
-								</div>
-							</div>
-							<br/>
-							<div className={"row"}>
-								<div className={"col-4"} style={{paddingTop: "8px", marginRight: 0, paddingRight: 0}}>
-									Email
-								</div>
-								<div className={"col-8"}>
-									<input style={buttonStyle} className={"form-control crud_input"} value={user?.email} onChange={(e) => setUser({...user, email: e.target.value})} required/>
-
-								</div>
-							</div>
-							<hr/>
 							<button
-								className={"btn btn-primary"}
+								className={"btn btn-dark"}
 								onClick={save}
-								style={{width: "100%", borderRadius: "10px"}}
+								style={{
+									width: "100%",
+									backgroundColor: "black",
+									fontSize: "25px",
+									height: "50px",
+									borderRadius: "2rem",
+									fontWeight: "500",
+									textShadow: "0 0 15px #FFF"
+
+								}}
 							>
 								Save
 							</button>

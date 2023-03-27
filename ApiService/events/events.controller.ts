@@ -168,8 +168,21 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
         const events = await Models.Event.find(query)
             .sort({createdAt: -1})
             .skip(Number(skip)).limit(10)
-            .populate(standardEventPopulation)
-            .select("-media")
+            .populate([{
+                path: "cover",
+                select: "publicId thumbnail snapshot"
+            },
+                {
+                    path: "users",
+                    select: "firstName lastName profilePictureSource username",
+                    options: {
+                        limit: 6
+                    }
+                }, {
+                    path: "invitees",
+                    select: "firstName lastName profilePictureSource username"
+                }])
+            .select("-media");
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
@@ -177,16 +190,22 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
                 if(i < 4) {
                     buffer = await getBuffer(event);
                 }
+                const media = await Models.Media.countDocuments({
+                    event: event._id
+                })
+
                 return {
                     ...event.toJSON(),
                     cover: event.cover?.publicId,
-                    peopleCount : event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
-                    // mediaCount: event.media.length,
+                    peopleCount : Number((await Models.Event.findById(event._id))?.users.length)  + event.invitees?.length + event.nonUsersInvitees?.length,
+                    mediaCount: media,
                     users: undefined,
                     invitees: undefined,
                     nonUsersInvitees: undefined,
                     media: undefined,
-                    people: event.people(req.user._id),
+                    people: [
+                        ...event.users,
+                    ],
                     buffer
                 }
             }))
@@ -486,6 +505,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
         });
+
 
         if (!event) {
             return res.sendStatus(404);

@@ -196,6 +196,7 @@ export default function EditEvent () {
 
 					</View>
 					<View style={{flex: 2, marginRight: 5}}>
+						<Text style={{fontFamily: 'Red Hat Display Semi Bold', marginBottom: -5, size: 10,color: "gray",}}>Title </Text>
 						<TextInput
 							multiline={true}
 							value={name}

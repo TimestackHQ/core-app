@@ -75,7 +75,7 @@ export default function Index() {
 								    alignItems: 'center',
 								    color: "white",
 								    backgroundColor: "#2E8EFF"
-							    }}><b>Thoughts ?</b></li>
+							    }}><b>Thoughts?</b></li>
 						</ul>
 						<br/>
 						<ul className="list-group text-start">
