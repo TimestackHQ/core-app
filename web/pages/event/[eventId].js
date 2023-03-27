@@ -53,7 +53,7 @@ export default function EventIOS ({}) {
 								searchURL.search = searchParams.toString();
 								window.history.replaceState(null, null, searchURL.toString());
 
-								modalView("upload", {eventId: response.data.event?._id, event:response.data.event});								let url = new URL(window.location.href);
+								NativeNavigate("Upload", {eventId: response.data.event?._id, event:response.data.event})
 
 							}, 1000);
 						}
