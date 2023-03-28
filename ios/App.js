@@ -45,6 +45,7 @@ function Viewer({baseRoute, navigation}) {
 }
 
 function Invite ({navigation, route}) {
+    alert("Hey"+route.params.eventId);
     return <Viewer navigation={navigation} baseRoute={"/event/"+route.params.eventId+"/join"}/>
 }
 

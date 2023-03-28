@@ -75,9 +75,9 @@ export default function Gallery ({eventId}) {
 							eventId: eventId
 						})} key={i} className={"col-4"} style={{
 							margin: 0,
-							padding: 1,
-							paddingLeft: i % 3 ? 1 : 0,
-							paddingRight: i % 3 === 2 ? 0 : 1,
+							padding: 0.5,
+							paddingLeft: i % 3 ? 0.5 : 0,
+							paddingRight: i % 3 === 2 ? 0 : 0.5,
 						}}>
 							<MediaView media={media}/>
 						</div>
