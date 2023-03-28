@@ -504,7 +504,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 limit: req.query?.limit ? Number(req.query.limit) : 12,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
-        });
+        }).sort({"metadata.timestamp": -1}).lean();
 
 
         if (!event) {

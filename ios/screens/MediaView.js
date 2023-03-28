@@ -29,8 +29,6 @@ function Headers ({media}) {
 				await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
 				setSharing(false);
 				await Share.open({
-					title: "Timestack",
-					message: "Timestack " + media?.type === "video" ? "video" : "photo",
 					url: FileSystem.documentDirectory + media?.fileName,
 				});
 				return;
@@ -196,7 +194,7 @@ export default function MediaView() {
 					try {
 						const location = await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
 						await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
-						Alert.alert("Success", "Saved to your device.");
+						alert("Saved");
 					} catch (err) {
 						alert("Failed to save");
 					}
