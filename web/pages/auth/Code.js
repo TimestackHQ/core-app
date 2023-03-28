@@ -76,7 +76,7 @@ export default function Code ({
 				left: "50%",
 				transform: "translateX(-50%)"
 			}} src={"images/logoglow.png"}/>
-			<div style={{marginTop: "180px"}}/>
+			<div style={{marginTop: "70%"}}/>
 
 			<br/>
 			<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
@@ -119,7 +119,7 @@ export default function Code ({
 				<br/>
 				<p style={{
 					position: "absolute",
-					bottom: "46%",
+					bottom: "12%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -142,7 +142,7 @@ export default function Code ({
 					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "39%",
+						bottom: "5%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999

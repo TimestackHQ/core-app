@@ -48,7 +48,7 @@ export default function FutureScreen({navigation}) {
 				fontSize: 15,
 				fontWeight: "bold",
 				fontFamily: "Red Hat Display Semi Bold",
-			}}>{eventsCount} {eventsCount === 1 ? "event" : "events"}</Text>
+			}}>{eventsCount} {eventsCount === 1 ? "Event" : "Events"}</Text>
 			<View style={{
 				height: 1,
 				marginVertical: 10,
@@ -91,7 +91,7 @@ export default function FutureScreen({navigation}) {
 							fontFamily: "Red Hat Display Regular",
 							color: "gray",
 						}}>
-							{user.eventsCount} {user.eventsCount === 1 ? "event" : "events"}
+							{user.eventsCount} {user.eventsCount === 1 ? "Event" : "Events"}
 						</Text>
 					</View>
 				</View>

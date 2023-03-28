@@ -8,7 +8,9 @@ export default function Adventure ({setStep, setUserConfirmed}) {
 
 	setTimeout(() => {
 		notifyNativeOfSession();
-		NativeNavigate("Main");
+		NativeNavigate("Main", {
+			screen: "Home",
+		});
 	}, 1500);
 
 	return (

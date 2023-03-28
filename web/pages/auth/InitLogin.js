@@ -59,46 +59,41 @@ export default function InitLogin({
 					left: "50%",
 					transform: "translateX(-50%)"
 				}} src={"images/logoglow.png"}/>
-				<div style={{marginTop: "180px"}}/>
+				<div style={{marginTop: "75%"}}/>
 
 				<br/>
-				{/*<div className="input-group mb-3" style={{borderRadius: "1rem"}}>*/}
-				{/*	<button className="btn btn-secondary dropdown-toggle" type="button"*/}
-				{/*	        data-bs-toggle="dropdown" aria-expanded="false">*/}
-				{/*		+1 <img src={"/images/flags/ca.png"} alt={"Canada"} width={"25"} height={"25"} />*/}
-				{/*	</button>*/}
-				{/*	<ul className="dropdown-menu">*/}
-				{/*		<li><a className="dropdown-item" href="#">+1 <img src={"/images/flags/us.png"} alt={"US"} width={"25"} height={"25"} /> United States</a> </li>*/}
-				{/*	</ul>*/}
-				{/*</div>*/}
-					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
-						justifyContent: "center"}}>
 
-						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>Let&apos;s get secure right away</h2>
+				<div className="input-group mb-3 text-center" style={{
+					borderRadius: "1rem",
+					display: "flex",
+					justifyContent: "center"
+				}}>
 
-						<input
-							ref={inputRef}
-							min="1" max="9999999999"
-							required={true}
-							className={"sign-up-phone-number"}
-							autoFocus={true}
-							type="tel"
-							style={{
-								padding: 0, margin: 0
+					<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>Let&apos;s get secure right away</h2>
 
-							}}
-							autoComplete={"tel"}
-							name={"phoneNumber"}
-							value={phoneNumber}
-							onChange={(e) => setPhoneNumber(e.target.value)}
-							placeholder="Your number"
-						/>
+					<input
+						ref={inputRef}
+						min="1" max="9999999999"
+						required={true}
+						className={"sign-up-phone-number"}
+						autoFocus={true}
+						type="tel"
+						style={{
+							padding: 0, margin: 0
 
-					</div>
+						}}
+						autoComplete={"tel"}
+						name={"phoneNumber"}
+						value={phoneNumber}
+						onChange={(e) => setPhoneNumber(e.target.value)}
+						placeholder="Your number"
+					/>
+
+				</div>
 
 				<p style={{
 					position: "absolute",
-					bottom: "48%",
+					bottom: "12%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -122,7 +117,7 @@ export default function InitLogin({
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "40%",
+						bottom: "5%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999

@@ -64,13 +64,13 @@ export default function Email ({
 				left: "50%",
 				transform: "translateX(-50%)"
 			}} src={"images/logoglow.png"}/>
-				<div style={{paddingTop: "200px"}}/>
+				<div style={{paddingTop: "80%"}}/>
 				<div className="input-group mb-3">
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>
 
 						<h2 style={{color: "white", fontWeight: 500, letterSpacing: -1.5, fontSize: "20px", padding: 0, margin: 0}}>How can we contact you ?</h2>
-						<br/><br/><br/>
+						<br/><br/>
 						<input
 							required={true}
 							className={"sign-up-phone-number"}
@@ -96,7 +96,7 @@ export default function Email ({
 
 				<p style={{
 					position: "absolute",
-					bottom: "52%",
+					bottom: "12%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -119,7 +119,7 @@ export default function Email ({
 					<img alt={""} className={"white-shadow"} width={"100%"} style={{
 						fill: "white",
 						position: "absolute",
-						bottom: "45%",
+						bottom: "5%",
 						left: "50%",
 						transform: "translateX(-50%)",
 						zIndex: 999

@@ -21,6 +21,7 @@ import * as Linking from "expo-linking";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import FastImage from "react-native-fast-image";
 import * as Network from "expo-network";
+import {createStackNavigator} from "@react-navigation/stack";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -124,7 +125,7 @@ export default function App() {
 
 }
 
-const CoreStack = createNativeStackNavigator();
+const CoreStack = createStackNavigator();
 function CoreStackScreen() {
 
     const [authenticated, setAuthenticated] = useState(true);

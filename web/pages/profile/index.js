@@ -69,6 +69,7 @@ export default function Index() {
 						{/*<hr/>*/}<br/>
 						<ul className="list-group text-start" >
 							<li className="list-group-item"
+							    onClick={() => openLink("https://forms.gle/sp5eyoN1y5qPenXS7")}
 							    style={{
 								    height: "50px",
 								    display: 'flex',
