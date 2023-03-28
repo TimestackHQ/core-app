@@ -134,10 +134,10 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 												}
 											}}>
 												<div className={"col-3"}>
-													<img
-														width="80%"
-														style={{borderRadius: "60px", marginRight: "5px"}}
-														src={invitee?.profilePictureSource ? invitee?.profilePictureSource : "/icons/contact.svg"}
+													<ProfilePicture
+														width="50px"
+														height="50px"
+														location={invitee?.profilePictureSource}
 													/>
 												</div>
 												<div className={"col-7"} style={{paddingLeft: "0px"}}>
