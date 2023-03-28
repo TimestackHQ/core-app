@@ -40,6 +40,7 @@
     "expo-job-queue": "^1.4.2",
     "expo-linking": "~4.0.1",
     "expo-media-library": "^15.2.3",
+    "expo-network": "^5.2.1",
     "expo-notifications": "~0.18.1",
     "expo-permissions": "~14.1.1",
     "expo-secure-store": "~12.1.1",

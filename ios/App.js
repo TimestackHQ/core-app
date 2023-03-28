@@ -1,12 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {FlatList, Image, StatusBar} from "react-native";
-import {NavigationContainer, useNavigation} from "@react-navigation/native";
+import {FlatList, Image, StatusBar, View, Text} from "react-native";
+import {NavigationContainer, useNavigation, useRoute} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
-import {createStackNavigator} from "@react-navigation/stack";
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import uploadWorker from "./uploadWorker";
 import Main from "./Main";
 import {useEffect, useState} from "react";
@@ -18,9 +16,11 @@ import {
     NotificationsStackScreen,
     ProfileStackScreen
 } from "./stacks";
-import MediaView from "./screens/MediaView";
 import * as React from "react";
 import * as Linking from "expo-linking";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import FastImage from "react-native-fast-image";
+import * as Network from "expo-network";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -57,7 +57,66 @@ function AuthScreen({navigation, route}) {
             navigation={navigation}
         />;
 }
+
+function ErrorScreen() {
+
+    const navigation = useNavigation();
+    const route = useRoute();
+
+    // useEffect(() => {
+    //     const network = setInterval(async () => {
+    //         const net = await Network.getNetworkStateAsync();
+    //         if(net.isInternetReachable && net.isConnected) {
+    //             navigation.goBack();
+    //         }
+    //     }, 1000);
+    //
+    //     clearInterval(network)
+    // }, []);
+    return <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    }}>
+        <Image
+            style={{
+                width: 300,
+            }}
+            source={require("./assets/i-thought-we-had-a-connection-connection.gif")}
+        />
+        <Text style={{
+            marginTop: 40,
+            fontFamily: "Red Hat Display Semi Bold",
+            fontSize: 25,
+            color: "gray"
+        }}>
+            Can’t connect.
+        </Text>
+        <Text style={{
+            textAlign: 'center',
+            fontFamily: "Red Hat Display Semi Bold",
+            fontSize: 20,
+            color: "gray"
+        }}>
+            Make sure you are connected to the internet.
+        </Text>
+    </View>
+}
 export default function App() {
+
+    useFonts({
+        'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
+        'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
+        'Red Hat Display Bold': require('./assets/fonts/RedHatDisplay-Bold.ttf'),
+        'Red Hat Display Bold Italic': require('./assets/fonts/RedHatDisplay-BoldItalic.ttf'),
+        'Red Hat Display Italic': require('./assets/fonts/RedHatDisplay-Italic.ttf'),
+        'Red Hat Display Medium': require('./assets/fonts/RedHatDisplay-Medium.ttf'),
+        'Red Hat Display Medium Italic': require('./assets/fonts/RedHatDisplay-MediumItalic.ttf'),
+        'Red Hat Display Regular': require('./assets/fonts/RedHatDisplay-Regular.ttf'),
+        'Red Hat Display Semi Bold': require('./assets/fonts/RedHatDisplay-SemiBold.ttf'),
+        'Red Hat Display Semi Bold Italic': require('./assets/fonts/RedHatDisplay-SemiBoldItalic.ttf'),
+    });
 
     StatusBar.setBarStyle('dark-content', true);
 
@@ -65,7 +124,7 @@ export default function App() {
 
 }
 
-const CoreStack = createStackNavigator();
+const CoreStack = createNativeStackNavigator();
 function CoreStackScreen() {
 
     const [authenticated, setAuthenticated] = useState(true);
@@ -98,6 +157,10 @@ function CoreStackScreen() {
             <CoreStack.Screen name="Invite" navigationOptions={{
                 animationEnabled: false
             }} component={Invite} />
+            <CoreStack.Screen
+                options={{presentation: "formSheet"}}
+                name="Error" component={ErrorScreen}
+            />
             {/*<CoreStack.Screen options={{*/}
             {/*    presentation: "card",*/}
             {/*    animationTypeForReplace: "pop",*/}
@@ -131,18 +194,7 @@ function Nav() {
         }
 
     }, [url]);
-    useFonts({
-        'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
-        'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
-        'Red Hat Display Bold': require('./assets/fonts/RedHatDisplay-Bold.ttf'),
-        'Red Hat Display Bold Italic': require('./assets/fonts/RedHatDisplay-BoldItalic.ttf'),
-        'Red Hat Display Italic': require('./assets/fonts/RedHatDisplay-Italic.ttf'),
-        'Red Hat Display Medium': require('./assets/fonts/RedHatDisplay-Medium.ttf'),
-        'Red Hat Display Medium Italic': require('./assets/fonts/RedHatDisplay-MediumItalic.ttf'),
-        'Red Hat Display Regular': require('./assets/fonts/RedHatDisplay-Regular.ttf'),
-        'Red Hat Display Semi Bold': require('./assets/fonts/RedHatDisplay-SemiBold.ttf'),
-        'Red Hat Display Semi Bold Italic': require('./assets/fonts/RedHatDisplay-SemiBoldItalic.ttf'),
-    });
+
 
     // return <FlatList
     //     data={photos}

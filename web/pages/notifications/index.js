@@ -94,6 +94,7 @@ export default function NotificationsPage() {
 						paddingRight: "0px",
 						height: "10px",
 					}}>
+						<h1>Notifications</h1>
 						<InfiniteScroll
 							dataLength={notifications.length} //This is important field to render the next data
 							next={getNotifications}
@@ -103,14 +104,6 @@ export default function NotificationsPage() {
 								<p style={{ textAlign: 'center' }}>
 									<b>Yay! You have seen it all</b>
 								</p>
-							}
-							// below props only if you need pull down functionality
-							refreshFunction={() => {
-								setNotifications([]);
-								getNotifications();
-							}}
-							releaseToRefreshContent={
-								<h3 style={{ textAlign: 'center' }}></h3>
 							}
 							style={{overflowX: "hidden", overflow: "scroll", height: "100%", width: "100%", "::-webkit-scrollbar": { width: "0px", height: "0px" }}}
 						>

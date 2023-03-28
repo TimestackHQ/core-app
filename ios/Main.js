@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
-import { NativeModules } from "react-native";
-
+import {Alert, Image, NativeModules} from "react-native";
+import * as Network from 'expo-network';
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from 'expo-linking';
@@ -16,6 +16,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { ModalView } from 'react-native-ios-modal';
 import Upload from "./screens/Upload";
+import {useNavigation} from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -105,7 +106,11 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
             }));
         });
 
-        return () => subscription.remove();
+
+        return () => {
+            subscription.remove();
+            // clearInterval(network);
+        }
 
     }, []);
 
@@ -132,7 +137,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
     }
 
     useEffect(() => {
-        updatePushToken()
+        updatePushToken();
     }, [expoPushToken, ]);
 
 
@@ -154,6 +159,9 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
             {/*/>*/}
             <WebView
                 scalesPageToFit={false}
+                renderError={() => {
+                    return <ViewError webviewRef={webviewRef}/>;
+                }}
                 allowsInlineMediaPlayback="true"
                 // allowsBackForwardNavigationGestures="true"
                 source={{ uri: uri ? uri : frontendUrl+baseRoute}}
@@ -264,10 +272,91 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         await AsyncStorage.setItem("@eventButtonAction", message.eventId);
                     }
 
+                    if(message.request === "cancelEventInvite") {
+                        Alert.alert("Decline Invite", "Are you sure you want to decline this invite?", [
+                            {
+                                text: "Cancel",
+                                style: "cancel"
+                            },
+                            {
+                                text: "Yes",
+                                onPress: async () => {
+                                    navigation.navigate("Main");
+                                }
+                            }
+                        ])
+
+                    }
+
 
                 }}
                 ref={webviewRef}
             />
         </View>
     );
+}
+
+function ViewError ({webviewRef}) {
+    return <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    }}>
+        <Image
+            style={{
+                width: 300,marginTop: -400
+            }}
+            source={require("./assets/i-thought-we-had-a-connection-connection.gif")}
+        />
+        <Text style={{
+            marginTop: 40,
+            fontFamily: "Red Hat Display Semi Bold",
+            fontSize: 25,
+            color: "gray"
+        }}>
+            Can’t connect.
+        </Text>
+        <Text style={{
+            textAlign: 'center',
+            fontFamily: "Red Hat Display Semi Bold",
+            fontSize: 20,
+            color: "gray"
+        }}>
+            Make sure you are connected to the internet.
+        </Text>
+        <TouchableOpacity style={{
+            textAlign: "center",
+            color: "grey",
+            position: "absolute",
+            bottom: 0,
+            marginTop: 10,
+
+            marginRight: 0,
+            width: "90%",
+            height: 50,
+            backgroundColor: "black",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 35,
+            marginBottom: 20,
+            paddingRight: 0,
+            zIndex: 1020
+        }}
+
+        >
+            <Text
+                onPress={() => {
+                    webviewRef.current.reload();
+                }}
+                style={{
+                fontFamily: "Red Hat Display Semi Bold",
+                color: "white",
+                fontSize: 20,
+                textShadowColor: '#FFF',
+                textShadowOffset: { width: 0, height: 0 },
+                textShadowRadius: 10,
+            }}>RECONNECT</Text>
+        </TouchableOpacity>
+    </View>
 }

@@ -61,10 +61,10 @@ export default function Gallery ({eventId}) {
 					<h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
 				}
 				style={{
-					paddingTop: "40px",
+					paddingTop: "30px",
 					overflowY: "scroll",
 					"-webkit-overflow-scrolling": "touch",
-					"-webkit-transform": "translateZ(0px)"
+					"-webkit-transform": "translateZ(0px)",
 
 				}}
 			>
@@ -73,7 +73,12 @@ export default function Gallery ({eventId}) {
 						<div onClick={() => NativeNavigate("MediaView", {
 							mediaId: media._id,
 							eventId: eventId
-						})} key={i} className={"col-4"} style={{margin: 0, padding: 1}}>
+						})} key={i} className={"col-4"} style={{
+							margin: 0,
+							padding: 1,
+							paddingLeft: i % 3 ? 1 : 0,
+							paddingRight: i % 3 === 2 ? 0 : 1,
+						}}>
 							<MediaView media={media}/>
 						</div>
 					);

@@ -10,6 +10,7 @@ import ProfilePicture from "../../components/ProfilePicture";
 import {EventButtonAction, modalView, NativeNavigate} from "../../utils/nativeBridge";
 import {Fade} from "@mui/material";
 import FadeIn from "react-fade-in";
+import {dateFormatter} from "../../utils/time";
 
 export default function EventIOS ({}) {
 
@@ -185,8 +186,11 @@ export default function EventIOS ({}) {
 											onClick={() => {
 												NativeNavigate("Invite", {
 													eventId: event._id,
+													eventThumbnail: uri,
 													eventName: event.name,
 													eventLocation: event.location,
+													eventStartsAt: event.startsAt,
+													eventEndsAt: event?.endsAt,
 													disabledAnimation: true
 												})
 											}}
@@ -223,8 +227,8 @@ export default function EventIOS ({}) {
 										</h3>
 									</div>
 									<div className="position-absolute bottom-0 start-0">
-										<p style={{fontSize: "15px", marginBottom: "-5px", marginLeft: "2px", marginTop: "10px"}}>{event?.location}</p>
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}>June 17 - 21, 2022</p>
+										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px", marginTop: "10px"}}>{event?.location}</p>
+										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px", lineHeight: 1.2, width: "100%"}}>{dateFormatter(new Date(event.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}</p>
 									</div>
 
 								</div>
@@ -248,7 +252,7 @@ export default function EventIOS ({}) {
 								</div>
 							</div>
 							<br/>
-							<div className={"row flex-nowrap"} style={{position: "absolute", overflowX: "scroll", width: "100%", overflowY: "none", height: "80px", paddingBottom: "20px"}}>
+							<div className={"row flex-nowrap"} style={{position: "absolute", overflowX: "scroll", width: "100%", overflowY: "none", height: "80px", paddingBottom: "20px", marginTop: "-10px"}}>
 
 								{event.people.map((user, index) => {
 									return <div key={index} style={{display: "inline", paddingLeft: "10px",width: "55px"}}>

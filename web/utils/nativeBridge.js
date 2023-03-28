@@ -44,6 +44,12 @@ export const NativeResetStack = () => window.ReactNativeWebView?.postMessage(JSO
 	request: "resetStack"
 }));
 
+export const NativeCancelEventInvite = () => {
+	window.ReactNativeWebView?.postMessage(JSON.stringify({
+		request: "cancelEventInvite"
+	}));
+}
+
 export const EventButtonAction = (eventId) => window.ReactNativeWebView?.postMessage(JSON.stringify({
 	request: "eventButtonAction",
 	eventId: eventId

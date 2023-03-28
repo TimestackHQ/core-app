@@ -30,7 +30,7 @@ export default function EditEvent () {
 	const scrollRef = React.createRef();
 
 	const [event, setEvent] = useState(null);
-	const [name, setName] = React.useState("");
+	const [name, setName] = React.useState(route.params.eventName);
 	const [startDate, setStartDate] = React.useState(new Date())
 	const [startDateOpen, setStartDateOpen] = React.useState(false);
 	const [endDate, setEndDate] = React.useState(null);
@@ -42,7 +42,7 @@ export default function EditEvent () {
 
 
 	const [loadingCover, setLoadingCover] = React.useState(false);
-	const [cover, setCover] = React.useState(null);
+	const [cover, setCover] = React.useState(route.params.eventThumbnail);
 	const [nextScreen, setNextScreen] = React.useState(false);
 	const [keyBoardOpen, setKeyBoardOpen] = React.useState(false);
 
@@ -310,7 +310,7 @@ export default function EditEvent () {
 								top: keyBoardOpen ? -1000 : 70,
 
 							}}
-						>{startDate && endDate ? "From" : "Start date"}</Text>
+						>Start date</Text>
 						<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 90, width: "100%"}} onPress={() => setStartDateOpen(true)}>
 							<Text
 								multiline={true}
@@ -354,7 +354,7 @@ export default function EditEvent () {
 								width: "90%",
 
 							}}
-						>{startDate && endDate ? "To" : "End date"}</Text>: null}
+						>End date</Text>: null}
 						<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 160, width: "100%"}} onPress={() => setEndDateOpen(true)}>
 							<Text
 								multiline={true}
@@ -436,7 +436,7 @@ export default function EditEvent () {
 			textAlign: "center",
 			color: "grey",
 			position: "absolute",
-			bottom: -200,
+			bottom: -180,
 			marginTop: 10,
 			marginLeft: 20,
 			width: "90%",

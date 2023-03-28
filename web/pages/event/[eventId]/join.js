@@ -5,8 +5,10 @@ import axios from "axios";
 import FadeIn from "react-fade-in";
 import Link from "next/link";
 import ProfilePicture from "../../../components/ProfilePicture";
-import {NativeNavigate, NativeNavigateBack} from "../../../utils/nativeBridge";
+import {NativeCancelEventInvite, NativeNavigate, NativeNavigateBack} from "../../../utils/nativeBridge";
 import {Navigate} from "react-big-calendar";
+import {dateFormat} from "react-big-calendar/lib/utils/propTypes";
+import {dateFormatter} from "../../../utils/time";
 
 export default function EventIOS ({}) {
 
@@ -14,6 +16,7 @@ export default function EventIOS ({}) {
 	const [joined, setJoined] = useState(true);
 	const [loaded, setLoaded] = useState(false);
 	const [event, setEvent] = useState(null);
+	const [dateString, setDateString] = useState("");
 	const [uri, setUri] = useState("");
 
 
@@ -42,8 +45,8 @@ export default function EventIOS ({}) {
 	}, []);
 
 	useEffect(() => {
-
-	}, [event]);
+		setDateString(dateFormatter(event?.startsAt,event?.endsAt));
+	}, []);
 
 	const join = () => {
 		HTTPClient("/events/"+eventId+"/join", "POST")
@@ -80,13 +83,14 @@ export default function EventIOS ({}) {
 							<FadeIn delay={600}  >
 								<div >
 									<div className={"row justify-content-center"}>
-										<div className={"col-12  text-center"} style={{marginTop: "10vh", color: "white"}}>
+										<div className={"col-12  text-center"} style={{marginTop: "8vh", color: "white"}}>
 											<br/>
 											<img className={"white-circle-shadow"} src={"/images/achraf.jpeg"} style={{
 												width: "30px",
 												borderRadius: "100px",
-												borderColor: "black",
-												borderWidth: "2px",
+												borderColor: "white",
+												borderWidth: "1px",
+												borderStyle: "solid",
 												marginRight: "10px",
 											}} /> invites you to
 										</div>
@@ -98,47 +102,71 @@ export default function EventIOS ({}) {
 												fontStyle: "normal",
 												fontSize: "3.3rem",
 												color: "white",
-												paddingTop: "5vh",
+												paddingTop: "3vh",
 												letterSpacing: "-3px",
 												marginBottom: "0px",
 												lineHeight: "0.9",
 											}}>{event?.name}</h2>
 											<br/>
-											<h6 style={{fontSize: "15px"}}>{event?.location}<br/>June 20, 2022</h6>
+											<h6 style={{fontSize: "15px"}}>
+												{event?.location}
+												<br/>{dateString}
+											</h6>
 										</div>
 										<div className={"col-12 text-center"}>
 											<br/>
-											{event?.people.map((invitee, index) => {
-												return <ProfilePicture key={index} width="30px" height="30px" location={invitee?.profilePictureSource}/>
+											{event.people.map((user, i) => {
+												return i === 5 && event?.peopleCount > 6 ? <div key={i} style={{}}>
+													<div style={{
+														backgroundColor: "black",
+														width: "25px",
+														height: "25px",
+														borderRadius: "30px",
+
+													}}>
+													<span style={{
+														zIndex: 1,
+														position: "absolute",
+														marginLeft: event.peopleCount-6 < 10 ? "8px" : "8px",
+														marginTop: "4px",
+														height: "25px", width: "25px",
+														borderRadius: "30px",
+													}}>
+														<p style={{color: "#ffffff", fontSize: 12}}>{event.peopleCount-6}</p>
+													</span>
+														<ProfilePicture style={{marginRight: "5px", opacity: 0.6, marginBottom: 2}} key={i} width="30px" height={"30px"} location={user.profilePictureSource}/>
+													</div>
+												</div> : <ProfilePicture  style={{marginRight: "5px",marginBottom: 2}} key={i} width="30px" height={"30px"} location={user.profilePictureSource}/>
+
 											})}
 										</div>
 									</div>
 								</div>
 
 							</FadeIn>
-							<div className={"col-12 row"} style={{marginTop: "10vh","position":"fixed","bottom":"8%"}}>
-								<div className={"col-2"} style={{"height":"40px", "width":"50%"}}>
+								<div className={"col-2"} style={{"height":"40px", "width":"40px", position: "absolute", bottom: "7.5%", zIndex: 10}}>
 									<FadeIn delay={600}>
-										<button onClick={NativeNavigateBack}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "35px", width: "40px", height: "120%", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
+										<button onClick={() => {
+											NativeCancelEventInvite();
+										}}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "15px", width: "55px", height: "55px", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 											<div className={"white-shadow"}>
-												<b>X</b>
+												<img src={"/images/xmark.png"} style={{width: "20px", marginBottom: "3px"}}/>
 											</div>
 										</button>
 									</FadeIn>
 
 
 								</div>
-								<div className={"col-6 text-center"} style={{"height":"40px", "width":"100%"}}>
+								<div className={"col-6 text-center"} style={{"height":"40px", "width":"100%", position: "absolute", bottom: "7.5%"}}>
 									<FadeIn delay={600}>
-										<button onClick={join} className={"btn btn-secondary"} style={{fontSize: "20px", width: "50%", height: "120%", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
-											<div className={"white-shadow"}>
-												<b>JOIN</b>
+										<button onClick={join} className={"btn btn-secondary"} style={{fontSize: "20px", width: "55%", height: "55px", opacity: "80%", borderRadius: "10rem", backgroundColor: "black", borderWidth: 0}}>
+											<div className={"white-shadow"} style={{fontWeight: "500", fontSize: "25px"}}>
+												JOIN
 											</div>
 										</button>
 									</FadeIn>
 
 								</div>
-							</div>
 						</div>
 					</div>
 

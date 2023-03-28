@@ -147,7 +147,7 @@ export default function AddScreen({navigation}) {
 				flex: 1,
 				justify: "center",
 				marginLeft: 20,
-				marginRight: 0,
+				marginRight: -20,
 				position: "relative",
 				top: 0,
 				zIndex: 100,
@@ -239,7 +239,7 @@ export default function AddScreen({navigation}) {
 							fontSize:28,
 
 							width: "90%",
-							color: endDate ? "black" : "gray",
+							color: endDate ? "black" : "#C5C5C7",
 
 						}}
 					>{endDate ? moment(endDate).format("dddd, MMM D YYYY") : "End date"}</Text>
@@ -440,7 +440,7 @@ export default function AddScreen({navigation}) {
 							position: "absolute",
 							textAlign: "center",
 							fontSize: 30,
-							bottom: 120,
+							bottom: 70,
 							width: "90%",
 							
 							transform: [{ scaleY: -1 }],
@@ -483,7 +483,7 @@ export default function AddScreen({navigation}) {
 				width: "90%",
 				
 			}}>
-				{loadingCover ? "loading..." : (cover?.uri ? "" : "You can add a cover later")}
+				{loadingCover ? "" : (cover?.uri ? "" : "You can add a cover later")}
 			</Text>
 			<TouchableOpacity style={{
 				textAlign: "center",

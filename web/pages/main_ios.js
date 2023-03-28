@@ -36,10 +36,10 @@ export default function MainIOS () {
 					<div className={"col-2"}>
 						<img style={{marginLeft: "20px"}} src="/icons/logo blacktimestack.svg" alt="logo" width="25px"/>
 					</div>
-					<div className={"col-9"}>
+					<div className={"col-10"} style={{paddingRight: "25px"}}>
 						<input
 							className={"form-control form-control-sm"}
-							style={{backgroundColor: "#EFEFF0", borderRadius: "10px", marginTop: "3px"}}
+							style={{backgroundColor: "#EFEFF0", borderRadius: "10px", marginTop: "3px", paddingRight: "10px"}}
 							type="text"
 							placeholder="Search"
 							onChange={(e) => {

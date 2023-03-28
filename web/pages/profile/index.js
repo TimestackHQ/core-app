@@ -29,11 +29,11 @@ export default function Index() {
 	return (
 		<IOS>
 			<FadeIn className={"container"} style={{paddingTop: 0, marginTop: 0} }>
-				<div className={"row"} style={{paddingTop: 0, marginTop: 0} }>
+				<div className={"row"} style={{paddingTop: -10, marginTop: -30} }>
 					<div className={"col-12 text-center"}>
 						<div className="image-upload">
 							<label htmlFor="file-input">
-								<ProfilePicture location={userStore.profilePictureSource}/>
+								<ProfilePicture width={"120px"} height={"120px"} location={userStore.profilePictureSource}/>
 							</label>
 							<input  id={"file-input"} accept="image/*" type="file" onChange={(e) => {
 								e.preventDefault();
@@ -142,8 +142,6 @@ export default function Index() {
 							<br/>
 								Make great memories
 
-							<br/>
-							<br/>
 							<br/>
 							<br/>
 							<br/>

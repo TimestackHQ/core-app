@@ -133,12 +133,12 @@ export default function Upload ({}) {
 			<View style={{flex: 1, margin: 15, flexDirection: "column"}}>
 				<Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 30, fontWeight: "600", marginLeft: 10 }}>Upload</Text>
 				<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'stretch', marginTop: 10}}>
-					<View style={{flex: 2}}>
+					<View style={{flex: 3}}>
 						<Image
 							source={{uri: 'data:image/jpeg;base64,' + (route?.params.event.buffer)}}
 							style={{
-								width: 80,
-								height: 120,
+								width: 100,
+								height: 140,
 								borderRadius: 15,
 								borderWidth: event?.buffer ? 0 : 1,
 								borderStyle: "solid",
@@ -237,7 +237,7 @@ export default function Upload ({}) {
 						</View>
 						<View style={{flex: 4, marginTop: 15, alignItems: "center"}}>
 							<Text style={{ fontFamily: 'Red Hat Display Semi Bold', marginLeft: -20, fontSize: 18, fontWeight: "600", margin: 0, padding: -30, paddingLeft: 20 }}>
-								{media.filter(m => m.selected).length} {media.filter(m => m.selected).length !== 1 ? "Memories" : "Memory"} Selected
+								{media.filter(m => m.selected).length} {media.filter(m => m.selected).length !== 1 ? "Memories" : "Memory"} selected
 							</Text>
 						</View>
 						<View style={{flex: 1, alignItems: "center", marginTop: 11, marginRight: 15}}>
