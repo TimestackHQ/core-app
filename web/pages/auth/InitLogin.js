@@ -101,7 +101,7 @@ export default function InitLogin({
 					fontWeight: "500",
 					width: "80%",
 					fontSize: "14px"
-				}}>This is how we keep your account safe</p>
+				}}>This is how we keep your account safe.</p>
 
 				<button
 					type={"submit"}
