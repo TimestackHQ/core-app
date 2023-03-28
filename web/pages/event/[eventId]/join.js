@@ -12,7 +12,9 @@ import {dateFormatter} from "../../../utils/time";
 
 export default function EventIOS ({}) {
 
-	const eventId = Router.query.eventId;
+	const router = useRouter();
+	const urlParams = new URLSearchParams(window.location.search);
+	const eventId = window.location.href.split("/").reverse()[1];
 	const [joined, setJoined] = useState(true);
 	const [loaded, setLoaded] = useState(false);
 	const [event, setEvent] = useState(null);
@@ -23,22 +25,30 @@ export default function EventIOS ({}) {
 
 	useEffect(() => {
 
+
+
+
+
+// Get the value of the "id" parameter
 		HTTPClient("/events/"+eventId, "GET")
 			.then((response) => {
 				setEvent(response.data.event);
 				if(response.data.message === "joinRequired") {
 					setJoined(false);
 				}
-				HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
+				if(response?.data?.event?.cover) HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
 					setUri(res.data);
 					setLoaded(true);
 				})
 					.catch(err => {
+						console.log(err);
+
 						Router.push("/event/"+eventId);
 					});
 
 			})
 			.catch((error) => {
+				console.log(error);
 				Router.push("/event/"+eventId);
 			});
 
@@ -110,7 +120,7 @@ export default function EventIOS ({}) {
 											<br/>
 											<h6 style={{fontSize: "15px"}}>
 												{event?.location}
-												<br/>{dateString}
+												<br/>{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}
 											</h6>
 										</div>
 										<div className={"col-12 text-center"}>

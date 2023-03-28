@@ -6,6 +6,7 @@ import {LazyLoadImage} from "react-lazy-load-image-component";
 import Image from "next/image";
 import {NativeNavigate} from "../utils/nativeBridge";
 import ProfilePicture from "./ProfilePicture";
+import {dateFormatter} from "../utils/time";
 
 export default function EventCard ({
    event
@@ -71,8 +72,7 @@ export default function EventCard ({
 					<h6 style={{marginTop: "10px", marginBottom: "0px", overflowX: "scroll",height: "65px"
 					}}><b>{event?.name}</b></h6>
 					<p style={{fontSize: "12px", marginBottom: "0px", marginLeft: "1px"}}>{event?.location}</p>
-					<p style={{fontSize: "13px", marginLeft: "1px", position: "absolute", bottom: "17px"}}>June 17 - 21, 2022
-					</p>
+					<p style={{fontSize: "13px", marginLeft: "1px", position: "absolute", bottom: "17px"}}>{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}</p>
 					<div style={{position : "absolute",
 						backgroundColor: "#fcfbfb",
 						width: "100%",
