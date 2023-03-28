@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useRouter} from "next/router";
-import {NativeNavigate, notifyNativeOfSession} from "../../utils/nativeBridge";
+import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
 
 export default function Adventure ({setStep, setUserConfirmed}) {
 
@@ -8,9 +8,7 @@ export default function Adventure ({setStep, setUserConfirmed}) {
 
 	setTimeout(() => {
 		notifyNativeOfSession();
-		NativeNavigate("Main", {
-			screen: "Home",
-		});
+		NativeResetStack();
 	}, 1500);
 
 	return (
