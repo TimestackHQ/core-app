@@ -194,9 +194,9 @@ export default function MediaView() {
 					try {
 						const location = await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
 						await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
-						alert("Saved");
+						Alert.alert("Saved", "");
 					} catch (err) {
-						alert("Failed to save");
+						Alert.alert("Failed to save", "");
 					}
 					setDownloading(false)
 				}
