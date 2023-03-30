@@ -27,7 +27,7 @@ export default function EventIOS ({}) {
 	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
 
-	const [updatingPeople, setUpdatingPeople] = useState(false);
+	const [updatingPeople, setUpdatingPeople] = useState(true);
 
 
 	const openUploadModal = () => {

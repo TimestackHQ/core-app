@@ -29,7 +29,8 @@ export default function EventCard ({
 			NativeNavigate("Event", {
 				eventId: event.publicId,
 				eventName: event.name,
-				eventLocation: event.location
+				eventLocation: event.location,
+				eventPlaceholder: event?.buffer
 			})
 			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
 		}} className={"card "} style={{
