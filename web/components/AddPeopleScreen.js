@@ -51,14 +51,10 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 			<br/>
 			<div className="row">
 				<div className={"card "} style={{
-					boxShadow: "rgba(100, 100, 111, 0.5) 0px 10px 50px 0px",
-					borderRadius: "3rem",
-					borderBottomRightRadius: "0px",
-					borderBottomLeftRadius: "0px",
-					margin: 0, padding: 0
+					marginTop: -30,
+					padding: 0
 				}}>
 
-					<div className={"card-body"}>
 
 						<FadeIn>
 
@@ -275,29 +271,11 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 									}
 
 
-
-
-									<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>	<br/>
-									<br/>
-
-
 								</div>
 							</div>
 
 
 						</FadeIn>
-					</div>
 				</div>
 			</div>
 		</div>

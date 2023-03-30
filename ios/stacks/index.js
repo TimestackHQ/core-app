@@ -13,6 +13,7 @@ import EditEvent from "../screens/EditEvent";
 import MediaView from "../screens/MediaView";
 import Upload from "../screens/Upload";
 import Roll from "../screens/Roll";
+import AddPeople from "../screens/AddPeople";
 
 
 
@@ -51,6 +52,7 @@ function CoreStackScreen({initialRouteName = "Main"}){
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="EditEvent" component={EditEvent} />
 			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="Upload" component={Upload} />
+			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="AddPeople" component={AddPeople} />
 			<Index.Screen options={{presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true}} name="MediaView" component={MediaView} />
 			<Index.Screen options={{presentation: "formSheet", headerShown: false}} name="Roll" component={Roll} />
 

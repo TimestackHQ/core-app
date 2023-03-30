@@ -191,7 +191,7 @@ export default function EventScreen () {
 			{viewMenu ? (
 				<View style={{ flexDirection: 'row' }}>
 					<TouchableOpacity onPress={() => {
-						// setUpdatingPeople(true);
+							navigation.navigate("AddPeople", {eventId: event?._id, event:event});
 							setViewMenu(false);
 						}}
 						style={styles.actionButton}

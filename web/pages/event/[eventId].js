@@ -35,11 +35,10 @@ export default function EventIOS ({}) {
 	}
 
 
-
 	useEffect(() => {
 
 		const fetchEvent = () => {
-			HTTPClient("/events/"+eventId, "GET")
+			HTTPClient("/events/"+eventId+"?noBuffer=true", "GET")
 				.then((response) => {
 					if(response.data.message === "joinRequired") {
 						Router.push("/event/"+eventId+"/join");
@@ -139,11 +138,23 @@ export default function EventIOS ({}) {
 
 	}
 
+	useEffect(() => {
+		if(!updatingPeople) {
+			NativeNavigate("Event", {eventId: event?._id, event:event});
+		}
+	}, [updatingPeople])
+
+	// <Main
+	// baseRoute={"/event/"+route.params.eventId+"?id="+id+"&name="+route.params.eventName+"&openUpload="+route.params.openUpload}
+	// apiUrl={apiUrl}
+	// frontendUrl={frontendUrl}
+	// navigation={navigation}
+	// />
 
 	return (
 		<div style={{backgroundColor: "white", marginLeft: 0}}>
 
-			{updatingPeople
+			{updatingPeople && loaded
 				? <div className={"col-12"} style={{margin: 0, padding: 0}}>
 					<AddPeopleScreen
 						eventId={eventId}
@@ -152,192 +163,7 @@ export default function EventIOS ({}) {
 						sharelink={window.location.protocol + "//" + window.location.host + "/event/" + event?.publicId+"/invite"}
 					/>
 				</div> :
-				<Fragment>
-					{loaded ? <div className={"container"}>
-
-							<div style={{zIndex: 1, position: "fixed", bottom: 15, left: 15}}>
-								<img onClick={() => setViewMenu(!viewMenu)} style={{marginRight: 10}} src={viewMenu ? "/icons/action_button_x.png" : "/icons/action_button.png"} height={43}/>
-								{viewMenu ? <Fragment>
-									<img onClick={() => {
-										setUpdatingPeople(true);
-										setViewMenu(false);
-									}} style={{marginRight: 10}} src={"/icons/add_people.png"} height={43}/>
-									<img onClick={() => {
-										openUploadModal();
-										setViewMenu(false);
-									}} src={"/icons/add_upload.png"} height={43}/>
-								</Fragment> : null}
-							</div>
-							<div className={"row"} style={{marginTop: 20}}>
-								<div className={"col-5"} autofocus={true}>
-									<div style={{
-										backgroundImage: event?.buffer ? `url(data:image/jpeg;base64,${event?.buffer})` : `url(${placeholder})`,
-										backgroundSize: "cover",
-										backgroundRepeat: "no-repeat",
-										backgroundPosition: "center",
-										borderRadius: "15px",
-										height: "200px",
-										borderWidth: event?.buffer ? "0px" : "2px",
-										borderStyle: "solid",
-										borderColor: "black"
-									}}>
-										<img
-
-											onClick={() => {
-												NativeNavigate("Invite", {
-													eventId: event._id,
-													eventThumbnail: uri,
-													eventName: event.name,
-													eventLocation: event.location,
-													eventStartsAt: event.startsAt,
-													eventEndsAt: event?.endsAt,
-													disabledAnimation: true
-												})
-											}}
-											src={uri}
-											effect="blur"
-											loading={"lazy"}
-											style={{
-												borderRadius: "15px",
-												objectFit: "cover",
-
-												// "backgroundSize":"contain","backgroundRepeat":"no-repeat"
-											}}
-											// alt={"/images/thumbnail-filler.png"}
-											width={"100%"} height={"200px"}
-											alt={""}
-										/>
-									</div>
-								</div>
-
-
-								<div className={"col-7 position-relative"}>
-									<div className="position-absolute top-0 start-0" style={{width: "100%",}}>
-										<h3 style={{
-											marginLeft: "2px",
-											marginBottom: "0px",
-											lineHeight: "1",
-											overflowX: "hidden",
-											maxHeight: "145px",
-											overflowWrap: "break-word",
-											width: "220px",
-										}}><b>
-											{event?.name}
-										</b>
-										</h3>
-									</div>
-									<div className="position-absolute bottom-0 start-0">
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px", marginTop: "10px"}}>{event?.location}</p>
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px", lineHeight: 1.2, width: "100%"}}>{dateFormatter(new Date(event.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}</p>
-									</div>
-
-								</div>
-
-							</div>
-							<br/>
-							<div className={"row"}>
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>{event?.peopleCount}</h5>
-									<h5 style={{color: "gray"}}>{event?.peopleCount === 1 ? "Person" : "People"}</h5>
-								</div>
-
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>{event?.mediaCount}</h5>
-									<h5 style={{color: "gray"}}>{event?.mediaCount === 1 ? "Memory" : "Memories"}</h5>
-								</div>
-
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}>0</h5>
-									<h5 style={{color: "gray"}}>Revisits</h5>
-								</div>
-							</div>
-							<br/>
-							<div className={"row flex-nowrap"} style={{position: "absolute", overflowX: "scroll", width: "100%", overflowY: "none", height: "80px", paddingBottom: "20px", marginTop: "-10px"}}>
-
-								{event.people.map((user, index) => {
-									return <div key={index} style={{display: "inline", paddingLeft: "10px",width: "55px"}}>
-										<ProfilePicture width={"45px"} height={"45px"} location={user?.profilePictureSource}/>
-									</div>
-								})}
-
-							</div>
-
-
-							<br/>
-							{uploadQueue.length !== 0 ? <h6><span style={{color: "green"}}> <i className="fas fa-circle-notch fa-spin"></i> {uploadQueue.length} remaining</span></h6>: null}
-
-							<Gallery eventId={event?._id}/>
-							<br/>
-							<br/>
-							<br/>
-						</div> :
-
-
-						<div style={{marginTop: 20}} className={"container"} onScroll={() => setViewMenu(false)}>
-
-							<div className={"row"}>
-								<div className={"col-5"} style={{height: "200px"}}>
-									<ContentLoader height={"100%"} width={370}>
-										<rect x="10" y="" rx="20" ry="10" width="35%" height="200px" />
-									</ContentLoader>
-									<br/>
-									<br/>
-									<br/>
-								</div>
-								<div className={"col-7 position-relative"}>
-									<div className="position-absolute top-0 start-0">
-										<h2 style={{marginLeft: "2px", marginBottom: "0px", lineHeight: "1", maxHeight: "52px"}}><b>{Router.query?.name}</b></h2>
-									</div>
-									<div className="position-absolute bottom-0 start-0">
-										<p style={{fontSize: "15px", marginBottom: "0px", marginLeft: "2px"}}></p>
-										<p style={{fontSize: "15px", marginLeft: "2px"}}></p>
-									</div>
-								</div>
-
-
-							</div>
-
-							<br/>
-
-							<div className={"row"}>
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}><br/></h5>
-									<h5 style={{color: "gray"}}>People</h5>
-								</div>
-
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}><br/></h5>
-									<h5 style={{color: "gray"}}>Memories</h5>
-								</div>
-
-								<div className={"col-4 text-center"}>
-									<h5 style={{margin: 0}}><br/></h5>
-									<h5 style={{color: "gray"}}>Revisits</h5>
-								</div>
-							</div>
-
-							<div style={{height: "5px"}}/>
-
-							<ContentLoader
-								width={500}
-								height={100}
-								backgroundColor="#f3f3f3"
-								foregroundColor="#ecebeb"
-								style={{marginLeft: "0"}}
-							>
-								<circle cx="26" cy="40" r="23" />
-								<circle cx="80" cy="40" r="23" />
-								<circle cx="134" cy="40" r="23" />
-								<circle cx="188" cy="40" r="23" />
-								<circle cx="242" cy="40" r="23" />
-
-							</ContentLoader>
-
-						</div>
-
-
-					}
-				</Fragment>
+			null
 			}
 		</div>
 	);
