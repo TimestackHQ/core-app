@@ -78,21 +78,21 @@ export async function generateScreenshot (mediaId, mediaUri) {
 
 
 
-export async function processPhoto (mediaId, mediaUri, compression, size) {
+export async function processPhoto (mediaId, mediaUri, compression, thumbnail) {
 
 	const path = await getResultPath();
 	let command;
-	if(size) {
+	if(thumbnail) {
 		command = `-i ${mediaUri} ` +
 			`-err_detect careful ` +
-			`-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 `+
+			`-vf "scale='if(gt(iw,ih),min(ih,800),-1)':'if(gt(iw,ih),-1,min(iw,800))',unsharp=5:3:0.8:5:3:0.8" -compression_level 80 -quality 80 `+
 			`-q:v ${compression} ` +
 			`${path}${mediaId}.jpg ` +
 			`-y`;
 	} else {
 		command = `-i ${mediaUri} ` +
 		`-err_detect careful ` +
-		// `${size !== undefined ? `-vf "scale='if(gt(iw,ih),min(ih,600),-1)':'if(gt(iw,ih),-1,min(iw,600))',unsharp=5:5:1.0:5:5:1.0" -compression_level 90 -quality 80 ` : ""} `+
+		`-vf scale='min(2048\\, iw):-2' `+
 		`-q:v ${compression} ` +
 		`${path}${mediaId}.jpg ` +
 		`-y`;

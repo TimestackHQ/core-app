@@ -18,3 +18,45 @@ router.use("/profile", authCheck, profileRoutes);
 router.use("/notifications", authCheck, notificationsRoutes);
 
 export default router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+1
+1
+1
+1
+1
+1
+1
+1
+1
+11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

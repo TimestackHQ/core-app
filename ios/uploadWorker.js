@@ -14,7 +14,7 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default async function uploadWorker () {
 	try {
 
-			await ExpoJobQueue.addWorker("mediaQueueV20", async (media) => {
+			await ExpoJobQueue.addWorker("mediaQueueV25", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 					console.log("------> ", media.uri, FileSystem.documentDirectory + media.filename);
@@ -61,8 +61,8 @@ export default async function uploadWorker () {
 					}
 
 					else {
-						const imagePath = await processPhoto(mediaId, media.uri, 10, false);
-						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 10, true);
+						const imagePath = await processPhoto(mediaId, media.uri, 5, false);
+						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
 						mediaList.push(imagePath, thumbnailPath);
 					}
 

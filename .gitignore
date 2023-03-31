@@ -3,6 +3,7 @@ node_modules
 .vercel
 ApiService/.dist
 .idea
+mylab
 
 # ios app related
 Timestack.app

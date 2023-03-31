@@ -22,6 +22,8 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import FastImage from "react-native-fast-image";
 import * as Network from "expo-network";
 import {createStackNavigator} from "@react-navigation/stack";
+import * as Updates from "expo-updates";
+import axios from "axios";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -105,6 +107,21 @@ function ErrorScreen() {
     </View>
 }
 export default function App() {
+
+    useEffect( () => {
+        const bundleVersion = "0.21.18";
+        axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
+            if(_res.data.bundleVersion !== bundleVersion) {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+            }
+        })
+            .catch((_err) => {
+                console.log(_err);
+            });
+
+    }, []);
+
 
     useFonts({
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),

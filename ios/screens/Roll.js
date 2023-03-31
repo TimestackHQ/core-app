@@ -49,10 +49,10 @@ export default function Roll () {
 			mediaSelected.push(file.node);
 		});
 
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV20");
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV200");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV25");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV250");
 		//
-		// await ExpoJobQueue.removeWorker("mediaQueueV20");
+		// await ExpoJobQueue.removeWorker("mediaQueueV25");
 		// await uploadWorker();
 
 		console.log(mediaSelected)
@@ -64,7 +64,7 @@ export default function Roll () {
 				type: media.type,
 				eventId: route.params.eventId
 			})
-			ExpoJobQueue.addJob("mediaQueueV20", {
+			ExpoJobQueue.addJob("mediaQueueV25", {
 				filename: moment().unix()+"_"+v4()+"."+media.image.extension,
 				extension: media.image.extension,
 				uri: media.image.uri,

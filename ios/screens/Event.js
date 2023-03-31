@@ -8,7 +8,7 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 	Image,
-	ScrollView, Share, RefreshControl, FlatList
+	ScrollView, Share, RefreshControl, FlatList, TextInput
 } from "react-native";
 import { useRoute, useNavigation } from '@react-navigation/native';
 import HTTPClient from "../httpClient";
@@ -20,6 +20,9 @@ import * as React from "react";
 import FastImage from "react-native-fast-image";
 import {dateFormatter} from "../utils/time";
 import ProfilePicture from "../Components/ProfilePicture";
+import { Linking } from 'react-native';
+import {Hyperlink} from "react-native-hyperlink";
+import * as WebBrowser from 'expo-web-browser';
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -38,6 +41,20 @@ function ReusableHiddenItem(props) {
 	return null;
 }
 
+function AboutViewer({about}) {
+
+	return <Hyperlink onPress={ async (url, text) => {
+		await WebBrowser.openBrowserAsync(url);
+	}}>
+		<Text style={{
+			fontSize: 15,
+			fontFamily: "Red Hat Display Regular",
+			marginBottom: 50,
+		}}>{about ? about : "No description (TBD)"}</Text>
+	</Hyperlink>
+
+}
+
 export default function EventScreen () {
 
 	const route = useRoute();
@@ -45,6 +62,7 @@ export default function EventScreen () {
 
 	const [refreshing, setRefreshing] = React.useState(false);
 	const [id, setId] = React.useState("null");
+	const [tab, setTab] = React.useState("memories");
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
@@ -176,12 +194,6 @@ export default function EventScreen () {
 		fetchEvent();
 	}, [])
 
-// 	<ScrollView
-// 	// scrollEnabled={false}
-// 	refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchEvent} />}
-// 	contentContainerStyle={{flexGrow: 1}}
-// 	style={{flex: 1, height: "100%", backgroundColor: "white"}}								navigation.navigate("Upload", {eventId: event?._id, event:event})}
-// >
 
 	return <View style={{flex: 1, backgroundColor: "white"}}>
 		<View style={{zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row"}}>
@@ -252,7 +264,7 @@ export default function EventScreen () {
 										fontFamily: "Red Hat Display Regular"
 									}}
 								>
-									{dateFormatter(String(event?.startsAt), String(event?.startsAt))}
+									{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}
 								</Text>
 							</View>
 						</View>
@@ -327,6 +339,47 @@ export default function EventScreen () {
 							}) : null}
 
 						</View>
+						<View style={{flexDirection: "row"}}>
+							<View style={{
+								flex: 1,
+								alignItems: "center", justifyContent: "flex-end",
+								marginBottom: 5,
+								borderBottomWidth: 1,
+								borderBottomColor: tab === "memories" ? "black" : "#8E8E93",
+								marginLeft: 10,
+							}}>
+								<TouchableOpacity onPress={() => setTab("memories")}>
+									<Text style={{
+										fontSize: 18,
+										fontFamily: "Red Hat Display Bold",
+										color: tab === "memories" ? "black" : "#8E8E93",
+									}}>
+										Memories
+									</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={{
+								flex: 1,
+								alignItems: "center", justifyContent: "flex-end",
+								marginBottom: 5,
+								borderBottomWidth: 1,
+								borderBottomColor: tab === "about" ? "black" : "#8E8E93",
+								marginRight: 10,
+							}}>
+								<TouchableOpacity onPress={() => setTab("about")}>
+									<Text style={{
+										fontSize: 18,
+										fontFamily: "Red Hat Display Bold",
+										color: tab === "about" ? "black" : "#8E8E93",
+									}}>
+										About
+									</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+						{tab === "about" ? <View style={{margin: 10}}>
+								<AboutViewer about={event?.about}/>
+						</View> : null}
 					</View>
 				</View>
 			}
@@ -339,14 +392,21 @@ export default function EventScreen () {
 
 				return <View style={{width: '33%', // 30% to account for space between items
 					backgroundColor: "#efefef",
-					height: 180,
+					opacity: tab !== "memories" ? 0 : 1,
+					height: tab !== "memories" ? 0 : 180,
 					margin: 0.5}}>
-					<FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/>
+					<TouchableWithoutFeedback onPress={() => navigation.navigate("MediaView", {
+						mediaId: media._id,
+						eventId: event?._id
+					})}>
+						<FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/>
+
+					</TouchableWithoutFeedback>
 				</View>
 			}}
 			keyExtractor={(item, index) => index.toString()}
 			onEndReached={() => getGallery()}
-			onEndReachedThreshold={1.5}
+			onEndReachedThreshold={3}
 			nestedScrollEnabled={true}
 		>
 
