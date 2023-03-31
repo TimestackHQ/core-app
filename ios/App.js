@@ -94,7 +94,7 @@ function ErrorScreen() {
             fontSize: 25,
             color: "gray"
         }}>
-            Can’t connect.
+            Can’t connect
         </Text>
         <Text style={{
             textAlign: 'center',
