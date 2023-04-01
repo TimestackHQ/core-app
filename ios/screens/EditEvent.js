@@ -174,7 +174,15 @@ export default function EditEvent () {
 	}
 
 	return <KeyboardAwareScrollView innerRef={ref => [scrollRef]} style={{backgroundColor: "white", paddingTop: 20}} behavior="height" enabled>
-			<View style={{backgroundColor: "white", flexDirection: "column"}}>
+		<View style={{justifyContent: 'center', alignItems: 'flex-end', padding: 10, paddingTop: 0}}>
+			<TouchableOpacity onPress={updateEvent}>
+				<Text style={{
+					fontSize: 15,
+					fontFamily: "Red Hat Display Semi Bold",
+				}}>Save</Text>
+			</TouchableOpacity>
+		</View>
+		<View style={{backgroundColor: "white", flexDirection: "column"}}>
 				<View style={{flexDirection: "row", flex: 1}}>
 					<View style={{flex: 2}}>
 						<TouchableWithoutFeedback onPress={importCover}>
@@ -432,33 +440,7 @@ export default function EditEvent () {
 
 				{/*<Text>{route.params?.eventName}</Text>*/}
 			</View>
-		<TouchableOpacity ref={ref => submitButtonRef.current = ref} style={{
-			textAlign: "center",
-			color: "grey",
-			position: "absolute",
-			bottom: -180,
-			marginTop: 10,
-			marginLeft: 20,
-			width: "90%",
-			height: 50,
-			backgroundColor: "black",
-			alignItems: "center",
-			justifyContent: "center",
-			borderRadius: 35,
-			marginBottom: 20
-		}}
-		                  onPress={updateEvent}
 
-		>
-			<Text style={{
-				fontFamily: "Red Hat Display Semi Bold",
-				color: "white",
-				fontSize: 20,
-				textShadowColor: '#FFF',
-				textShadowOffset: { width: 0, height: 0 },
-				textShadowRadius: 10,
-			}}>SAVE</Text>
-		</TouchableOpacity>
 
 		</KeyboardAwareScrollView>
 
