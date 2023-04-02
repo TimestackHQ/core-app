@@ -71,7 +71,7 @@ export async function editProfile (req: Request, res: Response, next: NextFuncti
 
         const {username: usernameRaw, firstName, lastName, email, phoneNumber} = req.body;
 
-        const username = usernameRaw.replace(/\s/g,'').toLowerCase()
+        const username = usernameRaw?.replace(/\s/g,'').toLowerCase()
 
         if (username && username !== req.user.username) {
             if(await Models.User.countDocuments({username})) {
