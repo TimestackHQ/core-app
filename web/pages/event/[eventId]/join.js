@@ -144,9 +144,9 @@ export default function EventIOS ({}) {
 													}}>
 														<p style={{color: "#ffffff", fontSize: 12}}>{event.peopleCount-6}</p>
 													</span>
-														<ProfilePicture style={{marginRight: "5px", opacity: 0.6, marginBottom: 2}} key={i} width="30px" height={"30px"} location={user.profilePictureSource}/>
+														<ProfilePicture style={{marginRight: "5px", opacity: 0.6, marginBottom: 2}} key={i} width="30px" height={"30px"} location={user?.profilePictureSource}/>
 													</div>
-												</div> : <ProfilePicture  style={{marginRight: "5px",marginBottom: 2}} key={i} width="30px" height={"30px"} location={user.profilePictureSource}/>
+												</div> : <ProfilePicture  style={{marginRight: "5px",marginBottom: 2}} key={i} width="30px" height={"30px"} location={user?.profilePictureSource}/>
 
 											})}
 										</div>
