@@ -29,6 +29,7 @@ export default function NotificationsPage() {
 	const [loaded, setLoaded] = React.useState(false);
 	const [loadedAllNotifications, setLoadedAllNotifications] = React.useState(false);
 
+
 	const getNotifications = () => HTTPClient(`/notifications?skip=${notifications?.length}`, "GET").then((res) => {
 		setNotifications([...notifications, ...res.data]);
 		setLoaded(true);
@@ -47,6 +48,11 @@ export default function NotificationsPage() {
 		}
 	});
 
+	const getInvites = () => HTTPClient("/events/invites", "GET").then((res) => {
+		setInvites(res.data.events);
+		setLoaded(true);
+	}).catch(err => {});
+
 	const joinAll = async () => {
 		for await (let invite of invites) {
 			HTTPClient("/events/"+invite._id+"/join", "POST")
@@ -60,12 +66,14 @@ export default function NotificationsPage() {
 	}
 
 	React.useEffect(() => {
-		HTTPClient("/events/invites", "GET").then((res) => {
-			setInvites(res.data.events);
-			setLoaded(true);
-		}).catch(err => {});
 
+		getInvites();
 		getNotifications().then(r => {});
+
+		setInterval(() => {
+			getInvites();
+			getNotifications().then(r => {});
+		}, 5000);
 
 	}, [])
 
