@@ -166,7 +166,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
         // @ts-ignore
         const events = await Models.Event.find(query)
-            .sort({createdAt: -1})
+            .sort({startsAt: -1})
             .skip(Number(skip)).limit(10)
             .populate([{
                 path: "cover",
