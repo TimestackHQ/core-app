@@ -19,7 +19,7 @@ export default function Invite() {
 	const router = useRouter();
 
 	useEffect(() =>{
-		if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
+		// if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
 		// setTimeout(() => {
 		// 	window.close();
 		// }, 5000);
