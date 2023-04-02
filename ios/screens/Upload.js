@@ -94,7 +94,7 @@ export default function Upload ({}) {
 			queue();
 		}
 
-		queue()
+		queue();
 
 	}, []);
 

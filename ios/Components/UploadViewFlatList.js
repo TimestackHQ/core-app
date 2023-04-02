@@ -85,7 +85,7 @@ export default function UploadViewFlatList ({eventId, pendingMedia, media, fetch
 const styles = StyleSheet.create({
 	item: {
 		width: '33%', // 30% to account for space between items
-	    backgroundColor: "#efefef",
+	    backgroundColor: "#EFEFEF",
 		height: 180,
 		margin: 0.5
 	},

@@ -15,7 +15,7 @@ export default function EventInviteNotification ({notification, timeAgo}) {
 			})
 		}} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
 			<div className={"col-2"}>
-				<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
+				<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePictureSource}/>
 			</div>
 			<div className={"col-8"} style={{marginLeft: "-10px", marginTop: "5px"}}>
 				<h6 style={{fontSize: "14px", width: "90%"}}>

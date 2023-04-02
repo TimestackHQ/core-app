@@ -405,6 +405,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                         payload: {
                             eventId: event._id,
                             userName: req.user.firstName,
+                            userProfilePictureSource: req.user.profilePictureSource,
                             eventName: event.name,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
                         }

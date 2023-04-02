@@ -152,11 +152,11 @@ function CoreStackScreen() {
     const [authenticated, setAuthenticated] = useState(true);
     const [currentSession, setCurrentSession] = useState(null);
 
-    const urlListenerWorker = url => {
+    const urlListenerWorker = async url => {
         console.log("URL deeplink intercepted, navigating to: "+url);
         const path = url.replace("timestack://", "");
         console.log(path);
-        if(path.startsWith("event/")) {
+        if(path.startsWith("event/") && await AsyncStorage.getItem('@session')) {
             navigator.navigate("Invite", {
                 eventId: path.split("/")[1]
             });

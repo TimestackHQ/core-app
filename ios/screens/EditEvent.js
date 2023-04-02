@@ -235,76 +235,18 @@ export default function EditEvent () {
 								zIndex: 1001
 							}}
 						>Location</Text>: null}
-						<GooglePlacesAutocomplete
-							textInputProps={{
-								onChangeText: (e) => {
-									// get all text and set it to location state
-									setLocation(e)
-								},
-								value: location,
-							}}
-							// currentLocation={true}
+						<TextInput
+							value={location}
+							onChangeText={e => setLocation(e)}
+							placeholder={"Location"}
+						           style={{
+							fontFamily: "Red Hat Display Semi Bold",
+							fontSize: location === "" ? 28 : 20,
+							width: "90%",
+							padding: 0,
+				            top: keyBoardOpen ? -1000 : 20,
 
-							styles={{
-								container: {
-									fontFamily: "Red Hat Display Semi Bold",
-									position: "absolute",
-									margin: 0,
-									padding: 0,
-									backgroundColor: "white",
-									top: keyBoardOpen ? -1000 : 20,
-									width: "90%",
-									zIndex: 1000,
-								},
-								textInputContainer: {
-									backgroundColor: "transparent",
-									margin: 0,
-									padding: 0,
-								},
-								textInput: {
-									fontFamily: "Red Hat Display Semi Bold",
-									fontSize: location === "" ? 28 : 20,
-									width: "90%",
-									margin: -10,
-									padding: 0,
-								},
-								row: {
-									fontFamily: "Red Hat Display Semi Bold",
-									backgroundColor: "white",
-									margin: 0,
-									marginTop: 10,
-									marginBottom: -10,
-									padding: 0,
-									zIndex: 1000,
-								},
-								separator: {
-									height: 0.5,
-									margin: 0,
-									padding: 0,
-									backgroundColor: '#c8c7cc',
-								},
-								description: {
-									fontFamily: "Red Hat Display Semi Bold",
-									backgroundColor: "white",
-									zIndex: 1000,
-								}
-
-							}}
-
-							placeholder='Location'
-							onPress={(data, details = null) => {
-								// 'details' is provided when fetchDetails = true
-								console.log(data);
-								console.log(details);
-								setLocation(data.structured_formatting.main_text);
-								setLocationMapsPayload(details)
-							}}
-
-							query={{
-								key: 'AIzaSyCyFybVOEKwDbbyCRaOs64OMpVMwmYXA0s',
-								language: 'en',
-							}}
-						/>
+				           }}/>
 
 						<Text
 							multiline={true}
@@ -359,7 +301,6 @@ export default function EditEvent () {
 								position: "absolute",
 								fontSize: 15,
 								top: keyBoardOpen ? -1000 : 140,
-								color: "gray",
 								width: "90%",
 
 							}}
@@ -374,7 +315,7 @@ export default function EditEvent () {
 									fontSize:28,
 
 									width: "90%",
-									color: endDate ? "black" : "gray",
+									color: endDate ? "black" : '#c8c7cc',
 
 								}}
 							>{endDate ? moment(endDate).format("dddd, MMM D YYYY") : "End date"}</Text>

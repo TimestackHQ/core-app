@@ -67,6 +67,7 @@ export default function EventScreen () {
 
 	const [refreshing, setRefreshing] = React.useState(false);
 	const [refreshEnabled, setRefreshEnabled] = React.useState(true);
+	const [uploadUsed, setUploadUsed] = React.useState(false);
 	const [tab, setTab] = React.useState("memories");
 
 
@@ -114,11 +115,18 @@ export default function EventScreen () {
 				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
 				getGallery();
 
-				if(route.params?.openUpload) {
-					navigation.navigate("Upload", {
-						eventId: event?._id, event:response.data.event
-					});
+				if(!uploadUsed) {
+					if(route.params?.openUpload) {
+						setTimeout(() => {
+							navigation.navigate("Upload", {
+								eventId: response.data.event?._id, event: response.data.event
+							});
+							setUploadUsed(true);
+						}, 1000);
+					}
 				}
+
+
 
 				HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setUri(res.data))
 					.catch(err => {});
@@ -133,7 +141,9 @@ export default function EventScreen () {
 						}
 					}
 				])
-			});
+			})
+
+
 
 		navigation.setOptions({
 			headerShown: true,
@@ -205,20 +215,33 @@ export default function EventScreen () {
 	};
 
 	useEffect(() => {
-		if (isFocused && refreshEnabled) {
-			refresh();
+		if(isFocused) {
+			HTTPClient("/events/"+route.params.eventId+"?noBuffer=true").then(res => {
+				if(
+					(res.data.event?.mediaCount !== event?.mediaCount)
+					|| (res.data.event?.name !== event?.name)
+					|| (res.data.event?.location !== event?.location)
+					|| (res.data.event?.about !== event?.about)
+					|| (res.data.event?.startsAt !== event?.startsAt)
+					|| (res.data.event?.endsAt !== event?.endsAt)
+					|| (res.data.event?.cover !== event?.cover)
+					|| (res.data.event?.peopleCount !== event?.peopleCount)
+				) {
+					refresh();
+				}
+			});
 		}
 	}, [isFocused])
 
 	useEffect(() => {
-		fetchEvent();
+		fetchEvent()
 		if(route?.params?.refresh) setRefreshEnabled(true);
 		setRefreshEnabled(false);
 
 	}, [])
 
 
-	return <View style={{flex: 1, backgroundColor: "white"}}>
+	return !route.params?.buffer && !loaded ? <View style={{flex: 1, backgroundColor: "white"}}/> : <View style={{flex: 1, backgroundColor: "white"}}>
 		<View style={{zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row"}}>
 			<TouchableWithoutFeedback style={{}} onPress={() => setViewMenu(!viewMenu)}>
 				<Image source={require("../assets/icons/collection/action_button.png")} style={{width: 45, height: 45}} />

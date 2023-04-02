@@ -72,7 +72,7 @@ export default function EventCard ({
 				<div className={"col-6"} style={{paddingLeft: "0px"}}>
 					<h6 style={{marginTop: "10px", marginBottom: "0px", overflowX: "scroll",height: "65px"
 					}}><b>{event?.name}</b></h6>
-					<p style={{fontSize: "12px", marginBottom: "0px", marginLeft: "1px"}}>{event?.location}</p>
+					<p style={{fontSize: "12px", marginBottom: "0px", marginLeft: "1px", zIndex: 1, position: "absolute", bottom: 48}}>{event?.location}</p>
 					<p style={{fontSize: "13px", marginLeft: "1px", position: "absolute", bottom: "17px"}}>{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}</p>
 					<div style={{position : "absolute",
 						backgroundColor: "#fcfbfb",
