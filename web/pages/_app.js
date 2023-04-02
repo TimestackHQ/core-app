@@ -33,7 +33,6 @@ function MyApp({ Component, pageProps }) {
               <script async defer
                               src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyFybVOEKwDbbyCRaOs64OMpVMwmYXA0s&libraries=places">
               </script>
-              <meta name="apple-itunes-app" content="app-id=1671064881"/>
 
 
           </Head>
