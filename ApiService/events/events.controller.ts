@@ -133,7 +133,8 @@ export async function leaveEvent (req: Request, res: Response, next: NextFunctio
             }
         }, {
             $pull: {
-                users: req.user._id
+                users: req.user._id,
+                invitees: req.user._id
             }
         });
 

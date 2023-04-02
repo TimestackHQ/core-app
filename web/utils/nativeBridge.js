@@ -49,9 +49,10 @@ export const NativeOpenNativeLink = (link) => window.ReactNativeWebView?.postMes
 	link
 }));
 
-export const NativeCancelEventInvite = () => {
+export const NativeCancelEventInvite = (eventId) => {
 	window.ReactNativeWebView?.postMessage(JSON.stringify({
-		request: "cancelEventInvite"
+		request: "cancelEventInvite",
+		eventId: eventId
 	}));
 }
 

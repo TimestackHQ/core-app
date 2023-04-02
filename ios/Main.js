@@ -265,10 +265,27 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                             {
                                 text: "Yes",
                                 onPress: async () => {
-                                    navigation.reset({
-                                        index: 0,
-                                        routes: [{ name: 'Main' }],
-                                    });
+                                    HTTPClient("/events/"+message.eventId+"/leave", "POST")
+                                        .then((response) => {
+                                            navigation.navigate("Main", {
+                                                updatedId: Math.random().toString(36).substring(7)
+                                            });
+                                            navigation.reset({
+                                                index: 0,
+                                                routes: [{ name: 'Main' }],
+                                            });
+                                        })
+                                        .catch((error) => {
+                                            Alert.alert("Error", "Could not leave event", [
+                                                {
+                                                    text: "OK",
+
+                                                }
+                                            ])
+                                            // window.location.href = "/main_ios";
+                                        });
+
+
                                 }
                             }
                         ])

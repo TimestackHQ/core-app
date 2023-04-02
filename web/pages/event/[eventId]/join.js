@@ -156,7 +156,7 @@ export default function EventIOS ({}) {
 								<div className={"col-2"} style={{"height":"40px", "width":"40px", position: "absolute", bottom: "7.5%", zIndex: 10}}>
 									<FadeIn delay={600}>
 										<button onClick={() => {
-											NativeCancelEventInvite();
+											NativeCancelEventInvite(eventId);
 										}}  className={"btn btn-secondary"} style={{fontSize: "20px", backgroundColor: "#FF9B9B", marginLeft: "15px", width: "55px", height: "55px", opacity: "80%", borderRadius: "15rem", borderWidth: 0}}>
 											<div className={"white-shadow"}>
 												<img src={"/images/xmark.png"} style={{width: "20px", marginBottom: "3px"}}/>
