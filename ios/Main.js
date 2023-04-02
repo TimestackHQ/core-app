@@ -91,27 +91,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
             setExpoPushToken(token)
         });
 
-        const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-
-            console.log("received notification response");
-
-            // processed notification link
-            const notification = response.notification.request.content;
-            const url = notification?.data.payload?.url;
-            if(url) setUri(url);
-
-            //updates webview child
-            webviewRef.current.postMessage(JSON.stringify({
-                response: "notificationsCount",
-            }));
-        });
-
-
-        return () => {
-            subscription.remove();
-            // clearInterval(network);
-        }
-
     }, []);
 
 
@@ -281,7 +260,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                             {
                                 text: "Yes",
                                 onPress: async () => {
-                                    navigation.navigate("Main");
+                                    navigation.navigate("Notifications");
                                 }
                             }
                         ])

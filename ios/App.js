@@ -24,6 +24,7 @@ import * as Network from "expo-network";
 import {createStackNavigator} from "@react-navigation/stack";
 import * as Updates from "expo-updates";
 import axios from "axios";
+import * as Notifications from "expo-notifications";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -152,20 +153,26 @@ function CoreStackScreen() {
     const [authenticated, setAuthenticated] = useState(true);
     const [currentSession, setCurrentSession] = useState(null);
 
+    const urlListenerWorker = url => {
+        console.log("URL deeplink intercepted, navigating to: "+url);
+        const path = url.replace("timestack://", "");
+        if(path.startsWith("event/")) {
+            navigator.navigate("Invite", {
+                eventId: path.split("/")[1]
+            });
+        }
+        setUrl(null);
+    }
+
     useEffect(() => {
         setUrl(urlSource);
         if(url) {
-            console.log("URL deeplink intercepted, navigating to: "+url);
-            const path = url.replace("timestack://", "");
-            if(path.startsWith("event/")) {
-                navigator.navigate("Invite", {
-                    eventId: path.split("/")[1]
-                });
-            }
-            setUrl(null);
+            urlListenerWorker(url);
         }
 
     }, [urlSource]);
+
+
 
     useEffect(() => {
         new Promise(async (resolve, reject) => {
@@ -175,10 +182,31 @@ function CoreStackScreen() {
                     setAuthenticated(true);
 
                 })
-                .catch((_err) => {
-                    setAuthenticated(false);
+                .catch((err) => {
+                    if(err.response.status === 401) {
+                        navigator.navigate("Auth");
+                    }
                 })
         }).then(_r => {});
+
+        // push notifications reader
+        const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log("received notification response");
+
+            // processed notification link
+            const notification = response.notification.request.content;
+            const url = notification?.data.payload?.url;
+
+            if(url) {
+                urlListenerWorker(url);
+            }
+
+        });
+
+        return () => {
+            subscription.remove();
+            // clearInterval(network);
+        }
     }, [currentSession]);
 
     return (

@@ -102,6 +102,12 @@ export default function EventScreen () {
 		HTTPClient("/events/"+route.params.eventId+String(Boolean(route.params?.buffer) ? "?noBuffer=true" : ""), "GET")
 			.then((response) => {
 
+				if(response.data?.message === "joinRequired") {
+					navigation.navigate("Invite", {
+						eventId: route.params?.eventId
+					});
+				}
+
 				setEvent(response.data.event);
 				setLoaded(true);
 				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
