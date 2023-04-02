@@ -110,7 +110,7 @@ function ErrorScreen() {
 export default function App() {
 
     useEffect( () => {
-        const bundleVersion = "0.22.2";
+        const bundleVersion = "0.22.3";
         axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
             if(_res.data.bundleVersion !== bundleVersion) {
                 await Updates.fetchUpdateAsync();
@@ -148,7 +148,6 @@ function CoreStackScreen() {
 
     const navigator = useNavigation();
 
-    const [url, setUrl] = useState(null);
     const urlSource = Linking.useURL();
     const [authenticated, setAuthenticated] = useState(true);
     const [currentSession, setCurrentSession] = useState(null);
@@ -156,18 +155,18 @@ function CoreStackScreen() {
     const urlListenerWorker = url => {
         console.log("URL deeplink intercepted, navigating to: "+url);
         const path = url.replace("timestack://", "");
+        console.log(path);
         if(path.startsWith("event/")) {
             navigator.navigate("Invite", {
                 eventId: path.split("/")[1]
             });
         }
-        setUrl(null);
     }
 
     useEffect(() => {
-        setUrl(urlSource);
-        if(url) {
-            urlListenerWorker(url);
+        console.log("Here", urlSource);
+        if(urlSource) {
+            urlListenerWorker(urlSource);
         }
 
     }, [urlSource]);
