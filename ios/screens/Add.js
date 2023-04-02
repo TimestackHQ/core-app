@@ -69,7 +69,7 @@ export default function AddScreen({navigation}) {
 				setCover(media);
 				const uri = media?.type === "video"
 					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
-					: await processPhoto(mediaId, media.uri, 80);
+					: await processPhoto(mediaId, media.uri, 5, true);
 				const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
 
 				console.log(uri)
