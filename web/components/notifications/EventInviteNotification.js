@@ -27,7 +27,10 @@ export default function EventInviteNotification ({notification, timeAgo}) {
 			</div>
 			<div className={"col-1"} style={{marginLeft: "-20px"}}>
 				<div style={{backgroundColor: notification?.acknowledgedAt ? "white" : "#E41E1E", width: "5px", height: "5px", borderRadius: "10px", marginLeft: "62px", marginTop: "20px"}}/>
-				<img src={notification.eventCover} style={{width: "40px", height: "55px", borderRadius: "4px", marginTop: "-35px", marginLeft: "15px"}}/>
+
+				<div style={{width: "40px", height: "55px", borderRadius: "4px", marginTop: "-35px", marginLeft: "15px"}}>
+					<img src={notification.eventCover} style={{objectFit: "cover", width: "100%", height: "100%", borderRadius: "4px"}}/>
+				</div>
 
 			</div>
 
