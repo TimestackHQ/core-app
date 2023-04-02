@@ -31,7 +31,11 @@ export default function EventIOS ({}) {
 
 
 	const openUploadModal = () => {
-		 NativeNavigate("Upload", {eventId: event?._id, event:event});
+		 NativeNavigate("Upload", {
+			 eventId: event?._id,
+			 event:event,
+			 refresh: true
+		 });
 	}
 
 
