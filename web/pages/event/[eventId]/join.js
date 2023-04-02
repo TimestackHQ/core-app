@@ -62,7 +62,7 @@ export default function EventIOS ({}) {
 		HTTPClient("/events/"+eventId+"/join", "POST")
 			.then((response) => {
 				setJoined(true);
-				NativeNavigate("HomeStack", {
+				NativeNavigate("Event", {
 
 						eventId: eventId,
 						eventName: event.name,
