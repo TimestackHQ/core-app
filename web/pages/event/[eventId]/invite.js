@@ -28,7 +28,8 @@ export default function Invite() {
 	return (
 		<React.Fragment>
 			<Head>
-				<meta name="apple-itunes-app" content={"app-id=1671064881, app-argument="+String("timestack://event/" + router.query.eventId + "/join?id="+v4())}/>
+				{/*<meta name="apple-itunes-app" content={"app-id=1671064881, app-argument="+String("timestack://event/" + router.query.eventId + "/join?id="+v4())}/>*/}
+				<meta name="apple-itunes-app" content={"app-id=1671064881"}/>
 			</Head>
 			<div className={"container text-center"}>
 				<br/>
