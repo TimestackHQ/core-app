@@ -15,6 +15,7 @@ import moment from "moment/moment";
 import EventInviteNotification from "../../components/notifications/EventInviteNotification";
 import NewLoginNotification from "../../components/notifications/NewLoginNotification";
 import {useDispatch} from "react-redux";
+import {NativeNavigate} from "../../utils/nativeBridge";
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US')
@@ -45,6 +46,18 @@ export default function NotificationsPage() {
 			})
 		}
 	});
+
+	const joinAll = async () => {
+		for await (let invite of invites) {
+			HTTPClient("/events/"+invite._id+"/join", "POST")
+				.then((response) => {
+					setInvites(invites.filter(i => i._id !== invite._id));
+				})
+				.catch((error) => {
+					// alert("Error joining event. Please try again later.");
+				});
+		}
+	}
 
 	React.useEffect(() => {
 		HTTPClient("/events/invites", "GET").then((res) => {
@@ -85,7 +98,7 @@ export default function NotificationsPage() {
 						<h5 style={{paddingTop: "5px"}}>{invites.length} {invites.length === 1 ? "New event" : "New events"}</h5>
 					</div>: null}
 					{invites.length !== 0 ? <div className={"col-6"} >
-						<button className={"btn btn-dark btn-sm white-shadow"} style={{float: "right", fontWeight: "500", width: "100px", marginRight: "5px"}}>Join all</button>
+						<button onClick={joinAll} className={"btn btn-dark btn-sm white-shadow"} style={{float: "right", fontWeight: "500", width: "100px", marginRight: "5px"}}>Join all</button>
 					</div>: null}
 					{invites.length !== 0 ? <hr style={{marginLeft: "10px", marginRight: "10px", marginTop: "5px", width: "92%"}}/> : null}
 					<div className={"col-12"} style={{
