@@ -29,10 +29,6 @@ function MyApp({ Component, pageProps }) {
                     crossOrigin="anonymous"/>
               <link rel="stylesheet" href="https://use.typekit.net/ver6zds.css"/>
 
-              <script async src={"/js/maps.js"}></script>
-              <script async defer
-                              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyFybVOEKwDbbyCRaOs64OMpVMwmYXA0s&libraries=places">
-              </script>
 
 
           </Head>
