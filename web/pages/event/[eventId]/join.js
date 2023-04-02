@@ -66,7 +66,8 @@ export default function EventIOS ({}) {
 					screen: "Event",
 					params: {
 						eventId: eventId,
-						eventName: event.name
+						eventName: event.name,
+						refresh: true
 					}
 				}})
 			})
