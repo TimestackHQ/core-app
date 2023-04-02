@@ -143,7 +143,7 @@ export default function App() {
 
 }
 
-const CoreStack = createStackNavigator();
+const CoreStack = createNativeStackNavigator();
 function CoreStackScreen() {
 
     const navigator = useNavigation();

@@ -20,6 +20,8 @@ import * as FileSystem from 'expo-file-system';
 import uploadWorker from "../uploadWorker";
 import moment from "moment";
 import {v4} from "uuid";
+import * as Network from "expo-network";
+import {NetworkStateType} from "expo-network";
 
 function formatDuration(durationInSeconds) {
 	if(!durationInSeconds) return "";
@@ -75,34 +77,53 @@ export default function Roll () {
 		// await ExpoJobQueue.removeWorker("mediaQueueV25");
 		// await uploadWorker();
 
-		console.log(mediaSelected)
-		for await (const media of mediaSelected) {
+		console.log(mediaSelected);
 
-			//
-			console.log("payload:",{
-				uri: media.image.uri,
-				type: media.type,
-				eventId: route.params.eventId
-			})
-			ExpoJobQueue.addJob("mediaQueueV25", {
-				filename: moment().unix()+"_"+v4()+"."+media.image.extension,
-				extension: media.image.extension,
-				uri: media.image.uri,
-				type: media.type,
-				eventId: route.params.eventId,
-				playableDuration: media.image.playableDuration,
-				timestamp: media.timestamp,
-				location: media.location,
-				fileSize: media.image.fileSize,
-			})
+		const upload = async () => {
+			for await (const media of mediaSelected) {
 
+				//
+				console.log("payload:",{
+					uri: media.image.uri,
+					type: media.type,
+					eventId: route.params.eventId
+				})
+				ExpoJobQueue.addJob("mediaQueueV25", {
+					filename: moment().unix()+"_"+v4()+"."+media.image.extension,
+					extension: media.image.extension,
+					uri: media.image.uri,
+					type: media.type,
+					eventId: route.params.eventId,
+					playableDuration: media.image.playableDuration,
+					timestamp: media.timestamp,
+					location: media.location,
+					fileSize: media.image.fileSize,
+				})
+
+			}
+
+			await ExpoJobQueue.start();
+
+			console.log("JOB_QUEUE_STARTED")
+
+			navigator.goBack();
+		}
+		const net = await Network.getNetworkStateAsync();
+		if(net.type === NetworkStateType.CELLULAR) {
+			Alert.alert("Cellular Upload", `Do you want to upload ${mediaSelected.length} items over cellular?`, [
+				{
+					text: "Cancel",
+					onPress: () => navigator.goBack(),
+				}, {
+					text: "OK",
+					onPress: upload
+
+			}]);
+
+		} else {
+			await upload();
 		}
 
-		await ExpoJobQueue.start();
-
-		console.log("JOB_QUEUE_STARTED")
-
-		navigator.goBack();
 	}
 
 	useEffect(() => {

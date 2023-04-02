@@ -8,13 +8,10 @@ export default function EventInviteNotification ({notification, timeAgo}) {
 	const payload = notification.data.payload;
 	return (
 		<div onClick={() => {
-			NativeNavigate("Main", {
-				screen: "Event",
-				params: {
-					eventId: payload.eventId._id,
-					eventName: payload.eventId.name,
-					refresh: true
-				}
+			NativeNavigate("Event",{
+				eventId: payload.eventId._id,
+				eventName: payload.eventId.name,
+				refresh: true
 			})
 		}} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
 			<div className={"col-2"}>

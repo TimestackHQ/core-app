@@ -66,6 +66,7 @@ export default function EventScreen () {
 	const isFocused = useIsFocused();
 
 	const [refreshing, setRefreshing] = React.useState(false);
+	const [refreshEnabled, setRefreshEnabled] = React.useState(true);
 	const [tab, setTab] = React.useState("memories");
 
 
@@ -112,6 +113,12 @@ export default function EventScreen () {
 				setLoaded(true);
 				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
 				getGallery();
+
+				if(route.params?.openUpload) {
+					navigation.navigate("Upload", {
+						eventId: event?._id, event:response.data.event
+					});
+				}
 
 				HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setUri(res.data))
 					.catch(err => {});
@@ -198,13 +205,15 @@ export default function EventScreen () {
 	};
 
 	useEffect(() => {
-		if (isFocused && route?.params?.refresh) {
+		if (isFocused && refreshEnabled) {
 			refresh();
+			setRefreshEnabled(false);
 		}
 	}, [isFocused])
 
 	useEffect(() => {
 		fetchEvent();
+		if(route?.params?.refresh) setRefreshEnabled(true);
 	}, [])
 
 

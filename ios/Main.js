@@ -265,7 +265,10 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                             {
                                 text: "Yes",
                                 onPress: async () => {
-                                    navigation.navigate("Notifications");
+                                    navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'Main' }],
+                                    });
                                 }
                             }
                         ])

@@ -135,7 +135,7 @@ export default function Upload ({}) {
 				<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'stretch', marginTop: 10}}>
 					<View style={{flex: 3}}>
 						<Image
-							source={{uri: 'data:image/jpeg;base64,' + (route?.params.event.buffer)}}
+							source={{uri: 'data:image/jpeg;base64,' + (route?.params.event?.buffer)}}
 							style={{
 								width: 100,
 								height: 140,

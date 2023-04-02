@@ -1,6 +1,7 @@
 import * as React from "react";
 import DatePicker from 'react-native-date-picker';
 import {
+	ActivityIndicator,
 	Alert,
 	Keyboard, KeyboardAvoidingView, Platform,
 	SafeAreaView,
@@ -98,6 +99,8 @@ export default function AddScreen({navigation}) {
 			setLoadingCover(false);
 		})
 
+			.finally(() => setLoadingCover(false));
+
 
 
 	}
@@ -187,7 +190,7 @@ export default function AddScreen({navigation}) {
 						top: keyBoardOpen ? -1000 : 150,
 
 					}}
-				>{startDate && endDate ? "From" : "Start date"}</Text>
+				>{startDate && endDate ? "From" : "Start date*"}</Text>
 				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 170, width: "100%"}} onPress={() => setStartDateOpen(true)}>
 					<Text
 						multiline={true}
@@ -206,12 +209,19 @@ export default function AddScreen({navigation}) {
 					mode="date"
 					open={startDateOpen}
 					date={startDate}
+					confirmText={"Confirm"}
+					cancelText={"❌"}
+					theme={"dark"}
 					onConfirm={(date) => {
+						setStartDate(date);
+						if (endDate < startDate) {
+							setEndDate(null)
+						}
 						setStartDateOpen(false)
-						setStartDate(date)
 					}}
 					onCancel={() => {
 						setStartDateOpen(false)
+
 					}}
 				/>
 				{endDate ? <Text
@@ -250,6 +260,9 @@ export default function AddScreen({navigation}) {
 					mode="date"
 					open={endDateOpen}
 					date={endDate ? endDate : startDate}
+					confirmText={"Confirm"}
+					cancelText={"❌"}
+					theme={"dark"}
 					onConfirm={(date) => {
 						setEndDateOpen(false)
 						setEndDate(date)
@@ -406,34 +419,37 @@ export default function AddScreen({navigation}) {
 
 			</SafeAreaView>
 		</KeyboardAvoidingView>
-	</TouchableWithoutFeedback> : <SafeAreaView onTouchStart={Keyboard.dismiss} style={{flex: 1, backgroundColor: "white"}}>
-		<ScrollView style={{flex: 1, height: "100%",
-			
-			Content: "center",
-		}}>
-			{name || cover ? <TouchableOpacity onPress={clear} style={{
-				fontFamily: "Red Hat Display Semi Bold",
-				position: "absolute",
-				top: 20,
-				right: 30
+	</TouchableWithoutFeedback> : <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1, backgroundColor: "white"}}>
+		<SafeAreaView style={{flex: 1}}>
+			<View style={{flex: 1, height: "100%",
+
+				Content: "center",
 			}}>
-				<Text>
-					Clear
-				</Text>
-			</TouchableOpacity> : null}
-			<View style={{
-				alignItems: "center",
-				justify: "center",
-				height: "100%",
-				justifyContent: 'flex-end',
-				transform: [{ scaleY: -1 }],
-			}}>
+				{name || cover ? <TouchableOpacity onPress={clear} style={{
+					fontFamily: "Red Hat Display Semi Bold",
+					position: "absolute",
+					top: 20,
+					right: 30,
+					zIndex: 1000
+				}}>
+					<Text>
+						Clear
+					</Text>
+				</TouchableOpacity> : null}
+				<View style={{
+					alignItems: "center",
+					justify: "center",
+					height: "100%",
+					justifyContent: 'flex-end',
+					transform: [{ scaleY: -1 }],
+				}}>
 
 					<TextInput
 						defaultValue={name}
 						value={name}
 						onChangeText={e => setName(e)}
 						multiline={true}
+						scrollEnabled={false}
 						caretColor={"black"}
 						style={{
 							fontFamily: "Red Hat Display Semi Bold",
@@ -442,85 +458,86 @@ export default function AddScreen({navigation}) {
 							fontSize: 30,
 							bottom: 70,
 							width: "90%",
-							
+
 							transform: [{ scaleY: -1 }],
 						}}
 						placeholder={"Event name"}
 					/>
+				</View>
+
 			</View>
+			<View style={{
+				flex: 2,
+				height: "100%",
 
-		</ScrollView>
-		<View style={{
-			flex: 2,
-			height: "100%",
-			
-			alignItems: "center",
-		}}>
-			<TouchableWithoutFeedback onPress={importCover}>
-				{cover?.type === "video" ?
-					<Video
-						source={{uri: cover.uri}}
-						muted={true}
-						resizeMode="cover"
-						style={{
-							borderRadius: 35, width: 220, height:280
-						}}
-					/>
-					:<FastImage
-						alt={"Cassis 2022"}
-						style={{borderRadius: 35, width: 220, height:280}}
-						source={cover?.uri ? {uri: cover.uri} : require("../assets/add-media.png")}
-					/>
-				}
-			</TouchableWithoutFeedback>
-			<Text style={{
-				fontFamily: "Red Hat Display Semi Bold",
-				textAlign: "center",
-				color: "grey",
-				fontSize: 13,
-				marginTop: 10,
-				
-				width: "90%",
-				
-			}}>
-				{loadingCover ? "" : (cover?.uri ? "" : "You can add a cover later")}
-			</Text>
-			<TouchableOpacity style={{
-				textAlign: "center",
-				color: "grey",
-				position: "absolute",
-				bottom: 0,
-				marginTop: 10,
-
-				width: "90%",
-				height: 50,
-				backgroundColor: "black",
 				alignItems: "center",
-				justifyContent: "center",
-				borderRadius: 35,
-				marginBottom: 20
-			}}
-            onPress={() => {
-				if (name === "") {
-					Alert.alert("Event name", "Please enter a name for your event", [
-						{
-							text: "OK",
-						}
-					])
-				}
-	            else setNextScreen(true)
-            }}
-
-			>
-				<Text style={{
+			}}>
+				<TouchableWithoutFeedback onPress={importCover}>
+					{cover?.type === "video" ?
+						<Video
+							source={{uri: cover.uri}}
+							muted={true}
+							resizeMode="cover"
+							style={{
+								borderRadius: 35, width: 220, height:280
+							}}
+						/>
+						:<FastImage
+							alt={"Cassis 2022"}
+							style={{borderRadius: 35, width: 220, height:280}}
+							source={cover?.uri ? {uri: cover.uri} : require("../assets/add-media.png")}
+						/>
+					}
+				</TouchableWithoutFeedback>
+				{loadingCover ? <ActivityIndicator color={"black"} style={{marginTop: 10}} /> : <Text style={{
 					fontFamily: "Red Hat Display Semi Bold",
-					color: "white",
-					fontSize: 20,
-					textShadowColor: '#FFF',
-					textShadowOffset: { width: 0, height: 0 },
-					textShadowRadius: 10,
-				}}>OKAY</Text>
-			</TouchableOpacity>
-		</View>
-	</SafeAreaView>
+					textAlign: "center",
+					color: "grey",
+					fontSize: 13,
+					marginTop: 10,
+
+					width: "90%",
+
+				}}>
+					{cover?.uri ? "" : "You can add a cover later"}
+				</Text>}
+				<TouchableOpacity style={{
+					textAlign: "center",
+					color: "grey",
+					position: "absolute",
+					bottom: 0,
+					marginTop: 10,
+
+					width: "90%",
+					height: 50,
+					backgroundColor: name === ""  ? "#9a9a9a" : "black",
+					alignItems: "center",
+					justifyContent: "center",
+					borderRadius: 35,
+					marginBottom: 20
+				}}
+				                  onPress={() => {
+					                  if (name === "") {
+						                  Alert.alert("Event name", "Please enter a name for your event", [
+							                  {
+								                  text: "OK",
+							                  }
+						                  ])
+					                  }
+					                  else setNextScreen(true)
+				                  }}
+
+				>
+					<Text style={{
+						fontFamily: "Red Hat Display Semi Bold",
+						color: "white",
+						fontSize: 20,
+						textShadowColor: name === "" ? "transparent" : '#FFF',
+						textShadowOffset: { width: 0, height: 0 },
+						textShadowRadius: 10,
+					}}>OKAY</Text>
+				</TouchableOpacity>
+			</View>
+		</SafeAreaView>
+	</TouchableWithoutFeedback>
 }
