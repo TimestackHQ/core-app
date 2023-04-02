@@ -174,6 +174,7 @@ export default function Login() {
 
 						{step === 8 ? <div>
 							<Adventure
+								completeAuth={completeAuth}
 								setStep={setStep}
 								setUserConfirmed={setUserConfirmed}
 							/>
