@@ -2,12 +2,13 @@ import * as React from "react";
 import {useRouter} from "next/router";
 import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
 
-export default function Adventure ({completeAuth}) {
+export default function Adventure ({setStep, setUserConfirmed}) {
 
 	const router = useRouter();
 
 	setTimeout(() => {
-		completeAuth();
+		notifyNativeOfSession();
+		NativeResetStack();
 	}, 1500);
 
 	return (
