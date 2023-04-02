@@ -145,8 +145,27 @@ export default function App() {
 const CoreStack = createStackNavigator();
 function CoreStackScreen() {
 
+    const navigator = useNavigation();
+
+    const [url, setUrl] = useState(null);
+    const urlSource = Linking.useURL();
     const [authenticated, setAuthenticated] = useState(true);
     const [currentSession, setCurrentSession] = useState(null);
+
+    useEffect(() => {
+        setUrl(urlSource);
+        if(url) {
+            console.log("URL deeplink intercepted, navigating to: "+url);
+            const path = url.replace("timestack://", "");
+            if(path.startsWith("event/")) {
+                navigator.navigate("Invite", {
+                    eventId: path.split("/")[1]
+                });
+            }
+            setUrl(null);
+        }
+
+    }, [urlSource]);
 
     useEffect(() => {
         new Promise(async (resolve, reject) => {
@@ -196,29 +215,6 @@ const Tab = createBottomTabNavigator();
 function Nav() {
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
-
-    const navigator = useNavigation();
-    const [photos, setPhotos] = useState([]);
-    const url = Linking.useURL();
-
-    useEffect(() => {
-        if(url) {
-            const path = url.replace("timestack://", "");
-            if(path.startsWith("event/")) {
-                navigator.navigate("Invite", {
-                    eventId: path.split("/")[1]
-                });
-            }
-        }
-
-    }, [url]);
-
-
-    // return <FlatList
-    //     data={photos}
-    //     numColumns={3}
-    //     renderItem={({item}) => <Image source={{uri: item.node.image.uri}} style={{width: "33%", height: 100}}/>}
-    // />
 
     return (
         <Tab.Navigator

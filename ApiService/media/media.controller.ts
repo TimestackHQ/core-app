@@ -180,7 +180,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
         }
 
-        const media = new Models.Media({
+        const body = {
             publicId: fileId,
             // @ts-ignore
             storageLocation: thumbnail.originalname,
@@ -190,10 +190,23 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             type: file.mimetype,
             group: "event",
             user: req.user._id,
-            metadata: JSON.parse(req.body.metadata),
-            timestamp: new Date(),
+            metadata: {
+                timestamp:
+                    JSON.parse(req.body.metadata)?.timestamp
+                        ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
+                        : undefined
+            },
+            timestamp: JSON.parse(req.body.metadata)?.timestamp
+                ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
+                : undefined,
             event: event._id
-        });
+        }
+
+        console.log(
+            JSON.parse(req.body.metadata)
+        );
+
+        const media = new Models.Media(body);
 
         await media.save();
 

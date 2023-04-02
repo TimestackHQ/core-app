@@ -10,7 +10,7 @@ import {
 	Image,
 	ScrollView, Share, RefreshControl, FlatList, TextInput
 } from "react-native";
-import { useRoute, useNavigation } from '@react-navigation/native';
+import {useRoute, useNavigation, useIsFocused} from '@react-navigation/native';
 import HTTPClient from "../httpClient";
 import {useEffect, useState} from "react";
 import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
@@ -55,30 +55,36 @@ function AboutViewer({about}) {
 
 }
 
+function EventCoverNoCover(props) {
+	return null;
+}
+
 export default function EventScreen () {
 
 	const route = useRoute();
 	const navigation = useNavigation();
+	const isFocused = useIsFocused();
 
 	const [refreshing, setRefreshing] = React.useState(false);
-	const [id, setId] = React.useState("null");
 	const [tab, setTab] = React.useState("memories");
 
-	const onRefresh = React.useCallback(() => {
-		setRefreshing(true);
-		setId(Math.random().toString(36).substring(7));
-		setTimeout(() => {
-			setRefreshing(false);
-		}, 1000);
-	}, []);
 
+	const [placeholder, setPlaceholder] = useState("");
 	const [event, setEvent] = useState(null);
 	const [loaded, setLoaded] = useState(false);
-	const [placeholder, setPlaceholder] = useState("");
 	const [uri, setUri] = useState("");
 	const [gallery, setGallery] = useState([]);
 	const [moreToLoad, setMoreToLoad] = useState(true);
 	const [viewMenu, setViewMenu] = useState(false);
+
+	const refresh = () => {
+		fetchEvent(true);
+		setGallery([]);
+		getGallery();
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
+	}
 
 	const getGallery = () => HTTPClient(`/events/${route.params.eventId}/media?skip=${gallery.length}`, "GET")
 		.then(res => {
@@ -88,8 +94,33 @@ export default function EventScreen () {
 
 	const fetchEvent = () => {
 
-		setPlaceholder(route.params?.eventPlaceholder)
+		setPlaceholder(route.params?.buffer);
+		setEvent({
+			name: route.params?.eventName,
+		})
 
+		HTTPClient("/events/"+route.params.eventId+String(Boolean(route.params?.buffer) ? "?noBuffer=true" : ""), "GET")
+			.then((response) => {
+
+				setEvent(response.data.event);
+				setLoaded(true);
+				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
+				getGallery();
+
+				HTTPClient("/media/"+response.data.event.cover+"?snapshot=true").then(res => setUri(res.data))
+					.catch(err => {});
+
+			})
+			.catch((error) => {
+				Alert.alert("Error", "Could not load event", [
+					{
+						text: "OK",
+						onPress: () => {
+							navigation.goBack();
+						}
+					}
+				])
+			});
 
 		navigation.setOptions({
 			headerShown: true,
@@ -144,7 +175,6 @@ export default function EventScreen () {
 
 													}
 												])
-												console.log(error);
 												// window.location.href = "/main_ios";
 											});
 									}
@@ -159,36 +189,13 @@ export default function EventScreen () {
 		});
 
 
-		HTTPClient("/events/"+route.params.eventId+"?noBuffer=true", "GET")
-			.then((response) => {
-
-				setEvent(response.data.event);
-				setLoaded(true);
-				getGallery();
-
-				HTTPClient("/media/"+response.data.event.cover+"?thumbnail=true").then(res => setUri(res.data))
-					.catch(err => {});
-
-			})
-			.catch((error) => {
-				Alert.alert("Error", "Could not load event", [
-					{
-						text: "OK",
-						onPress: () => {
-							navigation.goBack();
-						}
-					}
-				])
-				console.log(error);
-			});
 	};
 
 	useEffect(() => {
-		if(id !== route.params?.updateId) {
-			setId(route.params?.updateId);
+		if (isFocused && route?.params?.refresh) {
+			refresh();
 		}
-
-	}, [route.params, id])
+	}, [isFocused])
 
 	useEffect(() => {
 		fetchEvent();
@@ -230,13 +237,26 @@ export default function EventScreen () {
 
 					<View style={{flexDirection: "row"}}>
 						<View style={{flex: 2, margin: 10}}>
-							<FastImage source={
+							{event?.buffer || placeholder ? <FastImage source={
 								{uri: "data:image/png;base64,"+placeholder}
 							} style={{
 								width: "100%",
 								height: 200,
 								borderRadius: 10,
-							}} />
+							}} /> : <View
+							style={{
+								flex: 1,
+								width: "100%",
+								height: 200,
+								borderRadius: 10,
+								backgroundColor: "white",
+								borderWidth: 1,
+								borderColor: "black"
+							}}>
+								<EventCoverNoCover
+									people={event?.people}
+								/>
+							</View>}
 						</View>
 						<View style={{flex: 3, margin: 10, flexDirection: "column", height: 200,marginLeft: 0}}>
 							<View style={{flex: 1, flexDirection: "row"}}>
@@ -264,7 +284,7 @@ export default function EventScreen () {
 										fontFamily: "Red Hat Display Regular"
 									}}
 								>
-									{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}
+									{event?.startsAt ? dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null): ""}
 								</Text>
 							</View>
 						</View>
@@ -318,7 +338,6 @@ export default function EventScreen () {
 											</View>
 											<ProfilePicture
 												key={i}
-												// style={{opacity: 0.6, }}
 												width={iconWidth}
 												height={iconWidth}
 												location={user.profilePictureSource}
@@ -339,41 +358,39 @@ export default function EventScreen () {
 							}) : null}
 
 						</View>
-						<View style={{flexDirection: "row"}}>
+						<View style={{flexDirection: "row", marginTop: 10}}>
 							<View style={{
 								flex: 1,
-								alignItems: "center", justifyContent: "flex-end",
-								marginBottom: 5,
+								marginBottom: -0.5,
 								borderBottomWidth: 1,
 								borderBottomColor: tab === "memories" ? "black" : "#8E8E93",
-								marginLeft: 10,
 							}}>
-								<TouchableOpacity onPress={() => setTab("memories")}>
-									<Text style={{
-										fontSize: 18,
-										fontFamily: "Red Hat Display Bold",
-										color: tab === "memories" ? "black" : "#8E8E93",
-									}}>
-										Memories
-									</Text>
+								<TouchableOpacity style={{width: "100%", alignItems: "center", justifyContent: "flex-end",}} onPress={() => setTab("memories")}>
+									<Image
+										source={
+											tab === "memories" ?
+												require("../assets/icons/collection/memories-black.png")
+												: require("../assets/icons/collection/memories-gray.png")
+										}
+										style={{width: 35, height: 35, resizeMode: "contain", marginBottom: 5}}
+									/>
 								</TouchableOpacity>
 							</View>
 							<View style={{
 								flex: 1,
-								alignItems: "center", justifyContent: "flex-end",
-								marginBottom: 5,
+								marginBottom: -0.5,
 								borderBottomWidth: 1,
 								borderBottomColor: tab === "about" ? "black" : "#8E8E93",
-								marginRight: 10,
 							}}>
-								<TouchableOpacity onPress={() => setTab("about")}>
-									<Text style={{
-										fontSize: 18,
-										fontFamily: "Red Hat Display Bold",
-										color: tab === "about" ? "black" : "#8E8E93",
-									}}>
-										About
-									</Text>
+								<TouchableOpacity style={{width: "100%", alignItems: "center", justifyContent: "flex-end",}} onPress={() => setTab("about")}>
+									<Image
+										source={
+											tab === "about" ?
+												require("../assets/icons/collection/about-black.png")
+												: require("../assets/icons/collection/about-gray.png")
+										}
+										style={{width: 30, height: 30, resizeMode: "contain", marginBottom: 5}}
+									/>
 								</TouchableOpacity>
 							</View>
 						</View>

@@ -6,18 +6,28 @@ export default function HomeScreen({navigation, route}) {
 
 	const [refreshing, setRefreshing] = React.useState(false);
 	const [id, setId] = React.useState("null");
+	const isFocused = navigation.isFocused();
 
-	const onRefresh = React.useCallback(() => {
+	const onRefresh = () => {
 		setRefreshing(true);
 		setId(Math.random().toString(36).substring(7));
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
-	}, []);
+	};
 
 	useEffect(() => {
 		onRefresh();
 	}, [route.params?.updatedId]);
+
+	useEffect(() => {
+		if(isFocused && route.params?.refresh) {
+			setRefreshing(true);
+			onRefresh();
+		}
+	});
+
+
 
 	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
 		<ScrollView

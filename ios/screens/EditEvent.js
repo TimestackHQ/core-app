@@ -165,7 +165,8 @@ export default function EditEvent () {
 				eventId: event._id,
 				eventName: event.name,
 				eventLocation: event.location,
-				updateId: Math.random()
+				updateId: Math.random(),
+				refresh: true
 			});
 		}).catch((err) => {
 			Alert.alert("Error", "We couldn't update your event. Please try again.");

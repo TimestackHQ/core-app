@@ -30,7 +30,7 @@ export default function EventCard ({
 				eventId: event.publicId,
 				eventName: event.name,
 				eventLocation: event.location,
-				eventPlaceholder: event?.buffer
+				buffer: event?.buffer
 			})
 			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
 		}} className={"card "} style={{

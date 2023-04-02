@@ -7,7 +7,7 @@ import {
 	Text,
 	Platform,
 	Linking,
-	Alert
+	Alert, SafeAreaView, ActivityIndicator
 } from "react-native";
 import {useEffect, useState} from "react";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
@@ -21,6 +21,25 @@ import uploadWorker from "../uploadWorker";
 import moment from "moment";
 import {v4} from "uuid";
 
+function formatDuration(durationInSeconds) {
+	if(!durationInSeconds) return "";
+	const hours = Math.floor(durationInSeconds / 3600);
+	const minutes = Math.floor((durationInSeconds - hours * 3600) / 60);
+	const seconds = Math.floor(durationInSeconds - hours * 3600 - minutes * 60);
+
+	let formattedDuration = "";
+
+	if (hours > 0) {
+		const formattedHours = hours.toString().padStart(2, '0');
+		formattedDuration += `${formattedHours}:`;
+	}
+
+	const formattedMinutes = minutes.toString().padStart(2, '0');
+	const formattedSeconds = seconds.toString().padStart(2, '0');
+
+	formattedDuration += `${formattedMinutes}:${formattedSeconds}`;
+	return formattedDuration;
+}
 
 export default function Roll () {
 
@@ -31,11 +50,12 @@ export default function Roll () {
 	const [cursor, setCursor] = useState(undefined);
 	const [selected, setSelected] = useState([]);
 
-	const getMedia = async () => {
+	const getMedia = async (initial) => {
 		const newMedia = await CameraRoll.getPhotos({
-			first: 100,
+			first: initial ? 300 : 150,
 			after: cursor,
 		});
+
 
 		setMedia([...media, ...newMedia.edges]);
 		setCursor(newMedia.page_info?.end_cursor);
@@ -86,7 +106,7 @@ export default function Roll () {
 	}
 
 	useEffect(() => {
-		getMedia().then((err) => {
+		getMedia(true).then((err) => {
 			console.log(err)
 
 
@@ -127,8 +147,25 @@ export default function Roll () {
 				numColumns={3}
 				onEndReached={getMedia}
 				onEndReachedThreshold={1.5}
-				renderItem={({item}) => <View style={{flex: 5, width: "33%", height: 120, margin: 1, backgroundColor: "black"}}
+				renderItem={({item}) => <View style={{flex: 5, width: "33%", height: 120, margin: 1, backgroundColor: "#dedede"}}
 				>
+					<View style={{
+						position: 'absolute',
+						left: 5,
+						bottom: 3,
+						zIndex: 1,
+						backgroundColor: 'transparent',
+					}}>
+						<Text style={{
+							fontSize: 16,
+							fontFamily: "Red Hat Display Semi Bold",
+							color: "white",
+							textShadowColor: 'black',
+							textShadowRadius: 5,
+						}}>
+							{formatDuration(item.node.image.playableDuration)}
+						</Text>
+					</View>
 					{selected.includes(item.node.image.uri) ? <View
 						style={{
 							position: 'absolute',
@@ -159,6 +196,9 @@ export default function Roll () {
 						/>
 					</TouchableWithoutFeedback>
 				</View>}
+				// ListFooterComponent={() => <SafeAreaView>
+				// 	<ActivityIndicator color={"black"} animating={cursor ? true : false} style={{marginTop: 5}} />
+				// </SafeAreaView>}
 			/>
 		</View>
 	</View>

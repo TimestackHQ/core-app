@@ -500,12 +500,12 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             },
             options: {
                 sort: {
-                    createdAt: -1
+                    timestamp: 1
                 },
                 limit: req.query?.limit ? Number(req.query.limit) : 30,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
             }
-        }).sort({"metadata.timestamp": -1}).lean();
+        }).lean();
 
 
         if (!event) {

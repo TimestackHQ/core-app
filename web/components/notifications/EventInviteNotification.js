@@ -9,9 +9,10 @@ export default function EventInviteNotification ({notification, timeAgo}) {
 	return (
 		<div onClick={() => {
 			NativeNavigate("Event",{
-				eventId: payload.eventId._id
+				eventId: payload.eventId._id,
+				eventName: payload.eventId.name,
+				refresh: true
 			})
-			// router.push("/event/"+event?.publicId+"?name="+event?.name+"&location="+event?.location)
 		}} className={"row"} style={{paddingBottom: "3px", paddingTop: "10px", overflowX: "hidden"}}>
 			<div className={"col-2"}>
 				<ProfilePicture width={"45px"} height={"45px"} location={notification?.userProfilePicture}/>
