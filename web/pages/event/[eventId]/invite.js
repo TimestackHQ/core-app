@@ -8,4 +8,6 @@ const DynamicHeader = dynamic(() => import('../../../components/Invite'), {
 	ssr: false,
 })
 
-export default () => <DynamicHeader />
+export default function Invite () {
+	return <DynamicHeader />;
+}
