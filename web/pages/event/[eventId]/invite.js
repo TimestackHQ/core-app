@@ -19,17 +19,17 @@ export default function Invite() {
 	const router = useRouter();
 
 	useEffect(() =>{
-		// if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
-		setTimeout(() => {
-			window.close();
-		}, 5000);
+		if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
+		// setTimeout(() => {
+		// 	window.close();
+		// }, 5000);
 	}, [router.query.eventId]);
 
 	return (
 		<React.Fragment>
 			<Head>
-				{/*<meta name="apple-itunes-app" content={"app-id=1671064881, app-argument="+String("timestack://event/" + router.query.eventId + "/join?id="+v4())}/>*/}
-				<meta name="apple-itunes-app" content={"app-id=1671064881"}/>
+				<meta name="apple-itunes-app" content={"app-id=1671064881, app-argument="+String("timestack://event/" + router.query.eventId + "/join?id="+v4())}/>
+				{/*<meta name="apple-itunes-app" content={"app-id=1671064881"}/>*/}
 			</Head>
 			<div className={"container text-center"}>
 				<br/>
