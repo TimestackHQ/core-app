@@ -1,25 +1,11 @@
-import Router, {useRouter} from "next/router";
-import {useEffect} from "react";
-import {v4} from "uuid";
+import * as React from "react";
+import dynamic from 'next/dynamic'
 
-export default function Invite() {
-	const router = useRouter();
 
-	useEffect(() =>{
-		if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
-		setTimeout(() => {
-			window.close();
-		}, 5000);
-	}, [router.query.eventId]);
 
-	return (
-		<div className={"container text-center"}>
-			<br/>
-			<img src={"/images/logotype-blacktimestack.svg"} alt={"Timestack"} className={"img-fluid"} style={{maxWidth: "200px"}}/>
-			<br/>
-			<br/>
-			<h6>Opening app...</h6>
 
-		</div>
-	);
-}
+const DynamicHeader = dynamic(() => import('../../../components/Invite'), {
+	ssr: false,
+})
+
+export default () => <DynamicHeader />
