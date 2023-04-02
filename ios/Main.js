@@ -236,6 +236,11 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         await WebBrowser.openBrowserAsync(message.link)
                     }
 
+                    if(message.request === "openNativeLink") {
+                        console.log("Opening native link", message.link);
+                        await Linking.openURL(message.link)
+                    }
+
                     if(message.request === "pushNotifications") {
                         let { status } = await askAsync(Permissions.NOTIFICATIONS);
 

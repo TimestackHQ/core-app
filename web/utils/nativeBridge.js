@@ -44,6 +44,11 @@ export const NativeResetStack = () => window.ReactNativeWebView?.postMessage(JSO
 	request: "resetStack"
 }));
 
+export const NativeOpenNativeLink = (link) => window.ReactNativeWebView?.postMessage(JSON.stringify({
+	request: "openNativeLink",
+	link
+}));
+
 export const NativeCancelEventInvite = () => {
 	window.ReactNativeWebView?.postMessage(JSON.stringify({
 		request: "cancelEventInvite"

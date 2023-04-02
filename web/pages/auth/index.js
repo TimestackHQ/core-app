@@ -17,7 +17,7 @@ import Birthdate from "./Birthdate";
 import Adventure from "./Adventure";
 import Username from "./Username";
 import Step2 from "./Step2";
-import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
+import {NativeNavigate, NativeOpenNativeLink, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
 
 export default function Login() {
 
@@ -60,10 +60,18 @@ export default function Login() {
 
 	}, []);
 
-	useEffect(() => {
+	const completeAuth = () => {
 		notifyNativeOfSession();
-		setStep(1);
-		if(userConfirmed) NativeResetStack();
+		if(userConfirmed) {
+			if(router.query.redirect) {
+				NativeOpenNativeLink(router.query.redirect);
+			}
+			NativeResetStack();
+		}
+	}
+
+	useEffect(() => {
+		completeAuth();
 	}, [userConfirmed]);
 
 

@@ -54,7 +54,7 @@ function Invite ({navigation, route}) {
 function AuthScreen({navigation, route}) {
 
     return <Main
-            baseRoute={"/auth"}
+            baseRoute={"/auth?redirect="+route.params?.redirect}
             apiUrl={apiUrl}
             frontendUrl={frontendUrl}
             setSession={setSession}
@@ -110,7 +110,7 @@ function ErrorScreen() {
 export default function App() {
 
     useEffect( () => {
-        const bundleVersion = "0.22.3";
+        const bundleVersion = "0.22.4";
         axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
             if(_res.data.bundleVersion !== bundleVersion) {
                 await Updates.fetchUpdateAsync();
@@ -183,7 +183,10 @@ function CoreStackScreen() {
                 })
                 .catch((err) => {
                     if(err.response.status === 401) {
-                        navigator.navigate("Auth");
+                        console.log("Not authenticated, redirecting to auth screen");
+                        navigator.navigate("Auth", {
+                            redirect: urlSource
+                        });
                     }
                 })
         }).then(_r => {});
