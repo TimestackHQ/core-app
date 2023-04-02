@@ -200,7 +200,7 @@ function CoreStackScreen() {
             const url = notification?.data.payload?.url;
 
             if(url) {
-                urlListenerWorker(url);
+                urlListenerWorker(url.replace(frontendUrl, "timestack://"));
             }
 
         });

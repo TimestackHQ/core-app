@@ -62,14 +62,12 @@ export default function EventIOS ({}) {
 		HTTPClient("/events/"+eventId+"/join", "POST")
 			.then((response) => {
 				setJoined(true);
-				NativeNavigate("Main", {screen: "HomeStack", params: {
-					screen: "Event",
-					params: {
+				NativeNavigate("HomeStack", {
+
 						eventId: eventId,
 						eventName: event.name,
 						refresh: true
-					}
-				}})
+				})
 			})
 			.catch((error) => {
 				alert("Error joining event. Please try again later.");

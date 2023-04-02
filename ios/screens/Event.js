@@ -207,13 +207,14 @@ export default function EventScreen () {
 	useEffect(() => {
 		if (isFocused && refreshEnabled) {
 			refresh();
-			setRefreshEnabled(false);
 		}
 	}, [isFocused])
 
 	useEffect(() => {
 		fetchEvent();
 		if(route?.params?.refresh) setRefreshEnabled(true);
+		setRefreshEnabled(false);
+
 	}, [])
 
 
