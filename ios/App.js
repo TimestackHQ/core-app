@@ -48,7 +48,7 @@ function Viewer({baseRoute, navigation}) {
 }
 
 function Invite ({navigation, route}) {
-    return <Viewer navigation={navigation} baseRoute={"/event/"+route.params.eventId+"/join"}/>
+    return <Viewer navigation={navigation} baseRoute={route.params?.url ? route.params?.url : "/event/"+route.params.eventId+"/join"}/>
 }
 
 function AuthScreen({navigation, route}) {
@@ -193,17 +193,21 @@ function CoreStackScreen() {
 
         // push notifications reader
         const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+
             console.log("received notification response");
 
             // processed notification link
             const notification = response.notification.request.content;
             const url = notification?.data.payload?.url;
-
             if(url) {
-                urlListenerWorker(url);
-            }
+
+                navigator.navigate("Invite", {
+                    url: url
+                });
+            };
 
         });
+
 
         return () => {
             subscription.remove();
