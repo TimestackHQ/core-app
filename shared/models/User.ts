@@ -27,10 +27,12 @@ const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: false,
+        set: (field: string) => field.trim(),
     },
     lastName: {
         type: String,
         required: false,
+        set: (field: string) => field.trim(),
     },
     username: {
         type: String,
