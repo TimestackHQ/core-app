@@ -7,8 +7,8 @@ import Onboarding from "../Components/Onboarding";
 export default function HomeScreen({navigation, route}) {
 
 
-	const [firstLoad, setFirstLoad] = React.useState(false);
-	const [refreshing, setRefreshing] = React.useState(false);
+	const [firstLoad, setFirstLoad] = React.useState(true);
+	const [refreshing, setRefreshing] = React.useState(true);
 	const [id, setId] = React.useState("null");
 	const isFocused = navigation.isFocused();
 
@@ -27,8 +27,11 @@ export default function HomeScreen({navigation, route}) {
 	useEffect(() => {
 		(async () => {
 			await AsyncStorage.getItem("@first").then((value) => {
+				setRefreshing(false)
 				if(value === null) {
 					setFirstLoad(true);
+				}else {
+					setFirstLoad(false);
 				}
 			});
 			if(isFocused && route.params?.refresh) {

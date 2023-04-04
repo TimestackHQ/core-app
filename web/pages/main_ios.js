@@ -56,34 +56,36 @@ export default function MainIOS () {
 
 			<div className="container" >
 				<h1>My Timewall</h1>
-				<div className="row" style={{paddingTop: "8px"}}>
+				{(!loading && events.length === 0) ? <div className={"text-center"}>
+					<img src={"/images/timewall.png"} width={"95%"} style={{marginTop: "20px"}}/>
+				</div> : <div className="row" style={{paddingTop: "8px"}}>
 
-						{loading ? <React.Fragment>
-							{[0, 1, 2, 3].map((event, index) => {
-								return <div key={index} style={{
-									height: "145px",
-									width: "100%",
-									borderRadius: "15px 15px 15px 15px",
-									backgroundColor: "#f8f8f8",
-									marginBottom: "15px"
-								}}/>
-							})}
-						</React.Fragment> : <InfiniteScroll
-							style={{overflowX: "hidden"}}
-							dataLength={events.length}
-							next={getEvents}
-							hasMore={true}
-							loader={<h4></h4>}
-						>
-							{events?.map((event, index) => {
-								return <EventCard key={index} event={event}/>
-							})}
-						</InfiniteScroll>}
+					{loading ? <React.Fragment>
+						{[0, 1, 2, 3].map((event, index) => {
+							return <div key={index} style={{
+								height: "145px",
+								width: "100%",
+								borderRadius: "15px 15px 15px 15px",
+								backgroundColor: "#f8f8f8",
+								marginBottom: "15px"
+							}}/>
+						})}
+					</React.Fragment> : <InfiniteScroll
+						style={{overflowX: "hidden"}}
+						dataLength={events.length}
+						next={getEvents}
+						hasMore={true}
+						loader={<h4></h4>}
+					>
+						{events?.map((event, index) => {
+							return <EventCard key={index} event={event}/>
+						})}
+					</InfiniteScroll>}
 
-					</div>
+				</div>}
 
 
 			</div>
 		</div>
-	);
+	)
 }
