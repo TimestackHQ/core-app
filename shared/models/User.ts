@@ -46,6 +46,7 @@ const UserSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         unique: true,
+        set: (field: string) => field.replace(/\s/g,''),
     },
     isConfirmed: {
         type: Boolean,

@@ -73,14 +73,14 @@ export default function Login() {
 
 
 	const initLogin = (nextStep = true) => {
-		httpClient("/auth/login", "POST", {phoneNumber: "+1"+String(phoneNumber)})
+		httpClient("/auth/login", "POST", {phoneNumber: String(phoneNumber)})
 			.then((_res) => setStep(nextStep ? 1 : 0))
 			.catch((_err) => setError("The phone number you entered is invalid"));
 	}
 
 	const confirmCode = () => {
 		httpClient("/auth/confirm-login", "POST", {
-			username: "+1"+phoneNumber,
+			username: phoneNumber,
 			code: code
 		})
 		.then((res) => {
