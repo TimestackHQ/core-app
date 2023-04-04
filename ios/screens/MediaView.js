@@ -444,7 +444,7 @@ export default function MediaView() {
 				{/*}*/}
 				<View style={styles.container}>
 					<FlatList
-						data={[media, media, media]}
+						data={[media]}
 						horizontal
 						showsHorizontalScrollIndicator={false}
 						pagingEnabled

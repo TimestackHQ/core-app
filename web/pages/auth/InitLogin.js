@@ -42,7 +42,7 @@ export default function InitLogin({
 				const formattedPhoneNumber = PhoneNumberLib.parsePhoneNumber(phoneNumber, 'CA');
 				if (formattedPhoneNumber.isValid()) {
 					setPhoneNumber(formattedPhoneNumber.formatInternational());
-					setTimeout(initLogin, 0);
+					initLogin(formattedPhoneNumber.formatInternational())
 				} else {
 					alert("Please enter a valid phone number.")
 				}
