@@ -1,9 +1,13 @@
-import {RefreshControl, SafeAreaView, ScrollView} from "react-native";
+import {RefreshControl, SafeAreaView, ScrollView, View} from "react-native";
 import React, {useEffect} from "react";
 import Viewer from "../Components/Viewer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Onboarding from "../Components/Onboarding";
 
 export default function HomeScreen({navigation, route}) {
 
+
+	const [firstLoad, setFirstLoad] = React.useState(false);
 	const [refreshing, setRefreshing] = React.useState(false);
 	const [id, setId] = React.useState("null");
 	const isFocused = navigation.isFocused();
@@ -21,22 +25,29 @@ export default function HomeScreen({navigation, route}) {
 	}, [route.params?.updatedId]);
 
 	useEffect(() => {
-		if(isFocused && route.params?.refresh) {
-			setRefreshing(true);
-			onRefresh();
-		}
+		(async () => {
+			await AsyncStorage.getItem("@first").then((value) => {
+				if(value === null) {
+					setFirstLoad(true);
+				}
+			});
+			if(isFocused && route.params?.refresh) {
+				setRefreshing(true);
+				onRefresh();
+			}
+		})();
 	});
 
 
 
 	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
-		<ScrollView
+		{!firstLoad ?<ScrollView
 			// scrollEnabled={false}
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 			contentContainerStyle={{flexGrow: 1}}
 			style={{flex: 1, height: "100%", backgroundColor: "white"}}
 		>
 			<Viewer onStyle={{flex: 1}} baseRoute={"/main_ios?id="+id} navigation={navigation}/>
-		</ScrollView>
+		</ScrollView> : <Onboarding setFirstLoad={setFirstLoad}/>}
 	</SafeAreaView>
 }

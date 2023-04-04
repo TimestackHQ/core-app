@@ -110,7 +110,7 @@ function ErrorScreen() {
 export default function App() {
 
     useEffect( () => {
-        const bundleVersion = "0.22.7";
+        const bundleVersion = "0.22.8";
         axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
             if(_res.data.bundleVersion !== bundleVersion) {
                 await Updates.fetchUpdateAsync();
@@ -124,7 +124,7 @@ export default function App() {
     }, []);
 
 
-    useFonts({
+    const [loaded, error] = useFonts({
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
         'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
         'Red Hat Display Bold': require('./assets/fonts/RedHatDisplay-Bold.ttf'),
@@ -139,7 +139,7 @@ export default function App() {
 
     StatusBar.setBarStyle('dark-content', true);
 
-    return <NavigationContainer><CoreStackScreen/></NavigationContainer>;
+    return loaded ? <NavigationContainer><CoreStackScreen/></NavigationContainer> : null;
 
 }
 
