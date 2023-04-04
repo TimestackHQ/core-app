@@ -12,6 +12,7 @@ export interface EventSchema extends mongoose.Document {
     location?: string;
     about?: string;
     locationMapsPayload?: any;
+    status: "public" | "private";
     media: MediaSchema[] & mongoose.Schema.Types.ObjectId[],
     createdBy: mongoose.Types.ObjectId;
     users: mongoose.Types.ObjectId[];
@@ -25,7 +26,10 @@ export interface EventSchema extends mongoose.Document {
     cover: MediaSchema & mongoose.Schema.Types.ObjectId;
     publicId: string;
     commonProperties: commonProperties;
+    defaultPermission: "editor" | "viewer";
+    exclusionList: mongoose.Schema.Types.ObjectId[];
     people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & {type: String})[];
+    hasPermission: (userId: mongoose.Schema.Types.ObjectId) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
 }
 
@@ -50,6 +54,11 @@ const EventSchema = new mongoose.Schema({
     locationMapsPayload: {
         type: mongoose.Schema.Types.Mixed,
         required: false,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: "public",
     },
     about: {
         type: String,
@@ -100,6 +109,16 @@ const EventSchema = new mongoose.Schema({
         required: false,
         ref: "Media"
     },
+    defaultPermission: {
+        type: String,
+        required: true,
+        default: "editor",
+        enum: ["viewer", "editor"],
+    },
+    exclusionList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
     ...commonProperties,
 });
 
@@ -127,6 +146,14 @@ EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
             }
         }),
     ]
+}
+
+EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.ObjectId) {
+
+    if(this.defaultPermission === "editor") return !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+    else if(this.defaultPermission === "viewer") return this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+    else return false;
+
 }
 
 EventSchema.index({
