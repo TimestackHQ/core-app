@@ -259,7 +259,7 @@ export default function EventScreen () {
 						<Text style={styles.actionButtonText}>People</Text>
 					</TouchableOpacity>
 					{event?.hasPermission ? <TouchableOpacity onPress={() => {
-							navigation.navigate("Upload", {eventId: event?._id, event:event});
+							navigation.navigate("Upload", {eventId: event?._id, event:event, placeholder: placeholder});
 							setViewMenu(false);
 						}}
 	                    style={styles.actionButton}

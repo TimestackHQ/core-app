@@ -371,7 +371,14 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 ]}
             ],
         }).populate([
-            ...standardEventPopulation,
+            {
+                path: "cover",
+                select: "publicId thumbnail snapshot"
+            },
+            {
+                path: "users",
+                select: "firstName lastName profilePictureSource username"
+            },
         ]).select("-events");
 
         if (!event) {

@@ -201,8 +201,8 @@ function CoreStackScreen() {
             const url = notification?.data.payload?.url;
             if(url) {
 
-                navigator.navigate("Invite", {
-                    url: url
+                navigator.navigate("NotificationsStack", {
+                    screen: "Notifications",
                 });
             };
 

@@ -16,10 +16,12 @@ export default function UploadViewFlatList ({eventId, pendingMedia, media, fetch
 	return (
 		<FlatList
 			style={{height: selecting ? "89%" : "100%"}}
-			data={[
+			data={pendingMedia.length === 0 ? [
+				"loader",
+				...media,
+			] : [
 				"loader",
 				...pendingMedia,
-				...media,
 			]}
 			numColumns={3}
 			renderItem={((raw) => {

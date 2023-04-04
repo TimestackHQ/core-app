@@ -21,10 +21,11 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import uuid from "react-native-uuid";
-import moment from "moment";
+import moment from "moment-timezone";
 import HTTPClient from "../httpClient";
 import {useEffect} from "react";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
+import {getTimezone} from "../utils/time";
 navigator.geolocation = require('react-native-geolocation-service');
 
 
@@ -212,8 +213,8 @@ export default function AddScreen({navigation}) {
 					confirmText={"Confirm"}
 					cancelText={"❌"}
 					theme={"dark"}
-					onConfirm={(date) => {
-						setStartDate(date);
+					onConfirm={async (date) => {
+						setStartDate(moment(date).tz(await getTimezone(), true).toDate());
 						if (endDate < startDate) {
 							setEndDate(null)
 						}
@@ -263,9 +264,9 @@ export default function AddScreen({navigation}) {
 					confirmText={"Confirm"}
 					cancelText={"❌"}
 					theme={"dark"}
-					onConfirm={(date) => {
+					onConfirm={async (date) => {
+						setEndDate(moment(date).tz(await getTimezone(), true).toDate());
 						setEndDateOpen(false)
-						setEndDate(date)
 					}}
 					onCancel={() => {
 						setEndDateOpen(false)

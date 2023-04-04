@@ -10,7 +10,7 @@ import React, {useEffect, useRef, useState} from "react";
 import HTTPClient from "../httpClient";
 import FastImage from "react-native-fast-image";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import moment from "moment/moment";
+import moment from "moment-timezone";
 import DatePicker from "react-native-date-picker";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import * as ImagePicker from "expo-image-picker";
@@ -280,7 +280,7 @@ export default function EditEvent () {
 							modal
 							mode="date"
 							open={startDateOpen}
-							date={startDate}
+							date={moment(startDate).tz("UTC").toDate()}
 							onConfirm={(date) => {
 								setStartDateOpen(false)
 								setStartDate(date)
@@ -325,7 +325,7 @@ export default function EditEvent () {
 							modal
 							mode="date"
 							open={endDateOpen}
-							date={endDate ? endDate : startDate}
+							date={endDate ? moment(endDate).tz("UTC").toDate() : moment(startDate).tz("UTC").toDate()}
 							onConfirm={(date) => {
 								setEndDateOpen(false)
 								setEndDate(date)

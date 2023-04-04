@@ -41,13 +41,17 @@ export default function Upload ({}) {
 	const selectedMedia = React.useRef([]);
 
 	const fetchMedia = (flush) => {
-		HTTPClient("/events/"+route?.params?.eventId+"/media?me=true&limit=9&skip="+media.length).then(res => {
+		HTTPClient("/events/"+route?.params?.eventId+"/media?me=true&limit=9&skip="+String(flush ? 0 : media.length)).then(res => {
 			if(flush){
 				setMedia(res.data.media)
 			}else {
 				setMedia([...media, ...res.data.media])
 			}
 		})
+			.catch((error) => {
+				console.log(error);
+				// window.location.href = "/main_ios";
+			});
 	}
 
 	useEffect(() => {
@@ -108,6 +112,12 @@ export default function Upload ({}) {
 		}
 	}, [event]);
 
+	useEffect(() => {
+		if(pendingMedia.length === 0){
+			fetchMedia(true);
+		};
+	}, [pendingMedia.length])
+
 	const selectMedia = (_id, state) => {
 		setMedia(media.map(m => {
 			if(m._id === _id) {
@@ -127,6 +137,7 @@ export default function Upload ({}) {
 	};
 
 
+
 	return (
 		<View style={styles.container} >
 
@@ -135,12 +146,11 @@ export default function Upload ({}) {
 				<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'stretch', marginTop: 10}}>
 					<View style={{flex: 3}}>
 						<Image
-							source={{uri: 'data:image/jpeg;base64,' + (route?.params.event?.buffer)}}
+							source={{uri: 'data:image/jpeg;base64,' + (route?.params?.placeholder)}}
 							style={{
 								width: 100,
 								height: 140,
 								borderRadius: 15,
-								borderWidth: event?.buffer ? 0 : 1,
 								borderStyle: "solid",
 								borderColor: "black"
 						}} />
@@ -193,7 +203,7 @@ export default function Upload ({}) {
 							}
 						}}
 					>
-						<Text
+						{pendingMedia.length === 0 ? <Text
 							style={{
 								fontFamily: 'Red Hat Display Regular',
 								fontSize: 15,
@@ -203,7 +213,42 @@ export default function Upload ({}) {
 								flex: 1
 							}}>
 							{selecting ? "Cancel" : "Select"}
-						</Text>
+						</Text> : <TouchableOpacity style={{
+								flex: 1
+							}}
+                            onPress={() => {
+								Alert.alert(
+									"Cancel Upload",
+									"Are you sure you want to cancel the upload?",
+									[
+										{
+											text: "Cancel",
+											onPress: () => console.log("Cancel Pressed"),
+											style: "cancel"
+										},
+										{ text: "OK", onPress: async () => {
+											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV25");
+											setPendingMedia([]);
+										}}
+									]
+								);
+
+                            }}
+
+
+						>
+							<Text
+								style={{
+									fontFamily: 'Red Hat Display Regular',
+									fontSize: 15,
+									fontWeight: "300",
+									marginTop: 10,
+									color: "black",
+									flex: 1
+								}}>
+								{"Cancel upload"}
+							</Text>
+						</TouchableOpacity>}
 					</TouchableOpacity>
 
 				</View>

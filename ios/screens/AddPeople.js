@@ -319,7 +319,7 @@ export default function AddPeople () {
 									fontFamily: "Red Hat Display Semi Bold",
 									color: "gray"
 								}}>
-									@{person?.username} {person?.lastName}
+									@{person?.username}
 								</Text>
 							</View>
 							<View style={{flex: 1, marginRight: 10, flexDirection: "row-reverse"}}>
@@ -361,11 +361,11 @@ export default function AddPeople () {
 											textAlign: "center",
 											color: lightStyle ? "black" : "white"
 										}}>
-											{person?.status === "user" ? person.permission : null}
+											{person?.status === "user" ? person.permission === "editor" ? "Editor" : "Viewer" : null}
 											{person?.status === "invitee" ? "Pending" : null}
 											{person?.status === "result" ? addPeople.find(user => user._id === person._id) ? "Selected" : permission === "editor" ? "Add" : "User" : null}
 										</Text>
-									</TouchableOpacity> : <View>
+									</TouchableOpacity> : <View style={{marginLeft: 1}}>
 										{selectedIds.find(id => id === person._id) ?
 											<FastImage source={require("../assets/icons/collection/check-filled.png")} style={{width: 20, height: 20}}/>
 											: <FastImage source={require("../assets/icons/collection/check.png")} style={{width: 20, height: 20}}/>}

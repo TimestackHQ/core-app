@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "moment-timezone";
 
 export const getTimezone = async () => {
 	try {
@@ -12,8 +12,8 @@ export const getTimezone = async () => {
 export function dateFormatter(startDate, endDate = null) {
 	let output = "";
 
-	const start = moment(startDate, "MMMM DD YYYY");
-	const end = endDate ? moment(endDate, "MMMM DD YYYY") : null;
+	const start = moment(startDate, "MMMM DD YYYY").tz("UTC");
+	const end = endDate ? moment(endDate, "MMMM DD YYYY").tz("UTC") : null;
 
 	output += start.format("MMMM D");
 	if (start.year() !== end?.year()) {

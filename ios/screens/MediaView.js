@@ -72,7 +72,7 @@ export default function MediaView() {
 
 		HTTPClient(`/media/view/${route.params?.mediaId}/${route.params?.eventId}`, "GET")
 			.then(async res => {
-				const timezone = getTimezone();
+				const timezone = await getTimezone();
 
 				setMedia(res.data.media);
 

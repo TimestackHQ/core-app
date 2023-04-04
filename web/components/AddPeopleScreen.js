@@ -122,21 +122,21 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 									{!search ? invitees.map((invitee, index) => {
 										const isInvitee = invitees.map(invitee => invitee?._id).includes(invitee._id);
 										return (
-											<div key={index} className={"row"} onClick={() => {
+											<div key={index} className={"d-flex p-2 bd-highlight"} style={{flexDirection: "row"}} onClick={() => {
 												if (isInvitee) {
 													setInvitees(invitees.filter(row => row._id !== invitee._id));
 												} else {
 													setInvitees([...invitees, invitee]);
 												}
 											}}>
-												<div className={"col-3"}>
+												<div style={{flex: 2, alignContent: "flex-start"}}>
 													<ProfilePicture
 														width="50px"
 														height="50px"
 														location={invitee?.profilePictureSource}
 													/>
 												</div>
-												<div className={"col-7"} style={{paddingLeft: "0px"}}>
+												<div style={{flex: 6}}>
 													<h5 style={{marginBottom: "0px", marginTop: "3px"}}><b>
 														{invitee.firstName ? invitee?.firstName : invitee?.name} {invitee.lastName ? invitee?.lastName : invitee?.name}
 
@@ -146,11 +146,12 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 														{invitee?.phoneNumber ? invitee?.phoneNumber : null}
 													</p>
 												</div>
-												<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
-													{invitee?.status === "pending" || invitee?.status === "notUser" ? <i style={{color: "orange"}} className={"fa fa-question-circle"}/> : null}
-												</div>
-												<div className={"col-1 align-items-center"} style={{paddingLeft: "0px", marginTop: "10px"}}>
-													{isInvitee ? <i className={"fa fa-circle-check"}/> : <i className={"fa fa-circle-o"}/>}
+												<div style={{flex: 3, flexDirection: "row", margin: 0, padding: 0}}>
+													{invitee?.status === "pending" || invitee?.status === "notUser" ? <i style={{color: "orange", flex: 1}} className={"fa fa-question-circle"}/> : null}
+													{isInvitee ? <i style={{flex: 1}} className={"fa fa-circle-check"}/> : <i className={"fa fa-circle-o"}/>}
+													<button style={{flex: 1, marginRight: 0, borderColor: "black", marginLeft: 5, zIndex: 1, width: 70}} className={"btn btn-light btn-sm"}>
+														Editor
+													</button>
 												</div>
 												<span style={{marginBottom: "8px"}}/>
 											</div>
@@ -168,13 +169,13 @@ export default function AddPeopleScreen ({currentInvitees, sharelink, callback})
 											}}>
 												<div className={"col-3"}>
 													<ProfilePicture
-														width="40px"
-														height="40px"
+														width="50px"
+														height="50px"
 														style={{borderRadius: "60px", marginRight: "5px"}}
 														location={invitee?.profilePictureSource}
 													/>
 												</div>
-												<div className={"col-7"} style={{paddingLeft: "0px"}}>
+												<div className={"col-7"} style={{paddingLeft: "-10px", marginLeft:"-30px"}}>
 													<h5 style={{marginBottom: "0px", marginTop: "3px"}}><b>
 														{invitee.firstName ? invitee?.firstName : invitee?.name} {invitee.lastName ? invitee?.lastName : invitee?.name}
 
