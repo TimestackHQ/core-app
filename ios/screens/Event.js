@@ -353,7 +353,7 @@ export default function EventScreen () {
 									0
 								</Text>
 								<Text style={styles.counterText} numberOfLines={1}>
-									Revists
+									Revisits
 								</Text>
 							</View>
 
