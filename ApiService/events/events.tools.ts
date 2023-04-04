@@ -1,5 +1,6 @@
 import {EventSchema} from "../../shared/models/Event";
 import {GCP} from "../../shared";
+import mongoose from "mongoose";
 
 export const getBuffer = async (event: EventSchema): Promise<String | undefined> => {
     const cover = event.cover;
@@ -19,4 +20,5 @@ export const standardEventPopulation = [{
         path: "invitees",
         select: "firstName lastName profilePictureSource username"
     }
-]
+];
+

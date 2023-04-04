@@ -3,6 +3,7 @@ import {GCP, Models} from "../../shared";
 import {isObjectIdOrHexString} from "../../shared";
 import * as _ from "lodash";
 import {getBuffer, standardEventPopulation} from "./events.tools";
+import {ObjectId} from "bson";
 
 export async function createEvent (req: Request, res: Response, next: NextFunction) {
 
@@ -75,6 +76,74 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
 
 }
 
+export async function getPeople (req: Request, res: Response, next: NextFunction) {
+    try {
+        const event = await Models.Event.findOne({
+            $or: [
+                {
+                    publicId: req.params.eventId
+                },
+                {
+                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                }
+            ],
+            users: {
+                $all: [req.user._id],
+            },
+        }).select("users invitees defaultPermission exclusionList status").populate([{
+            path: "cover",
+            select: "publicId thumbnail snapshot"
+        }, {
+            path: "users",
+            select: "username firstName lastName profilePictureSource",
+            match: {
+                _id: {
+                    $ne: req.user._id
+                }
+            }
+        }, {
+            path: "invitees",
+            select: "username firstName lastName profilePictureSource"
+        }])
+            .sort({createdAt: -1});
+
+
+        if (!event) {
+            return res.status(404).json({
+                message: "Event not found"
+            });
+        }
+
+        res.json({
+            eventStatus: event.status,
+            permission: event.hasPermission(req.user._id) ? "editor" : "viewer",
+            people: [
+                ...event.users.map((user: any) => ({
+                    _id: user._id,
+                    username: user.username,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    profilePictureSource: user.profilePictureSource,
+                    permission: event.hasPermission(user._id) ? "editor" : "viewer",
+                    status: "user",
+                })),
+                ...event.invitees.map((user: any) => ({
+                    _id: user._id,
+                    username: user.username,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    status: "invitee",
+                    profilePictureSource: user.profilePictureSource,
+                }))
+            ]
+        });
+
+
+    } catch (e) {
+        next(e);
+    }
+}
+
 export async function updateEvent (req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -95,6 +164,12 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
                 message: "Event not found"
             });
         }
+        else if(!event.hasPermission(req.user._id)){
+            return res.status(403).json({
+                message: "You don't have permission to update this event"
+            });
+        }
+
 
         event.name = req.body?.name ? req.body.name : event?.name;
         event.startsAt = req.body?.startsAt ? req.body.startsAt : event?.startsAt;
@@ -103,6 +178,7 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
         event.location = req.body?.location ? req.body.location : event?.location;
         event.locationMapsPayload = req.body?.locationMapsPayload ? req.body.locationMapsPayload : event?.locationMapsPayload;
         event.cover = cover?._id ? cover._id : event?.cover;
+        event.status = req.body?.status ? req.body.status : event?.status;
 
 
         await event.save();
@@ -126,17 +202,36 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
 export async function leaveEvent (req: Request, res: Response, next: NextFunction) {
     try {
 
-        await Models.Event.updateOne({
-            publicId: req.params.eventId,
+        const update = await Models.Event.updateOne({
+            $and: [{
+                $or: [
+                    {
+                        publicId: req.params.eventId
+                    },
+                    {
+                        _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                    }
+                ]}
+            ],
             users: {
-                $in: [req.user._id]
+                $in: [new ObjectId(req.user._id)],
+                // $size: {
+                //     $gt: 1
+                // }
             }
         }, {
             $pull: {
                 users: req.user._id,
-                invitees: req.user._id
+                invitees: req.user._id,
+                exclusionList: req.user._id
             }
         });
+
+        if (update.matchedCount === 0) {
+            return res.status(400).json({
+                message: "You can't leave this event"
+            });
+        }
 
         res.json({
             message: "Left event"
@@ -179,9 +274,6 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
                     options: {
                         limit: 6
                     }
-                }, {
-                    path: "invitees",
-                    select: "firstName lastName profilePictureSource username"
                 }])
             .select("-media");
 
@@ -290,30 +382,10 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
         const buffer = req.query?.noBuffer ? undefined: await getBuffer(event);
 
-
-        if (!event.users?.map(u => u._id.toString()).includes(req.user?._id.toString())) return res.status(200).json({
-            message: "joinRequired",
-            event: {
-                _id: event._id,
-                publicId: event.publicId,
-                name: event.name,
-                location: event.location,
-                startsAt: event.startsAt,
-                endsAt: event?.endsAt,
-                cover: event.cover?.publicId,
-                people: (await Models.User.find({
-                    _id: {
-                        $in: event.users
-                    }
-                }).select("profilePictureSource")).map((user: any) => user?.profilePictureSource),
-                buffer
-            }
-
-        })
-
         // get cover buffer from google cloud
 
         res.json({
+            message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
             event: {
                 ...event.toJSON(),
                 cover: event.cover?.publicId,
@@ -323,7 +395,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                 invitees: undefined,
                 nonUsersInvitees: undefined,
                 buffer,
-                people: event.people(req.user._id)
+                people: event.people(req.user._id),
+                hasPermission: event.hasPermission(req.user._id)
             }
         })
     } catch (e) {
@@ -353,6 +426,12 @@ export const updatePeople = async (req: any, res: any, next: any) => {
         if (!event) {
             return res.status(404).json({
                 message: "Event not found"
+            })
+        }
+
+        if(!event.hasPermission(req.user._id)) {
+            return res.status(401).json({
+                message: "You don't have permission to do this"
             })
         }
 
@@ -387,6 +466,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
             }).select("_id");
             event.users = event.users.filter((user: any) => !usersToRemove.map((user: any) => user._id.toString()).includes(user._id.toString()));
             event.invitees = event.invitees.filter((user: any) => !usersToRemove.map((user: any) => user._id.toString()).includes(user._id.toString()));
+            event.exclusionList = event.exclusionList.filter((userId: any) => event.users.includes(userId.toString()));
         }
 
         await event.save();
@@ -422,6 +502,63 @@ export const updatePeople = async (req: any, res: any, next: any) => {
 
 
     } catch (e) {
+        next(e);
+    }
+}
+
+export const updatePermissions = async (req: any, res: any, next: any) => {
+    try {
+
+        if(!req.params.userId || req.params.userId.toString() === req.user._id.toString()) {
+            return res.status(400).json({
+                message: "Missing userId"
+            })
+        }
+
+
+        const event = await Models.Event.findOne({
+            $or: [
+                {
+                    publicId: req.params.eventId
+                },
+                {
+                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                }
+            ],
+            users: {
+                $all: [req.params.userId, req.user._id],
+            },
+        }).select("users defaultPermission exclusionList");
+
+        if (!event) {
+            return res.status(404).json({
+                message: "Event not found"
+            });
+        }
+
+        console.log(event.defaultPermission, req.user._id, event.exclusionList, event.hasPermission(req.user._id))
+        if(!event.hasPermission(req.user._id)) {
+            return res.status(401).json({
+                message: "You don't have permission to do this"
+            })
+        }
+
+        await Models.Event.updateOne({
+            _id: event._id
+        },
+        event.exclusionList.includes(req.params.userId) ? {
+            $pull: {
+                exclusionList: req.params.userId
+            }
+        } : {
+            $push: {
+                exclusionList: req.params.userId
+            }
+        });
+
+        return res.sendStatus(200);
+
+    } catch(e) {
         next(e);
     }
 }

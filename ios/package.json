@@ -12,7 +12,7 @@
     "eas:ios:production": "eas build --platform ios -e production --auto-submit"
   },
   "dependencies": {
-    "@config-plugins/ffmpeg-kit-react-native": "^4.0.0",
+    "@config-plugins/ffmpeg-kit-react-native": "^5.0.0",
     "@expo/ngrok": "^4.1.0",
     "@openspacelabs/react-native-zoomable-view": "^2.1.1",
     "@react-native-async-storage/async-storage": "1.17.11",
@@ -62,7 +62,7 @@
     "moment-timezone": "^0.5.41",
     "npx": "^10.2.2",
     "react": "18.2.0",
-    "react-native": "0.71.3",
+    "react-native": "0.71.4",
     "react-native-camera-roll": "^0.0.29",
     "react-native-date-picker": "^4.2.9",
     "react-native-fast-image": "^8.6.3",

@@ -26,7 +26,8 @@ export const updateEventValidator = (body: unknown): Joi.ValidationResult => {
         about: Joi.string(),
         cover: Joi.string(),
         invitees: Joi.array().items(isObjectIdJoiValidator),
-        locationMapsPayload: Joi.any()
+        locationMapsPayload: Joi.any(),
+        status: Joi.string().valid("public", "private"),
     });
 
     return schema.validate(body);
@@ -36,6 +37,14 @@ export const updatePeopleValidator = (body: unknown): Joi.ValidationResult => {
     const schema = Joi.object({
         add: Joi.array().items(isObjectIdJoiValidator).required(),
         remove: Joi.array().items(isObjectIdJoiValidator).required(),
+    });
+
+    return schema.validate(body);
+}
+
+export const updatePermissionValidator = (body: unknown): Joi.ValidationResult => {
+    const schema = Joi.object({
+        permission: Joi.string().valid("editor", "viewer").required()
     });
 
     return schema.validate(body);

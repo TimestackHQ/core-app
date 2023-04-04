@@ -121,7 +121,7 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 
         return res.json({
             media: {
-                _id: media._id,
+                _id: media?._id,
                 publicId: media.publicId,
                 fileName: media.storageLocation,
                 storageLocation: await GCP.signedUrl(media?.storageLocation),
@@ -129,12 +129,12 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
                 thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                 timestamp: media.metadata.timestamp,
                 type: media.type.split("/")[0],
-                user: {
+                user: media.user ? {
                     _id: media.user._id,
                     firstName: media.user?.firstName,
                     lastName: media.user?.lastName,
                     profilePictureSource: media.user?.profilePictureSource
-                }
+                } : {}
             }
         });
     } catch (e) {
@@ -163,6 +163,11 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         if(!event) {
             return res.sendStatus(404);
+        }
+        else if(!event.hasPermission(req.user._id)){
+            return res.status(403).json({
+                message: "You don't have permission to upload to this event"
+            });
         }
 
         const fileId = uuid();
@@ -376,12 +381,21 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
 export async function deleteMemories (req: Request, res: Response, next: NextFunction) {
     try {
 
-        if(!(await Models.Event.countDocuments({
+        const event = await Models.Event.findOne({
             _id: req.params.eventId,
             users: {
                 $in: [req.user._id]
             }
-        }))) return res.sendStatus(404);
+        });
+
+        if(!event) {
+            return res.sendStatus(404);
+        }
+        else if(!event.hasPermission(req.user._id)){
+            return res.status(403).json({
+                message: "You don't have permission to delete media from this event"
+            });
+        }
 
         const media = await Models.Media.find({
             _id: {

@@ -115,6 +115,72 @@ export default function EventScreen () {
 				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
 				getGallery();
 
+				navigation.setOptions({
+					headerShown: true,
+					headerBackTitleStyle: {
+						fontSize: 200,
+					},
+					headerRight: () => (
+
+						<HeaderButtons>
+							<TouchableOpacity onPress={async () => {
+								await Share.share({
+									url: frontendUrl + "/event/" + route.params.eventId+"/invite",
+									title: "Timestack"
+								});}
+							}>
+								<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
+							</TouchableOpacity>
+							<OverflowMenu
+								style={{ marginHorizontal: 10, marginRight: -10 }}
+								OverflowIcon={({ color }) =><View color="#000" style={{color: "black"}} onPress={() => {
+								}} title="Update count">
+									<TouchableOpacity>
+										<Image source={require("../assets/icons/collection/three-dots.png")} style={{width: 35, height: 35}} />
+									</TouchableOpacity>
+								</View>}
+							>
+								{response.data?.event?.hasPermission ? <HiddenItem style={{color: "red"}} title="Edit" onPress={() => navigation.navigate("EditEvent", {
+									eventId: route.params.eventId,
+									eventName: route.params.eventName
+								})
+								} /> : null}
+								<HiddenItem style={{color: "red"}} title="Leave" onPress={() => {
+									Alert.alert("Leave event", "Are you sure you want to leave this event?", [
+										{
+											text: "Cancel",
+											onPress: () => {},
+											style: "cancel"
+										},
+										{
+											text: "Leave",
+											onPress: () => {
+												HTTPClient("/events/"+route.params.eventId+"/leave", "POST")
+													.then((response) => {
+														navigation.navigate("Main", {
+															updatedId: Math.random().toString(36).substring(7)
+														});
+													})
+													.catch((error) => {
+														Alert.alert("Error", "Could not leave event", [
+															{
+																text: "OK",
+
+															}
+														])
+														// window.location.href = "/main_ios";
+													});
+											}
+										}
+									])
+								}} />
+								<ReusableHiddenItem onPress={() => alert('hidden2')} />
+							</OverflowMenu>
+						</HeaderButtons>
+
+					),
+				});
+
 				if(!uploadUsed) {
 					if(route.params?.openUpload) {
 						setTimeout(() => {
@@ -145,71 +211,7 @@ export default function EventScreen () {
 
 
 
-		navigation.setOptions({
-			headerShown: true,
-			headerBackTitleStyle: {
-				fontSize: 200,
-			},
-			headerRight: () => (
 
-				<HeaderButtons>
-					<TouchableOpacity onPress={async () => {
-						await Share.share({
-							url: frontendUrl + "/event/" + route.params.eventId+"/invite",
-							title: "Timestack"
-						});}
-					}>
-						<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
-					</TouchableOpacity>
-					<OverflowMenu
-						style={{ marginHorizontal: 10, marginRight: -10 }}
-						OverflowIcon={({ color }) =><View color="#000" style={{color: "black"}} onPress={() => {
-						}} title="Update count">
-							<TouchableOpacity>
-								<Image source={require("../assets/icons/collection/three-dots.png")} style={{width: 35, height: 35}} />
-							</TouchableOpacity>
-						</View>}
-					>
-						<HiddenItem style={{color: "red"}} title="Edit" onPress={() => navigation.navigate("EditEvent", {
-							eventId: route.params.eventId,
-							eventName: route.params.eventName
-						})
-						} />
-						<HiddenItem style={{color: "red"}} title="Leave" onPress={() => {
-							Alert.alert("Leave event", "Are you sure you want to leave this event?", [
-								{
-									text: "Cancel",
-									onPress: () => {},
-									style: "cancel"
-								},
-								{
-									text: "Leave",
-									onPress: () => {
-										HTTPClient("/events/"+route.params.eventId+"/leave", "POST")
-											.then((response) => {
-												navigation.navigate("Main", {
-													updatedId: Math.random().toString(36).substring(7)
-												});
-											})
-											.catch((error) => {
-												Alert.alert("Error", "Could not leave event", [
-													{
-														text: "OK",
-
-													}
-												])
-												// window.location.href = "/main_ios";
-											});
-									}
-								}
-							])
-						}} />
-						<ReusableHiddenItem onPress={() => alert('hidden2')} />
-					</OverflowMenu>
-				</HeaderButtons>
-
-			),
-		});
 
 
 	};
@@ -256,14 +258,14 @@ export default function EventScreen () {
 					>
 						<Text style={styles.actionButtonText}>People</Text>
 					</TouchableOpacity>
-					<TouchableOpacity onPress={() => {
+					{event?.hasPermission ? <TouchableOpacity onPress={() => {
 							navigation.navigate("Upload", {eventId: event?._id, event:event});
 							setViewMenu(false);
 						}}
 	                    style={styles.actionButton}
 					>
 						<Text style={styles.actionButtonText}>Upload</Text>
-					</TouchableOpacity>
+					</TouchableOpacity> : null}
 				</View>
 			) : null}
 		</View>

@@ -1,6 +1,11 @@
 import {Router} from "express";
 import {HTTPValidator, authCheck} from "../../shared";
-import {createEventValidator, updateEventValidator, updatePeopleValidator} from "./events.validator";
+import {
+    createEventValidator,
+    updateEventValidator,
+    updatePeopleValidator,
+    updatePermissionValidator
+} from "./events.validator";
 import {
     byMe,
     createEvent,
@@ -10,7 +15,7 @@ import {
     getEvent,
     joinEvent,
     mediaList,
-    updatePeople, leaveEvent
+    updatePeople, leaveEvent, updatePermissions, getPeople
 } from "./events.controller";
 
 const router: Router = Router()
@@ -22,7 +27,9 @@ router.put("/:eventId", authCheck, HTTPValidator(updateEventValidator), updateEv
 router.post("/:eventId/leave", authCheck, leaveEvent);
 router.get("/:eventId/media", authCheck, mediaList);
 router.post("/", authCheck, HTTPValidator(createEventValidator), createEvent);
+router.get("/:eventId/people", authCheck, getPeople);
 router.put("/:eventId/people", authCheck, HTTPValidator(updatePeopleValidator), updatePeople);
+router.put("/:eventId/people/:userId/permission", authCheck, HTTPValidator(updatePermissionValidator), updatePermissions);
 router.post("/:eventId/join", authCheck, joinEvent);
 router.get("/:eventId/media/byme", authCheck, byMe);
 
