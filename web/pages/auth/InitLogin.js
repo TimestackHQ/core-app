@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import FadeIn from "react-fade-in";
 import {icons} from "../../components/ios";
+import * as PhoneNumberLib from 'libphonenumber-js'
 
 export default function InitLogin({
     phoneNumber,
@@ -38,7 +39,13 @@ export default function InitLogin({
 			}}
 			onSubmit={e => {
 				e.preventDefault();
-				initLogin()
+				const formattedPhoneNumber = PhoneNumberLib.parsePhoneNumber(phoneNumber, 'CA');
+				if (formattedPhoneNumber.isValid()) {
+					setPhoneNumber(formattedPhoneNumber.formatInternational());
+					initLogin();
+				} else {
+					alert("Please enter a valid phone number.")
+				}
 			}
 		}>
 				<div
@@ -73,11 +80,10 @@ export default function InitLogin({
 
 					<input
 						ref={inputRef}
-						min="1" max="9999999999"
 						required={true}
 						className={"sign-up-phone-number"}
 						autoFocus={true}
-						type="tel"
+						type="text"
 						style={{
 							padding: 0, margin: 0
 
@@ -86,12 +92,7 @@ export default function InitLogin({
 						name={"phoneNumber"}
 						value={phoneNumber}
 						onChange={(e) => {
-							if(e.target.value[0] === "1") {
-								setPhoneNumber(e.target.value.substring(1, e.target.value.length))
-							}
-							else {
-								setPhoneNumber(e.target.value);
-							}
+							setPhoneNumber(new PhoneNumberLib.AsYouType().input(e.target.value))
 						}}
 						placeholder="Your number"
 					/>
@@ -112,7 +113,6 @@ export default function InitLogin({
 
 				<button
 					type={"submit"}
-					disabled={phoneNumber?.length !== 10}
 					style={{
 						background: "transparent",
 						borderWidth: 0,

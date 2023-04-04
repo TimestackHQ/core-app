@@ -2,8 +2,7 @@ import moment from "moment-timezone";
 
 export const getTimezone = async () => {
 	try {
-		const timezone = await Intl.DateTimeFormat().resolvedOptions().timeZone;
-		return timezone;
+		return Intl.DateTimeFormat().resolvedOptions().timeZone;
 	} catch (error) {
 		console.log('Error getting timezone:', error);
 	}
