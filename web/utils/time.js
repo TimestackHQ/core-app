@@ -1,10 +1,10 @@
-import moment from "moment";
+import moment from "moment-timezone";
 
 export function dateFormatter(startDate, endDate = null) {
 	let output = "";
 
-	const start = moment(startDate, "MMMM DD YYYY");
-	const end = endDate ? moment(endDate, "MMMM DD YYYY") : null;
+	const start = moment(startDate, "MMMM DD YYYY").tz("UTC");
+	const end = endDate ? moment(endDate, "MMMM DD YYYY").tz("UTC") : null;
 
 	// Example 1: Single date
 	output += start.format("MMMM D");
