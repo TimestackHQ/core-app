@@ -110,7 +110,7 @@ function ErrorScreen() {
 export default function App() {
 
     useEffect( () => {
-        const bundleVersion = "0.22.5";
+        const bundleVersion = "0.22.6";
         axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
             if(_res.data.bundleVersion !== bundleVersion) {
                 await Updates.fetchUpdateAsync();
