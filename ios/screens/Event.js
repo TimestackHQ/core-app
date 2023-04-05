@@ -458,6 +458,7 @@ export default function EventScreen () {
 						eventId: event?._id,
 						content: gallery,
 						currentIndex: raw.index,
+						hasPermission: event?.hasPermission
 					})}>
 						<FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/>
 

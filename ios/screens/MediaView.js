@@ -22,13 +22,13 @@ import Video from "react-native-video";
 import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
 import * as MediaLibrary from "expo-media-library";
-import {HeaderButtons} from "react-navigation-header-buttons";
+import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
 import * as React from "react";
 
 const { width } = Dimensions.get('window');
 
 
-function Headers ({media}) {
+function Headers ({media, hasPermission, deleteMedia}) {
 
 	const [sharing, setSharing] = useState(false);
 	return <HeaderButtons>
@@ -54,6 +54,27 @@ function Headers ({media}) {
 
 			<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
 		</TouchableOpacity>
+		{hasPermission ? <OverflowMenu
+			style={{ marginHorizontal: 10, marginRight: -10 }}
+			OverflowIcon={({ color }) =><View color="#000" style={{color: "black"}} onPress={() => {
+			}} title="Update count">
+				<TouchableOpacity>
+					<Image source={require("../assets/icons/collection/three-dots.png")} style={{width: 35, height: 35}} />
+				</TouchableOpacity>
+			</View>}
+		>
+			 <HiddenItem style={{color: "red"}} title="Delete" onPress={() => {
+				 Alert.alert("Delete", "Are you sure you want to delete this item?", [
+					 {
+						 text: "Cancel",
+						 onPress: () => console.log("Cancel Pressed"),
+						 style: "cancel"
+					 },
+					 { text: "Yes", onPress: () => deleteMedia(media?._id) }
+
+                 ]);
+			 }}/>
+		</OverflowMenu> : null}
 	</HeaderButtons>
 }
 
@@ -65,6 +86,7 @@ export default function MediaView() {
 	const imageUrl = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=2726&h=2047&dpr=1";
 	const [content, setContent] = useState(route.params?.content);
 	const [media, setMedia] = useState(null);
+	const [hasPermission, setHasPermission] = useState(false);
 
 	const [downloading, setDownloading] = useState(false);
 	const [sharing, setSharing] = useState(false);
@@ -78,7 +100,21 @@ export default function MediaView() {
 		HTTPClient(`/events/${route.params.eventId}/media?skip=${content.length}`, "GET")
 			.then(res => {
 				setContent([...content, ...res.data.media]);
+
 			});
+	}
+
+	const deleteMedia = (id) => {
+		HTTPClient("/media/"+route.params.eventId+"/delete", "POST", {ids: [id]}).then(() => {
+			if(content.length === 1) {
+				navigator.goBack();
+				return;
+			}
+			setContent(content.filter((item) => item._id !== id));
+		}).catch(err => {
+			console.log(err.response);
+			alert("Error deleting. Please try again.")
+		})
 	}
 
 	const handleSwipe = (direction) => {
@@ -96,6 +132,7 @@ export default function MediaView() {
 
 	useEffect(() => {
 
+		setHasPermission(Boolean(route.params?.hasPermission));
 		mediaFetch(route.params?.mediaId);
 
 		console.log("MediaView: ", route.params);
@@ -135,7 +172,7 @@ export default function MediaView() {
 						</Text>
 					</View>,
 
-					headerRight: () => <Headers media={res.data.media}/>
+					headerRight: () => <Headers media={res.data.media} deleteMedia={deleteMedia} hasPermission={route.params?.hasPermission}/>
 
 				});
 			})
@@ -151,7 +188,7 @@ export default function MediaView() {
 				])
 			});
 
-	}, [currentIndex]);
+	}, [currentIndex, content]);
 
 	return (
 		<View style={{backgroundColor: "white", flex: 1, flexDirection: "column"}}>

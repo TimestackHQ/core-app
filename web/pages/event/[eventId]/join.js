@@ -94,14 +94,14 @@ export default function EventIOS ({}) {
 									<div className={"row justify-content-center"}>
 										<div className={"col-12  text-center"} style={{marginTop: "8vh", color: "white"}}>
 											<br/>
-											<img className={"white-circle-shadow"} src={"/images/achraf.jpeg"} style={{
-												width: "30px",
-												borderRadius: "100px",
-												borderColor: "white",
-												borderWidth: "1px",
-												borderStyle: "solid",
-												marginRight: "10px",
-											}} /> invites you to
+											{/*<img className={"white-circle-shadow"} src={"/images/achraf.jpeg"} style={{*/}
+											{/*	width: "30px",*/}
+											{/*	borderRadius: "100px",*/}
+											{/*	borderColor: "white",*/}
+											{/*	borderWidth: "1px",*/}
+											{/*	borderStyle: "solid",*/}
+											{/*	marginRight: "10px",*/}
+											{/*}} /> invites you to*/}
 										</div>
 
 										<div className={"col-12 text-center"}>
@@ -122,30 +122,10 @@ export default function EventIOS ({}) {
 												<br/>{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}
 											</h6>
 										</div>
-										<div className={"col-12 text-center"}>
+										<div className={"col-12 text-center"} style={{width: "100%"}}>
 											<br/>
 											{event.people.map((user, i) => {
-												return i === 5 && event?.peopleCount > 6 ? <div key={i} style={{}}>
-													<div style={{
-														backgroundColor: "black",
-														width: "25px",
-														height: "25px",
-														borderRadius: "30px",
-
-													}}>
-													<span style={{
-														zIndex: 1,
-														position: "absolute",
-														marginLeft: event.peopleCount-6 < 10 ? "8px" : "8px",
-														marginTop: "4px",
-														height: "25px", width: "25px",
-														borderRadius: "30px",
-													}}>
-														<p style={{color: "#ffffff", fontSize: 12}}>{event.peopleCount-6}</p>
-													</span>
-														<ProfilePicture style={{marginRight: "5px", opacity: 0.6, marginBottom: 2}} key={i} width="30px" height={"30px"} location={user?.profilePictureSource}/>
-													</div>
-												</div> : <ProfilePicture  style={{marginRight: "5px",marginBottom: 2}} key={i} width="30px" height={"30px"} location={user?.profilePictureSource}/>
+												return <ProfilePicture dark={true} style={{marginRight: "5px",marginBottom: 2}} key={i} width="30px" height={"30px"} location={user?.profilePictureSource}/>
 
 											})}
 										</div>
