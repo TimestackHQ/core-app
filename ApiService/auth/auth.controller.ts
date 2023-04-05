@@ -139,8 +139,6 @@ export async function register (req: Request, res: Response, next: NextFunction)
         if(
             user.firstName &&
             user.lastName &&
-            user.birthDate &&
-            user.email &&
             user.username
         ) {
             user.isConfirmed = true;
