@@ -106,7 +106,7 @@ export default function MediaView() {
 
 	const deleteMedia = (id) => {
 		HTTPClient("/media/"+route.params.eventId+"/delete", "POST", {ids: [id]}).then(() => {
-			if(content.length === 1) {
+			if(content.length === 1 || currentIndex === content.length - 1) {
 				navigator.goBack();
 				return;
 			}
