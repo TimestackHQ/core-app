@@ -4,6 +4,7 @@
   "main": "index.ts",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.306.0",
     "@google-cloud/storage": "^6.9.1",
     "@sendgrid/mail": "^7.7.0",
     "@sentry/core": "^7.20.0",

@@ -1,4 +1,6 @@
-import "newrelic";
+if(process.env.NODE_ENV !== "development") {
+    require("newrelic");
+}
 import {config, Logger, Models} from "../shared";
 import * as express from "express";
 import * as cors from "cors";

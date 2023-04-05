@@ -33,7 +33,6 @@ export async function get (req: Request, res: Response, next: NextFunction) {
 
 
         res.status(200).json((await Promise.all(notifications.map(async notification => {
-            console.log(JSON.stringify(notification?.data?.payload?.userId))
 
             return {
                 ...notification.toJSON(),
@@ -82,8 +81,6 @@ export async function markAsRead (req: Request, res: Response, next: NextFunctio
                 $in: notificationIds
             }
         }
-
-        console.log(query)
 
         await Models.Notification.updateMany(query, {
             $set: {

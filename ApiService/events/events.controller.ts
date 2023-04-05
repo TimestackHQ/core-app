@@ -70,7 +70,6 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
         );
 
     } catch (e) {
-        console.log(e)
         next(e);
     }
 
@@ -193,7 +192,6 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
         });
 
     } catch (e) {
-        console.log(e)
         next(e);
     }
 
@@ -551,7 +549,6 @@ export const updatePermissions = async (req: any, res: any, next: any) => {
             });
         }
 
-        console.log(event.defaultPermission, req.user._id, event.exclusionList, event.hasPermission(req.user._id))
         if(!event.hasPermission(req.user._id)) {
             return res.status(401).json({
                 message: "You don't have permission to do this"
@@ -699,7 +696,6 @@ export async function byMe (req: Request, res: Response, next: NextFunction) {
         return res.json(media);
 
     } catch(err) {
-        console.log(err);
         next(err);
     }
 }

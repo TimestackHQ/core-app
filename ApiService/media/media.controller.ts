@@ -58,7 +58,6 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
 
     } catch (e) {
-        console.log("OUP");
         next(e);
     }
 
@@ -173,8 +172,6 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
         const fileId = uuid();
 
-        console.log(req.files)
-
         // @ts-ignore
         const file = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
         const thumbnail = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
@@ -208,9 +205,6 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             event: event._id
         }
 
-        console.log(
-            JSON.parse(req.body.metadata)
-        );
 
         const media = new Models.Media(body);
 
@@ -232,105 +226,6 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
         await media.save();
 
     } catch (e) {
-        // const file: Express.Multer.File | undefined = req.file;
-        // const fileId = uuid();
-        //
-        // let thumbnail: any;
-        // let snapshot: any;
-        // let metadata: any = JSON.parse(req.body?.metadata);
-        //
-        // if(file?.mimetype.split("/")[0] === "image") {
-        //
-        //     const thumbnailBuffer = await sharp(<Buffer>file?.buffer)
-        //         .resize(400)
-        //         .jpeg()
-        //         .toBuffer();
-        //
-        //     Logger("Generating thumbnail for image")
-        //     const publicId = fileId+".thumb."+mime.extension(file.mimetype);
-        //     Logger("Uploading thumbnail to GCP")
-        //     await GCP.upload(publicId, <Buffer>thumbnailBuffer);
-        //     thumbnail = publicId
-        // }
-        //
-        // if(file?.mimetype.split("/")[0] === "video") {
-        //     Logger("Generating thumbnail for video")
-        //     const thumbnailLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 31, 20, 10);
-        //     const publicId = fileId+".thumb.mp4";
-        //     await GCP.upload(publicId, <Buffer>fs.readFileSync(thumbnailLocation));
-        //     thumbnail = publicId;
-        //     const snapshotPublicId = fileId+".snapshot.jpg";
-        //     await GCP.upload(snapshotPublicId, <Buffer>fs.readFileSync("/tmp/"+snapshotPublicId));
-        //     snapshot = snapshotPublicId;
-        // }
-        //
-        // let timestamp = undefined;
-        // if(metadata?.DateTimeOriginal) {
-        //     const date =
-        //         metadata?.DateTimeOriginal.split(" ")[0].replace(":", "-").replace(":", "-")
-        //         +"T"
-        //         +metadata?.DateTimeOriginal.split(" ")[1]
-        //         +"Z"
-        //
-        //     console.log(date)
-        //     timestamp = moment(date).toDate();
-        // }
-        // if(metadata?.format?.tags?.["com.apple.quicktime.creationdate"]) {
-        //     console.log(metadata?.format?.tags?.["com.apple.quicktime.creationdate"])
-        //     timestamp = moment(metadata?.format?.tags?.com?.apple?.quicktime?.creationdate).toISOString();
-        // }
-        // else if(metadata?.format?.tags?.creation_time) {
-        //     timestamp = moment(metadata?.format?.tags?.creation_time).toDate();
-        // }
-        //
-        // const media = new Models.Media({
-        //     publicId: fileId+"."+(file?.mimetype.split("/")[0] === "video" ? "mp4" : "jpg"),
-        //     // @ts-ignore
-        //     original: req.file.filename,
-        //     // @ts-ignore
-        //     storageLocation: fileId+".thumb."+mime.extension(String(file.mimetype)),
-        //     snapshot,
-        //     // @ts-ignore
-        //     type: req.file.mimetype,
-        //     group: "event",
-        //     user: req.user._id,
-        //     thumbnail,
-        //     metadata: JSON.parse(req.body.metadata),
-        //     timestamp,
-        //     event: event._id
-        // });
-        //
-        // await media.save();
-        //
-        // event.media.push(media._id);
-        // await event.save();
-        //
-        // res.status(202).json({
-        //     message: "Media queued for upload",
-        //     media: {
-        //         publicId: media.publicId,
-        //     }
-        // });
-        //
-        // if(file?.mimetype.split("/")[0] === "video") {
-        //     Logger("Uploading media to GCP")
-        //     const storageLocation = await Compress.compressVideo(fileId, <Buffer>file?.buffer, 21, 30);
-        //     await GCP.upload(fileId+".mp4", <Buffer>fs.readFileSync(storageLocation));
-        //     media.storageLocation = fileId+".mp4";
-        //     media.publicId = media.storageLocation
-        // }
-        // else if(file?.mimetype.split("/")[0] === "image") {
-        //     Logger("Uploading media to GCP")
-        //     const storageLocation = await Compress.compressImage(fileId, <Buffer>file?.buffer, 21);
-        //     await GCP.upload(fileId+".jpg", <Buffer>fs.readFileSync(storageLocation));
-        //     media.storageLocation = fileId+".jpg";
-        //     media.publicId = media.storageLocation
-        // }
-        //
-        // Logger("Completed")
-        // await media.save();
-
-
         next(e);
     }
 
@@ -374,7 +269,6 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
         });
 
     } catch(err) {
-        console.log(err);
         next(err);
     }
 }
@@ -402,10 +296,8 @@ export async function deleteMemories (req: Request, res: Response, next: NextFun
             _id: {
                 $in: req.body.ids
             },
-            user: req.user._id,
+            event: event._id,
         });
-
-        console.log(media);
 
         await Models.Event.updateOne({
             _id: req.params.eventId,

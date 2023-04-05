@@ -81,18 +81,19 @@ export default function EventScreen () {
 
 	const refresh = () => {
 		fetchEvent(true);
-		setGallery([]);
-		getGallery();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
 	}
 
-	const getGallery = () => HTTPClient(`/events/${route.params.eventId}/media?skip=${gallery.length}`, "GET")
-		.then(res => {
-			setGallery([...gallery, ...res.data.media]);
-			if (res.data.media.length === 0) setMoreToLoad(false);
-		});
+	const getGallery = (flush) => {
+		setGallery(flush ? [] : gallery)
+		HTTPClient(`/events/${route.params.eventId}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
+			.then(res => {
+				setGallery(flush ? [...res.data.media] : [...gallery, ...res.data.media]);
+				if (res.data.media.length === 0) setMoreToLoad(false);
+			});
+	}
 
 	const fetchEvent = () => {
 
@@ -113,7 +114,7 @@ export default function EventScreen () {
 				setEvent(response.data.event);
 				setLoaded(true);
 				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
-				getGallery();
+				getGallery(true);
 
 				navigation.setOptions({
 					headerShown: true,
