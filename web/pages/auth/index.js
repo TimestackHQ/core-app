@@ -155,21 +155,21 @@ export default function Login() {
 							/>
 						</div> : null}
 
+						{/*{step === 6 ? <div>*/}
+						{/*	<Birthdate*/}
+						{/*		setStep={setStep}*/}
+						{/*		setUserConfirmed={setUserConfirmed}*/}
+						{/*	/>*/}
+						{/*</div> : null}*/}
+
+						{/*{step === 7 ? <div>*/}
+						{/*	<Email*/}
+						{/*		setStep={setStep}*/}
+						{/*		setUserConfirmed={setUserConfirmed}*/}
+						{/*	/>*/}
+						{/*</div> : null}*/}
+
 						{step === 6 ? <div>
-							<Birthdate
-								setStep={setStep}
-								setUserConfirmed={setUserConfirmed}
-							/>
-						</div> : null}
-
-						{step === 7 ? <div>
-							<Email
-								setStep={setStep}
-								setUserConfirmed={setUserConfirmed}
-							/>
-						</div> : null}
-
-						{step === 8 ? <div>
 							<Adventure
 								completeAuth={completeAuth}
 								setStep={setStep}

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import {useEffect, useState} from "react";
 import Share from "react-native-share";
-import {useNavigation, useRoute} from "@react-navigation/native";
+import {useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
 import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
 import ReactNativeZoomableView from '@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView';
@@ -82,6 +82,7 @@ export default function MediaView() {
 
 	const navigator = useNavigation();
 	const route = useRoute();
+	const isFocused = useIsFocused();
 
 	const imageUrl = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=2726&h=2047&dpr=1";
 	const [content, setContent] = useState(route.params?.content);
@@ -131,14 +132,16 @@ export default function MediaView() {
 	}
 
 	useEffect(() => {
+		if(isFocused) {
+			setHasPermission(Boolean(route.params?.hasPermission));
+			mediaFetch(route.params?.mediaId);
 
-		setHasPermission(Boolean(route.params?.hasPermission));
-		mediaFetch(route.params?.mediaId);
-
-		console.log("MediaView: ", route.params);
+			console.log("MediaView: ", route.params);
+		}
 
 
-	}, []);
+
+	}, [useIsFocused()]);
 
 	useEffect(() => {
 		const id = content[currentIndex]?._id;

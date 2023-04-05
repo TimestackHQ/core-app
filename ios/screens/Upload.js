@@ -114,7 +114,9 @@ export default function Upload ({}) {
 
 	useEffect(() => {
 		if(pendingMedia.length === 0){
-			fetchMedia(true);
+			setTimeout(() => {
+				fetchMedia(true);
+			}, 1000);
 		};
 	}, [pendingMedia.length])
 
