@@ -19,6 +19,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
         const fileId = uuid();
 
         // @ts-ignore
+        const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
         const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
         const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
 
@@ -32,7 +33,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
         const media = new Models.Media({
             publicId: fileId,
             // @ts-ignore
-            storageLocation: thumbnail.originalname,
+            storageLocation: mediaFile.originalname,
             thumbnail: thumbnail.originalname,
             snapshot: snapshot ? snapshot.originalname : undefined,
             // @ts-ignore

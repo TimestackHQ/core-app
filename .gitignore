@@ -1,11 +1,15 @@
 .env
-node_modules
 .vercel
-ApiService/.dist
 .idea
+.aws
+.github
+
+node_modules
+ApiService/.dist
 mylab
 
-# ios app related
 Timestack.app
 ios/ios
 build*
+
+*.log
