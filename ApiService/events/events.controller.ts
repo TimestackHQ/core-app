@@ -377,7 +377,10 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             },
             {
                 path: "users",
-                select: "firstName lastName profilePictureSource username"
+                select: "firstName lastName profilePictureSource username",
+                options: {
+                    limit: 7
+                }
             },
         ]).select("-events");
 
@@ -391,12 +394,17 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
 
         // get cover buffer from google cloud
 
+        const peopleCount = await Models.Event.findById(event._id).populate([{
+            path: "users",
+            select: "_id",
+        }])
+
         res.json({
             message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
             event: {
                 ...event.toJSON(),
                 cover: event.cover?.publicId,
-                peopleCount : event.users.length + event.invitees.length + event.nonUsersInvitees.length,
+                peopleCount: peopleCount?.users?.length,
                 mediaCount: event.media.length,
                 users: undefined,
                 invitees: undefined,
@@ -638,7 +646,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             media: 1,
         }).populate({
             path: "media",
-            select: "_id publicId snapshot thumbnail createdAt user type",
+            select: "_id publicId storageLocation snapshot thumbnail createdAt user type",
             match: {
                 user: req.query.me ? req.user._id : {
                     $exists: true
@@ -663,6 +671,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 return {
                     _id: media._id,
                     publicId: media.publicId,
+                    storageLocation: media.storageLocation ? await GCP.signedUrl(media.storageLocation) : undefined,
                     snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
                     thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                     createdAt: media.createdAt,

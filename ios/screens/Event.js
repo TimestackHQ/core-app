@@ -363,7 +363,7 @@ export default function EventScreen () {
 							marginLeft: 10, marginVertical: 15, marginTop: 10}}>
 
 							{event?.people ? [...event?.people].map((user, i) => {
-								if (i === 5 && event?.peopleCount > 7) {
+								if (i === 6 && event?.peopleCount > 7) {
 									return (
 										<View style={{marginRight: 5}}>
 											<View style={{
@@ -445,7 +445,7 @@ export default function EventScreen () {
 				...gallery,
 			]}
 			numColumns={3}
-			renderItem={raw => {
+			renderItem={(raw) => {
 				const media = raw.item;
 
 				return <View style={{width: '33%', // 30% to account for space between items
@@ -455,7 +455,9 @@ export default function EventScreen () {
 					margin: 0.5}}>
 					<TouchableWithoutFeedback onPress={() => navigation.navigate("MediaView", {
 						mediaId: media._id,
-						eventId: event?._id
+						eventId: event?._id,
+						content: gallery,
+						currentIndex: raw.index,
 					})}>
 						<FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/>
 

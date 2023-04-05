@@ -199,20 +199,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         }
                     }
 
-                    if(message.request === "allContacts"){
-                        console.log("Providing all contacts")
-                        const { status } = await Contacts.requestPermissionsAsync();
-                        if (status === 'granted') {
-
-                            const { data } = await Contacts.getContactsAsync({
-                            });
-                            webviewRef.current.postMessage(JSON.stringify({
-                                response: "allContacts",
-                                data
-                            }));
-
-                        }
-                    }
 
                     if(message.request === "session") {
 
@@ -223,13 +209,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         updatePushToken();
                     }
 
-                    if(message.request === "shareLink") {
-                        console.log("Sharing link", message.link);
-                        await Share.share({
-                            url: message.link,
-                            title: message.link
-                        });
-                    }
 
                     if(message.request === "openLink") {
                         console.log("Opening link", message.link);
@@ -241,16 +220,6 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                         await Linking.openURL(message.link)
                     }
 
-                    if(message.request === "pushNotifications") {
-                        let { status } = await askAsync(Permissions.NOTIFICATIONS);
-
-                        if (status !== PermissionStatus.GRANTED) {
-                            return;
-                        }
-
-                        let token = await Notifications.getExpoPushTokenAsync();
-                        console.log(token);
-                    }
 
                     if(message.request === "eventButtonAction") {
                         await AsyncStorage.setItem("@eventButtonAction", message.eventId);
