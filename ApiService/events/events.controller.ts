@@ -651,7 +651,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
             },
             options: {
                 sort: {
-                    timestamp: 1
+                    timestamp: -1
                 },
                 limit: req.query?.limit ? Number(req.query.limit) : 30,
                 skip: req.query?.skip ? Number(req.query.skip) : 0
@@ -675,7 +675,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     type: media.type.split("/")[0],
                     user: media.user
                 }
-            }))).sort((a: any, b: any) => b.createdAt - a.createdAt)
+            })))
         });
 
 
