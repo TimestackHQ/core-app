@@ -8,20 +8,28 @@ import Constants from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import moment from "moment";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
+import {Platform} from "react-native";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
 export default async function uploadWorker () {
 	try {
 
-			await ExpoJobQueue.addWorker("mediaQueueV25", async (media) => {
+			await ExpoJobQueue.addWorker("mediaQueueV30", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 					console.log("------> ", media.uri, FileSystem.documentDirectory + media.filename);
 
-					// if(media.extension === "heic") {
+					if(Platform.OS === "ios") {
 						const dev = await CameraRoll.iosGetImageDataById(media.uri);
 						media.uri = dev.node.image.filepath;
+					} else {
+						await FileSystem.copyAsync({
+							from: media.uri,
+							to: FileSystem.documentDirectory + media.filename
+						});
+						media.uri = FileSystem.documentDirectory + media.filename;
+					}
 					// } else {
 					// 	await FileSystem.copyAsync({
 					// 		from: media.uri,
@@ -70,24 +78,35 @@ export default async function uploadWorker () {
 					formData.append('metadata', JSON.stringify({
 						timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
 					}));
-					formData.append('media', {uri: mediaList[0], name: mediaList[0].split("/").pop()});
-					formData.append('thumbnail', {uri: mediaList[1], name: mediaList[1].split("/").pop()});
+					formData.append('media', {
+						uri: mediaList[0],
+						name: mediaList[0].split("/").pop(),
+						type: `image/${media.extension}`
+					});
+					formData.append('thumbnail', {
+						uri: mediaList[1],
+						name: mediaList[1].split("/").pop(),
+						type: `image/${media.extension}`
+					});
 					if(media.type === "video") {
-						formData.append('snapshot', {uri: mediaList[2], name: mediaList[2].split("/").pop()});
+						formData.append('snapshot', {
+							uri: mediaList[2],
+							name: mediaList[2].split("/").pop(),
+							type: `video/${media.extension}`
+						});
 					}
 
 					try {
-						axios.post(apiUrl+"/v1/media/" + media.eventId, formData, {
-							headers: {
-								authorization: "Bearer " + (await AsyncStorage.getItem("@session"))
-							}
-						})
-							.then((res) => {
-								console.log(res.data);
-							})
-							.catch((err) => {
-								console.log(err);
-							})
+						const xhr = new XMLHttpRequest();
+						xhr.open("POST", `${apiUrl}/v1/media/${media.eventId}`);
+						xhr.setRequestHeader("authorization", `Bearer ${await AsyncStorage.getItem("@session")}`);
+						xhr.onload = () => {
+							console.log(xhr.response);
+						};
+						xhr.onerror = () => {
+							console.log(xhr.statusText);
+						};
+						xhr.send(formData);
 
 					} catch (err) {
 						console.log(err);

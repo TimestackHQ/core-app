@@ -76,7 +76,7 @@ export default function Code ({
 				left: "50%",
 				transform: "translateX(-50%)"
 			}} src={"images/logoglow.png"}/>
-			<div style={{marginTop: "70%"}}/>
+			<div style={{marginTop: "50%"}}/>
 
 			<br/>
 			<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
@@ -119,7 +119,7 @@ export default function Code ({
 				<br/>
 				<p style={{
 					position: "absolute",
-					bottom: "12%",
+					bottom: "8%",
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: 999,
@@ -129,25 +129,27 @@ export default function Code ({
 					fontSize: "16px"
 				}}>This code is only for you.</p>
 
-				<button
-					type={"submit"}
-					style={{
-						background: "transparent",
-						borderWidth: 0,
-						fontSize :0,
-						width: "0px",
-						height: "0px",
-					}}
-				>
-					<img alt={""} onClick={() => initLogin} className={"white-shadow"} width={"100%"} style={{
-						fill: "white",
-						position: "absolute",
-						bottom: "5%",
-						left: "50%",
-						transform: "translateX(-50%)",
-						zIndex: 999
-					}} src={"images/continue.png"}/>
-				</button>
+			<button
+				className={"btn btn-dark"}
+				type={"submit"}
+				style={{
+					position: "absolute",
+					top: "90%",
+					left: "5%",
+					width: "90%",
+					backgroundColor: "white",
+					fontSize: "22px",
+					height: "50px",
+					borderRadius: "2rem",
+					borderWidth: "0px",
+					fontWeight: "500",
+					textShadow: "0 0 15px #FFF",
+					zIndex: 1,
+					color: "black"
+				}}
+			>
+				CONTINUE
+			</button>
 		</form>
 	);
 }

@@ -84,12 +84,19 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
     });
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then(token => {
-            if(!token) {
-                setExpoPushToken("ExponentPushToken[HaK7a_IDmPDQz4DkTJo4U6]");
-            }
-            setExpoPushToken(token)
-        });
+        try {
+            registerForPushNotificationsAsync().then(token => {
+                if(!token) {
+                    setExpoPushToken("ExponentPushToken[HaK7a_IDmPDQz4DkTJo4U6]");
+                }
+                setExpoPushToken(token)
+            }).catch(err => {
+                console.log(err);
+            })
+        } catch (e) {
+            console.log(e);
+        }
+
 
     }, []);
 
@@ -275,6 +282,7 @@ function ViewError ({webviewRef}) {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: "white"
     }}>
         <Image
             style={{

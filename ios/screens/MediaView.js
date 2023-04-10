@@ -21,9 +21,9 @@ import {getTimezone} from "../utils/time";
 import Video from "react-native-video";
 import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
-import * as MediaLibrary from "expo-media-library";
 import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
 import * as React from "react";
+import {CameraRoll} from "@react-native-camera-roll/camera-roll";
 
 const { width } = Dimensions.get('window');
 
@@ -58,9 +58,7 @@ function Headers ({media, hasPermission, deleteMedia}) {
 			style={{ marginHorizontal: 10, marginRight: -10 }}
 			OverflowIcon={({ color }) =><View color="#000" style={{color: "black"}} onPress={() => {
 			}} title="Update count">
-				<TouchableOpacity>
 					<Image source={require("../assets/icons/collection/three-dots.png")} style={{width: 35, height: 35}} />
-				</TouchableOpacity>
 			</View>}
 		>
 			 <HiddenItem style={{color: "red"}} title="Delete" onPress={() => {
@@ -126,22 +124,19 @@ export default function MediaView() {
 		}
 	};
 
-	const mediaFetch = id => {
-		setContent(route.params?.content);
-		setCurrentIndex(route.params?.currentIndex)
-	}
 
 	useEffect(() => {
 		if(isFocused) {
 			setHasPermission(Boolean(route.params?.hasPermission));
-			mediaFetch(route.params?.mediaId);
+			setContent(route.params?.content);
+			setCurrentIndex(route.params?.currentIndex)
 
 			console.log("MediaView: ", route.params);
 		}
 
 
 
-	}, [useIsFocused()]);
+	}, [isFocused]);
 
 	useEffect(() => {
 		const id = content[currentIndex]?._id;
@@ -210,7 +205,7 @@ export default function MediaView() {
 						renderItem={({ item }) => (
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
 								<Image
-									source={{ uri: item?.thumbnail }}
+									source={{ uri: item?.storageLocation }}
 									style={{ width, height: "100%", resizeMode: "contain" }}
 								/>
 							</TouchableWithoutFeedback>
@@ -242,8 +237,8 @@ export default function MediaView() {
 				<TouchableOpacity onPress={async () => {
 					setDownloading(true);
 					try {
-						const location = await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
-						await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
+						await CameraRoll.save(media?.storageLocation);
+						// await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
 						Alert.alert("Saved", "");
 					} catch (err) {
 						Alert.alert("Failed to save", "");

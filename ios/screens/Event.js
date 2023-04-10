@@ -121,6 +121,11 @@ export default function EventScreen () {
 					headerBackTitleStyle: {
 						fontSize: 200,
 					},
+					headerRightStyle: {
+						buttonContainer: {
+							zIndex: 100, // fixes Android not allowing full touchableopacity to be press-able
+						},
+					},
 					headerRight: () => (
 
 						<HeaderButtons>
@@ -133,12 +138,11 @@ export default function EventScreen () {
 								<Image source={require("../assets/icons/collection/share.png")} style={{width: 30, height: 30}} />
 							</TouchableOpacity>
 							<OverflowMenu
-								style={{ marginHorizontal: 10, marginRight: -10 }}
+								style={{ marginHorizontal: 10, marginRight: -10, zIndex: 100 }}
 								OverflowIcon={({ color }) =><View color="#000" style={{color: "black"}} onPress={() => {
+									alert("Update count"    );
 								}} title="Update count">
-									<TouchableOpacity>
 										<Image source={require("../assets/icons/collection/three-dots.png")} style={{width: 35, height: 35}} />
-									</TouchableOpacity>
 								</View>}
 							>
 								{response.data?.event?.hasPermission ? <HiddenItem style={{color: "red"}} title="Edit" onPress={() => navigation.navigate("EditEvent", {

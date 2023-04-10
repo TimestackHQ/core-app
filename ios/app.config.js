@@ -3,7 +3,7 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.22.10",
+    "version": "0.22.40",
     "orientation": "portrait",
     "icon": "./assets/icon3.png",
     "userInterfaceStyle": "light",
@@ -12,31 +12,24 @@ module.exports = {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "plugins": [ [
-      "@config-plugins/ffmpeg-kit-react-native",
-      {
-        "package": "min-gpl",
-        "ios": {
+    "plugins": [
+        [
+          "@config-plugins/ffmpeg-kit-react-native",
+        {
           "package": "min-gpl",
+          "ios": {
+            "package": "min-gpl",
+          }
         }
-      }
-    ],
+      ],
       [
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
             "minSdkVersion": 24,
-            "buildToolsVersion": "31.0.0",
-            "packagingOptions": {
-              "pickFirst": [
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so"
-              ]
-            }
+            "buildToolsVersion": "31.0.0"
           }
         }
       ]],
@@ -44,7 +37,9 @@ module.exports = {
       "**/*"
     ],
     "ios": {
+
       "supportsTablet": false,
+
       "bundleIdentifier": "com.timestack.timestack",
       "config": {
         "usesNonExemptEncryption": false
@@ -61,14 +56,20 @@ module.exports = {
     },
     "android": {
       "package": "com.timestack.timestack",
-      "versionCode": 12,
+      "versionCode": 14,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon3.png",
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_CONTACTS",
+        "android.permission.CAMERA",
+          "READ_MEDIA_IMAGES",
+            "READ_MEDIA_VIDEO",
+            "READ_CONTACTS",
+          "CAMERA"
       ]
     },
     "web": {

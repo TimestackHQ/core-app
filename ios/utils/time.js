@@ -1,6 +1,6 @@
 import moment from "moment-timezone";
 
-export const getTimezone = async () => {
+export const getTimezone = () => {
 	try {
 		return Intl.DateTimeFormat().resolvedOptions().timeZone;
 	} catch (error) {

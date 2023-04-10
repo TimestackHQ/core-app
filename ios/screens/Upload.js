@@ -12,7 +12,6 @@ import {
 import * as React from "react";
 import HTTPClient from "../httpClient";
 import {useEffect} from "react";
-import * as ImagePicker from "expo-image-picker";
 import * as _ from "lodash";
 import ExpoJobQueue from "expo-job-queue";
 import Video from 'react-native-video';
@@ -103,9 +102,14 @@ export default function Upload ({}) {
 	}, []);
 
 	useEffect(() => {
-		const remoteMedia = setInterval(() => {
+
+		const call = () => {
 			HTTPClient("/events/"+route?.params?.eventId+"/media/byme").then(res => setSelfMediaCount(res.data));
-		}, 2000);
+
+		}
+		call();
+
+		const remoteMedia = setInterval(() => call, 2000);
 
 		return () => {
 			clearInterval(remoteMedia);
@@ -229,7 +233,7 @@ export default function Upload ({}) {
 											style: "cancel"
 										},
 										{ text: "OK", onPress: async () => {
-											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV25");
+											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV30");
 											setPendingMedia([]);
 										}}
 									]

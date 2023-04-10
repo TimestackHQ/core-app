@@ -13,7 +13,7 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import moment from "moment-timezone";
 import DatePicker from "react-native-date-picker";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import * as ImagePicker from "expo-image-picker";
+// import * as ImagePicker from "expo-image-picker";
 import uuid from "react-native-uuid";
 import {generateScreenshot, processPhoto, processVideo} from "../utils/compression";
 import axios from "axios";
@@ -96,49 +96,49 @@ export default function EditEvent () {
 
 		setLoadingCover(true);
 
-		ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
-			allowsMultipleSelection: false,
-			exif: true,
-			quality: 0,
-		}).then(async result => {
-
-			if (!result.canceled) {
-
-				console.log(result)
-
-				const mediaId = uuid.v4();
-				const media = result.assets[0];
-				console.log(media)
-				setCover(media);
-				const uri = await processPhoto(mediaId, media.uri, 80);
-				// const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
-
-				console.log(uri)
-				const formData = new FormData();
-				formData.append('thumbnail', {uri: uri, name: uri.split("/").pop()});
-				// if(snapshot) formData.append('snapshot', {uri: snapshot, name: snapshot.split("/").pop()});
-
-				axios.post(apiUrl+"/v1/media/cover", formData,{
-					headers: {
-						authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
-						"Content-Type": "multipart/form-data",
-					}
-				})
-					.then((res) => {
-						setUploadedCover(res.data);
-					})
-					.catch((err) => {
-						console.log(err.response.data);
-					})
-					.finally(() => setLoadingCover(false));
-
-			}
-
-		}).catch(err => {
-			console.log(err.response);
-			setLoadingCover(false);
-		})
+		// ImagePicker.launchImageLibraryAsync({
+		// 	mediaTypes: ImagePicker.MediaTypeOptions.Images,
+		// 	allowsMultipleSelection: false,
+		// 	exif: true,
+		// 	quality: 0,
+		// }).then(async result => {
+		//
+		// 	if (!result.canceled) {
+		//
+		// 		console.log(result)
+		//
+		// 		const mediaId = uuid.v4();
+		// 		const media = result.assets[0];
+		// 		console.log(media)
+		// 		setCover(media);
+		// 		const uri = await processPhoto(mediaId, media.uri, 80);
+		// 		// const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
+		//
+		// 		console.log(uri)
+		// 		const formData = new FormData();
+		// 		formData.append('thumbnail', {uri: uri, name: uri.split("/").pop()});
+		// 		// if(snapshot) formData.append('snapshot', {uri: snapshot, name: snapshot.split("/").pop()});
+		//
+		// 		axios.post(apiUrl+"/v1/media/cover", formData,{
+		// 			headers: {
+		// 				authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
+		// 				"Content-Type": "multipart/form-data",
+		// 			}
+		// 		})
+		// 			.then((res) => {
+		// 				setUploadedCover(res.data);
+		// 			})
+		// 			.catch((err) => {
+		// 				console.log(err.response.data);
+		// 			})
+		// 			.finally(() => setLoadingCover(false));
+		//
+		// 	}
+		//
+		// }).catch(err => {
+		// 	console.log(err.response);
+		// 	setLoadingCover(false);
+		// })
 
 
 

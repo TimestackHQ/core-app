@@ -7,7 +7,7 @@ import {
 	Text,
 	Platform,
 	Linking,
-	Alert, SafeAreaView, ActivityIndicator
+	Alert, SafeAreaView, ActivityIndicator, PermissionsAndroid
 } from "react-native";
 import {useEffect, useState} from "react";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
@@ -52,12 +52,33 @@ export default function Roll () {
 	const [cursor, setCursor] = useState(undefined);
 	const [selected, setSelected] = useState([]);
 
+	async function hasAndroidPermission() {
+
+		const checkPermission = async (permission) => {
+			const hasPermission = await PermissionsAndroid.check(permission);
+			if (hasPermission) {
+				return true;
+			}
+
+			const status = await PermissionsAndroid.request(permission);
+			return status === 'granted';
+		}
+
+		if(Platform.Version >= 33) {
+			await checkPermission(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+			await checkPermission(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
+		}
+		await checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+	}
+
 	const getMedia = async (initial) => {
+
+		await hasAndroidPermission()
+
 		const newMedia = await CameraRoll.getPhotos({
 			first: initial ? 300 : 150,
 			after: cursor,
 		});
-
 
 		setMedia([...media, ...newMedia.edges]);
 		setCursor(newMedia.page_info?.end_cursor);
@@ -71,10 +92,10 @@ export default function Roll () {
 			mediaSelected.push(file.node);
 		});
 
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV25");
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV250");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV30");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV300");
 		//
-		// await ExpoJobQueue.removeWorker("mediaQueueV25");
+		// await ExpoJobQueue.removeWorker("mediaQueueV30");
 		// await uploadWorker();
 
 		console.log(mediaSelected);
@@ -88,7 +109,7 @@ export default function Roll () {
 					type: media.type,
 					eventId: route.params.eventId
 				})
-				ExpoJobQueue.addJob("mediaQueueV25", {
+				ExpoJobQueue.addJob("mediaQueueV30", {
 					filename: moment().unix()+"_"+v4()+"."+media.image.extension,
 					extension: media.image.extension,
 					uri: media.image.uri,

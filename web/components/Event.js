@@ -52,10 +52,9 @@ export default function EventCard ({
 						borderStyle: "solid",
 						borderColor: "black"
 					}}>
-						<img
+						{uri ? <img
 
 							src={uri}
-							effect="blur"
 							loading={"lazy"}
 							style={{
 								borderRadius: "15px",
@@ -65,7 +64,7 @@ export default function EventCard ({
 							}}
 							alt={""}
 							width={"100%"} height={"145px"}
-						/>
+						/> : null}
 					</div>
 
 				</div>

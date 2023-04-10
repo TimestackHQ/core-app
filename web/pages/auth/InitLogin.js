@@ -66,7 +66,7 @@ export default function InitLogin({
 					left: "50%",
 					transform: "translateX(-50%)"
 				}} src={"images/logoglow.png"}/>
-				<div style={{marginTop: "75%"}}/>
+				<div style={{marginTop: "50%"}}/>
 
 				<br/>
 
@@ -101,34 +101,36 @@ export default function InitLogin({
 
 				<p style={{
 					position: "absolute",
-					bottom: "12%",
+					top: "86%",
 					left: "50%",
 					transform: "translateX(-50%)",
-					zIndex: 999,
+					zIndex: -1,
 					color: "white",
 					fontWeight: "500",
 					width: "80%",
-					fontSize: "14px"
+					fontSize: "14px",
 				}}>This is how we keep your account safe.</p>
 
 				<button
+					className={"btn btn-dark"}
 					type={"submit"}
 					style={{
-						background: "transparent",
-						borderWidth: 0,
-						fontSize :0,
-						width: "0px",
-						height: "0px",
+						position: "absolute",
+						top: "90%",
+						left: "5%",
+						width: "90%",
+						backgroundColor: "white",
+						fontSize: "22px",
+						height: "50px",
+						borderRadius: "2rem",
+						borderWidth: "0px",
+						fontWeight: "500",
+						textShadow: "0 0 15px #FFF",
+						zIndex: 1000,
+						color: "black"
 					}}
 				>
-					<img alt={""} className={"white-shadow"} width={"100%"} style={{
-						fill: "white",
-						position: "absolute",
-						bottom: "5%",
-						left: "50%",
-						transform: "translateX(-50%)",
-						zIndex: 999
-					}} src={"images/continue.png"}/>
+					CONTINUE
 				</button>
 
 

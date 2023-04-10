@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import KeyboardListener from 'react-native-keyboard-listener';
 import FastImage from "react-native-fast-image";
-import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from "react-native-image-picker";
 import Video from "react-native-video";
 import {generateScreenshot, processPhoto, processVideo} from "../utils/compression";
 import axios from "axios";
@@ -53,15 +53,12 @@ export default function AddScreen({navigation}) {
 
 		setLoadingCover(true);
 
-		ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
-			allowsMultipleSelection: false,
-			exif: true,
-			quality: 0,
+		ImagePicker.launchImageLibrary({
+			mediaType: "photo",
 		}).then(async result => {
 			console.log(result)
 
-			if (!result.canceled) {
+			if (!result.didCancel) {
 
 				console.log(result)
 
@@ -74,11 +71,21 @@ export default function AddScreen({navigation}) {
 					: await processPhoto(mediaId, media.uri, 5, true);
 				const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
 
+				
 				console.log(uri)
 				const formData = new FormData();
-				formData.append('thumbnail', {uri: uri, name: uri.split("/").pop()});
-				if(snapshot) formData.append('snapshot', {uri: snapshot, name: snapshot.split("/").pop()});
+				formData.append('thumbnail', {
+					uri: media.uri,
+					name: uri.split("/").pop(),
+					type: media.type === "video" ? "video/mp4" : "image/jpeg"
+				});
+				if(snapshot) formData.append('snapshot', {
+					uri: snapshot,
+					name: snapshot.split("/").pop(),
+					type: "image/jpeg"
+				});
 
+				console.log(formData._parts)
 				axios.post(apiUrl+"/v1/media/cover", formData,{
 					headers: {
 						authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
@@ -86,10 +93,11 @@ export default function AddScreen({navigation}) {
 					}
 				})
 					.then((res) => {
+						console.log(res)
 						setUploadedCover(res.data);
 					})
 					.catch((err) => {
-						console.log(err.response.data);
+						console.log(JSON.stringify(err));
 					})
 					.finally(() => setLoadingCover(false));
 

@@ -25,6 +25,7 @@ import {createStackNavigator} from "@react-navigation/stack";
 import * as Updates from "expo-updates";
 import axios from "axios";
 import * as Notifications from "expo-notifications";
+import {OverflowMenuProvider} from "react-navigation-header-buttons";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -110,7 +111,7 @@ function ErrorScreen() {
 export default function App() {
 
     useEffect( () => {
-        const bundleVersion = "0.22.12";
+        const bundleVersion = "0.22.40";
         axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
             if(_res.data.bundleVersion !== bundleVersion) {
                 await Updates.fetchUpdateAsync();
@@ -139,7 +140,13 @@ export default function App() {
 
     StatusBar.setBarStyle('dark-content', true);
 
-    return loaded ? <NavigationContainer><CoreStackScreen/></NavigationContainer> : null;
+    return loaded ?
+        <NavigationContainer>
+            <OverflowMenuProvider>
+                <CoreStackScreen/>
+            </OverflowMenuProvider>
+        </NavigationContainer>
+    : null;
 
 }
 
