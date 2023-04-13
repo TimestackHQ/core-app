@@ -18,7 +18,7 @@ export default function MainIOS () {
 			if(res.data.events.length !== 0) setEvents(clean ? [...res.data.events] : [...events, ...res.data.events]);
 			setLoading(false);
 		}).catch(err => {
-			alert("An error occurred while loading your events. Please try again later.")
+			// alert("An error occurred while loading your events. Please try again later.")
 		})
 	}
 
