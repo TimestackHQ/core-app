@@ -35,10 +35,10 @@ export default function AuthCheck({children}) {
 					(err.response?.data?.status === "waitlist" ||
 						err.response?.data?.status === "unconfirmed")
 				){
-					await Router.push("/auth?eventId="+eventId);
+					// await Router.push("/auth?eventId="+eventId);
 					await NativeNavigate("Auth", []);
 				} else {
-					await Router.push("/auth");
+					// await Router.push("/auth");
 					await NativeNavigate("Auth", []);
 
 				}
