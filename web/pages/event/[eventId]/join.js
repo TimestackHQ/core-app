@@ -25,24 +25,20 @@ export default function EventIOS ({}) {
 
 	useEffect(() => {
 
-
-
-
-
 // Get the value of the "id" parameter
-		HTTPClient("/events/"+eventId, "GET")
+		HTTPClient("/events/"+eventId+"?noBuffer=true", "GET")
 			.then((response) => {
 				setEvent(response.data.event);
 				if(response.data.message === "joinRequired") {
 					setJoined(false);
 				}
-				if(response?.data?.event?.cover) HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
+				HTTPClient("/media/"+response?.data?.event?.cover).then(res => {
 					setUri(res.data);
 					setLoaded(true);
 				})
 					.catch(err => {
 						console.log(err);
-
+r
 						Router.push("/event/"+eventId);
 					});
 
@@ -94,14 +90,6 @@ export default function EventIOS ({}) {
 									<div className={"row justify-content-center"}>
 										<div className={"col-12  text-center"} style={{marginTop: "8vh", color: "white"}}>
 											<br/>
-											{/*<img className={"white-circle-shadow"} src={"/images/achraf.jpeg"} style={{*/}
-											{/*	width: "30px",*/}
-											{/*	borderRadius: "100px",*/}
-											{/*	borderColor: "white",*/}
-											{/*	borderWidth: "1px",*/}
-											{/*	borderStyle: "solid",*/}
-											{/*	marginRight: "10px",*/}
-											{/*}} /> invites you to*/}
 										</div>
 
 										<div className={"col-12 text-center"}>

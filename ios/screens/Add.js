@@ -69,14 +69,20 @@ export default function AddScreen({navigation}) {
 				const uri = media?.type === "video"
 					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
 					: await processPhoto(mediaId, media.uri, 5, true);
+				const thumbnail = media?.type === "video"
+					? await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10)
+					: await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
 				const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
 
-				
-				console.log(uri)
 				const formData = new FormData();
-				formData.append('thumbnail', {
-					uri: media.uri,
+				formData.append('media', {
+					uri: uri,
 					name: uri.split("/").pop(),
+					type: media.type === "video" ? "video/mp4" : "image/jpeg"
+				});
+				formData.append('thumbnail', {
+					uri: thumbnail,
+					name: thumbnail.split("/").pop(),
 					type: media.type === "video" ? "video/mp4" : "image/jpeg"
 				});
 				if(snapshot) formData.append('snapshot', {
@@ -85,7 +91,6 @@ export default function AddScreen({navigation}) {
 					type: "image/jpeg"
 				});
 
-				console.log(formData._parts)
 				axios.post(apiUrl+"/v1/media/cover", formData,{
 					headers: {
 						authorization: "Bearer " + (await AsyncStorage.getItem("@session")),

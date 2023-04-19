@@ -19,7 +19,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
         const fileId = uuid();
 
         // @ts-ignore
-        // const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
+        const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
         const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
         const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
 
@@ -52,6 +52,12 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
                 storageLocation: media.storageLocation,
             },
         });
+
+        await GCP.upload(mediaFile.originalname, <Buffer>mediaFile.buffer);
+
+        media.storageLocation = mediaFile.originalname;
+        media.type = mediaFile.mimetype;
+        await media.save();
 
 
 
@@ -87,7 +93,9 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
             return res.send(await GCP.signedUrl(media.thumbnail));
         }
 
-        return res.send(await GCP.signedUrl(media.publicId));
+
+        console.log(await GCP.signedUrl(media.storageLocation))
+        return res.send(await GCP.signedUrl(media.storageLocation));
 
     } catch (e) {
         next(e);

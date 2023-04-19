@@ -97,6 +97,8 @@ export default function EventScreen () {
 
 	const fetchEvent = () => {
 
+		console.log(route.params?.buffer)
+
 		setPlaceholder(route.params?.buffer);
 		setEvent({
 			name: route.params?.eventName,

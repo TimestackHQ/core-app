@@ -20,6 +20,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import {HeaderButtons} from "react-navigation-header-buttons";
+import * as ImagePicker from "react-native-image-picker";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
@@ -96,49 +97,64 @@ export default function EditEvent () {
 
 		setLoadingCover(true);
 
-		// ImagePicker.launchImageLibraryAsync({
-		// 	mediaTypes: ImagePicker.MediaTypeOptions.Images,
-		// 	allowsMultipleSelection: false,
-		// 	exif: true,
-		// 	quality: 0,
-		// }).then(async result => {
-		//
-		// 	if (!result.canceled) {
-		//
-		// 		console.log(result)
-		//
-		// 		const mediaId = uuid.v4();
-		// 		const media = result.assets[0];
-		// 		console.log(media)
-		// 		setCover(media);
-		// 		const uri = await processPhoto(mediaId, media.uri, 80);
-		// 		// const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
-		//
-		// 		console.log(uri)
-		// 		const formData = new FormData();
-		// 		formData.append('thumbnail', {uri: uri, name: uri.split("/").pop()});
-		// 		// if(snapshot) formData.append('snapshot', {uri: snapshot, name: snapshot.split("/").pop()});
-		//
-		// 		axios.post(apiUrl+"/v1/media/cover", formData,{
-		// 			headers: {
-		// 				authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
-		// 				"Content-Type": "multipart/form-data",
-		// 			}
-		// 		})
-		// 			.then((res) => {
-		// 				setUploadedCover(res.data);
-		// 			})
-		// 			.catch((err) => {
-		// 				console.log(err.response.data);
-		// 			})
-		// 			.finally(() => setLoadingCover(false));
-		//
-		// 	}
-		//
-		// }).catch(err => {
-		// 	console.log(err.response);
-		// 	setLoadingCover(false);
-		// })
+		ImagePicker.launchImageLibrary({
+			mediaType: "photo",
+		}).then(async result => {
+
+			if (!result.didCancel) {
+
+				console.log(result)
+
+				const mediaId = uuid.v4();
+				const media = result.assets[0];
+				console.log(media)
+				setCover(media);
+
+				const uri = media?.type === "video"
+					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
+					: await processPhoto(mediaId, media.uri, 5, true);
+				const thumbnail = media?.type === "video"
+					? await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10)
+					: await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
+				const snapshot = media?.type === "video" ? await generateScreenshot(mediaId+"snapshot", uri, 0.5) : null
+
+				const formData = new FormData();
+				formData.append('media', {
+					uri: uri,
+					name: uri.split("/").pop(),
+					type: media.type === "video" ? "video/mp4" : "image/jpeg"
+				});
+				formData.append('thumbnail', {
+					uri: thumbnail,
+					name: thumbnail.split("/").pop(),
+					type: media.type === "video" ? "video/mp4" : "image/jpeg"
+				});
+				if(snapshot) formData.append('snapshot', {
+					uri: snapshot,
+					name: snapshot.split("/").pop(),
+					type: "image/jpeg"
+				});
+
+				axios.post(apiUrl+"/v1/media/cover", formData,{
+					headers: {
+						authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
+						"Content-Type": "multipart/form-data",
+					}
+				})
+					.then((res) => {
+						setUploadedCover(res.data);
+					})
+					.catch((err) => {
+						console.log(err.response.data);
+					})
+					.finally(() => setLoadingCover(false));
+
+			}
+
+		}).catch(err => {
+			console.log(err.response);
+			setLoadingCover(false);
+		})
 
 
 
