@@ -4,7 +4,7 @@ import {openLink} from "../../utils/nativeBridge";
 export default function Step1 ({setStep}) {
 	return (
 		<div className={"text-center"} style={{
-			backgroundImage: `url("images/timestack city sunset 1.png")`,
+			backgroundImage: `url("images/timestack city sunset 1.jpg")`,
 			backgroundSize: "cover",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",

@@ -55,7 +55,7 @@ function Invite ({navigation, route}) {
 function AuthScreen({navigation, route}) {
 
     return <Main
-            baseRoute={"/auth?redirect="+route.params?.redirect}
+            baseRoute={"/auth"}
             apiUrl={apiUrl}
             frontendUrl={frontendUrl}
             setSession={setSession}

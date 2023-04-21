@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
-import {Alert, Image, NativeModules} from "react-native";
-import * as Network from 'expo-network';
+import {Alert, Image} from "react-native";
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from 'expo-linking';
-import {SafeAreaView, Share, TouchableOpacity, View, Text, StatusBar} from "react-native";
-import * as Contacts from "expo-contacts";
-import ExpoJobQueue from "expo-job-queue";
+import {TouchableOpacity, View, Text, StatusBar} from "react-native";
 import {useEffect, useRef, useState} from "react";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -16,7 +13,6 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { ModalView } from 'react-native-ios-modal';
 import Upload from "./screens/Upload";
-import {useNavigation} from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -69,7 +65,8 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
     console.log(frontendUrl+baseRoute);
 
     useEffect(() => {
-        webviewRef.current.reload();
+        console.log(baseRoute)
+        webviewRef.current?.reload();
     }, [baseRoute]);
 
 
@@ -77,13 +74,18 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
     const modalRef = React.createRef();
     const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(null);
-    const [barStyle, setBarStyle] = React.useState("light-content");
     const [modalData, setModalData] = React.useState({
         type: null,
         payload: null
     });
+    const [session, setSession] = React.useState(null);
 
     useEffect(() => {
+        const getAsyncStorage = async () => {
+            const session = await AsyncStorage.getItem("@session");
+            setSession(session);
+        }
+        getAsyncStorage();
         try {
             registerForPushNotificationsAsync().then(token => {
                 if(!token) {
@@ -150,18 +152,11 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                 }}
                 allowsInlineMediaPlayback="true"
                 // allowsBackForwardNavigationGestures="true"
-                source={{ uri: uri ? uri : frontendUrl+baseRoute}}
+                source={{ uri: uri ? uri : frontendUrl+baseRoute }}
+                // injectedJavaScript={`window.localStorage.setItem("TIMESTACK_TOKEN", "${session}");window.localStorage.setItem("appVersion", "0.0.15-1");const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 injectedJavaScript={`window.localStorage.setItem("appVersion", "0.0.15-1");const meta = document.createElement('meta'); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
-                    console.log(event);
-                   if(event.url.includes("/join") || event.url.includes("/auth")) {
-                       setUri(event.url);
-
-                       setViewtype("full");
-                   } else {
-                        setUri(event.url);
-                      setViewtype("safe");
-                   }
+                    setUri(event.url);
                 }}
                 onMessage={async (event) => {
 

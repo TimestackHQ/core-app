@@ -41,7 +41,7 @@ export default function Username ({
 	return (
 		<form
 			style={{
-				backgroundImage: `url("images/timestack city sunset 1.png")`,
+				backgroundImage: `url("images/timestack city sunset 1.jpg")`,
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 				backgroundRepeat: "no-repeat",
@@ -79,7 +79,7 @@ export default function Username ({
 				left: "50%",
 				transform: "translateX(-50%)"
 			}} src={"images/logoglow.png"}/>
-				<div style={{paddingTop: "80%"}}/>
+				<div style={{paddingTop: "50%"}}/>
 				<div className="input-group mb-3">
 					<div className="input-group mb-3 text-center" style={{borderRadius: "1rem", display: "flex",
 						justifyContent: "center"}}>

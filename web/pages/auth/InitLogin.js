@@ -24,12 +24,12 @@ export default function InitLogin({
 
 		<form
 			style={{
-				backgroundImage: `url("images/timestack city sunset 1.png")`,
+				backgroundImage: `url("images/timestack city sunset 1.jpg")`,
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 				backgroundRepeat: "no-repeat",
 				height: "100%",
-				width: "100vw",
+				width: "100%",
 				position: "absolute",
 				top: "0",
 				left: "0",

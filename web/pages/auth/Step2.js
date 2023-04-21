@@ -8,7 +8,7 @@ const openLink = link => window.ReactNativeWebView?.postMessage(JSON.stringify({
 export default function Step2 ({setStep}) {
 	return (
 		<div className={"text-center"} style={{
-			backgroundImage: `url("images/timestack city sunset 1.png")`,
+			backgroundImage: `url("images/timestack city sunset 1.jpg")`,
 			backgroundSize: "cover",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",

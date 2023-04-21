@@ -51,7 +51,12 @@ export default function HomeScreen({navigation, route}) {
 	}
 
 	useEffect(() => {
-		getEvents();
+		(async () => {
+			if(!(await AsyncStorage.getItem("@session"))) {
+				navigation.navigate("Auth");
+			}
+			getEvents();
+		})();
 	}, []);
 
 	useEffect(() => {
@@ -88,7 +93,9 @@ export default function HomeScreen({navigation, route}) {
 		<View>
 			<Text style={{fontSize: 30, fontWeight: "bold", marginHorizontal: 10, marginTop: 5, marginBottom: 10, fontFamily: "Red Hat Display Semi Bold"}}>My Timewall</Text>
 		</View>
-		{!firstLoad ?<FlatList
+		
+		{!firstLoad ? <View style={{flex: 1}}>
+			{events.length === 0 && !query && loading ? <Image style={{marginLeft: "2%", width: "96%", height: "100%", resizeMode: "contain"}} source={require("../assets/timewall.png")} /> : <FlatList
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => getEvents(true)} />}
 			data={events}
 			renderItem={(raw) => {
@@ -176,8 +183,10 @@ export default function HomeScreen({navigation, route}) {
 			keyExtractor={(item, index) => index.toString()}
 			onEndReached={() => getEvents(false)}
 			onEndReachedThreshold={0.5}
-		/> : <Onboarding setFirstLoad={setFirstLoad}/>}
+		/>}
+		</View> : <Onboarding setFirstLoad={setFirstLoad}/>}
 	</SafeAreaView>
+
 }
 
 const iconWidth = 25;

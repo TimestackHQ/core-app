@@ -26,7 +26,7 @@ export default function Email ({
 	return (
 		<form
 			style={{
-				backgroundImage: `url("images/timestack city sunset 1.png")`,
+				backgroundImage: `url("images/timestack city sunset 1.jpg")`,
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 				backgroundRepeat: "no-repeat",
