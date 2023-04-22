@@ -10,7 +10,7 @@ export default async function HTTPClient (path, method, data, headers) {
 			"Content-Type": "application/json",
 			"Accept": "application/json",
 			"Authorization": "Bearer " + await AsyncStorage.getItem('@session') || "",
-			"x-app-version": "0.22.41",
+			"x-app-version": "0.22.42",
 			...headers
 		}
 	})
