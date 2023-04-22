@@ -1,11 +1,11 @@
-import {NextFunction, Request, Response} from "express";
-import {GCP, Models} from "../../shared";
-import {isObjectIdOrHexString} from "../../shared";
+import { NextFunction, Request, Response } from "express";
+import { GCP, Models, isGreaterVersion } from "../../shared";
+import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
-import {getBuffer, standardEventPopulation} from "./events.tools";
-import {ObjectId} from "bson";
+import { getBuffer, standardEventPopulation } from "./events.tools";
+import { ObjectId } from "bson";
 
-export async function createEvent (req: Request, res: Response, next: NextFunction) {
+export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -24,7 +24,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
             name: req.body.name,
             createdBy: req.user._id,
             invitees: _.uniq([
-                ...users.map((user: {_id: any}) => user._id.toString())
+                ...users.map((user: { _id: any }) => user._id.toString())
             ]),
             startsAt: req.body.startsAt,
             endsAt: req.body?.endsAt,
@@ -59,7 +59,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
                             eventId: event._id,
                             userName: req.user.firstName,
                             eventName: event.name,
-                            url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
+                            url: process.env.FRONTEND_URL + "/event/" + event.publicId + "/join"
                         }
                     }
 
@@ -75,7 +75,7 @@ export async function createEvent (req: Request, res: Response, next: NextFuncti
 
 }
 
-export async function getPeople (req: Request, res: Response, next: NextFunction) {
+export async function getPeople(req: Request, res: Response, next: NextFunction) {
     try {
         const event = await Models.Event.findOne({
             $or: [
@@ -104,7 +104,7 @@ export async function getPeople (req: Request, res: Response, next: NextFunction
             path: "invitees",
             select: "username firstName lastName profilePictureSource"
         }])
-            .sort({createdAt: -1});
+            .sort({ createdAt: -1 });
 
 
         if (!event) {
@@ -143,7 +143,7 @@ export async function getPeople (req: Request, res: Response, next: NextFunction
     }
 }
 
-export async function updateEvent (req: Request, res: Response, next: NextFunction) {
+export async function updateEvent(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -163,7 +163,7 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
                 message: "Event not found"
             });
         }
-        else if(!event.hasPermission(req.user._id)){
+        else if (!event.hasPermission(req.user._id)) {
             return res.status(403).json({
                 message: "You don't have permission to update this event"
             });
@@ -197,7 +197,7 @@ export async function updateEvent (req: Request, res: Response, next: NextFuncti
 
 }
 
-export async function leaveEvent (req: Request, res: Response, next: NextFunction) {
+export async function leaveEvent(req: Request, res: Response, next: NextFunction) {
     try {
 
         const update = await Models.Event.updateOne({
@@ -209,7 +209,8 @@ export async function leaveEvent (req: Request, res: Response, next: NextFunctio
                     {
                         _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
                     }
-                ]}
+                ]
+            }
             ],
             users: {
                 $in: [new ObjectId(req.user._id)],
@@ -235,12 +236,12 @@ export async function leaveEvent (req: Request, res: Response, next: NextFunctio
             message: "Left event"
         });
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
 
-export async function getAllEvents (req: Request, res: Response, next: NextFunction) {
+export async function getAllEvents(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -260,44 +261,72 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
         // @ts-ignore
         const events = await Models.Event.find(query)
-            .sort({startsAt: -1})
+            .sort({ startsAt: -1 })
             .skip(Number(skip)).limit(10)
             .populate([{
                 path: "cover",
                 select: "publicId thumbnail snapshot"
             },
-                {
-                    path: "users",
-                    select: "firstName lastName profilePictureSource username",
-                    options: {
-                        limit: 6
-                    }
-                }])
+            {
+                path: "users",
+                select: "firstName lastName profilePictureSource username",
+                options: {
+                    limit: 6
+                }
+            }])
             .select("-media");
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
-                let buffer = undefined;
-                if(i < 4) {
-                    buffer = await getBuffer(event);
-                }
-                const media = await Models.Media.countDocuments({
-                    event: event._id
-                })
 
-                return {
-                    ...event.toJSON(),
-                    cover: event.cover?.publicId,
-                    peopleCount : Number((await Models.Event.findById(event._id))?.users.length)  + event.invitees?.length + event.nonUsersInvitees?.length,
-                    mediaCount: media,
-                    users: undefined,
-                    invitees: undefined,
-                    nonUsersInvitees: undefined,
-                    media: undefined,
-                    people: [
-                        ...event.users,
-                    ],
-                    buffer
+
+                console.log(req.headers)
+                if (req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40")) {
+
+                    const media = await Models.Media.countDocuments({
+                        event: event._id
+                    })
+
+                    return {
+                        ...event.toJSON(),
+                        peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
+                        mediaCount: media,
+                        users: undefined,
+                        invitees: undefined,
+                        nonUsersInvitees: undefined,
+                        media: undefined,
+                        cover: undefined,
+                        people: [
+                            ...event.users,
+                        ],
+                        thumbnailUrl: event?.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined
+                    }
+
+                } else {
+
+                    let buffer = undefined;
+                    if (i < 4) {
+                        buffer = await getBuffer(event);
+                    }
+                    const media = await Models.Media.countDocuments({
+                        event: event._id
+                    })
+
+                    return {
+                        ...event.toJSON(),
+                        cover: event.cover?.publicId,
+                        peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
+                        mediaCount: media,
+                        users: undefined,
+                        invitees: undefined,
+                        nonUsersInvitees: undefined,
+                        media: undefined,
+                        people: [
+                            ...event.users,
+                        ],
+                        buffer
+                    }
+
                 }
             }))
         });
@@ -308,7 +337,7 @@ export async function getAllEvents (req: Request, res: Response, next: NextFunct
 
 }
 
-export async function getAllInvites (req: Request, res: Response, next: NextFunction) {
+export async function getAllInvites(req: Request, res: Response, next: NextFunction) {
     try {
         const events = await Models.Event.find({
             invitees: {
@@ -324,13 +353,13 @@ export async function getAllInvites (req: Request, res: Response, next: NextFunc
             path: "invitees",
             select: "profilePictureSource"
         }])
-            .sort({createdAt: -1})
+            .sort({ createdAt: -1 })
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
 
                 let buffer = undefined;
-                if(i < 4) {
+                if (i < 4) {
                     buffer = await getBuffer(event);
                 }
 
@@ -339,7 +368,7 @@ export async function getAllInvites (req: Request, res: Response, next: NextFunc
                     publicId: event.publicId,
                     name: event.name,
                     cover: event.cover?.publicId,
-                    peopleCount : event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
+                    peopleCount: event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
                     users: undefined,
                     invitees: undefined,
                     nonUsersInvitees: undefined,
@@ -353,7 +382,7 @@ export async function getAllInvites (req: Request, res: Response, next: NextFunc
     }
 }
 
-export async function getEvent (req: Request, res: Response, next: NextFunction) {
+export async function getEvent(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -366,7 +395,8 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
                     {
                         _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
                     }
-                ]}
+                ]
+            }
             ],
         }).populate([
             {
@@ -388,7 +418,7 @@ export async function getEvent (req: Request, res: Response, next: NextFunction)
             })
         }
 
-        const buffer = req.query?.noBuffer ? undefined: await getBuffer(event);
+        const buffer = req.query?.noBuffer ? undefined : await getBuffer(event);
 
         // get cover buffer from google cloud
 
@@ -442,7 +472,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
             })
         }
 
-        if(!event.hasPermission(req.user._id)) {
+        if (!event.hasPermission(req.user._id)) {
             return res.status(401).json({
                 message: "You don't have permission to do this"
             })
@@ -450,7 +480,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
 
         const usersToNotify = []
 
-        if(req.body.add.length) {
+        if (req.body.add.length) {
             const usersToAdd = await Models.User.find({
                 _id: {
                     $in: req.body.add,
@@ -470,7 +500,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
         }
 
 
-        if(req.body.remove.length) {
+        if (req.body.remove.length) {
             const usersToRemove = await Models.User.find({
                 _id: {
                     $in: req.body.remove,
@@ -501,7 +531,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                             userName: req.user.firstName,
                             userProfilePictureSource: req.user.profilePictureSource,
                             eventName: event.name,
-                            url: process.env.FRONTEND_URL + "/event/" + event.publicId+"/join"
+                            url: process.env.FRONTEND_URL + "/event/" + event.publicId + "/join"
                         }
                     }
 
@@ -522,7 +552,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
 export const updatePermissions = async (req: any, res: any, next: any) => {
     try {
 
-        if(!req.params.userId || req.params.userId.toString() === req.user._id.toString()) {
+        if (!req.params.userId || req.params.userId.toString() === req.user._id.toString()) {
             return res.status(400).json({
                 message: "Missing userId"
             })
@@ -549,7 +579,7 @@ export const updatePermissions = async (req: any, res: any, next: any) => {
             });
         }
 
-        if(!event.hasPermission(req.user._id)) {
+        if (!event.hasPermission(req.user._id)) {
             return res.status(401).json({
                 message: "You don't have permission to do this"
             })
@@ -558,19 +588,19 @@ export const updatePermissions = async (req: any, res: any, next: any) => {
         await Models.Event.updateOne({
             _id: event._id
         },
-        event.exclusionList.includes(req.params.userId) ? {
-            $pull: {
-                exclusionList: req.params.userId
-            }
-        } : {
-            $push: {
-                exclusionList: req.params.userId
-            }
-        });
+            event.exclusionList.includes(req.params.userId) ? {
+                $pull: {
+                    exclusionList: req.params.userId
+                }
+            } : {
+                $push: {
+                    exclusionList: req.params.userId
+                }
+            });
 
         return res.sendStatus(200);
 
-    } catch(e) {
+    } catch (e) {
         next(e);
     }
 }
@@ -684,7 +714,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export async function byMe (req: Request, res: Response, next: NextFunction) {
+export async function byMe(req: Request, res: Response, next: NextFunction) {
     try {
 
         const media = await Models.Media.find({
@@ -695,7 +725,7 @@ export async function byMe (req: Request, res: Response, next: NextFunction) {
 
         return res.json(media);
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }

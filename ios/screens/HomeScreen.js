@@ -18,6 +18,7 @@ import FastImage from "react-native-fast-image";
 import {useNavigation} from "@react-navigation/native";
 import {dateFormatter} from "../utils/time";
 import ProfilePicture from "../Components/ProfilePicture";
+import EventCover from "../Components/EventCover";
 
 export default function HomeScreen({navigation, route}) {
 
@@ -95,7 +96,7 @@ export default function HomeScreen({navigation, route}) {
 		</View>
 		
 		{!firstLoad ? <View style={{flex: 1}}>
-			{events.length === 0 && !query && loading ? <Image style={{marginLeft: "2%", width: "96%", height: "100%", resizeMode: "contain"}} source={require("../assets/timewall.png")} /> : <FlatList
+			{events.length === 0 && !query && !loading ? <Image style={{marginLeft: "2%", width: "96%", height: "100%", resizeMode: "contain"}} source={require("../assets/timewall.png")} /> : <FlatList
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => getEvents(true)} />}
 			data={events}
 			renderItem={(raw) => {
@@ -108,14 +109,7 @@ export default function HomeScreen({navigation, route}) {
 				})}>
 					<View style={{flexDirection: "row", flex: 1, ...styles.shadow, margin: 10, borderRadius: 15, height: 125}}>
 						<View style={{flex: 3}}>
-							<Image style={{
-								width: "100%",
-								height: "100%",
-								borderRadius: 15,
-								objectFit: "cover",
-								borderColor: "black",
-								borderWidth: event.buffer ? 0 : 1,
-							}} source={{uri: "data:image/jpg;base64,"+event.buffer}}/>
+							<EventCover thumbnailUrl={event?.thumbnailUrl} />
 						</View>
 						<View style={{flex: 8, paddingLeft: 10, paddingTop: 10, zIndex: 10}}>
 							<Text style={{

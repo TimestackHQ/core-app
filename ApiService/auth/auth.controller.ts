@@ -1,14 +1,14 @@
-import {NextFunction, Request, Response} from "express";
-import {Models} from "../../shared";
+import { NextFunction, Request, Response } from "express";
+import { Models } from "../../shared";
 import * as jwt from "jsonwebtoken";
 import moment = require("moment");
 
-export async function login (req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const {phoneNumber} = req.body;
+        const { phoneNumber } = req.body;
 
-        let user = await Models.User.findOne({phoneNumber: phoneNumber});
+        let user = await Models.User.findOne({ phoneNumber: phoneNumber });
 
         let newUser = false;
         if (!user) {
@@ -20,7 +20,7 @@ export async function login (req: Request, res: Response, next: NextFunction) {
         };
 
         const smsLogin = await user.initSMSLogin();
-        if(!smsLogin) {
+        if (!smsLogin) {
             return res.status(500).json({
                 message: "Internal Server Error"
             });
@@ -37,18 +37,18 @@ export async function login (req: Request, res: Response, next: NextFunction) {
 
 }
 
-export async function confirmLogin (req: Request, res: Response, next: NextFunction) {
+export async function confirmLogin(req: Request, res: Response, next: NextFunction) {
     try {
-        const {username, code} = req.body;
+        const { username, code } = req.body;
 
-        const user = await Models.User.findOne({phoneNumber: username});
+        const user = await Models.User.findOne({ phoneNumber: username });
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
             });
         }
 
-        if(user.phoneNumber === "+14384934907" && code === "" +
+        if (user.phoneNumber === "+14384934907" && code === "" +
             "" +
             "" +
             "") {
@@ -89,10 +89,10 @@ export async function confirmLogin (req: Request, res: Response, next: NextFunct
 
 }
 
-export async function register (req: Request, res: Response, next: NextFunction) {
+export async function register(req: Request, res: Response, next: NextFunction) {
 
     try {
-        let {authorization} = req.headers;
+        let { authorization } = req.headers;
 
         authorization = String(authorization).replace("Bearer ", "");
         const token: any = jwt.verify(authorization, String(process.env.JWT_SECRET));
@@ -122,7 +122,7 @@ export async function register (req: Request, res: Response, next: NextFunction)
         }
 
         if (req.body.email) {
-            if (await Models.User.countDocuments({email: req.body.email, _id: {$ne: user._id}})) {
+            if (await Models.User.countDocuments({ email: req.body.email, _id: { $ne: user._id } })) {
                 return res.status(400).json({
                     message: "This email is taken"
                 });
@@ -131,7 +131,7 @@ export async function register (req: Request, res: Response, next: NextFunction)
         }
 
         if (req.body.username) {
-            if (await Models.User.countDocuments({username: req.body.username, _id: {$ne: user._id}})) {
+            if (await Models.User.countDocuments({ username: req.body.username, _id: { $ne: user._id } })) {
                 return res.status(400).json({
                     message: "This username is taken"
                 });
@@ -139,7 +139,7 @@ export async function register (req: Request, res: Response, next: NextFunction)
             user.setUsername(req.body.username);
         }
 
-        if(
+        if (
             user.firstName &&
             user.lastName &&
             user.username
@@ -182,9 +182,9 @@ export const check = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-export async function notificationLink (req: Request, res: Response, next: NextFunction) {
+export async function notificationLink(req: Request, res: Response, next: NextFunction) {
     try {
-        const {authorization} = req.headers;
+        const { authorization } = req.headers;
 
         let userId: string | null;
         try {
@@ -199,7 +199,7 @@ export async function notificationLink (req: Request, res: Response, next: NextF
         }, {
             $set: {
                 user: userId,
-            to: req.body.pushToken,
+                to: req.body.pushToken,
             }
         }, {
             upsert: true,

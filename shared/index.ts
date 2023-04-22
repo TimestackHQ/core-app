@@ -1,19 +1,19 @@
 import * as mongoose from "mongoose";
 import * as Models from "./models";
-import {Request, Response, NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
-import {ValidationResult} from "joi";
+import { ValidationResult } from "joi";
 import * as jwt from "jsonwebtoken";
 import * as twilio from "twilio";
 import * as sgMail from "@sendgrid/mail";
 sgMail.setApiKey(String(process.env.SENDGRID_API_KEY));
 import * as Handlebars from "handlebars";
-import {UserSchema} from "./models/User";
-import {EventSchema} from "./models/Event";
+import { UserSchema } from "./models/User";
+import { EventSchema } from "./models/Event";
 import * as fs from "fs";
 import * as path from "path";
 import * as Compress from "./compress";
-import {isObjectIdOrHexString} from "mongoose";
+import { isObjectIdOrHexString } from "mongoose";
 import {
     SecretsManagerClient,
     GetSecretValueCommand,
@@ -26,11 +26,11 @@ import * as GCP from "./cloud/gcp";
 export const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
 
-export function Logger (...args: any[]) {
+export function Logger(...args: any[]) {
     console.log(...args);
 }
 
-export async function config () {
+export async function config() {
 
     try {
 
@@ -84,7 +84,7 @@ export const HTTPValidator = (validator: (arg0: unknown) => ValidationResult) =>
     };
 };
 
-export async function authCheck (req: Request, res: Response, next: NextFunction) {
+export async function authCheck(req: Request, res: Response, next: NextFunction) {
     try {
         const token = String(req.headers.authorization).split(" ")[1]
         jwt.verify(token, String(process.env.JWT_SECRET));
@@ -92,15 +92,15 @@ export async function authCheck (req: Request, res: Response, next: NextFunction
         // @ts-ignore
         req.user = await Models.User.findById(String(decodedToken?._id)).select("-password -events");
 
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).json({
                 message: "Unauthorized"
             });
         }
 
-        if(!req.user.isConfirmed || req.user.isOnWaitList) {
+        if (!req.user.isConfirmed || req.user.isOnWaitList) {
             console.log(req.path)
-            if(req.path.includes("/check")) {
+            if (req.path.includes("/check")) {
                 return res.status(401).json({
                     status: !req.user.isConfirmed ? "unconfirmed" : req.user.isOnWaitList ? "waitlist" : "ok"
                 });
@@ -123,7 +123,7 @@ export const PhoneNumberValidator = () => Joi.extend(require("joi-phone-number")
     format: 'international'
 })
 
-export function sendTextMessage (body: string, to: string, mediaUrl?: string) {
+export function sendTextMessage(body: string, to: string, mediaUrl?: string) {
     const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
     return client.messages
         .create({
@@ -140,7 +140,7 @@ export const sendEmail = (
     subject: string,
     text: string,
     html: string,
-    attachments: {filename: string, type: string, content: Buffer, disposition: string}[] = []
+    attachments: { filename: string, type: string, content: Buffer, disposition: string }[] = []
 ) => sgMail.send({
     to,
     from: {
@@ -154,12 +154,12 @@ export const sendEmail = (
     attachments
 });
 
-export async function notifyOfEvent (event: EventSchema, user: UserSchema, anchor: string) {
+export async function notifyOfEvent(event: EventSchema, user: UserSchema, anchor: string) {
 
     const inviteLink = `${process.env.FRONTEND_URL}/event/${event.publicId}`
 
     try {
-        if(emailRegex.test(anchor)){
+        if (emailRegex.test(anchor)) {
 
             const html = fs
                 .readFileSync(path.join(__dirname, "email/eventInviteTemplate.html"))
@@ -182,7 +182,7 @@ export async function notifyOfEvent (event: EventSchema, user: UserSchema, ancho
                 anchor
             )
         }
-    } catch(err: any) {
+    } catch (err: any) {
         console.log(err.response.body);
     }
 
@@ -205,13 +205,13 @@ export const inviteToEvent = async (
 
     try {
         await sendTextMessage(
-        host.firstName + ' invites you to ' + event.name + ' on Timestack.' +
-                    '\n' +
-                    'Click here to join: ' + `${inviteLink}`,
+            host.firstName + ' invites you to ' + event.name + ' on Timestack.' +
+            '\n' +
+            'Click here to join: ' + `${inviteLink}`,
 
             String(user.phoneNumber),
         )
-    } catch(err: any) {
+    } catch (err: any) {
         Logger(err.response.body);
     }
 
@@ -257,4 +257,20 @@ export {
     Models,
     GCP,
     Compress
+}
+
+
+export function isGreaterVersion(ver1: string, ver2: string) {
+    const v1 = ver1.split('.').map(Number);
+    const v2 = ver2.split('.').map(Number);
+
+    for (let i = 0; i < v1.length; i++) {
+        if (v1[i] > v2[i]) {
+            return true;
+        } else if (v1[i] < v2[i]) {
+            return false;
+        }
+    }
+
+    return false;
 }

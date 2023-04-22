@@ -108,21 +108,18 @@ function ErrorScreen() {
         </Text>
     </View>
 }
+
 export default function App() {
 
-    useEffect( () => {
-        const bundleVersion = "0.22.41";
-        axios.get(frontendUrl+"/api/bundle").then(async (_res) => {
-            if(_res.data.bundleVersion !== bundleVersion) {
-                await Updates.fetchUpdateAsync();
-                await Updates.reloadAsync();
-            }
-        })
-            .catch((_err) => {
-                console.log(_err);
-            });
-
-    }, []);
+    Updates.checkForUpdateAsync().then(async (update) => {
+        if(update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            Updates.reloadAsync();
+        }
+    })
+    .catch((e) => {
+        console.log(e);
+    });
 
 
     const [loaded, error] = useFonts({

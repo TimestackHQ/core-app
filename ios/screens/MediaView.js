@@ -1,4 +1,5 @@
 import * as FileSystem from "expo-file-system";
+import Pinchable from 'react-native-pinchable';
 import ImageZoom from 'react-native-image-pan-zoom';
 import {
 	Image,
@@ -204,10 +205,14 @@ export default function MediaView() {
 						// keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
-								<Image
-									source={{ uri: item?.storageLocation }}
-									style={{ width, height: "100%", resizeMode: "contain" }}
-								/>
+								<Pinchable maximumZoomScale={5}>
+									<Image
+										source={{ uri: item?.storageLocation }}
+										style={{ width, height: "100%", resizeMode: "contain" }}
+									/>
+								</Pinchable>
+
+								
 							</TouchableWithoutFeedback>
 						)}
 						onScroll={(event) => {
