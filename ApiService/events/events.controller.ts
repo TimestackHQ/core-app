@@ -418,7 +418,9 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
             })
         }
 
-        const buffer = req.query?.noBuffer ? undefined : await getBuffer(event);
+        const buffer =
+            req.query?.noBuffer && req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40")
+                ? undefined : await getBuffer(event);
 
         // get cover buffer from google cloud
 
@@ -439,7 +441,8 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 nonUsersInvitees: undefined,
                 buffer,
                 people: event.people(req.user._id),
-                hasPermission: event.hasPermission(req.user._id)
+                hasPermission: event.hasPermission(req.user._id),
+                thumbnailUrl: event?.cover?.thumbnail && req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40") ? await GCP.signedUrl(event.cover.thumbnail) : undefined
             }
         })
     } catch (e) {

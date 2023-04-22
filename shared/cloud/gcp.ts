@@ -12,7 +12,7 @@ export const signedUrl = async (publicId: string): Promise<string> => {
     const options = {
         version: "v4",
         action: "read",
-        expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+        expires: Date.now() + 1500 * 60 * 1000, // 1500 minutes
     };
 
     const object = await storage

@@ -105,7 +105,7 @@ export default function HomeScreen({navigation, route}) {
 					eventId: event.publicId,
 					eventName: event.name,
 					eventLocation: event.location,
-					buffer: event?.buffer
+					thumbnailUrl: event.thumbnailUrl,
 				})}>
 					<View style={{flexDirection: "row", flex: 1, ...styles.shadow, margin: 10, borderRadius: 15, height: 125}}>
 						<View style={{flex: 3}}>

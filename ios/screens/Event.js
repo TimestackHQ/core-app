@@ -99,12 +99,12 @@ export default function EventScreen () {
 
 		console.log(route.params?.buffer)
 
-		setPlaceholder(route.params?.buffer);
+		setPlaceholder(route.params?.thumbnailUrl);
 		setEvent({
 			name: route.params?.eventName,
 		})
 
-		HTTPClient("/events/"+route.params.eventId+String(Boolean(route.params?.buffer) ? "?noBuffer=true" : ""), "GET")
+		HTTPClient("/events/"+route.params.eventId, "GET")
 			.then((response) => {
 
 				if(response.data?.message === "joinRequired") {
@@ -115,7 +115,7 @@ export default function EventScreen () {
 
 				setEvent(response.data.event);
 				setLoaded(true);
-				if(response.data.event?.buffer) setPlaceholder(response.data.event.buffer);
+				if(!route.params?.thumbnailUrl) setPlaceholder(response.data.event.thumbnailUrl);
 				getGallery(true);
 
 				navigation.setOptions({
@@ -250,7 +250,7 @@ export default function EventScreen () {
 	}, [])
 
 
-	return !route.params?.buffer && !loaded ? <View style={{flex: 1, backgroundColor: "white"}}/> : <View style={{flex: 1, backgroundColor: "white"}}>
+	return !route.params?.thumbnailUrl && !loaded ? <View style={{flex: 1, backgroundColor: "white"}}/> : <View style={{flex: 1, backgroundColor: "white"}}>
 		<View style={{zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row"}}>
 			<TouchableWithoutFeedback style={{}} onPress={() => setViewMenu(!viewMenu)}>
 				<Image source={require("../assets/icons/collection/action_button.png")} style={{width: 45, height: 45}} />
@@ -286,7 +286,7 @@ export default function EventScreen () {
 					<View style={{flexDirection: "row"}}>
 						<View style={{flex: 2, margin: 10}}>
 							{event?.buffer || placeholder ? <FastImage source={
-								{uri: "data:image/png;base64,"+placeholder}
+								{uri: placeholder}
 							} style={{
 								width: "100%",
 								height: 200,
