@@ -18,8 +18,14 @@ import {v4} from "uuid";
 export default function Invite() {
 	const router = useRouter();
 
+	const [isIOS, setIsIOS] = React.useState(false);
+
+
 	useEffect(() =>{
 		try {
+			if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+				setIsIOS(true);
+			}
 			if(router.query.eventId) window.location.href = "timestack://event/" + router.query.eventId + "/join?id="+v4();
 		} catch (e) {
 			console.log(e)
@@ -38,6 +44,7 @@ export default function Invite() {
 				<br/>
 				<br/>
 				<h6>Opening app...</h6>
+				{isIOS ? <a href={"https://apps.apple.com/us/app/timestack/id1671064881"} className={"btn btn-primary"}>Download Timestack</a> : <a href={"https://play.google.com/store/apps/details?id=com.timestack"} className={"btn btn-primary"}>Download Timestack</a>}
 
 
 			</div>

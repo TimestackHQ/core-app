@@ -1,6 +1,5 @@
 import * as FileSystem from "expo-file-system";
-import Pinchable from 'react-native-pinchable';
-import ImageZoom from 'react-native-image-pan-zoom';
+import Constants from "expo-constants";
 import {
 	Image,
 	TouchableOpacity,
@@ -25,6 +24,7 @@ import ProfilePicture from "../Components/ProfilePicture";
 import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
 import * as React from "react";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
+import ImageView from "../Components/ImageView";
 
 const { width } = Dimensions.get('window');
 
@@ -82,6 +82,7 @@ export default function MediaView() {
 	const navigator = useNavigation();
 	const route = useRoute();
 	const isFocused = useIsFocused();
+	const [hasZoom, setHasZoom] = useState(false);
 
 	const imageUrl = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=2726&h=2047&dpr=1";
 	const [content, setContent] = useState(route.params?.content);
@@ -125,8 +126,8 @@ export default function MediaView() {
 		}
 	};
 
-
 	useEffect(() => {
+		
 		if(isFocused) {
 			setHasPermission(Boolean(route.params?.hasPermission));
 			setContent(route.params?.content);
@@ -205,12 +206,11 @@ export default function MediaView() {
 						// keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
-								<Pinchable maximumZoomScale={5}>
-									<Image
-										source={{ uri: item?.storageLocation }}
-										style={{ width, height: "100%", resizeMode: "contain" }}
-									/>
-								</Pinchable>
+								{hasZoom ? <ImageView item={item} />
+								: <Image
+								source={{ uri: item?.storageLocation }}
+								style={{ width, height: "100%", resizeMode: "contain" }}
+							/>}
 
 								
 							</TouchableWithoutFeedback>

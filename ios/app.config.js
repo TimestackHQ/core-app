@@ -1,9 +1,11 @@
+const version = "0.22.42";
+
 module.exports = {
   "expo": {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
-    "version": "0.22.41",
+    "version": version,
     "orientation": "portrait",
     "icon": "./assets/icon3.png",
     "userInterfaceStyle": "light",
@@ -81,6 +83,7 @@ module.exports = {
       "eas": {
         "projectId": "e0c26aeb-0710-4a0c-8057-e4415032c70b"
       },
+      "version": "0.22.42",
     },
     "updates": {
       "url": "https://u.expo.dev/e0c26aeb-0710-4a0c-8057-e4415032c70b",
