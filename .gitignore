@@ -3,6 +3,7 @@
 .idea
 .aws
 .github
+.vscode 
 
 node_modules
 ApiService/.dist
