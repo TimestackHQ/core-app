@@ -634,8 +634,10 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
         res.sendStatus(200);
 
+        console.log(...event.users);
+
         await Promise.all(
-            [...event.users].filter(userId => userId.toString() !== req.user._id.toString()).map(async (invitee: any) => {
+            [...event.users].map(async (invitee: any) => {
                 const notification = new Models.Notification({
                     user: invitee,
                     title: event.name,
@@ -643,7 +645,7 @@ export const joinEvent = async (req: any, res: any, next: any) => {
                     data: {
                         type: "eventJoin",
                         payload: {
-                            eventId: event.publicId,
+                            eventId: event._id,
                             userId: req.user._id,
                             userName: req.user.firstName,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId

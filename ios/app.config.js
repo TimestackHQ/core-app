@@ -15,6 +15,7 @@ module.exports = {
       "backgroundColor": "#ffffff"
     },
     "plugins": [
+        "sentry-expo",
         [
           "@config-plugins/ffmpeg-kit-react-native",
         {
@@ -58,7 +59,7 @@ module.exports = {
     },
     "android": {
       "package": "com.timestack.timestack",
-      "versionCode": 14,
+      "versionCode": 15,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon3.png",
         "backgroundColor": "#FFFFFF"
@@ -92,5 +93,16 @@ module.exports = {
     "runtimeVersion": {
       "policy": "sdkVersion",
     }
+  },
+  "hooks": {
+    "postPublish": [
+      {
+        "file": "sentry-expo/upload-sourcemaps",
+        "config": {
+          "organization": "timestack",
+          "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
+        }
+      }
+    ]
   }
 }
