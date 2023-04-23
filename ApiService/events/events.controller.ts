@@ -636,27 +636,27 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
         console.log(...event.users);
 
-        await Promise.all(
-            [...event.users].map(async (invitee: any) => {
-                const notification = new Models.Notification({
-                    user: invitee,
-                    title: event.name,
-                    body: `${req.user.firstName} joined the event`,
-                    data: {
-                        type: "eventJoin",
-                        payload: {
-                            eventId: event._id,
-                            userId: req.user._id,
-                            userName: req.user.firstName,
-                            url: process.env.FRONTEND_URL + "/event/" + event.publicId
-                        }
-                    }
+        // await Promise.all(
+        //     [...event.users].map(async (invitee: any) => {
+        //         const notification = new Models.Notification({
+        //             user: invitee,
+        //             title: event.name,
+        //             body: `${req.user.firstName} joined the event`,
+        //             data: {
+        //                 type: "eventJoin",
+        //                 payload: {
+        //                     eventId: event._id,
+        //                     userId: req.user._id,
+        //                     userName: req.user.firstName,
+        //                     url: process.env.FRONTEND_URL + "/event/" + event.publicId
+        //                 }
+        //             }
 
-                });
-                await notification.save();
-                await notification.notify();
-            })
-        );
+        //         });
+        //         await notification.save();
+        //         await notification.notify();
+        //     })
+        // );
 
     } catch (e) {
         next(e);
