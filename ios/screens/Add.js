@@ -134,8 +134,8 @@ export default function AddScreen({navigation}) {
 	const createEvent = async () => {
 		HTTPClient("/events", "POST", {
 			name: name,
-			startsAt: moment(startDate).format("YYYY-MM-DD"),
-			endsAt: endDate ? moment(endDate).format("YYYY-MM-DD") : undefined,
+			startsAt: moment(startDate),
+			endsAt: endDate ? moment(endDate) : undefined,
 			location: location ? location : undefined,
 			about: about ? about : undefined,
 			invitees: [],
@@ -227,7 +227,7 @@ export default function AddScreen({navigation}) {
 					cancelText={"❌"}
 					theme={"dark"}
 					onConfirm={async (date) => {
-						setStartDate(moment(date).tz(await getTimezone(), true).toDate());
+						setStartDate(moment(date).tz(getTimezone(), true).toDate());
 						if (endDate < startDate) {
 							setEndDate(null)
 						}
@@ -278,7 +278,7 @@ export default function AddScreen({navigation}) {
 					cancelText={"❌"}
 					theme={"dark"}
 					onConfirm={async (date) => {
-						setEndDate(moment(date).tz(await getTimezone(), true).toDate());
+						setEndDate(moment(date).tz(getTimezone(), true).toDate());
 						setEndDateOpen(false)
 					}}
 					onCancel={() => {

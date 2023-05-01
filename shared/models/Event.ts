@@ -32,6 +32,7 @@ export interface EventSchema extends mongoose.Document {
     commonProperties: commonProperties;
     defaultPermission: "editor" | "viewer";
     exclusionList: mongoose.Schema.Types.ObjectId[];
+    mutedList: mongoose.Schema.Types.ObjectId[];
     people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
@@ -133,6 +134,11 @@ const EventSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }],
+    mutedList: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User",
+        default: []
+    },
 
     ...commonProperties,
 });

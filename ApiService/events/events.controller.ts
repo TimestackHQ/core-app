@@ -34,6 +34,8 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
             locationMapsPayload: req.body?.locationMapsPayload,
             cover: cover?._id,
             users: [req.user._id],
+            defaultPermission: req.body?.defaultPermission,
+            exclusionList: req.body.defaultPermission === "viewer" ? [req.user._id] : [],
         });
 
         await event.save();
@@ -57,7 +59,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
                     data: {
                         type: "eventInvite",
                         payload: {
-                            eventId: event._id,
+                            eventId: event,
                             userName: req.user.firstName,
                             eventName: event.name,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId + "/join"
@@ -454,6 +456,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 buffer,
                 people: event.people(req.user._id),
                 hasPermission: event.hasPermission(req.user._id),
+                muted: event.mutedList?.includes(req.user._id.toString()),
                 thumbnailUrl: event?.cover?.thumbnail && req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40") ? await GCP.signedUrl(event.cover.thumbnail) : undefined
             }
         })
@@ -544,7 +547,7 @@ export const updatePeople = async (req: any, res: any, next: any) => {
                         payload: {
                             eventId: event._id,
                             userName: req.user.firstName,
-                            userProfilePictureSource: req.user.profilePictureSource,
+                            userProfilePictureSource: req.user?.profilePictureSource,
                             eventName: event.name,
                             url: process.env.FRONTEND_URL + "/event/" + event.publicId + "/join"
                         }
@@ -648,27 +651,34 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
         console.log(...event.users);
 
-        // await Promise.all(
-        //     [...event.users].map(async (invitee: any) => {
-        //         const notification = new Models.Notification({
-        //             user: invitee,
-        //             title: event.name,
-        //             body: `${req.user.firstName} joined the event`,
-        //             data: {
-        //                 type: "eventJoin",
-        //                 payload: {
-        //                     eventId: event._id,
-        //                     userId: req.user._id,
-        //                     userName: req.user.firstName,
-        //                     url: process.env.FRONTEND_URL + "/event/" + event.publicId
-        //                 }
-        //             }
+        await Promise.all(
+            [...event.users].filter((userId: any) => {
+                if (event?.mutedList?.includes(userId.toString())) {
+                    return false;
+                }
+            })
+                .map(async (invitee: any) => {
+                    const notification = new Models.Notification({
+                        user: invitee,
+                        title: event.name,
+                        body: `${req.user.firstName} joined the event`,
+                        data: {
+                            type: "eventJoin",
+                            payload: {
+                                eventId: event._id,
+                                userId: req.user,
+                                userName: req.user.firstName,
+                                eventName: event.name,
+                                url: process.env.FRONTEND_URL + "/event/" + event.publicId,
+                                userProfilePictureSource: req.user?.profilePictureSource,
+                            }
+                        }
 
-        //         });
-        //         await notification.save();
-        //         await notification.notify();
-        //     })
-        // );
+                    });
+                    await notification.save();
+                    await notification.notify();
+                })
+        );
 
     } catch (e) {
         next(e);
@@ -741,6 +751,49 @@ export async function byMe(req: Request, res: Response, next: NextFunction) {
             .countDocuments();
 
         return res.json(media);
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function muteEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+        const event = await Models.Event.findOne({
+            $or: [
+                {
+                    publicId: req.params.eventId
+                },
+                {
+                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
+                }
+            ]
+        });
+
+        if (!event) {
+            return res.sendStatus(404);
+        }
+
+        if (!event.hasPermission(req.user._id)) {
+            return res.status(401).json({
+                message: "You don't have permission to do this"
+            })
+        }
+
+
+        if (event.mutedList.includes(req.user._id.toString())) {
+            event.mutedList = event.mutedList.filter((user: any) => user.toString() !== req.user._id.toString());
+            await event.save();
+            return res.json({
+                muted: false
+            });
+        }
+
+        event.mutedList.push(req.user._id);
+        await event.save();
+        return res.json({
+            muted: true
+        });
 
     } catch (err) {
         next(err);

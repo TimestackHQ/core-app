@@ -41,6 +41,16 @@ function ReusableHiddenItem(props) {
 	return null;
 }
 
+function formatNumber(num) {
+	if (num >= 1000000) {
+	  return (num / 1000000).toFixed(0) + 'M';
+	}
+	if (num >= 10000) {
+	  return (num / 1000).toFixed(0) + 'K';
+	}
+	return num;
+  }
+
 function AboutViewer({about}) {
 
 	return <Hyperlink onPress={ async (url, text) => {
@@ -357,7 +367,7 @@ export default function EventScreen () {
 							</View>
 							<View style={{flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "flex-end"}}>
 								<Text style={styles.counterNumber} numberOfLines={1}>
-									{event?.revisits}
+									{formatNumber(event?.revisits)}
 								</Text>
 								<Text style={styles.counterText} numberOfLines={1}>
 									{event?.revisits === 1 ? "Revisit" : "Revisits"}
