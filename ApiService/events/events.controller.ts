@@ -649,13 +649,12 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
         res.sendStatus(200);
 
-        console.log(...event.users);
-
         await Promise.all(
             [...event.users].filter((userId: any) => {
                 if (event?.mutedList?.includes(userId.toString())) {
                     return false;
                 }
+                return true;
             })
                 .map(async (invitee: any) => {
                     const notification = new Models.Notification({
