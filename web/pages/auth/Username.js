@@ -100,7 +100,8 @@ export default function Username ({
 							}}
 							name={"username"}
 							value={username}
-							onChange={(e) => setUsername(e.target.value)}
+							pattern="[a-zA-Z0-9]+"
+							onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
 							placeholder="Username"
 							autoCapitalize={"none"}
 							autoFocus={true}

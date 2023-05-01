@@ -131,7 +131,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
         }
 
         if (req.body.username) {
-            const username = req.body.username?.replace(/\s/g, '').toLowerCase()
+            const username = req.body.username?.replace(/\s/g, '').toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
             if (await Models.User.countDocuments({ username, _id: { $ne: user._id } })) {
                 return res.status(400).json({
                     message: "This username is taken"

@@ -1,9 +1,9 @@
-import {NextFunction, Request, Response} from "express";
-import {GCP, Models} from "../../shared";
+import { NextFunction, Request, Response } from "express";
+import { GCP, Models } from "../../shared";
 import * as jwt from "jsonwebtoken";
-import {v4} from "uuid";
+import { v4 } from "uuid";
 
-export async function get (req: Request, res: Response, next: NextFunction) {
+export async function get(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -25,7 +25,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
 
 }
 
-export async function picture (req: Request, res: Response, next: NextFunction) {
+export async function picture(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -45,11 +45,11 @@ export async function picture (req: Request, res: Response, next: NextFunction) 
         }
 
 
-        const fileName = v4()+"."+file.originalname.split(".").pop();
+        const fileName = v4() + "." + file.originalname.split(".").pop();
 
         await GCP.upload(fileName, <Buffer>file.buffer, "timestack-profiles");
 
-        req.user.profilePictureSource = "https://storage.googleapis.com/timestack-profiles/"+fileName;
+        req.user.profilePictureSource = "https://storage.googleapis.com/timestack-profiles/" + fileName;
         await req.user.save();
 
         return res.status(200).json({
@@ -65,16 +65,16 @@ export async function picture (req: Request, res: Response, next: NextFunction) 
 
 }
 
-export async function editProfile (req: Request, res: Response, next: NextFunction) {
+export async function editProfile(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const {username: usernameRaw, firstName, lastName, email, phoneNumber} = req.body;
+        const { username: usernameRaw, firstName, lastName, email, phoneNumber } = req.body;
 
-        const username = usernameRaw?.replace(/\s/g,'').toLowerCase()
+        const username = usernameRaw?.replace(/\s/g, '').toLowerCase().replace(/[^a-zA-Z0-9]/g, '')
 
         if (username && username !== req.user.username) {
-            if(await Models.User.countDocuments({username})) {
+            if (await Models.User.countDocuments({ username })) {
                 return res.status(400).json({
                     message: "This username is taken"
                 });
@@ -91,7 +91,7 @@ export async function editProfile (req: Request, res: Response, next: NextFuncti
         }
 
         if (email && email !== req.user.email) {
-            if(await Models.User.countDocuments({email})){
+            if (await Models.User.countDocuments({ email })) {
                 return res.status(400).json({
                     message: "This email is taken"
                 });
@@ -100,7 +100,7 @@ export async function editProfile (req: Request, res: Response, next: NextFuncti
         }
 
         if (phoneNumber && phoneNumber !== req.user.phoneNumber) {
-            if(await Models.User.countDocuments({phoneNumber})){
+            if (await Models.User.countDocuments({ phoneNumber })) {
                 return res.status(400).json({
                     message: "This phone number is taken"
                 });

@@ -352,15 +352,15 @@ export default function EventScreen () {
 									{event?.mediaCount}
 								</Text>
 								<Text style={styles.counterText} numberOfLines={1}>
-									Memories
+									{event?.mediaCount === 1 ? "Memory" : "Memories"}
 								</Text>
 							</View>
 							<View style={{flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "flex-end"}}>
 								<Text style={styles.counterNumber} numberOfLines={1}>
-									0
+									{event?.revisits}
 								</Text>
 								<Text style={styles.counterText} numberOfLines={1}>
-									Revisits
+									{event?.revisits === 1 ? "Revisit" : "Revisits"}
 								</Text>
 							</View>
 

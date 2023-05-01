@@ -1,9 +1,9 @@
 import * as mongoose from "mongoose";
-import {commonProperties} from "./utils";
-import {v4 as uuid} from "uuid";
-import {MediaSchema} from "./Media";
-import {UserSchema} from "./User";
-import {isObjectIdOrHexString} from "mongoose";
+import { commonProperties } from "./utils";
+import { v4 as uuid } from "uuid";
+import { MediaSchema } from "./Media";
+import { UserSchema } from "./User";
+import { isObjectIdOrHexString } from "mongoose";
 
 export interface EventSchema extends mongoose.Document {
     name: string;
@@ -13,6 +13,10 @@ export interface EventSchema extends mongoose.Document {
     about?: string;
     locationMapsPayload?: any;
     status: "public" | "private";
+    revisits: number;
+    revisitsCache: {
+        [key: string]: Date
+    }
     media: MediaSchema[] & mongoose.Schema.Types.ObjectId[],
     createdBy: mongoose.Types.ObjectId;
     users: mongoose.Types.ObjectId[];
@@ -28,7 +32,7 @@ export interface EventSchema extends mongoose.Document {
     commonProperties: commonProperties;
     defaultPermission: "editor" | "viewer";
     exclusionList: mongoose.Schema.Types.ObjectId[];
-    people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & {type: String})[];
+    people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
 }
@@ -64,6 +68,16 @@ const EventSchema = new mongoose.Schema({
         type: String,
         required: false,
         max: 100000
+    },
+    revisits: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    revisitsCache: {
+        type: Object,
+        required: true,
+        default: {},
     },
     media: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -119,6 +133,7 @@ const EventSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }],
+
     ...commonProperties,
 });
 
@@ -150,8 +165,8 @@ EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
 
 EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.ObjectId) {
 
-    if(this.defaultPermission === "editor") return !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
-    else if(this.defaultPermission === "viewer") return this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+    if (this.defaultPermission === "editor") return !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+    else if (this.defaultPermission === "viewer") return this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
     else return false;
 
 }
