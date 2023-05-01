@@ -19,11 +19,7 @@ import {
 import * as React from "react";
 import * as Linking from "expo-linking";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import FastImage from "react-native-fast-image";
-import * as Network from "expo-network";
-import {createStackNavigator} from "@react-navigation/stack";
 import * as Updates from "expo-updates";
-import axios from "axios";
 import * as Notifications from "expo-notifications";
 import {OverflowMenuProvider} from "react-navigation-header-buttons";
 import * as Sentry from "@sentry/react-native";
@@ -112,15 +108,15 @@ function ErrorScreen() {
 
 function App() {
 
-    Updates.checkForUpdateAsync().then(async (update) => {
-        if(update.isAvailable) {
-            await Updates.fetchUpdateAsync();
-            Updates.reloadAsync();
-        }
-    })
-    .catch((e) => {
-        console.log(e);
-    });
+    // Updates.checkForUpdateAsync().then(async (update) => {
+    //     if(update.isAvailable) {
+    //         await Updates.fetchUpdateAsync();
+    //         Updates.reloadAsync();
+    //     }
+    // })
+    // .catch((e) => {
+    //     console.log(e);
+    // });
 
 
     const [loaded, error] = useFonts({
