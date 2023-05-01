@@ -16,6 +16,7 @@ import EventInviteNotification from "../../components/notifications/EventInviteN
 import NewLoginNotification from "../../components/notifications/NewLoginNotification";
 import {useDispatch} from "react-redux";
 import {NativeNavigate} from "../../utils/nativeBridge";
+import EventJoinNotification from "../../components/notifications/EventJoinNotification";
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US')
@@ -136,6 +137,12 @@ export default function NotificationsPage() {
 									notification={notification}
 									timeAgo={ago}
 								/>;
+								if(type === "eventJoin") return <EventJoinNotification
+									style={{overflowX: "hidden"}}
+									key={index}
+									notification={notification}
+									timeAgo={ago}
+								/>
 								return <EventInviteNotification
 									style={{overflowX: "hidden"}}
 									key={index}
