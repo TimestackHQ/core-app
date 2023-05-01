@@ -82,7 +82,7 @@ export default function MediaView() {
 	const navigator = useNavigation();
 	const route = useRoute();
 	const isFocused = useIsFocused();
-	const [hasZoom, setHasZoom] = useState(false);
+	const [hasZoom, setHasZoom] = useState(true);
 
 	const imageUrl = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=2726&h=2047&dpr=1";
 	const [content, setContent] = useState(route.params?.content);

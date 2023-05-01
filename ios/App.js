@@ -26,6 +26,7 @@ import * as Updates from "expo-updates";
 import axios from "axios";
 import * as Notifications from "expo-notifications";
 import {OverflowMenuProvider} from "react-navigation-header-buttons";
+import * as Sentry from "@sentry/react-native";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -109,7 +110,7 @@ function ErrorScreen() {
     </View>
 }
 
-export default function App() {
+function App() {
 
     Updates.checkForUpdateAsync().then(async (update) => {
         if(update.isAvailable) {
@@ -350,3 +351,6 @@ function Nav() {
 }
 
 
+
+
+export default Sentry.wrap(App);

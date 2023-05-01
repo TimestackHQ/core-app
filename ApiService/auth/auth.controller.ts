@@ -131,12 +131,13 @@ export async function register(req: Request, res: Response, next: NextFunction) 
         }
 
         if (req.body.username) {
-            if (await Models.User.countDocuments({ username: req.body.username, _id: { $ne: user._id } })) {
+            const username = req.body.username?.replace(/\s/g, '').toLowerCase()
+            if (await Models.User.countDocuments({ username, _id: { $ne: user._id } })) {
                 return res.status(400).json({
                     message: "This username is taken"
                 });
             }
-            user.setUsername(req.body.username);
+            user.setUsername(username);
         }
 
         if (

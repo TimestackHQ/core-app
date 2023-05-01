@@ -92,7 +92,7 @@ export default function HomeScreen({navigation, route}) {
 			}}/>
 		</View>
 		<View>
-			<Text style={{fontSize: 30, fontWeight: "bold", marginHorizontal: 10, marginTop: 5, marginBottom: 10, fontFamily: "Red Hat Display Semi Bold"}}>My Timewall</Text>
+			<Text style={{fontSize: 30, marginHorizontal: 10, marginTop: 5, marginBottom: 10, fontFamily: "Red Hat Display Semi Bold"}}>My Timewall</Text>
 		</View>
 		
 		{!firstLoad ? <View style={{flex: 1}}>

@@ -46,7 +46,6 @@ export default function FutureScreen({navigation}) {
 			</Text>
 			<Text style={{
 				fontSize: 15,
-				fontWeight: "bold",
 				fontFamily: "Red Hat Display Semi Bold",
 			}}>{eventsCount} {eventsCount === 1 ? "Event" : "Events"}</Text>
 			<View style={{
@@ -71,7 +70,6 @@ export default function FutureScreen({navigation}) {
 					<View style={{flex: 3}}>
 						<Text style={{
 							fontSize: 17,
-							fontWeight: "bold",
 							fontFamily: "Red Hat Display Bold",
 						}}>
 							{user.firstName} {user.lastName}

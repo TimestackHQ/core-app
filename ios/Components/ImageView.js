@@ -7,6 +7,7 @@ const { width } = Dimensions.get('window');
 
 const ImageViewCore = ({item}) => {
     return <Image
+        fadeDuration={0}
         source={{ uri: item?.storageLocation }}
         style={{ width, height: "100%", resizeMode: "contain" }}
     />
