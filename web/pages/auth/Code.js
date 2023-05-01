@@ -107,7 +107,7 @@ export default function Code ({
 				<p style={{fontSize: "14px", color: "white"}}>
 					Didn&#39;t get it? <b><br/>
 						{timeRemaining ? <span style={{color: "white"}}>Resend in {timeRemaining}s</span> : <a style={{color: "white"}} href={"#"} onClick={() => {
-							initLogin(false);
+							initLogin(phoneNumber, false);
 							setTimeRemaining(30);
 							setCode("");
 							setSpinner();
