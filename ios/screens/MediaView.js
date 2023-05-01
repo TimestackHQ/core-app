@@ -24,8 +24,8 @@ import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-b
 import * as React from "react";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
 import ImageView from "../Components/ImageView";
-
 const { width } = Dimensions.get('window');
+
 
 
 function Headers ({media, hasPermission, deleteMedia}) {
@@ -234,9 +234,16 @@ export default function MediaView() {
 				<TouchableOpacity onPress={async () => {
 					setDownloading(true);
 					try {
-						await CameraRoll.save(media?.storageLocation);
-						// await MediaLibrary.saveToLibraryAsync(FileSystem.documentDirectory + media?.fileName)
-						Alert.alert("Saved", "");
+
+						let imageUrl = media?.storageLocation;
+						const name = media?.storageLocation.split("/").reverse()[0].split("?")[0];
+
+						if (Platform.OS === 'android') {
+							const { uri } = await FileSystem.downloadAsync(imageUrl, FileSystem.documentDirectory + name);
+							imageUrl = uri;
+						} 
+						CameraRoll.save(imageUrl, { type: 'auto', album: "Timestack" })
+							.then((_response) => Alert.alert("Saved"))
 					} catch (err) {
 						Alert.alert("Failed to save", "");
 					}

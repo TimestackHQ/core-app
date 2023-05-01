@@ -4,6 +4,7 @@ import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
 import { getBuffer, standardEventPopulation } from "./events.tools";
 import { ObjectId } from "bson";
+import moment = require("moment");
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -412,6 +413,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
             },
         ]).select("-events");
 
+
         if (!event) {
             return res.status(404).json({
                 message: "Event not found"
@@ -427,7 +429,17 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
         const peopleCount = await Models.Event.findById(event._id).populate([{
             path: "users",
             select: "_id",
-        }])
+        }]);
+
+        if (!event.revisitsCache?.[String(req.user._id)] || moment(event["revisitsCache"][String(req.user._id)]).unix() < moment().subtract(10, "minutes").unix()) {
+            console.log(moment(event["revisitsCache"][String(req.user._id)]).unix(), moment().subtract(10, "minutes").unix(), event.revisitsCache[String(req.user._id)]);
+            event.revisitsCache = {
+                ...event.revisitsCache,
+                [String(req.user._id)]: new Date()
+            }
+            event.revisits = event.revisits + 1;
+            await event.save();
+        }
 
         res.json({
             message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
