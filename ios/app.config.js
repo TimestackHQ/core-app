@@ -5,6 +5,7 @@ module.exports = {
     "name": "Timestack",
     "slug": "timestack",
     "scheme": "timestack",
+    "owner": "timestack",
     "version": version,
     "orientation": "portrait",
     "icon": "./assets/icon3.png",
