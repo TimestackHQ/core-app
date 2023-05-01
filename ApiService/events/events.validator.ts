@@ -12,7 +12,7 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
         cover: Joi.string(),
         invitees: Joi.array().items(isObjectIdJoiValidator).required(),
         locationMapsPayload: Joi.any(),
-        defaultPermission: Joi.string().valid("editor", "viewer").required(),
+        defaultPermission: Joi.string().valid("editor", "viewer"),
     });
 
     return schema.validate(body);
