@@ -1,5 +1,5 @@
 import * as Joi from "joi";
-import {isObjectIdJoiValidator, PhoneNumberValidator} from "../../shared";
+import { isObjectIdJoiValidator, PhoneNumberValidator } from "../../shared";
 
 export const createEventValidator = (body: unknown): Joi.ValidationResult => {
 
@@ -11,7 +11,8 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
         about: Joi.string(),
         cover: Joi.string(),
         invitees: Joi.array().items(isObjectIdJoiValidator).required(),
-        locationMapsPayload: Joi.any()
+        locationMapsPayload: Joi.any(),
+        defaultPermission: Joi.string().valid("editor", "viewer").required(),
     });
 
     return schema.validate(body);

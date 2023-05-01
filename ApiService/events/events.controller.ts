@@ -34,6 +34,8 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
             locationMapsPayload: req.body?.locationMapsPayload,
             cover: cover?._id,
             users: [req.user._id],
+            defaultPermission: req.body?.defaultPermission,
+            exclusionList: req.body.defaultPermission === "viewer" ? [req.user._id] : [],
         });
 
         await event.save();

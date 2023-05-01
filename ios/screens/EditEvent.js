@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import {HeaderButtons} from "react-navigation-header-buttons";
 import * as ImagePicker from "react-native-image-picker";
+import {getTimezone} from "../utils/time";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
@@ -167,8 +168,8 @@ export default function EditEvent () {
 	const updateEvent = async () => {
 		HTTPClient("/events/"+event?._id, "PUT", {
 			name: name,
-			startsAt: moment(startDate).format("YYYY-MM-DD"),
-			endsAt: endDate ? moment(endDate).format("YYYY-MM-DD") : undefined,
+			startsAt: moment(startDate),
+			endsAt: endDate ? moment(endDate) : undefined,
 			location: location ? location : undefined,
 			about: about ? about : undefined,
 			invitees: [],
@@ -296,15 +297,20 @@ export default function EditEvent () {
 							modal
 							mode="date"
 							open={startDateOpen}
-							date={moment(startDate).tz("UTC").toDate()}
-							onConfirm={(date) => {
+							date={moment(startDate).tz(getTimezone(), true).toDate()}
+							onConfirm={async (date) => {
+								setStartDate(moment(date).toDate());
+								if (endDate < startDate) {
+									setEndDate(null)
+								}
 								setStartDateOpen(false)
-								setStartDate(date)
 							}}
 							onCancel={() => {
 								setStartDateOpen(false)
 							}}
 						/>
+
+						
 
 
 
@@ -341,10 +347,10 @@ export default function EditEvent () {
 							modal
 							mode="date"
 							open={endDateOpen}
-							date={endDate ? moment(endDate).tz("UTC").toDate() : moment(startDate).tz("UTC").toDate()}
-							onConfirm={(date) => {
+							date={endDate ? moment(endDate).tz(getTimezone(), true).toDate() : moment(startDate).tz(getTimezone(), true).toDate()}
+							onConfirm={async (date) => {
+								setEndDate(moment(date).toDate());
 								setEndDateOpen(false)
-								setEndDate(date)
 							}}
 							onCancel={() => {
 								setEndDateOpen(false)
