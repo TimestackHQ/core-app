@@ -33,4 +33,4 @@ jobs:
         run: cd ios && yarn install
 
       - name: Publish update
-        run: cd ios && eas update --branch production
+        run: cd ios && eas update --auto
