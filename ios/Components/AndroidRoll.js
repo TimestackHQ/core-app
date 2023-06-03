@@ -90,10 +90,10 @@ export default function AndroidRoll ({onMediaPicked}) {
 
 		Object.values(selected).forEach((item) => mediaSelected.push(item));
 
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV47");
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV470");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV6");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV60");
 		//
-		// await ExpoJobQueue.removeWorker("mediaQueueV47");
+		// await ExpoJobQueue.removeWorker("mediaQueueV6");
 		// await uploadWorker();
 
 		console.log(mediaSelected);
@@ -107,7 +107,7 @@ export default function AndroidRoll ({onMediaPicked}) {
 					type: media.type,
 					eventId: route.params.eventId
 				})
-				ExpoJobQueue.addJob("mediaQueueV47", {
+				ExpoJobQueue.addJob("mediaQueueV6", {
 					filename: moment().unix()+"_"+v4()+"."+media.image.extension,
 					extension: media.image.extension,
 					uri: media.image.uri,
@@ -151,7 +151,7 @@ export default function AndroidRoll ({onMediaPicked}) {
 		(async () => {
 			const images = await CameraRoll.getPhotos({
 				first: 200,
-				assetType: 'Photos',
+				assetType: 'All',
 			});
 			// console.log(images.edges)
 			setMedia(images.edges);
