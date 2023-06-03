@@ -22,7 +22,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import * as Updates from "expo-updates";
 import * as Notifications from "expo-notifications";
 import {OverflowMenuProvider} from "react-navigation-header-buttons";
-import * as Sentry from "@sentry/react-native";
+// import * as Sentry from "@sentry/react-native";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -108,15 +108,15 @@ function ErrorScreen() {
 
 function App() {
 
-    // Updates.checkForUpdateAsync().then(async (update) => {
-    //     if(update.isAvailable) {
-    //         await Updates.fetchUpdateAsync();
-    //         Updates.reloadAsync();
-    //     }
-    // })
-    // .catch((e) => {
-    //     console.log(e);
-    // });
+    Updates.checkForUpdateAsync().then(async (update) => {
+        if(update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            Updates.reloadAsync();
+        }
+    })
+    .catch((e) => {
+        console.log(e);
+    });
 
 
     const [loaded, error] = useFonts({
@@ -348,5 +348,5 @@ function Nav() {
 
 
 
-
-export default Sentry.wrap(App);
+export default App;
+// export default Sentry.wrap(App);

@@ -10,7 +10,6 @@ ApiService/.dist
 mylab
 
 Timestack.app
-ios/ios
 build*
 
 *.log

@@ -10,7 +10,8 @@ import {
 	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
-	View
+	View,
+	Switch
 } from "react-native";
 import KeyboardListener from 'react-native-keyboard-listener';
 import FastImage from "react-native-fast-image";
@@ -42,6 +43,8 @@ export default function AddScreen({navigation}) {
 	const [about, setAbout] = React.useState("");
 	const [uploadedCover, setUploadedCover] = React.useState(null);
 	const [locationMapsPayload, setLocationMapsPayload] = React.useState(null);
+	const [isEnabled, setIsEnabled] = React.useState(true);
+
 
 
 	const [loadingCover, setLoadingCover] = React.useState(false);
@@ -140,7 +143,8 @@ export default function AddScreen({navigation}) {
 			about: about ? about : undefined,
 			invitees: [],
 			cover: uploadedCover ? uploadedCover.media.publicId : undefined,
-			locationMapsPayload: locationMapsPayload ? locationMapsPayload : undefined
+			locationMapsPayload: locationMapsPayload ? locationMapsPayload : undefined,
+			defaultPermission: isEnabled ? "editor" : "viewer"
 		}).then((res) => {
 			const {event} = res.data;
 
@@ -190,7 +194,25 @@ export default function AddScreen({navigation}) {
 					}}/>
 
 				</TouchableOpacity>
+				<Text style={{
+					fontFamily: "Red Hat Display Semi Bold",
+					fontSize: 15,
+					color: "gray",
+					width: "90%",
+					position: "absolute",
+					top: keyBoardOpen ? -1000 : 95,
+				}}>{isEnabled ? "Anyone that joins will be an editor by default." : "Anyone that joins will be a viewer by default."}</Text>
+				<Switch
+					style={{
+						position: "absolute",
+						top: keyBoardOpen ? -1000 : 120,
+					}}
+					trackColor={{true: 'black', false: "white"}}
+					thumbColor={isEnabled ? '#f4f3f4': 'black'}
+					onValueChange={() => setIsEnabled(previousState => !previousState)}
+					value={isEnabled}
 
+      			/>
 				<Text
 					multiline={true}
 
@@ -201,11 +223,11 @@ export default function AddScreen({navigation}) {
 						color: "gray",
 						width: "90%",
 						position: "absolute",
-						top: keyBoardOpen ? -1000 : 150,
+						top: keyBoardOpen ? -1000 : 170,
 
 					}}
 				>{startDate && endDate ? "From" : "Start date*"}</Text>
-				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 170, width: "100%"}} onPress={() => setStartDateOpen(true)}>
+				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 190, width: "100%"}} onPress={() => setStartDateOpen(true)}>
 					<Text
 						multiline={true}
 
@@ -245,13 +267,13 @@ export default function AddScreen({navigation}) {
 						fontFamily: "Red Hat Display Semi Bold",
 						position: "absolute",
 						fontSize: 15,
-						top: keyBoardOpen ? -1000 : 220,
+						top: keyBoardOpen ? -1000 : 240,
 						color: "gray",
 						width: "90%",
 
 					}}
 				>{startDate && endDate ? "To" : "End date"}</Text>: null}
-				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 240, width: "100%", zIndex: -3000}} onPress={() => {
+				<TouchableOpacity style={{position: "absolute", top: keyBoardOpen ? -1000 : 260, width: "100%", zIndex: -3000}} onPress={() => {
 					setEndDateOpen(true)
 				}}>
 					<Text
@@ -294,7 +316,7 @@ export default function AddScreen({navigation}) {
 						fontSize: 15,
 
 						position: "absolute",
-						top: keyBoardOpen ? 100 : 290,
+						top: keyBoardOpen ? 120 : 310,
 						color: "gray",
 						width: "90%",
 						zIndex: 1001
@@ -317,7 +339,7 @@ export default function AddScreen({navigation}) {
 							margin: 0,
 							padding: 0,
 							backgroundColor: "white",
-							top: keyBoardOpen ? 120 : 314,
+							top: keyBoardOpen ? 140 : 324,
 							width: "90%",
 							zIndex: 1000,
 						},
@@ -379,7 +401,7 @@ export default function AddScreen({navigation}) {
 						fontFamily: "Red Hat Display Semi Bold",
 						position: "absolute",
 						fontSize: 15,
-						top: keyBoardOpen ? 160 : 350,
+						top: keyBoardOpen ? 180 : 360,
 						color: "gray",
 						width: "90%",
 					}}
@@ -394,7 +416,7 @@ export default function AddScreen({navigation}) {
 						fontFamily: "Red Hat Display Semi Bold",
 						position: "absolute",
 						fontSize: about ? 18: 28,
-						top: keyBoardOpen ? 180 : 370,
+						top: keyBoardOpen ? 200 : 370,
 						width: "90%",
 						zIndex: 1
 					}}

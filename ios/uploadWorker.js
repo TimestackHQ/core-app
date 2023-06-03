@@ -9,92 +9,93 @@ import * as FileSystem from "expo-file-system";
 import moment from "moment";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
 import {Platform} from "react-native";
+import * as TimestackCoreModule from "./modules/timestack-core";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
 export default async function uploadWorker () {
 	try {
 
-			await ExpoJobQueue.addWorker("mediaQueueV30", async (media) => {
+			// await ExpoJobQueue.removeJob("mediaQueueV6");
+			ExpoJobQueue.addWorker("mediaQueueV6", async (media) => {
 			return new Promise(async (resolve, reject) => {
 				try {
+
+					console.log(media)
 					console.log("------> ", media.uri, FileSystem.documentDirectory + media.filename);
 
+					const mediaList = [];
+
+					console.log(media.uri);
+
 					if(Platform.OS === "ios") {
-						const dev = await CameraRoll.iosGetImageDataById(media.uri);
-						media.uri = dev.node.image.filepath;
-					} else {
+						if(media.type === "video") {
+							console.log(await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type, 1080, 1080))
+							const videoPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type, 1080, 1080)).compressedURL;
+							const thumbnailPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 300)).compressedURL;
+							mediaList.push(videoPath, thumbnailPath);
+							console.log(mediaList);
+						}
+
+						else {
+							console.log(await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type));
+							const imagePath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type)).compressedURL;
+							console.log(imagePath);
+							const thumbnailPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 300, 300)).compressedURL;
+							mediaList.push(imagePath, thumbnailPath);
+						}
+					} else if (Platform.OS === "android") {
+						
 						await FileSystem.copyAsync({
 							from: media.uri,
 							to: FileSystem.documentDirectory + media.filename
 						});
 						media.uri = FileSystem.documentDirectory + media.filename;
-					}
-					// } else {
-					// 	await FileSystem.copyAsync({
-					// 		from: media.uri,
-					// 		to: FileSystem.documentDirectory + media.filename
-					// 	});
-					// 	media.uri = FileSystem.documentDirectory + media.filename;
-					//
-					// }
 
-					// console.log("IOS_PATH", dev);
+						const mediaId = uuid.v4();
 
+						if(media.type === "video") {
+							const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1080, 600);
+							// const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
+							const snapshotPath = await generateScreenshot(mediaId, media.uri);
+							mediaList.push(
+								videoPath, 
+								// videoPath
+								// thumbnailPath, 
+								snapshotPath
+							);
+							console.log(mediaList);
+						}
 
+						else {
+							const imagePath = await processPhoto(mediaId, media.uri, 5, false);
+							const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
+							mediaList.push(imagePath, thumbnailPath);
+						}
 
-
-					if(media.extension === "heic") {
-						const converted = await RNHeicConverter.convert({
-							path: media.uri
-						});
-
-						media.uri = converted.path;
-						media.extension = "jpg";
-					} else {
-					}
-
-
-
-					const mediaId = uuid.v4();
-
-					const mediaList = [];
-
-					if(media.type === "video") {
-						const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1080, 600);
-						const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
-						const snapshotPath = await generateScreenshot(mediaId, media.uri);
-						mediaList.push(videoPath, thumbnailPath, snapshotPath);
 						console.log(mediaList);
-					}
 
-					else {
-						const imagePath = await processPhoto(mediaId, media.uri, 5, false);
-						const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
-						mediaList.push(imagePath, thumbnailPath);
 					}
 
 					const formData = new FormData();
 					formData.append('metadata', JSON.stringify({
 						timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
 					}));
+
 					formData.append('media', {
 						uri: mediaList[0],
-						name: mediaList[0].split("/").pop(),
-						type: `image/${media.extension}`
+						name: 
+							Platform.OS === "ios" ? mediaList[0].split("/").pop()+String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[0].split("/").pop(),
+						type: `image/${media.type === "video" ? "mp4" : "jpeg"}`
 					});
 					formData.append('thumbnail', {
 						uri: mediaList[1],
-						name: mediaList[1].split("/").pop(),
-						type: `image/${media.extension}`
+						name: 
+							Platform.OS === "ios" ? mediaList[1].split("/").pop()+String(media.type === "video" ? ".mp4" : ".jpeg"): mediaList[1].split("/").pop(),
+						type: `image/${media.type === "video" ? "mp4" : "jpeg"}`
 					});
-					if(media.type === "video") {
-						formData.append('snapshot', {
-							uri: mediaList[2],
-							name: mediaList[2].split("/").pop(),
-							type: `video/${media.extension}`
-						});
-					}
+
+					formData.append('type', media.type === "video" ? "video/mp4" : "image/jpeg");
 
 					try {
 						const xhr = new XMLHttpRequest();
@@ -112,7 +113,6 @@ export default async function uploadWorker () {
 						console.log(err);
 					}
 
-
 					resolve(true);
 
 				} catch (err) {
@@ -120,7 +120,6 @@ export default async function uploadWorker () {
 					console.log("QUEUE ERROR", err);
 
 					resolve(true);
-
 
 				}
 

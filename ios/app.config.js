@@ -1,4 +1,4 @@
-const version = "0.22.42";
+const version = "0.23.1";
 
 module.exports = {
   "expo": {

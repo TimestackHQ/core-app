@@ -1,4 +1,4 @@
-FROM node:17
+FROM node:18
 
 # Create app directory
 WORKDIR /app
@@ -6,7 +6,6 @@ WORKDIR /app
 COPY ./.dist ./
 
 RUN apt update -y
-RUN apt install ffmpeg -y
 
 USER root
 RUN chmod -R 777 ./

@@ -11,8 +11,8 @@ export const getTimezone = () => {
 export function dateFormatter(startDate, endDate = null) {
 	let output = "";
 
-	const start = moment(startDate, "MMMM DD YYYY").tz("UTC");
-	const end = endDate ? moment(endDate, "MMMM DD YYYY").tz("UTC") : null;
+	const start = moment(startDate, "MMMM DD YYYY");
+	const end = endDate ? moment(endDate, "MMMM DD YYYY") : null;
 
 	output += start.format("MMMM D");
 	if (start.year() !== end?.year()) {
