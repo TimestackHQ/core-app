@@ -1,8 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {FlatList, Image, StatusBar, View, Text} from "react-native";
+import {Image, StatusBar, View, Text, Platform, Alert} from "react-native";
 import {NavigationContainer, useNavigation, useRoute} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
+import * as TimestackCoreModule from './modules/timestack-core';
 import {useFonts} from "expo-font";
 import Constants from "expo-constants";
 import uploadWorker from "./uploadWorker";
@@ -22,7 +23,8 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import * as Updates from "expo-updates";
 import * as Notifications from "expo-notifications";
 import {OverflowMenuProvider} from "react-navigation-header-buttons";
-import * as Sentry from "@sentry/react-native";
+import axios from 'axios';
+// import * as Sentry from "@sentry/react-native";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -62,19 +64,6 @@ function AuthScreen({navigation, route}) {
 
 function ErrorScreen() {
 
-    const navigation = useNavigation();
-    const route = useRoute();
-
-    // useEffect(() => {
-    //     const network = setInterval(async () => {
-    //         const net = await Network.getNetworkStateAsync();
-    //         if(net.isInternetReachable && net.isConnected) {
-    //             navigation.goBack();
-    //         }
-    //     }, 1000);
-    //
-    //     clearInterval(network)
-    // }, []);
     return <View style={{
         flex: 1,
         flexDirection: 'column',
@@ -108,15 +97,57 @@ function ErrorScreen() {
 
 function App() {
 
-    // Updates.checkForUpdateAsync().then(async (update) => {
-    //     if(update.isAvailable) {
-    //         await Updates.fetchUpdateAsync();
-    //         Updates.reloadAsync();
-    //     }
-    // })
-    // .catch((e) => {
-    //     console.log(e);
-    // });
+    axios(frontendUrl+"/api/bundle").then((response) => {
+        let NativeClientVersion = "";
+        try {
+            NativeClientVersion = TimestackCoreModule.NativeClientVersion ? TimestackCoreModule.NativeClientVersion : "";
+        } catch (e) {
+            console.log(e);
+        }
+
+        console.log("NativeClientVersion", NativeClientVersion);
+
+        if(response.data.clientVersion[Platform.OS] !== NativeClientVersion) {
+            console.log("Bundle version mismatch. Current version: "+NativeClientVersion+". Server version: "+response.data.clientVersion[Platform.OS]);
+
+            if(response.data.backwardsCompatibleClients[Platform.OS].includes(NativeClientVersion)) {
+                console.log("Client is backwards compatible. Downloading and reloading Expo Update.");
+                Updates.fetchUpdateAsync().then(() => {
+                    Updates.reloadAsync();
+                });
+            } else {
+                setTimeout(() => {
+                    Alert.alert(
+                        "New update",
+                        "We've released new features on Timestack. Make sure to update your app to get the latest updates.",
+                        [
+                            {
+                                text: "Update",
+                                onPress: async () => {
+                                    await AsyncStorage.setItem("@update5", "true");	
+                                    Platform.OS === "ios" ? Linking.openURL("https://apps.apple.com/us/app/timestack/id1671064881") : Linking.openURL("https://play.google.com/store/apps/details?id=com.timestack.timestack");
+                                    Updates.reloadAsync();
+                                }
+                            }
+                        ],
+                        {cancelable: false}
+                    );
+                }, 1000);
+            }
+                    
+            Updates.reloadAsync();
+        }
+    });
+    
+    Updates.checkForUpdateAsync().then(async (update) => {
+        if(update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            Updates.reloadAsync();
+        }
+    })
+    .catch((e) => {
+        console.log(e);
+    });
 
 
     const [loaded, error] = useFonts({
@@ -348,5 +379,5 @@ function Nav() {
 
 
 
-
-export default Sentry.wrap(App);
+export default App;
+// export default Sentry.wrap(App);

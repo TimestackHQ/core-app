@@ -233,7 +233,7 @@ export default function Upload ({}) {
 											style: "cancel"
 										},
 										{ text: "OK", onPress: async () => {
-											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV30");
+											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV6");
 											setPendingMedia([]);
 										}}
 									]

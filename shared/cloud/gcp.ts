@@ -10,9 +10,10 @@ export const storage = new Storage({
 
 export const signedUrl = async (publicId: string): Promise<string> => {
     const options = {
-        version: "v4",
+        version: "v2",
         action: "read",
-        expires: Date.now() + 1500 * 60 * 1000, // 1500 minutes
+        expires: Date.now() + 1500 * 60 * 1000, // 1500 minutes,
+
     };
 
     const object = await storage

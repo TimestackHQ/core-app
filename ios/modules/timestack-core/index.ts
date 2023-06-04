@@ -9,12 +9,10 @@ import { ChangeEventPayload, TimestackCoreViewProps } from './src/TimestackCore.
 // Get the native constant value.
 export const Name = TimestackCoreModule.Name;
 
-export function hello(): string {
-  return TimestackCoreModule.hello();
-}
+export const NativeClientVersion = TimestackCoreModule.NativeClientVersion;
 
-export async function fetchImages(page: number, pageSize: number) {
-  return await TimestackCoreModule.fetchImages(page, pageSize);
+export async function fetchImage(assetIdentifier: string, mediaTypeString: string, maxWidth?: number, maxHeight?: number, videoLength?: number) {
+  return await TimestackCoreModule.fetchImage(assetIdentifier, mediaTypeString, maxWidth, maxHeight, videoLength);
 }
 
 export { TimestackCoreView, TimestackCoreViewProps, ChangeEventPayload };

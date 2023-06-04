@@ -7,6 +7,7 @@ import {
 	Text,
 	Platform,
 	Linking,
+	VirtualizedList,
 	Alert, SafeAreaView, ActivityIndicator, PermissionsAndroid
 } from "react-native";
 import {useEffect, useState} from "react";
@@ -22,6 +23,7 @@ import moment from "moment";
 import {v4} from "uuid";
 import * as Network from "expo-network";
 import {NetworkStateType} from "expo-network";
+import { fetchImages } from "../modules/timestack-core";
 
 function formatDuration(durationInSeconds) {
 	if(!durationInSeconds) return "";
@@ -73,29 +75,32 @@ export default function Roll () {
 
 	const getMedia = async (initial) => {
 
-		await hasAndroidPermission()
+		await hasAndroidPermission();
 
-		const newMedia = await CameraRoll.getPhotos({
-			first: initial ? 300 : 150,
-			after: cursor,
-		});
+		const mediaList = await fetchImages(media.length / 300, 300);
+		// console.log(mediaList);
 
-		setMedia([...media, ...newMedia.edges]);
-		setCursor(newMedia.page_info?.end_cursor);
+		// const newMedia = await CameraRoll.getPhotos({
+		// 	first: initial ? 300 : 150,
+		// 	after: cursor,
+		// });
+
+		setMedia([...media, ...mediaList.media]);
+
 	}
 
 	const save = async () => {
 		const mediaSelected = [];
 
 		selected.map((uri) => {
-			const file = media.find((media) => media.node.image.uri === uri);
-			mediaSelected.push(file.node);
+			const file = media.find((media) => media.image.uri === uri);
+			mediaSelected.push(file);
 		});
 
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV30");
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV300");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV6");
+		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV60");
 		//
-		// await ExpoJobQueue.removeWorker("mediaQueueV30");
+		// await ExpoJobQueue.removeWorker("mediaQueueV6");
 		// await uploadWorker();
 
 		console.log(mediaSelected);
@@ -109,7 +114,7 @@ export default function Roll () {
 					type: media.type,
 					eventId: route.params.eventId
 				})
-				ExpoJobQueue.addJob("mediaQueueV30", {
+				ExpoJobQueue.addJob("mediaQueueV6", {
 					filename: moment().unix()+"_"+v4()+"."+media.image.extension,
 					extension: media.image.extension,
 					uri: media.image.uri,
@@ -148,12 +153,12 @@ export default function Roll () {
 	}
 
 	useEffect(() => {
-		getMedia(true).then((err) => {
+		getMedia(true).then(async (err) => {
 			console.log(err)
-
 
 		})
 			.catch((err) => {
+				console.log(err);
 				Alert.alert("Permission", "Please allow access to your photos and videos in order to upload them.", [
 					{
 						text: "Cancel",
@@ -184,60 +189,87 @@ export default function Roll () {
 			</TouchableOpacity>
 		</View>
 		<View style={{flex: 25}}>
-			<FlatList
+			<VirtualizedList
 				data={media}
 				numColumns={3}
 				onEndReached={getMedia}
 				onEndReachedThreshold={1.5}
-				renderItem={({item}) => <View style={{flex: 5, width: "33%", height: 120, margin: 1, backgroundColor: "#dedede"}}
-				>
-					<View style={{
-						position: 'absolute',
-						left: 5,
-						bottom: 3,
-						zIndex: 1,
-						backgroundColor: 'transparent',
-					}}>
-						<Text style={{
-							fontSize: 16,
-							fontFamily: "Red Hat Display Semi Bold",
-							color: "white",
-							textShadowColor: 'black',
-							textShadowRadius: 5,
-						}}>
-							{formatDuration(item.node.image.playableDuration)}
-						</Text>
-					</View>
-					{selected.includes(item.node.image.uri) ? <View
-						style={{
-							position: 'absolute',
-							right: 5,
-							bottom: 5,
-							zIndex: 1,
-							backgroundColor: 'transparent',
-						}}
-					>
-						<Image
-							source={require("../assets/icons/select.png")}
-							style={{width: 20, height: 20, opacity: 1, borderWidth: 1,borderColor: "white", borderRadius: 10}}
-						/>
-					</View> : null}
-					<TouchableWithoutFeedback onPress={() => {
-						if (selected.includes(item.node.image.uri)) {
-							setSelected(selected.filter((uri) => uri !== item.node.image.uri));
-						}
-						else {
-							setSelected([...selected, item.node.image.uri]);
-						}
-					}}>
+				getItemCount={(data) => data.length}
+				keyExtractor={(item, index) => index.toString()}
+				getItem={(data, index) => {
+					let items = []
+					for (let i = 0; i < 3; i++) {
+					  const item = data[index * 3 + i];
+					  item && items.push(item)
+					}
+					return items
+				}}
+				renderItem={({item: items, index}) => {
 
-						<Image
-							source={{uri: item.node.image.uri}}
-							style={{width: "100%", height: "100%", margin: 0.5,
-								opacity: selected.includes(item.node.image.uri) ? 0.5 : 1}}
-						/>
-					</TouchableWithoutFeedback>
-				</View>}
+					return (
+					  <View key={index} style={{flexDirection: 'row'}}>
+						{/* <Text
+							style={{
+								fontSize: 15,
+								fontFamily: "Red Hat Display Semi Bold",
+							}}
+						>{JSON.stringify(items)}</Text> */}
+						{items.map((item, i) => (
+				
+						<View style={{flex: 5, width: "33%", height: 120, margin: 1, backgroundColor: "#dedede"}}
+						>
+							<View style={{
+								position: 'absolute',
+								left: 5,
+								bottom: 3,
+								zIndex: 1,
+								backgroundColor: 'transparent',
+							}}>
+								<Text style={{
+									fontSize: 16,
+									fontFamily: "Red Hat Display Semi Bold",
+									color: "white",
+									textShadowColor: 'black',
+									textShadowRadius: 5,
+								}}>
+									{formatDuration(item.image.playableDuration)}
+								</Text>
+							</View>
+							{selected.includes(item.image.uri) ? <View
+								style={{
+									position: 'absolute',
+									right: 5,
+									bottom: 5,
+									zIndex: 1,
+									backgroundColor: 'transparent',
+								}}
+							>
+								<Image
+									fadeDuration={300}
+									source={require("../assets/icons/select.png")}
+									style={{width: 20, height: 20, opacity: 1, borderWidth: 1,borderColor: "white", borderRadius: 10}}
+								/>
+							</View> : null}
+							<TouchableWithoutFeedback onPress={() => {
+								if (selected.includes(item.image.uri)) {
+									setSelected(selected.filter((uri) => uri !== item.image.uri));
+								}
+								else {
+									setSelected([...selected, item.image.uri]);
+								}
+							}}>
+
+								<Image
+									source={{uri: item.image.uri}}
+									style={{width: "100%", height: "100%", margin: 0.5,
+										opacity: selected.includes(item.image.uri) ? 0.5 : 1}}
+								/>
+							</TouchableWithoutFeedback>
+						</View>
+						))}
+					  </View>
+					)
+				}}
 				// ListFooterComponent={() => <SafeAreaView>
 				// 	<ActivityIndicator color={"black"} animating={cursor ? true : false} style={{marginTop: 5}} />
 				// </SafeAreaView>}

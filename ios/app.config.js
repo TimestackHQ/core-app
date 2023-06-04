@@ -1,4 +1,4 @@
-const version = "0.22.42";
+const version = "0.23.2";
 
 module.exports = {
   "expo": {
@@ -60,7 +60,7 @@ module.exports = {
     },
     "android": {
       "package": "com.timestack.timestack",
-      "versionCode": 15,
+      "versionCode": 16,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon3.png",
         "backgroundColor": "#FFFFFF"

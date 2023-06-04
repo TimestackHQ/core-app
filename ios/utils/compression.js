@@ -18,36 +18,33 @@ const getResultPath = async () => {
 	return `${videoDir}`;
 }
 
-export async function processVideo (mediaId, mediaUri, fps, compression, height, duration) {
-
-
+export async function processVideo(mediaId, mediaUri, fps, compression, height, duration) {
 	const path = await getResultPath();
-	const command =
-		`-i ${mediaUri} ` +
-		`-c:v libx264 ` +
-		`-vf scale=-1:${String(height)} ` +
-		`-r ${fps} ` +
-		`-crf ${compression} ` +
-		String(duration ? `-t ${duration ? duration : 10} ` : "") +
-		`${path}${mediaId}.mp4 ` +
-		`-y`;
-
+	const command = `-i ${mediaUri} ` +
+	  `-c:v libx264 ` + // Use a more efficient codec
+	  `-vf scale=-2:${height} ` + // Resize input video to the desired height
+	  `-crf ${compression} ` +
+	  `${duration ? `-t ${duration} ` : ""}` +
+	  `${path}${mediaId}.mp4 ` +
+	  `-y`;
+  
 	try {
-		await new Promise((resolve) => {
-			FFmpegKit.execute(command)
-				.then((result) => {
-					resolve(result);
-				})
-				.catch((err) => {
-					// throw err;
-				});
-		});
+	  await new Promise((resolve) => {
+		FFmpegKit.execute(command)
+		  .then((result) => {
+			resolve(result);
+		  })
+		  .catch((err) => {
+			// throw err;
+		  });
+	  });
 	} catch (err) {
-		console.log(err);
+	  console.log(err);
 	}
+  
 	return `${path}${mediaId}.mp4`;
-
-}
+  }
+  
 
 export async function generateScreenshot (mediaId, mediaUri) {
 
@@ -79,6 +76,8 @@ export async function generateScreenshot (mediaId, mediaUri) {
 
 
 export async function processPhoto (mediaId, mediaUri, compression, thumbnail) {
+
+	console.log("sl;dfk;kfsd;lfds mediaUri", mediaUri)
 
 	const path = await getResultPath();
 	let command;

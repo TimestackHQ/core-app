@@ -1,6 +1,6 @@
-import {NextFunction, Request, Response} from "express";
-import {Compress, GCP, Logger, Models} from "../../shared";
-import {v4 as uuid} from 'uuid';
+import { NextFunction, Request, Response } from "express";
+import { Compress, GCP, Logger, Models } from "../../shared";
+import { v4 as uuid } from 'uuid';
 import * as mime from "mime-types";
 // @ts-ignore
 import * as Ffmpeg from "fluent-ffmpeg";
@@ -10,7 +10,7 @@ import moment = require("moment");
 
 const bucket = GCP.storage.bucket(String(process.env.GCP_STORAGE_BUCKET));
 
-export async function uploadCover (req: Request, res: Response, next: NextFunction) {
+export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -25,7 +25,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 
 
         await GCP.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
-        if(snapshot) {
+        if (snapshot) {
             await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
         }
 
@@ -72,7 +72,7 @@ export async function uploadCover (req: Request, res: Response, next: NextFuncti
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const {publicId} = req.params;
+        const { publicId } = req.params;
         const media = await Models.Media.findOne({
             publicId,
         });
@@ -81,15 +81,15 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
             return res.sendStatus(404);
         }
 
-        if(media?.snapshot && req.query?.snapshot == "true") {
+        if (media?.snapshot && req.query?.snapshot == "true") {
             return res.send(await GCP.signedUrl(media.snapshot));
         }
 
-        if(media?.thumbnail && (req.query?.thumbnail == "true" || req.query?.snapshot == "true")) {
+        if (media?.thumbnail && (req.query?.thumbnail == "true" || req.query?.snapshot == "true")) {
             return res.send(await GCP.signedUrl(media.thumbnail));
         }
 
-        if(media?.thumbnail === media?.storageLocation) {
+        if (media?.thumbnail === media?.storageLocation) {
             return res.send(await GCP.signedUrl(media.thumbnail));
         }
 
@@ -105,14 +105,14 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
 
 export const viewMedia = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {eventId, mediaId} = req.params;
+        const { eventId, mediaId } = req.params;
         const event = await Models.Event.countDocuments({
             _id: eventId,
             users: {
                 $in: [req.user._id]
             }
         });
-        if(!event) {
+        if (!event) {
             return res.sendStatus(404);
         }
         const media = await Models.Media.findOne({
@@ -151,9 +151,11 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 
 }
 
-export async function upload (req: Request, res: Response, next: NextFunction) {
+export async function upload(req: Request, res: Response, next: NextFunction) {
 
     try {
+
+        console.log(req.body)
 
         const event = await Models.Event.findOne({
             _id: req.params.eventId,
@@ -169,10 +171,10 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             ]
         });
 
-        if(!event) {
+        if (!event) {
             return res.sendStatus(404);
         }
-        else if(!event.hasPermission(req.user._id)){
+        else if (!event.hasPermission(req.user._id)) {
             return res.status(403).json({
                 message: "You don't have permission to upload to this event"
             });
@@ -187,7 +189,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
 
         await GCP.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
-        if(snapshot) {
+        if (snapshot) {
             await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
         }
 
@@ -198,7 +200,7 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
             thumbnail: thumbnail.originalname,
             snapshot: snapshot ? snapshot.originalname : undefined,
             // @ts-ignore
-            type: file.mimetype,
+            type: req.body.type ? req.body.type : file.mimetype.split("/")[0],
             group: "event",
             user: req.user._id,
             metadata: {
@@ -241,11 +243,11 @@ export async function upload (req: Request, res: Response, next: NextFunction) {
 
 
 
-export async function getUploadedMedia (req: Request, res: Response, next: NextFunction) {
+export async function getUploadedMedia(req: Request, res: Response, next: NextFunction) {
     try {
 
 
-        if(!req.query?.gte) {
+        if (!req.query?.gte) {
             return res.status(400).json({
                 message: "gte is required"
             });
@@ -258,7 +260,7 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
             }
         });
 
-        if(!event) return res.sendStatus(404);
+        if (!event) return res.sendStatus(404);
 
         const newMedia = await Models.Media.find({
             event: event._id,
@@ -269,19 +271,19 @@ export async function getUploadedMedia (req: Request, res: Response, next: NextF
             }
         })
             .select("publicId")
-            .sort({createdAt: 1});
+            .sort({ createdAt: 1 });
 
         return res.json({
             media: newMedia.map(m => m.publicId),
             mediaCount: event.media.length
         });
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }
 
-export async function deleteMemories (req: Request, res: Response, next: NextFunction) {
+export async function deleteMemories(req: Request, res: Response, next: NextFunction) {
     try {
 
         const event = await Models.Event.findOne({
@@ -291,10 +293,10 @@ export async function deleteMemories (req: Request, res: Response, next: NextFun
             }
         });
 
-        if(!event) {
+        if (!event) {
             return res.sendStatus(404);
         }
-        else if(!event.hasPermission(req.user._id)){
+        else if (!event.hasPermission(req.user._id)) {
             return res.status(403).json({
                 message: "You don't have permission to delete media from this event"
             });
@@ -323,13 +325,13 @@ export async function deleteMemories (req: Request, res: Response, next: NextFun
         try {
             await Promise.all(media.map(async m => {
                 await GCP.deleteFile(m.storageLocation);
-                if(m.thumbnail) await GCP.deleteFile(m.thumbnail);
-                if(m.snapshot) await GCP.deleteFile(m.snapshot);
+                if (m.thumbnail) await GCP.deleteFile(m.thumbnail);
+                if (m.snapshot) await GCP.deleteFile(m.snapshot);
                 await Models.Media.deleteOne({
                     _id: m._id
                 });
             }));
-        } catch(Err) {
+        } catch (Err) {
             console.log(Err);
         }
 
@@ -344,7 +346,7 @@ export async function deleteMemories (req: Request, res: Response, next: NextFun
 
         return res.sendStatus(200);
 
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
 }

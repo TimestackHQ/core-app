@@ -3,11 +3,12 @@ import {
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
+	Linking,
 	Text,
 	View,
 	StyleSheet,
 	FlatList,
-	TouchableWithoutFeedback, TextInput
+	TouchableWithoutFeedback, TextInput, Alert, Platform
 } from "react-native";
 import React, {useEffect} from "react";
 import Viewer from "../Components/Viewer";
@@ -66,6 +67,7 @@ export default function HomeScreen({navigation, route}) {
 
 	useEffect(() => {
 		(async () => {
+
 			await AsyncStorage.getItem("@first").then((value) => {
 				setRefreshing(false)
 				if(value === null) {

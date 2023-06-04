@@ -140,6 +140,7 @@ export default function MediaView() {
 
 	useEffect(() => {
 		const id = content[currentIndex]?._id;
+		if(!id) return;
 		HTTPClient(`/media/view/${id}/${route.params?.eventId}`, "GET")
 			.then(async res => {
 				const timezone = getTimezone();
@@ -204,7 +205,26 @@ export default function MediaView() {
 						// keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
-								<ImageView item={item} />
+								{/* <Text
+									// style={{
+									// 	fontSize: 20,
+									// 	fontWeight: 'bold',
+									// 	textAlign: 'center',
+									// 	color: 'white',
+									// }}
+
+								>{JSON.stringify(item.type)}</Text> */}
+								{item.type.includes("video") ? <Video
+									poster={item.thumbnail}
+									posterResizeMode="contain"
+									source={{uri: item.storageLocation}}
+									muted={true}
+									resizeMode="contain"
+									paused={true}
+									controls
+									style={{borderRadius: 0, width: width, height: "100%"}}
+										/> : <ImageView item={item} />}	
+
 							</TouchableWithoutFeedback>
 						)}
 						onScroll={(event) => {
