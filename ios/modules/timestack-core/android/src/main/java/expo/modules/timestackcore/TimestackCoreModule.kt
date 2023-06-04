@@ -15,7 +15,8 @@ class TimestackCoreModule : Module() {
 
     // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants(
-      "PI" to Math.PI
+      "Name" to "TimestackCore",
+      "NativeClientVersion" to "0.23.2"
     )
 
     // Defines event names that the module can send to JavaScript.

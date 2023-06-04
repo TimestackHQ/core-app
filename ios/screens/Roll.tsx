@@ -1,42 +1,32 @@
 import {
-	FlatList,
-	Image,
 	TouchableOpacity,
-	TouchableWithoutFeedback,
 	View,
 	Text,
 	Platform,
-	Linking,
-	Animated,
-	VirtualizedList,
-	Alert, SafeAreaView, ActivityIndicator, PermissionsAndroid,
-	StyleSheet
+	Alert, PermissionsAndroid,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import FadeIn from 'react-native-fade-in-image';
-import {useEffect, useState, Component, } from "react";
-import {CameraRoll} from "@react-native-camera-roll/camera-roll";
-import FastImage from "react-native-fast-image";
+import { useEffect, useState } from "react";
 import * as React from "react";
-import {useNavigation, useRoute} from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import * as _ from "lodash";
 import ExpoJobQueue from "expo-job-queue";
-import * as FileSystem from 'expo-file-system';
-import uploadWorker from "../uploadWorker";
 import moment from "moment";
-import {v4} from "uuid";
+import { v4 } from "uuid";
 import * as Network from "expo-network";
-import {NetworkStateType} from "expo-network";
+import { NetworkStateType } from "expo-network";
 import * as TimestackCoreModule from "../modules/timestack-core";
 import AndroidRoll from "../Components/AndroidRoll";
+import { UploadItem } from "../types/global";
 
-export default function Roll () {
+export default function Roll() {
 
 	const navigator = useNavigation();
-	const route = useRoute()
+	const route = useRoute<RouteProp<{
+		params: {
+			eventId: string,
+		}
+	}>>()
 
-	const [media, setMedia] = useState([]);
-	const [cursor, setCursor] = useState(undefined);
 	const [selected, setSelected] = useState({});
 
 	async function hasAndroidPermission() {
@@ -51,42 +41,34 @@ export default function Roll () {
 			return status === 'granted';
 		}
 
-		if(Platform.Version >= 33) {
+		if (Number(Platform.Version) >= 33) {
 			await checkPermission(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
 			await checkPermission(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
 		}
 		await checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 	}
 
-	
+
 
 
 	const save = async () => {
 
-		// return; 
 		const mediaSelected = [];
 
 		Object.values(selected).forEach((item) => mediaSelected.push(item));
-
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV6");
-		// await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV60");
-		//
-		// await ExpoJobQueue.removeWorker("mediaQueueV6");
-		// await uploadWorker();
 
 		console.log(mediaSelected);
 
 		const upload = async () => {
 			for await (const media of mediaSelected) {
 
-				//
-				console.log("payload:",{
+				console.log("payload:", {
 					uri: media.image.uri,
 					type: media.type,
 					eventId: route.params.eventId
 				})
-				ExpoJobQueue.addJob("mediaQueueV6", {
-					filename: moment().unix()+"_"+v4()+"."+media.image.extension,
+				ExpoJobQueue.addJob<UploadItem>("mediaQueueV6", {
+					filename: moment().unix() + "_" + v4() + "." + media.image.extension,
 					extension: media.image.extension,
 					uri: media.image.uri,
 					type: media.type,
@@ -106,7 +88,7 @@ export default function Roll () {
 			navigator.goBack();
 		}
 		const net = await Network.getNetworkStateAsync();
-		if(net.type === NetworkStateType.CELLULAR) {
+		if (net.type === NetworkStateType.CELLULAR) {
 			Alert.alert("Cellular Upload", `Do you want to upload ${mediaSelected.length} items over cellular?`, [
 				{
 					text: "Cancel",
@@ -115,7 +97,7 @@ export default function Roll () {
 					text: "OK",
 					onPress: upload
 
-			}]);
+				}]);
 
 		} else {
 			await upload();
@@ -128,25 +110,24 @@ export default function Roll () {
 	}, []);
 
 	const onMediaPicked = async (event) => {
-		const {itemDetails: item, picked} = Platform.OS === "ios" ? event.nativeEvent : event.reactEvent;
-
-		console.log(item, picked)
 
 		const selectedList = selected;
+		const { itemDetails: item } = Platform.OS === "ios" ? event.nativeEvent : event.reactEvent;
+
 		const id = item.image.uri;
 
-		if(picked) {
-			selectedList[id] = item
-		} else {
+		if (selectedList?.[id]) {
 			delete selectedList[id]
+		} else {
+			selectedList[id] = item
 		}
 
 		setSelected(selectedList);
 
 	}
 
-	return <View style={{flex: 1, flexDirection: "column"}}>
-		<View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end', padding: 10}}>
+	return <View style={{ flex: 1, flexDirection: "column" }}>
+		<View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', padding: 10 }}>
 			<TouchableOpacity onPress={save}>
 				<Text style={{
 					fontSize: 15,
@@ -154,10 +135,10 @@ export default function Roll () {
 				}}>Upload</Text>
 			</TouchableOpacity>
 		</View>
-		<View style={{flex: 25}}>
+		<View style={{ flex: 25 }}>
 			{Platform.OS === 'ios'
-			?<TimestackCoreModule.TimestackCoreView onMediaPicked={onMediaPicked} style={{flex: 1}}/>
-			:<AndroidRoll onMediaPicked={onMediaPicked} style={{flex: 1}}/>}
+				? <TimestackCoreModule.TimestackCoreView onMediaPicked={onMediaPicked} style={{ flex: 1 }} />
+				: <AndroidRoll onMediaPicked={onMediaPicked} />}
 		</View>
 	</View>
 }

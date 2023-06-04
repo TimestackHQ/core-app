@@ -3,5 +3,6 @@ export type ChangeEventPayload = {
 };
 
 export type TimestackCoreViewProps = {
-  name: string;
+  onMediaPicked: (event: ChangeEventPayload) => void;
+  style?: any;
 };

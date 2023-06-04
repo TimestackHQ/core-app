@@ -1,23 +1,24 @@
 import ExpoJobQueue from "expo-job-queue";
 import uuid from "react-native-uuid";
-import {generateScreenshot, processPhoto, processVideo} from "./utils/compression";
+import { UploadItem } from "./types/global";
+import { generateScreenshot, processPhoto, processVideo } from "./utils/compression";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNHeicConverter from 'react-native-heic-converter';
 import Constants from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import moment from "moment";
-import {CameraRoll} from "@react-native-camera-roll/camera-roll";
-import {Platform} from "react-native";
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { Platform } from "react-native";
 import * as TimestackCoreModule from "./modules/timestack-core";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
-export default async function uploadWorker () {
+export default async function uploadWorker() {
 	try {
 
-			// await ExpoJobQueue.removeJob("mediaQueueV6");
-			ExpoJobQueue.addWorker("mediaQueueV6", async (media) => {
+		// await ExpoJobQueue.removeJob("mediaQueueV6");
+		ExpoJobQueue.addWorker("mediaQueueV6", async (media: UploadItem) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -28,8 +29,8 @@ export default async function uploadWorker () {
 
 					console.log(media.uri);
 
-					if(Platform.OS === "ios") {
-						if(media.type === "video") {
+					if (Platform.OS === "ios") {
+						if (media.type === "video") {
 							console.log(await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type, 1080, 1080))
 							const videoPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type, 1080, 1080)).compressedURL;
 							const thumbnailPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 300)).compressedURL;
@@ -45,7 +46,7 @@ export default async function uploadWorker () {
 							mediaList.push(imagePath, thumbnailPath);
 						}
 					} else if (Platform.OS === "android") {
-						
+
 						await FileSystem.copyAsync({
 							from: media.uri,
 							to: FileSystem.documentDirectory + media.filename
@@ -54,12 +55,12 @@ export default async function uploadWorker () {
 
 						const mediaId = uuid.v4();
 
-						if(media.type === "video") {
+						if (media.type === "video") {
 							const videoPath = await processVideo(mediaId, media.uri, 30, 0, 1080, 600);
 							// const thumbnailPath = await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10);
 							const snapshotPath = await generateScreenshot(mediaId, media.uri);
 							mediaList.push(
-								videoPath, 
+								videoPath,
 								// videoPath
 								// thumbnailPath, 
 								snapshotPath
@@ -69,7 +70,7 @@ export default async function uploadWorker () {
 
 						else {
 							const imagePath = await processPhoto(mediaId, media.uri, 5, false);
-							const thumbnailPath = await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
+							const thumbnailPath = await processPhoto(mediaId + ".thumbnail", media.uri, 5, true);
 							mediaList.push(imagePath, thumbnailPath);
 						}
 
@@ -82,16 +83,19 @@ export default async function uploadWorker () {
 						timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
 					}));
 
+					// @ts-ignore
 					formData.append('media', {
 						uri: mediaList[0],
-						name: 
-							Platform.OS === "ios" ? mediaList[0].split("/").pop()+String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[0].split("/").pop(),
+						name:
+							Platform.OS === "ios" ? mediaList[0].split("/").pop() + String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[0].split("/").pop(),
 						type: `image/${media.type === "video" ? "mp4" : "jpeg"}`
 					});
+
+					// @ts-ignore
 					formData.append('thumbnail', {
 						uri: mediaList[1],
-						name: 
-							Platform.OS === "ios" ? mediaList[1].split("/").pop()+String(media.type === "video" ? ".mp4" : ".jpeg"): mediaList[1].split("/").pop(),
+						name:
+							Platform.OS === "ios" ? mediaList[1].split("/").pop() + String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[1].split("/").pop(),
 						type: `image/${media.type === "video" ? "mp4" : "jpeg"}`
 					});
 
@@ -118,7 +122,6 @@ export default async function uploadWorker () {
 				} catch (err) {
 
 					console.log("QUEUE ERROR", err);
-
 					resolve(true);
 
 				}
@@ -130,7 +133,7 @@ export default async function uploadWorker () {
 			concurrency: 1,
 
 		})
-	} catch(err) {
+	} catch (err) {
 		console.log(err);
 	}
 

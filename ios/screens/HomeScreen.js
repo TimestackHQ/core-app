@@ -54,23 +54,6 @@ export default function HomeScreen({navigation, route}) {
 
 	useEffect(() => {
 		(async () => {
-			AsyncStorage.getItem("@update5").then(async (value) => {
-				if(value === null) {
-					Alert.alert(
-						"New update",
-						"We've released new features on Timestack. Make sure to update your app to get the latest updates.",
-						[
-							{
-								text: "Update",
-								onPress: async () => {
-									await AsyncStorage.setItem("@update5", "true");	
-									Platform.OS === "ios" ? Linking.openURL("https://apps.apple.com/us/app/timestack/id1671064881") : Linking.openURL("https://play.google.com/store/apps/details?id=com.timestack.timestack");
-								}
-							}
-						]
-					)
-				}
-			});
 			if(!(await AsyncStorage.getItem("@session"))) {
 				navigation.navigate("Auth");
 			}

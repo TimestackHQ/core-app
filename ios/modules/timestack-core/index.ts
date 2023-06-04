@@ -9,7 +9,9 @@ import { ChangeEventPayload, TimestackCoreViewProps } from './src/TimestackCore.
 // Get the native constant value.
 export const Name = TimestackCoreModule.Name;
 
-export async function fetchImage(assetIdentifier: string, mediaTypeString: string, maxWidth: number, maxHeight: number, videoLength: number) {
+export const NativeClientVersion = TimestackCoreModule.NativeClientVersion;
+
+export async function fetchImage(assetIdentifier: string, mediaTypeString: string, maxWidth?: number, maxHeight?: number, videoLength?: number) {
   return await TimestackCoreModule.fetchImage(assetIdentifier, mediaTypeString, maxWidth, maxHeight, videoLength);
 }
 

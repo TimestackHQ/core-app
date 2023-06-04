@@ -8,9 +8,10 @@ public class TimestackCoreModule: Module {
     
     public func definition() -> ModuleDefinition {
         Name("TimestackCore")
-        
+    
         Constants([
-            "Name": "TimestackCore"
+            "Name": "TimestackCore",
+            "NativeClientVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         ])
         
         View(TimestackCoreView.self) {
@@ -292,7 +293,7 @@ public class TimestackCoreModule: Module {
                 "height": asset.pixelHeight,
                 "width": asset.pixelWidth,
                 "orientation": asset.pixelHeight > asset.pixelWidth ? 1 : 0
-            ]
+            ] as [String : Any]
         ]
         
         if let compressedURL = compressedURL {
@@ -317,7 +318,7 @@ public class TimestackCoreModule: Module {
                 "filepath": asset.location ?? "",
                 "uri": "ph://" + asset.localIdentifier,
                 "playableDuration": Int(asset.duration)
-            ]
+            ] as [String : Any]
         ]
         
         if let compressedURL = compressedURL {
