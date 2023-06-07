@@ -8,8 +8,6 @@ import * as sharp from "sharp";
 import * as fs from "fs";
 import moment = require("moment");
 
-const bucket = GCP.storage.bucket(String(process.env.GCP_STORAGE_BUCKET));
-
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
     try {

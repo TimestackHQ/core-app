@@ -1,65 +1,53 @@
-import * as Cloud from '@google-cloud/storage';
-import * as path from "path";
-const serviceKey = path.join(__dirname, './.gc/peppy-plateau-376819-bdf2b94447bd.json')
 
-const { Storage } = Cloud
-export const storage = new Storage({
-    keyFilename: serviceKey,
-    projectId: 'peppy-plateau-376819',
-})
+import * as AWS from 'aws-sdk';
+import * as aws4 from 'aws4';
+
+const AWS_ACCESS_KEY_ID = 'AKIAUAFCOME3MI6RJV5J';
+const AWS_SECRET_ACCESS_KEY = '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';
+
+AWS.config.update({
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY
+});
 
 export const signedUrl = async (publicId: string): Promise<string> => {
-    const options = {
-        version: "v2",
-        action: "read",
-        expires: Date.now() + 1500 * 60 * 1000, // 1500 minutes,
 
+    var opts = {
+        host: 'timestack-private.s3.ca-central-1.amazonaws.com',
+        path: '/media/' + publicId,
+        service: 's3',
+        region: 'ca-central-1'
+    }
+
+    return aws4.sign(opts, { accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY });
+
+}
+
+export const upload = async (publicId: string, buffer: Buffer) => {
+    const s3 = new AWS.S3();
+
+    const params = {
+        Bucket: "timestack-private",
+        Key: String("media/" + publicId),
+        Body: buffer,
     };
 
-    const object = await storage
-        .bucket(String(process.env.GCP_STORAGE_BUCKET))
-        .file(publicId)
-        // @ts-ignore
-        .getSignedUrl(options)
-
-    return String(object?.[0]);
-}
-
-export const upload = async (publicId: string, buffer: Buffer, bucketName?: string): Promise<string> => {
-    const blob = storage
-        .bucket(bucketName ? bucketName : String(process.env.GCP_STORAGE_BUCKET))
-        .file(publicId);
-
-    const blobStream = blob.createWriteStream({
-        resumable: false
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err: any, data: any) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log(data);
+                resolve(data.Location);
+            }
+        });
     });
-
-    return await new Promise((resolve, reject) => {
-        blobStream.on('finish', async () => {
-            const publicUrl =
-                `https://storage.googleapis.com/${storage.bucket(String(process.env.GCP_STORAGE_BUCKET)).name}/${blob.name}`
-
-            resolve(publicUrl);
-        })
-            .on('error', () => {
-                reject("error");
-            })
-            .end(buffer);
-    });
-}
+};
 
 export const download = async (publicId: string): Promise<Buffer> => {
-    const file = storage
-        .bucket(String(process.env.GCP_STORAGE_BUCKET))
-        .file(publicId);
-
-    return (await file.download())[0];
+    return new Buffer("test");
 }
 
 export const deleteFile = async (publicId: string): Promise<void> => {
-    const file = storage
-        .bucket(String(process.env.GCP_STORAGE_BUCKET))
-        .file(publicId);
 
-    await file.delete();
 }
