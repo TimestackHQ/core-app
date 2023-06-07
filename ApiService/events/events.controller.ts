@@ -282,55 +282,25 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
 
+                const media = await Models.Media.countDocuments({
+                    event: event._id
+                })
 
-                console.log(req.headers)
-                if (req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40")) {
-
-                    const media = await Models.Media.countDocuments({
-                        event: event._id
-                    })
-
-                    return {
-                        ...event.toJSON(),
-                        peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
-                        mediaCount: media,
-                        users: undefined,
-                        invitees: undefined,
-                        nonUsersInvitees: undefined,
-                        media: undefined,
-                        cover: undefined,
-                        people: [
-                            ...event.users,
-                        ],
-                        thumbnailUrl: event?.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined
-                    }
-
-                } else {
-
-                    let buffer = undefined;
-                    if (i < 4) {
-                        buffer = await getBuffer(event);
-                    }
-                    const media = await Models.Media.countDocuments({
-                        event: event._id
-                    })
-
-                    return {
-                        ...event.toJSON(),
-                        cover: event.cover?.publicId,
-                        peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
-                        mediaCount: media,
-                        users: undefined,
-                        invitees: undefined,
-                        nonUsersInvitees: undefined,
-                        media: undefined,
-                        people: [
-                            ...event.users,
-                        ],
-                        buffer
-                    }
-
+                return {
+                    ...event.toJSON(),
+                    peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
+                    mediaCount: media,
+                    users: undefined,
+                    invitees: undefined,
+                    nonUsersInvitees: undefined,
+                    media: undefined,
+                    cover: undefined,
+                    people: [
+                        ...event.users,
+                    ],
+                    thumbnailUrl: event?.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined
                 }
+
             }))
         });
 
