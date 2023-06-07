@@ -47,7 +47,7 @@ export async function picture(req: Request, res: Response, next: NextFunction) {
 
         const fileName = v4() + "." + file.originalname.split(".").pop();
 
-        await GCP.upload(fileName, <Buffer>file.buffer, "timestack-profiles");
+        // await GCP.upload(fileName, <Buffer>file.buffer, "timestack-profiles");
 
         req.user.profilePictureSource = "https://storage.googleapis.com/timestack-profiles/" + fileName;
         await req.user.save();
