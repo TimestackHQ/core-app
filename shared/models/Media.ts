@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
-import {v4 as uuid} from "uuid";
-import {GCP} from "../index";
-import {UserSchema} from "./User";
+import { v4 as uuid } from "uuid";
+import { GCP } from "../index";
+import { UserSchema } from "./User";
 
 export interface MediaSchema extends mongoose.Document {
     publicId: string;
@@ -76,14 +76,14 @@ const MediaSchema = new mongoose.Schema({
     }
 });
 
-MediaSchema.methods.getStorageLocation = async function (type?: "thumbnail" | "snapshot"): Promise<string> {
+MediaSchema.methods.getStorageLocation = async function (type?: "thumbnail" | "snapshot") {
 
-    if(type === "snapshot" && this?.snapshot) {
+    if (type === "snapshot" && this?.snapshot) {
         console.log(this.snapshot)
         return await GCP.signedUrl(this.snapshot)
     }
 
-    if(!type) {
+    if (!type) {
         console.log(this.publicId)
         return await GCP.signedUrl(this.publicId)
     }

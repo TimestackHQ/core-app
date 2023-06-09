@@ -10,7 +10,7 @@ AWS.config.update({
     secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-export const signedUrl = async (publicId: string): Promise<string> => {
+export const signedUrl = async (publicId: string) => {
 
     var opts = {
         host: 'timestack-private.s3.ca-central-1.amazonaws.com',
