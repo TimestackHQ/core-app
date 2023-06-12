@@ -26,6 +26,7 @@ import {Hyperlink} from "react-native-hyperlink";
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import VideoView from "../Components/Video";
+import TimestackMedia from "../Components/TimestackMedia";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 const frontendUrl = Constants.expoConfig.extra.frontendUrl;
@@ -185,8 +186,6 @@ export default function EventScreen () {
 
 	const fetchEvent = () => {
 
-		console.log(route.params?.buffer)
-
 		setPlaceholder(route.params?.thumbnailUrl);
 		setEvent({
 			name: route.params?.eventName,
@@ -200,12 +199,6 @@ export default function EventScreen () {
 						eventId: route.params?.eventId
 					});
 				}
-
-				setEvent(response.data.event);
-				muted = response.data.event.muted;
-				setLoaded(true);
-				if(!route.params?.thumbnailUrl) setPlaceholder(response.data.event.thumbnailUrl);
-				getGallery(true);
 
 				navigation.setOptions({
 					headerShown: true,
@@ -223,6 +216,12 @@ export default function EventScreen () {
 						event={response.data.event}
 					/>,
 				});
+
+				setEvent(response.data.event);
+				muted = response.data.event.muted;
+				setLoaded(true);
+				if(!route.params?.thumbnailUrl) setPlaceholder(response.data.event.thumbnailUrl);
+				getGallery(true);
 
 				if(!uploadUsed) {
 					if(route.params?.openUpload) {
@@ -285,25 +284,6 @@ export default function EventScreen () {
 	
 
 	useEffect(() => {
-		(async () => {
-			AsyncStorage.getItem("@update5").then(async (value) => {
-				if(value === null) {
-					Alert.alert(
-						"New update",
-						"We've released new features on Timestack. Make sure to update your app to get the latest updates.",
-						[
-							{
-								text: "Update",
-								onPress: async () => {
-									await AsyncStorage.setItem("@update5", "true");	
-									Platform.OS === "ios" ? Linking.openURL("https://apps.apple.com/us/app/timestack/id1671064881") : Linking.openURL("https://play.google.com/store/apps/details?id=com.timestack.timestack");
-								}
-							}
-						]
-					)
-				}
-			});
-		})();
 		fetchEvent()
 		if(route?.params?.refresh) setRefreshEnabled(true);
 		setRefreshEnabled(false);
@@ -314,7 +294,7 @@ export default function EventScreen () {
 	return !route.params?.thumbnailUrl && !loaded ? <View style={{flex: 1, backgroundColor: "white"}}/> : <View style={{flex: 1, backgroundColor: "white"}}>
 		<View style={{zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row"}}>
 			<TouchableWithoutFeedback style={{}} onPress={() => setViewMenu(!viewMenu)}>
-				<Image source={require("../assets/icons/collection/action_button.png")} style={{width: 45, height: 45}} />
+				<FastImage source={require("../assets/icons/collection/action_button.png")} style={{width: 45, height: 45}} />
 			</TouchableWithoutFeedback>
 			{viewMenu ? (
 				<View style={{ flexDirection: 'row' }}>
@@ -343,9 +323,7 @@ export default function EventScreen () {
 
 					<View style={{flexDirection: "row"}}>
 						<View style={{flex: 2, margin: 10}}>
-							{event?.buffer || placeholder ? <FastImage source={
-								{uri: placeholder}
-							} style={{
+							{event?.buffer || placeholder ? <TimestackMedia source={placeholder} style={{
 								width: "100%",
 								height: 200,
 								borderRadius: 10,
@@ -519,34 +497,22 @@ export default function EventScreen () {
 				const media = raw.item;
 
 				return <View style={{width: '33%', // 30% to account for space between items
-					backgroundColor: "#efefef",
-					opacity: tab !== "memories" ? 0 : 1,
-					height: tab !== "memories" ? 0 : 180,
-					margin: 0.5}}>
-					<TouchableWithoutFeedback onPress={() => navigation.navigate("MediaView", {
-						mediaId: media._id,
-						eventId: event?._id,
-						content: gallery,
-						currentIndex: raw.index,
-						hasPermission: event?.hasPermission
-					})}>
-						{/* <Text>{JSON.stringify(media)}</Text> */}
-						{
-						// media?.type.includes("image") ? 
-						<FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/> 
-						// 	: <Video		
-						// 	poster={media.thumbnail}
-						// 	posterResizeMode="cover"
-						// 	source={{uri: media.storageLocation}}
-						// 	muted={true}
-						// 	resizeMode="cover"
-						// 	repeat={true}
-						// 	style={{borderRadius: 0, width: "100%", height: 180, zIndex: -1}}
-						// />
-						}
+				backgroundColor: "#efefef",
+				opacity: tab !== "memories" ? 0 : 1,
+				height: tab !== "memories" ? 0 : 180,
+				margin: 0.5}} ><TouchableOpacity
+				
+				onPress={() => {
 
-					</TouchableWithoutFeedback>
-				</View>
+					navigation.navigate("MediaView", {
+					mediaId: media._id,
+					eventId: event?._id,
+					content: gallery,
+					currentIndex: raw.index,
+					hasPermission: event?.hasPermission
+				})}}>
+					<TimestackMedia style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail}/> 
+				</TouchableOpacity></View>
 			}}
 			keyExtractor={(item, index) => index.toString()}
 			onEndReached={() => getGallery()}

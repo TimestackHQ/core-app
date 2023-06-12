@@ -5,23 +5,9 @@ export default function NativeBridge (request, payload) {
 	}));
 }
 
-export function shareLink (link) {
-	NativeBridge("shareLink", link);
-}
-
-export function shareRawLink (link) {
-	NativeBridge("shareLink", {link});
-}
-
 export const openLink = link => window.ReactNativeWebView?.postMessage(JSON.stringify({
 	request: "openLink",
 	link
-}));
-
-export const modalView = (type, payload) => window.ReactNativeWebView?.postMessage(JSON.stringify({
-	request: "modalView",
-	type,
-	payload
 }));
 
 export const notifyNativeOfSession = () => {
@@ -60,3 +46,9 @@ export const EventButtonAction = (eventId) => window.ReactNativeWebView?.postMes
 	request: "eventButtonAction",
 	eventId: eventId
 }));
+
+export const clearNativeSession = () => window.ReactNativeWebView?.postMessage(JSON.stringify({
+	request: "clearSession"
+}));
+
+

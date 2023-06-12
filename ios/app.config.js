@@ -1,4 +1,5 @@
-const version = "0.23.2";
+const version = "0.23.4";
+export const build = 2;
 
 module.exports = {
   "expo": {
@@ -42,6 +43,8 @@ module.exports = {
     ],
     "ios": {
 
+      "jsEngine": "jsc",
+
       "supportsTablet": false,
 
       "bundleIdentifier": "com.timestack.timestack",
@@ -59,8 +62,11 @@ module.exports = {
       }
     },
     "android": {
+
+      "jsEngine": "hermes",
+
       "package": "com.timestack.timestack",
-      "versionCode": 16,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon3.png",
         "backgroundColor": "#FFFFFF"

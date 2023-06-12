@@ -2,6 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import axiosRetry from "axios-retry";
+import { build } from "./app.config";
 
 axiosRetry(axios, {
     retries: 3,
@@ -27,7 +28,7 @@ export default async function HTTPClient (path, method, data, headers) {
 			"Content-Type": "application/json",
 			"Accept": "application/json",
 			"Authorization": "Bearer " + await AsyncStorage.getItem('@session') || "",
-			"x-app-version": "0.22.42",
+			"x-timestack-build": build,
 			...headers
 		}
 	})

@@ -11,6 +11,7 @@ import {
 import FastImage from 'react-native-fast-image'
 import Video from "react-native-video";
 import * as React from "react";
+import TimestackMedia from "./TimestackMedia";
 
 export default function UploadViewFlatList ({eventId, pendingMedia, media, fetchMedia, pickImage, selecting, selectMedia}) {
 	return (
@@ -55,7 +56,8 @@ export default function UploadViewFlatList ({eventId, pendingMedia, media, fetch
 								selectMedia(media._id, media.selected);
 							}
 						}}>
-						{media.type === "video" ?
+						<TimestackMedia style={{borderRadius: 0, width: "100%", height: 180}} media={media}/>
+						{/* {media.type === "video" ?
 							<Video
 								source={{uri: media.thumbnail}}
 								poster={media.snapshot}
@@ -69,7 +71,7 @@ export default function UploadViewFlatList ({eventId, pendingMedia, media, fetch
 								}}
 							/>
 							: <FastImage  alt={"Cassis 2022"} style={{borderRadius: 0, width: "100%", height: 180}} source={{uri: media.thumbnail}}/>
-						}
+						} */}
 					</TouchableWithoutFeedback>
 
 

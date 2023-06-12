@@ -23,11 +23,11 @@ export const signedUrl = async (publicId: string) => {
 
 }
 
-export const upload = async (publicId: string, buffer: Buffer) => {
+export const upload = async (publicId: string, buffer: Buffer, bucketName: "timestack-profile-pictures" | "timestack-private" = "timestack-private"): Promise<string> => {
     const s3 = new AWS.S3();
 
     const params = {
-        Bucket: "timestack-private",
+        Bucket: bucketName,
         Key: String("media/" + publicId),
         Body: buffer,
     };

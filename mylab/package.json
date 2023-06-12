@@ -4,6 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/signature-v4": "^3.347.0",
+    "aws-sdk": "^2.1392.0",
+    "aws4": "^1.12.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2"
   }

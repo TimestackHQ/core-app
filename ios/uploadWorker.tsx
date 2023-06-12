@@ -17,8 +17,8 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default async function uploadWorker() {
 	try {
 
-		// await ExpoJobQueue.removeJob("mediaQueueV6");
-		ExpoJobQueue.addWorker("mediaQueueV6", async (media: UploadItem) => {
+		// await ExpoJobQueue.removeJob("mediaQueueV9");
+		ExpoJobQueue.addWorker("mediaQueueV9", async (media: UploadItem) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -42,7 +42,7 @@ export default async function uploadWorker() {
 							console.log(await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type));
 							const imagePath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type)).compressedURL;
 							console.log(imagePath);
-							const thumbnailPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 300, 300)).compressedURL;
+							const thumbnailPath = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 600, 600)).compressedURL;
 							mediaList.push(imagePath, thumbnailPath);
 						}
 					} else if (Platform.OS === "android") {
@@ -103,6 +103,30 @@ export default async function uploadWorker() {
 
 					try {
 						const xhr = new XMLHttpRequest();
+
+						let startTime = 0 // Start the timer;
+
+						xhr.upload.addEventListener('progress', (event) => {
+							console.log(event);
+							if (event.lengthComputable) {
+								const uploadedBytes = event.loaded;
+								const uploadPercentage = (uploadedBytes / event.total) * 100;
+								const currentTime = new Date().getTime();
+								const elapsedTime = (currentTime - startTime) / 1000; // Convert to seconds
+								const uploadSpeed = uploadedBytes / elapsedTime; // Calculate speed in bytes per second
+
+								// Convert to appropriate units
+								const speedInKB = uploadSpeed / 1024;
+								const speedInMB = speedInKB / 1024;
+
+								console.log(
+									`Upload progress: ${uploadPercentage.toFixed(2)}% - Speed: ${speedInMB.toFixed(
+										2
+									)} MB/s`
+								);
+							}
+						});
+
 						xhr.open("POST", `${apiUrl}/v1/media/${media.eventId}`);
 						xhr.setRequestHeader("authorization", `Bearer ${await AsyncStorage.getItem("@session")}`);
 						xhr.onload = () => {
@@ -112,6 +136,8 @@ export default async function uploadWorker() {
 							console.log(xhr.statusText);
 						};
 						xhr.send(formData);
+
+						startTime = new Date().getTime();
 
 					} catch (err) {
 						console.log(err);

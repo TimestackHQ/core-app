@@ -162,6 +162,7 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
 
                     const message = JSON.parse(event.nativeEvent.data);
 
+                    console.log(message);
                     if(message.request === "modalView") {
 
                         setModalData({
@@ -261,6 +262,11 @@ export default function Main({baseRoute, frontendUrl, queueUpdated, navigation})
                             }
                         ])
 
+                    }
+
+                    if(message.request === "clearSession") {
+                        console.log("Clearing session");
+                        await AsyncStorage.removeItem("@session");
                     }
 
 

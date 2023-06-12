@@ -20,6 +20,7 @@ import {useNavigation} from "@react-navigation/native";
 import {dateFormatter} from "../utils/time";
 import ProfilePicture from "../Components/ProfilePicture";
 import EventCover from "../Components/EventCover";
+import TimestackMedia from "../Components/TimestackMedia";
 
 export default function HomeScreen({navigation, route}) {
 
@@ -86,16 +87,16 @@ export default function HomeScreen({navigation, route}) {
 
 
 	return <SafeAreaView style={{flex: 1, backgroundColor: "white"}}>
-		<View style={{flexDirection: "row", marginLeft:5, marginRight: 10, alignContent: "flex-end"}}>
+		{!firstLoad ? <View style={{flexDirection: "row", marginLeft:5, marginRight: 10, alignContent: "flex-end"}}>
 			<FastImage style={{width: 35, height: 35, resizeMode: "scale-down"}} source={require("../assets/icons/collection/timestack.png")}/>
 			<TextInput style={{borderRadius: 10, backgroundColor: "#F2F2F2", margin: 5, marginTop: 5, padding: 6, fontFamily: "Red Hat Display Regular", width: "90%"}} placeholder="Search" onChangeText={(text) => {
 				setQuery(text);
 				getEvents(true, true, text);
 			}}/>
-		</View>
-		<View>
+		</View> : null}
+		{!firstLoad ? <View>
 			<Text style={{fontSize: 30, marginHorizontal: 10, marginTop: 5, marginBottom: 10, fontFamily: "Red Hat Display Semi Bold"}}>My Timewall</Text>
-		</View>
+		</View> : null}
 		
 		{!firstLoad ? <View style={{flex: 1}}>
 			{events.length === 0 && !query && !loading ? <Image style={{marginLeft: "2%", width: "96%", height: "100%", resizeMode: "contain"}} source={require("../assets/timewall.png")} /> : <FlatList
@@ -111,7 +112,14 @@ export default function HomeScreen({navigation, route}) {
 				})}>
 					<View style={{flexDirection: "row", flex: 1, ...styles.shadow, margin: 10, borderRadius: 15, height: 125}}>
 						<View style={{flex: 3}}>
-							<EventCover thumbnailUrl={event?.thumbnailUrl} />
+							<TimestackMedia style={{
+								width: "100%",
+								height: "100%",
+								borderRadius: 15,
+								objectFit: "cover",
+								borderColor: "black",
+								borderWidth: 1,
+							}} source={event?.thumbnailUrl} />
 						</View>
 						<View style={{flex: 8, paddingLeft: 10, paddingTop: 10, zIndex: 10}}>
 							<Text style={{

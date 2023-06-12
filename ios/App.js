@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {Image, StatusBar, View, Text, Platform, Alert} from "react-native";
+import {Image, StatusBar, View, Text, Platform, Alert, Button} from "react-native";
 import {NavigationContainer, useNavigation, useRoute} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoJobQueue from "expo-job-queue";
@@ -24,6 +24,8 @@ import * as Updates from "expo-updates";
 import * as Notifications from "expo-notifications";
 import {OverflowMenuProvider} from "react-navigation-header-buttons";
 import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import Invite from './screens/Invite';
 // import * as Sentry from "@sentry/react-native";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
@@ -45,10 +47,6 @@ function Viewer({baseRoute, navigation}) {
             frontendUrl={frontendUrl}
         />
     );
-}
-
-function Invite ({navigation, route}) {
-    return <Viewer navigation={navigation} baseRoute={route.params?.url ? route.params?.url : "/event/"+route.params.eventId+"/join"}/>
 }
 
 function AuthScreen({navigation, route}) {
@@ -97,60 +95,64 @@ function ErrorScreen() {
 
 function App() {
 
-    axios(frontendUrl+"/api/bundle").then((response) => {
-        let NativeClientVersion = "";
-        try {
-            NativeClientVersion = TimestackCoreModule.NativeClientVersion ? TimestackCoreModule.NativeClientVersion : "";
-        } catch (e) {
-            console.log(e);
-        }
+    // if(Platform.OS === "ios") {
 
-        console.log("NativeClientVersion", NativeClientVersion);
+    //     axios(frontendUrl+"/api/bundle").then((response) => {
+    //         let NativeClientVersion = "";
+    //         try {
+    //             NativeClientVersion = TimestackCoreModule.NativeClientVersion ? TimestackCoreModule.NativeClientVersion : "";
+    //         } catch (e) {
+    //             console.log(e);
+    //         }
 
-        if(response.data.clientVersion[Platform.OS] !== NativeClientVersion) {
-            console.log("Bundle version mismatch. Current version: "+NativeClientVersion+". Server version: "+response.data.clientVersion[Platform.OS]);
+    //         console.log("NativeClientVersion", NativeClientVersion);
 
-            if(response.data.backwardsCompatibleClients[Platform.OS].includes(NativeClientVersion)) {
-                console.log("Client is backwards compatible. Downloading and reloading Expo Update.");
-                Updates.fetchUpdateAsync().then(() => {
-                    Updates.reloadAsync();
-                });
-            } else {
-                setTimeout(() => {
-                    Alert.alert(
-                        "New update",
-                        "We've released new features on Timestack. Make sure to update your app to get the latest updates.",
-                        [
-                            {
-                                text: "Update",
-                                onPress: async () => {
-                                    await AsyncStorage.setItem("@update5", "true");	
-                                    Platform.OS === "ios" ? Linking.openURL("https://apps.apple.com/us/app/timestack/id1671064881") : Linking.openURL("https://play.google.com/store/apps/details?id=com.timestack.timestack");
-                                    Updates.reloadAsync();
-                                }
-                            }
-                        ],
-                        {cancelable: false}
-                    );
-                }, 1000);
-            }
-                    
-            Updates.reloadAsync();
-        }
-    });
-    
-    Updates.checkForUpdateAsync().then(async (update) => {
-        if(update.isAvailable) {
-            await Updates.fetchUpdateAsync();
-            Updates.reloadAsync();
-        }
-    })
-    .catch((e) => {
-        console.log(e);
-    });
+    //         // if(response.data.clientVersion[Platform.OS] !== NativeClientVersion || !response.data.backwardsCompatibleClients.includes(NativeClientVersion)) {
+    //         //     console.log("Bundle version mismatch. Current version: "+NativeClientVersion+". Server version: "+response.data.clientVersion[Platform.OS]);
+
+    //         //     // if(response.data.backwardsCompatibleClients[Platform.OS].includes(Updates.runtimeVersion)) {
+    //         //     //     console.log("Client is backwards compatible. Downloading and reloading Expo Update.");
+    //         //     //     Updates.fetchUpdateAsync().then(() => {
+    //         //     //         Updates.reloadAsync();
+    //         //     //     });
+    //         //     // } else {
+    //         //     //     setTimeout(() => {
+    //         //             Alert.alert(
+    //         //                 "New update",
+    //         //                 "We've released new features on Timestack. Make sure to update your app to get the latest updates.",
+    //         //                 [
+    //         //                     {
+    //         //                         text: "Update",
+    //         //                         onPress: async () => {
+    //         //                             await AsyncStorage.setItem("@update5", "true");	
+    //         //                             Platform.OS === "ios" ? Linking.openURL("https://apps.apple.com/us/app/timestack/id1671064881") : Linking.openURL("https://play.google.com/store/apps/details?id=com.timestack.timestack");
+    //         //                             Updates.reloadAsync();
+    //         //                         }
+    //         //                     }
+    //         //                 ],
+    //         //                 {cancelable: false}
+    //         //             );
+    //         //     //     }, 1000);
+    //         //     // }
+
+
+    //         // }
+    //     });
+        
+    //     // Updates.checkForUpdateAsync().then(async (update) => {
+    //     //     if(update.isAvailable) {
+    //     //         await Updates.fetchUpdateAsync();
+    //     //         Updates.reloadAsync();
+    //     //     }
+    //     // })
+    //     // .catch((e) => {
+    //     //     console.log(e);
+    //     // });
+    // }
 
 
     const [loaded, error] = useFonts({
+        'Athelas Bold': require('./assets/fonts/Athelas-Bold.ttf'),
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
         'Red Hat Display Black Italic': require('./assets/fonts/RedHatDisplay-BlackItalic.ttf'),
         'Red Hat Display Bold': require('./assets/fonts/RedHatDisplay-Bold.ttf'),
@@ -258,19 +260,13 @@ function CoreStackScreen() {
                 animationEnabled: false
             }} component={AuthScreen} />
             <CoreStack.Screen name="Invite" navigationOptions={{
-                animationEnabled: false
+                animationEnabled: false,
+                
             }} component={Invite} />
             <CoreStack.Screen
                 options={{presentation: "formSheet"}}
                 name="Error" component={ErrorScreen}
             />
-            {/*<CoreStack.Screen options={{*/}
-            {/*    presentation: "card",*/}
-            {/*    animationTypeForReplace: "pop",*/}
-            {/*    gestureEnabled: true,*/}
-            {/*    gestureDirection: "vertical",*/}
-            {/*    animationEnabled: true,*/}
-            {/*}} name="MediaView" component={MediaView} />*/}
 
         </CoreStack.Navigator>
     );
@@ -305,8 +301,8 @@ function Nav() {
                     },
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/home_black.png")}/>
-                        return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/home_white.png")}/>
+                        if(focused) return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/home_black.png")}/>
+                        return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/home_white.png")}/>
                     }
                 }}
             />
@@ -317,8 +313,8 @@ function Nav() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/future_black.png")}/>
-                        return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/future_white.png")}/>
+                        if(focused) return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/future_black.png")}/>
+                        return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/future_white.png")}/>
 
                     }
                 }}
@@ -340,8 +336,8 @@ function Nav() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width:40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
-                        return <Image style={{width: 40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
+                        if(focused) return <FastImage resizeMode='contain' style={{width:40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
+                        return <FastImage resizeMode='contain' style={{width: 40, height: 40}} source={require("./assets/icons/collection/timestack.png")}/>
 
                     }
                 }}
@@ -352,8 +348,8 @@ function Nav() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/notifications_black.png")}/>
-                        return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/notifications_white.png")}/>
+                        if(focused) return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/notifications_black.png")}/>
+                        return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/notifications_white.png")}/>
 
                     }
                 }}
@@ -364,8 +360,8 @@ function Nav() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => {
-                        if(focused) return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/profile_black.png")}/>
-                        return <Image style={{width: 30, height: 30}} source={require("./assets/icons/nav/profile_white.png")}/>
+                        if(focused) return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/profile_black.png")}/>
+                        return <FastImage style={{width: 30, height: 30}} source={require("./assets/icons/nav/profile_white.png")}/>
 
                     }
                 }}

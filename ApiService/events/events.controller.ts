@@ -374,7 +374,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
         }).populate([
             {
                 path: "cover",
-                select: "publicId thumbnail snapshot"
+                select: "publicId thumbnail snapshot storageLocation"
             },
             {
                 path: "users",
@@ -391,12 +391,6 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 message: "Event not found"
             })
         }
-
-        const buffer =
-            req.query?.noBuffer && req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40")
-                ? undefined : await getBuffer(event);
-
-        // get cover buffer from google cloud
 
         const peopleCount = await Models.Event.findById(event._id).populate([{
             path: "users",
@@ -423,11 +417,12 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 users: undefined,
                 invitees: undefined,
                 nonUsersInvitees: undefined,
-                buffer,
                 people: event.people(req.user._id),
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
-                thumbnailUrl: event?.cover?.thumbnail && req.headers["x-app-version"] && isGreaterVersion(String(req.headers?.["x-app-version"]), "0.22.40") ? await GCP.signedUrl(event.cover.thumbnail) : undefined
+
+                thumbnailUrl: await GCP.signedUrl(event.cover.thumbnail),
+                storageLocation: await GCP.signedUrl(event.cover.storageLocation)
             }
         })
     } catch (e) {
