@@ -1,15 +1,11 @@
 import * as React from "react";
 import {useRouter} from "next/router";
 import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
+import {login} from ".";
 
-export default function Adventure ({setStep, setUserConfirmed}) {
+export default function Adventure ({completeAuth}) {
 
-	const router = useRouter();
-
-	setTimeout(() => {
-		notifyNativeOfSession();
-		NativeResetStack();
-	}, 1500);
+	setTimeout(completeAuth, 1500);
 
 	return (
 		<div className={"text-center"} style={{

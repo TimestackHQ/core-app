@@ -9,11 +9,13 @@ export default function handler(req, res) {
 			ios: [
 
 				"0.23.3",
+				"0.23.2",
 
 			],
 			android: [
 
 				"0.23.2",
+				"0.23.3",
 
 			]
 		}

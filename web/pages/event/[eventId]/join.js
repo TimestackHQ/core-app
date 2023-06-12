@@ -20,6 +20,7 @@ export default function EventIOS ({}) {
 	const [event, setEvent] = useState(null);
 	const [dateString, setDateString] = useState("");
 	const [uri, setUri] = useState("");
+	const [image, setImage] = useState(null);
 
 
 

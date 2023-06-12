@@ -59,18 +59,8 @@ export default function Login() {
 
 	const completeAuth = () => {
 		notifyNativeOfSession();
-		if(userConfirmed) {
-			if(router.query.redirect) {
-				NativeOpenNativeLink(router.query.redirect);
-			}
-			NativeResetStack();
-		}
+		NativeResetStack();
 	}
-
-	useEffect(() => {
-		completeAuth();
-	}, [userConfirmed]);
-
 
 	const initLogin = (number, nextStep = true) => {
 		httpClient("/auth/login", "POST", {phoneNumber: number})
@@ -91,7 +81,7 @@ export default function Login() {
 			}));
 			dispatch({type: "SET_USER", payload: userInitRoutine()});
 			if(res.data.message === "User confirmed") {
-				setUserConfirmed(true);
+				completeAuth();
 				return;
 			}
 			setStep(1);
