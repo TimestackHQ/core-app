@@ -48,10 +48,7 @@ export async function confirmLogin(req: Request, res: Response, next: NextFuncti
             });
         }
 
-        if (user.phoneNumber === "+14384934907" && code === "" +
-            "" +
-            "" +
-            "") {
+        if (user.phoneNumber === "+14384934907" && code === "826671") {
             return res.status(200).json({
                 message: user.isConfirmed && !user.isOnWaitList ? "User confirmed" : "User not confirmed",
                 token: await user.generateSessionToken(),
