@@ -1,9 +1,16 @@
 {
-  "platforms": ["ios", "android", "web"],
+  "platforms": [
+    "ios",
+    "web"
+  ],
   "ios": {
-    "modules": ["TimestackCoreModule"]
+    "modules": [
+      "TimestackCoreModule"
+    ]
   },
   "android": {
-    "modules": ["expo.modules.timestackcore.TimestackCoreModule"]
+    "modules": [
+      "expo.modules.timestackcore.TimestackCoreModule"
+    ]
   }
 }

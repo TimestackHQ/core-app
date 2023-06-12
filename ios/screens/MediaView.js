@@ -12,7 +12,6 @@ import {
 	TouchableWithoutFeedback
 } from "react-native";
 import {useEffect, useState} from "react";
-import Share from "react-native-share";
 import {useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
 import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
@@ -23,7 +22,9 @@ import ProfilePicture from "../Components/ProfilePicture";
 import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-buttons";
 import * as React from "react";
 import {CameraRoll} from "@react-native-camera-roll/camera-roll";
-import ImageView from "../Components/ImageView";
+import TimestackMedia from "../Components/TimestackMedia";
+import mediaDownload from "../utils/mediaDownload";
+import Pinchable from 'react-native-pinchable';
 const { width } = Dimensions.get('window');
 
 
@@ -39,11 +40,8 @@ function Headers ({media, hasPermission, deleteMedia}) {
 			setSharing(true);
 			try {
 
-				await FileSystem.downloadAsync(media?.storageLocation, FileSystem.documentDirectory + media?.fileName);
-				setSharing(false);
-				await Share.open({
-					url: FileSystem.documentDirectory + media?.fileName,
-				});
+				mediaDownload(media?.storageLocation, "share", setSharing, false);
+				
 				return;
 			} catch(e) {
 				console.log(e)
@@ -82,18 +80,11 @@ export default function MediaView() {
 	const route = useRoute();
 	const isFocused = useIsFocused();
 
-	const imageUrl = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=2726&h=2047&dpr=1";
 	const [content, setContent] = useState(route.params?.content);
 	const [media, setMedia] = useState(null);
 	const [hasPermission, setHasPermission] = useState(false);
-
 	const [downloading, setDownloading] = useState(false);
-	const [sharing, setSharing] = useState(false);
-
-	const [currentIndex, setCurrentIndex] = useState(0);
-
-	const [swipeDirection, setSwipeDirection] = useState('');
-
+	const [currentIndex, setCurrentIndex] = useState(null);
 
 	const getGallery = () => {
 		HTTPClient(`/events/${route.params.eventId}/media?skip=${content.length}`, "GET")
@@ -130,8 +121,6 @@ export default function MediaView() {
 			setHasPermission(Boolean(route.params?.hasPermission));
 			setContent(route.params?.content);
 			setCurrentIndex(route.params?.currentIndex)
-
-			console.log("MediaView: ", route.params);
 		}
 
 
@@ -202,29 +191,25 @@ export default function MediaView() {
 						getItemLayout={(data, index) => (
 							{length: width, offset: width * index, index}
 						)}
-						// keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
-								{/* <Text
-									// style={{
-									// 	fontSize: 20,
-									// 	fontWeight: 'bold',
-									// 	textAlign: 'center',
-									// 	color: 'white',
-									// }}
-
-								>{JSON.stringify(item.type)}</Text> */}
-								{item.type.includes("video") ? <Video
-									poster={item.thumbnail}
-									posterResizeMode="contain"
-									source={{uri: item.storageLocation}}
-									muted={true}
-									resizeMode="contain"
-									paused={true}
-									controls
-									style={{borderRadius: 0, width: width, height: "100%"}}
-										/> : <ImageView item={item} />}	
-
+								<Pinchable maximumZoomScale={item.type === "video" ? 1 : 5}>
+									<View style={{ width, height: "100%", resizeMode: "contain" }}>
+										<TimestackMedia
+											type={item.type}
+											source={item.storageLocation}
+											resizeMode={FastImage.resizeMode.contain}
+											style={{ zIndex: 1, width, height: "100%" }}
+										/>
+										<TimestackMedia
+											type={"image"}
+											source={item.thumbnail}
+											priority={FastImage.priority.high}
+											resizeMode={FastImage.resizeMode.contain}
+											style={{ width, height: "100%", resizeMode: "contain", position: "absolute", top: 0, left: 0 }}
+										/>
+									</View>
+								</Pinchable>
 							</TouchableWithoutFeedback>
 						)}
 						onScroll={(event) => {
@@ -253,21 +238,7 @@ export default function MediaView() {
 				<ActivityIndicator animating={downloading} style={{position: 'absolute', right: 40, marginTop: 5}} color={"#4fc711"} />
 				<TouchableOpacity onPress={async () => {
 					setDownloading(true);
-					try {
-
-						let imageUrl = media?.storageLocation;
-						const name = media?.storageLocation.split("/").reverse()[0].split("?")[0];
-
-						if (Platform.OS === 'android') {
-							const { uri } = await FileSystem.downloadAsync(imageUrl, FileSystem.documentDirectory + name);
-							imageUrl = uri;
-						} 
-						CameraRoll.save(imageUrl, { type: 'auto', album: "Timestack" })
-							.then((_response) => Alert.alert("Saved"))
-					} catch (err) {
-						Alert.alert("Failed to save", "");
-					}
-					setDownloading(false)
+					mediaDownload(media?.storageLocation, "download", setDownloading, false);
 				}
 				} disabled={downloading} style={{position: 'absolute', right: 10, marginTop: 15, marginRight: 5}} >
 					<FastImage

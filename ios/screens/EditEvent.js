@@ -22,6 +22,7 @@ import Constants from "expo-constants";
 import {HeaderButtons} from "react-navigation-header-buttons";
 import * as ImagePicker from "react-native-image-picker";
 import {getTimezone} from "../utils/time";
+import TimestackMedia from "../Components/TimestackMedia";
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
 
@@ -113,7 +114,7 @@ export default function EditEvent () {
 
 				const uri = media?.type === "video"
 					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
-					: await processPhoto(mediaId, media.uri, 5, true);
+					: await processPhoto(mediaId, media.uri, 5, false);
 				const thumbnail = media?.type === "video"
 					? await processVideo(mediaId+".thumbnail", media.uri, 15, 25, 600, 10)
 					: await processPhoto(mediaId+".thumbnail", media.uri, 5, true);
@@ -203,10 +204,11 @@ export default function EditEvent () {
 		<View style={{backgroundColor: "white", flexDirection: "column"}}>
 				<View style={{flexDirection: "row", flex: 1}}>
 					<View style={{flex: 2}}>
-						<TouchableWithoutFeedback onPress={importCover}>
-							<FastImage
+						{/* <Text>{JSON.stringify(event)}</Text> */}
+						<TouchableOpacity onPress={importCover}>
+							{cover ? <FastImage
 								source={{
-									uri: cover ? cover.uri : "data:image/jpeg;base64,"+event?.buffer,
+									uri: cover.uri,
 								}}
 								style={{
 									width: "80%",
@@ -217,8 +219,19 @@ export default function EditEvent () {
 									borderWidth: event?.buffer ? 0 : 2,
 									borderColor: "black"
 								}}
-							/>
-						</TouchableWithoutFeedback>
+							/> : event?.thumbnailUrl ? <TimestackMedia
+								source={event?.thumbnailUrl}
+								style={{
+									width: "80%",
+									height: 220,
+									margin: 20,
+									marginTop: 0,
+									borderRadius: 10,
+									borderWidth: event?.buffer ? 0 : 2,
+									borderColor: "black"
+								}}
+							/> : null}
+						</TouchableOpacity>
 
 					</View>
 					<View style={{flex: 2, marginRight: 5}}>

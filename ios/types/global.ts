@@ -7,5 +7,5 @@ export type UploadItem = {
     playableDuration: number;
     timestamp: number;
     location: string;
-    fileSize: number;
+    filesize: number;
 };

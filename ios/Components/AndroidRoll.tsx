@@ -38,7 +38,7 @@ const PickerCell = ({ index, item, onMediaPicked }: { index: number, item: Photo
 							extension: item.node.image.extension,
 							uri: item.node.image.uri,
 							playableDuration: item.node.image.playableDuration,
-							fileSize: item.node.image.fileSize,
+							filesize: item.node.image.fileSize,
 						},
 						type: item.node.type.includes("video") ? "video" : "image",
 						timestamp: item.node.timestamp

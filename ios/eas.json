@@ -27,7 +27,8 @@
       "android": {
         "buildType": "apk",
         "image": "latest"
-      }
+      },
+      "channel": "development-simulator"
     },
     "development": {
       "developmentClient": true,
@@ -37,7 +38,8 @@
       },
       "android": {
         "buildType": "apk"
-      }
+      },
+      "channel": "development"
     }
   }
 }

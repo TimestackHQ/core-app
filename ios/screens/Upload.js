@@ -194,7 +194,7 @@ export default function Upload ({}) {
 						color: "green",
 						flex: 1
 					}}>
-						{pendingMedia.length} Remaining ({Number(pendingMedia.reduce((acc, cur) => acc + cur.fileSize, 0) / (1024 * 1024)).toFixed(2)} MB)
+						{pendingMedia.length} Remaining ({Number(pendingMedia.reduce((acc, cur) => acc + cur.filesize, 0) / (1024 * 1024)).toFixed(2)} MB)
 					</Text>}
 					<TouchableOpacity
 						onPress={() =>{
@@ -233,7 +233,7 @@ export default function Upload ({}) {
 											style: "cancel"
 										},
 										{ text: "OK", onPress: async () => {
-											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV6");
+											await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV9");
 											setPendingMedia([]);
 										}}
 									]

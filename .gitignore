@@ -13,3 +13,5 @@ Timestack.app
 build*
 
 *.log
+/.VSCodeCounter
+.DS_Store
