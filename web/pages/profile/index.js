@@ -6,7 +6,7 @@ import HTTPClient from "../../utils/httpClient";
 import ProfilePicture from "../../components/ProfilePicture";
 import FadeIn from "react-fade-in";
 import {useDispatch, useSelector} from "react-redux";
-import {openLink, shareRawLink} from "../../utils/nativeBridge";
+import {openLink} from "../../utils/nativeBridge";
 
 export default function Index() {
 

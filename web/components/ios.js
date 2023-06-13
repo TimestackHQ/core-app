@@ -4,7 +4,7 @@ import FadeIn from "react-fade-in";
 import Router, {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import ProfilePicture from "./ProfilePicture";
-import NativeBridge, {shareLink, shareRawLink, modalView, NativeNavigateBack} from "../utils/nativeBridge";
+import NativeBridge, {shareLink, modalView, NativeNavigateBack} from "../utils/nativeBridge";
 
 export const icons = {
 	"leftArrow": "/icons/arrow_back_ios_FILL0_wght400_GRAD0_opsz48.svg",
@@ -58,27 +58,7 @@ export default function IOS ({
 								</div>
 							})}
 						</div>
-						<div className={"col-6 d-flex justify-content-end"} style={{paddingRight: "25px"}}>
-
-							{buttons?.filter(button => button.position !== "left").map((button, index) => {
-								if(button?.share) {
-									return <img
-										key={index}
-										onClick={() => {
-											shareRawLink(button.href);
-										}}
-										style={{marginLeft: "20px"}}
-										src={icons?.[button.icon]}
-										alt="logo"
-										width="25px"
-									/>
-								}
-								return <Link key={index} href={button.href}>
-									<img style={{marginLeft: "20px"}} src={icons?.[button.icon]} alt="logo" width="25px"/>
-								</Link>
-							})}
-
-						</div>
+						
 					</header>
 					<br/>
 					<br/>
