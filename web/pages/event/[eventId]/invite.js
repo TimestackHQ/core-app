@@ -45,7 +45,7 @@ export default function Invite() {
 				<br/>
 				<h6>Opening app...</h6>
 				<br/>
-				<h6>Link not working?</h6>
+				{/* <h6>Link not working?</h6> */}
 				{isIOS ? <a style={{borderRadius: "200px", width: "60%"}} href={"https://apps.apple.com/us/app/timestack/id1671064881"} className={"btn btn-primary"}>Download</a> : <a href={"https://play.google.com/store/apps/details?id=com.timestack"} className={"btn btn-primary"}>Download</a>}
 
 
