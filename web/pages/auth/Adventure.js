@@ -5,7 +5,7 @@ import {login} from ".";
 
 export default function Adventure ({completeAuth}) {
 
-	setTimeout(completeAuth, 1500);
+	setTimeout(() => completeAuth(),  1500);
 
 	return (
 		<div className={"text-center"} style={{
