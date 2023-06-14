@@ -50,7 +50,6 @@ export default function UploadViewFlatList({ eventId, pendingMedia, media, fetch
 					</View>
 					<TouchableWithoutFeedback
 						onPress={() => {
-							alert("hey")
 							if (selecting) {
 								media.selected = !media.selected;
 								selectMedia(media._id, media.selected);

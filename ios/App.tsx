@@ -45,9 +45,7 @@ function App() {
 
             if (response.data.activeClients[Platform.OS].includes(Application.nativeApplicationVersion)) {
                 console.log("Client is backwards compatible. Downloading and reloading Expo Update.");
-                Updates.fetchUpdateAsync().then(() => {
-                    Updates.reloadAsync();
-                });
+
             } else {
                 setTimeout(() => {
                     const alert = () => {
