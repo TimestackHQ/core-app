@@ -21,6 +21,8 @@ import * as WebBrowser from 'expo-web-browser';
 import TimestackMedia from "../Components/TimestackMedia";
 import { InviteScreenNavigationProp, RootStackParamList, UploadScreenNavigationProp } from "../navigation";
 import { frontendUrl } from "../utils/io";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+
 
 function Picker(props) {
 	return null;
@@ -67,6 +69,7 @@ function Headers({
 	const [muted, setMuted] = useState(event?.muted);
 	return <HeaderButtons>
 		<TouchableOpacity onPress={async () => {
+			ReactNativeHapticFeedback.trigger("notificationSuccess");
 			HTTPClient("/events/" + route.params.eventId + "/mute", "POST")
 				.then((response) => {
 					setMuted(response.data.muted)
@@ -260,6 +263,7 @@ export default function EventScreen() {
 				}
 			});
 		}
+
 	}, [isFocused]);
 
 	const peopleScreenNav = () => {
