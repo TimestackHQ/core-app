@@ -4,15 +4,12 @@ export type RootStackParamList = {
     NotificationsStack: {
         screen: "Notifications"
     }
-
-
     Auth: {
         redirect?: string
     }
     Invite: {
         eventId: string
     },
-
     Event: {
         eventId: string,
         eventName?: string,
@@ -41,7 +38,9 @@ export type RootStackParamList = {
         eventId: string,
         event: any,
     },
-    // Add more screen names and their respective parameters if needed
+    Roll: {
+        eventId: string,
+    }
 };
 
 export type AuthScreenNavigationProp = StackNavigationProp<
@@ -82,4 +81,9 @@ export type AddPeopleScreenNavigationProp = StackNavigationProp<
 export type UploadScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Upload'
+>;
+
+export type RollScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Roll'
 >;

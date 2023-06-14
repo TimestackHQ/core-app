@@ -1,4 +1,13 @@
 {
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "achraf.ghellach@icloud.com",
+        "ascAppId": "1671064881",
+        "appleTeamId": "5F4TK98UYH"
+      }
+    }
+  },
   "build": {
     "production": {
       "channel": "production",

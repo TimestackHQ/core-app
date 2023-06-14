@@ -46,9 +46,6 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			headerTintColor: 'black',
 			headerTitle: "",
 			headerBackTitleVisible: false,
-			backgroundColor: '#ffffff',
-
-
 		}}>
 			<Index.Screen options={{ headerShown: false, headerBackTitle: "Hey" }} name="Main" component={HomeScreen} />
 
