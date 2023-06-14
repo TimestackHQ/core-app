@@ -54,13 +54,9 @@ async function registerForPushNotificationsAsync() {
 }
 
 
-export default function Main({baseRoute, frontendUrl, queueUpdated, navigation}) {
-
+export default function Main({baseRoute, frontendUrl, navigation}) {
 
     const [expoPushToken, setExpoPushToken] = useState('');
-    const [notification, setNotification] = useState(false);
-    const notificationListener = useRef();
-    const responseListener = useRef();
 
     console.log(frontendUrl+baseRoute);
 

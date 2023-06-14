@@ -421,8 +421,8 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
 
-                thumbnailUrl: await GCP.signedUrl(event.cover.thumbnail),
-                storageLocation: await GCP.signedUrl(event.cover.storageLocation)
+                thumbnailUrl: event.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined,
+                storageLocation: event.cover?.storageLocation ? await GCP.signedUrl(event.cover.storageLocation) : undefined
             }
         })
     } catch (e) {

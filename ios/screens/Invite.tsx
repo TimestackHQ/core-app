@@ -9,20 +9,25 @@ import TimestackMedia from '../Components/TimestackMedia';
 const { width } = Dimensions.get('window');
 
 import HapticFeedback from 'react-native-haptic-feedback';
+import { AuthScreenNavigationProp, EventScreenNavigationProp } from '../navigation';
 
 const hapticOptions = {
     enableVibrateFallback: true, // fallback to vibration if haptic feedback is not available
     ignoreAndroidSystemSettings: false, // respect Android system settings for haptic feedback
 };
 
-export default function EventIOS() {
+export default function Invite() {
 
     const route = useRoute<RouteProp<{
         params: {
             eventId: string
         }
     }>>();
-    const navigation = useNavigation();
+
+    const navigation = useNavigation<
+        AuthScreenNavigationProp |
+        EventScreenNavigationProp
+    >();
 
     const [event, setEvent] = useState<any>({});
     const [joined, setJoined] = useState<boolean>(false);

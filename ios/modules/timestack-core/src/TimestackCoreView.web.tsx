@@ -5,7 +5,7 @@ import { TimestackCoreViewProps } from './TimestackCore.types';
 export default function TimestackCoreView(props: TimestackCoreViewProps) {
   return (
     <div>
-      <span>{props.name}</span>
+      <span></span>
     </div>
   );
 }

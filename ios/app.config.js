@@ -44,7 +44,6 @@ module.exports = {
     "ios": {
 
       "jsEngine": "jsc",
-
       "supportsTablet": false,
 
       "bundleIdentifier": "com.timestack.timestack",

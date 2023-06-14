@@ -1,22 +1,23 @@
 import FastImage, { Priority, ResizeMode } from "react-native-fast-image"
 import Video from "react-native-video";
 import { Request } from "aws4";
+import { View } from "react-native";
 
 export default function TimestackMedia({
     source,
-    type,
+    type = "image",
     resizeMode,
     style,
     priority,
 }: {
     source: Request,
-    type: "image" | "video",
+    type?: "image" | "video",
     resizeMode?: ResizeMode,
     style?: any,
     priority?: Priority
 }) {
 
-    return type === "video" ? <Video
+    return source ? type === "video" ? <Video
         muted={true}
         paused={true}
         style={style}
@@ -27,7 +28,10 @@ export default function TimestackMedia({
             priority: priority
         }}
     /> : <FastImage
-        style={style}
+        style={{
+            ...style,
+            zIndex: 0
+        }}
         resizeMode={resizeMode}
         source={{
             uri: "https://" + source.host + source.path,
@@ -35,6 +39,12 @@ export default function TimestackMedia({
             headers: source.headers,
             cache: FastImage.cacheControl.immutable,
             priority: priority
+        }}
+    /> : <View
+        style={{
+            ...style,
+            borderWidth: 1,
+            borderColor: "black"
         }}
     />
 

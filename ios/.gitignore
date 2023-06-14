@@ -74,5 +74,6 @@ dist/
 
 # @end expo-cli
 
-ios
+./ios
+
 android
