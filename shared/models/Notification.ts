@@ -1,24 +1,25 @@
 import * as mongoose from "mongoose";
-import {commonProperties} from "./utils";
-import {v4 as uuid} from "uuid";
-import {MediaSchema} from "./Media";
-import {UserSchema} from "./User";
-import {isObjectIdOrHexString} from "mongoose";
-import {PushToken} from "./index";
-import {EventSchema} from "./Event";
+import { commonProperties } from "./utils";
+import { v4 as uuid } from "uuid";
+import { MediaSchema } from "./Media";
+import { UserSchema } from "./User";
+import { isObjectIdOrHexString } from "mongoose";
+import { PushToken } from "./index";
+import { EventSchema } from "./Event";
+import { ConnectionRequest } from "../@types/public";
 
 export interface NotificationSchema extends mongoose.Document {
     user?: mongoose.Schema.Types.ObjectId | UserSchema;
     title: string;
     body: string;
-    data: {
+    data: ConnectionRequest | null | {
         type: string;
         payload: {
             eventId?: mongoose.Schema.Types.ObjectId & EventSchema;
             userId?: mongoose.Schema.Types.ObjectId & UserSchema;
             eventName?: string;
             userName?: string;
-        };
+        }
     };
     acknowledgedAt?: Date;
     createdAt: Date;
@@ -46,29 +47,33 @@ const NotificationSchema = new mongoose.Schema({
             required: true,
         },
         payload: {
-            url: {
-                type: String,
-                required: false,
-            },
-            eventId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Event",
-                required: false,
-            },
-            userId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: false,
-            },
-            eventName: {
-                type: String,
-                required: false,
-            },
-            userName: {
-                type: String,
-                required: false,
-            }
+            type: Object,
+            required: true,
         }
+        // {
+        //     url: {
+        //         type: String,
+        //         required: false,
+        //     },
+        //     eventId: {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "Event",
+        //         required: false,
+        //     },
+        //     userId: {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "User",
+        //         required: false,
+        //     },
+        //     eventName: {
+        //         type: String,
+        //         required: false,
+        //     },
+        //     userName: {
+        //         type: String,
+        //         required: false,
+        //     },
+        // }
     },
 
     acknowledgedAt: {
@@ -86,14 +91,14 @@ const NotificationSchema = new mongoose.Schema({
 
 NotificationSchema.methods.notify = async function () {
     try {
-        const {user, title, body, data} = this;
+        const { user, title, body, data } = this;
 
-        const pushTokens = await PushToken.find({user: user});
+        const pushTokens = await PushToken.find({ user: user });
 
         for (const pushToken of pushTokens) {
             await pushToken.notify(title, body, data);
         }
-    } catch(Err) {
+    } catch (Err) {
         console.log(Err);
     }
 

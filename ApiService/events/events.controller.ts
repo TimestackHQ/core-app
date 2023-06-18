@@ -633,7 +633,6 @@ export const joinEvent = async (req: any, res: any, next: any) => {
                                 userId: req.user,
                                 userName: req.user.firstName,
                                 eventName: event.name,
-                                url: process.env.FRONTEND_URL + "/event/" + event.publicId,
                                 userProfilePictureSource: req.user?.profilePictureSource,
                             }
                         }

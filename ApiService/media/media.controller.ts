@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Compress, GCP, Logger, Models } from "../../shared";
+import { GCP, Logger, Models } from "../../shared";
 import { v4 as uuid } from 'uuid';
-import * as mime from "mime-types";
-// @ts-ignore
-import * as Ffmpeg from "fluent-ffmpeg";
-import * as sharp from "sharp";
-import * as fs from "fs";
 import moment = require("moment");
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {

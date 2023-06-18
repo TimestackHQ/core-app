@@ -5,6 +5,7 @@ import SMSCode from "./SMSCode";
 import Notification from "./Notification";
 import PushToken from "./PushToken";
 import User from "./User";
+import SocialProfile from "./SocialProfile";
 
 export {
     Event,
@@ -14,4 +15,5 @@ export {
     Notification,
     PushToken,
     User,
+    SocialProfile
 }
