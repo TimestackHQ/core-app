@@ -96,9 +96,7 @@ module.exports = {
       "url": "https://u.expo.dev/e0c26aeb-0710-4a0c-8057-e4415032c70b",
       "fallbackToCacheTimeout": 0
     },
-    "runtimeVersion": {
-      "policy": "sdkVersion",
-    }
+    "runtimeVersion": "exposdk:48.0.18",
   },
   "hooks": {
     "postPublish": [

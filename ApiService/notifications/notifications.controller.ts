@@ -1,10 +1,10 @@
-import {NextFunction, Request, Response} from "express";
-import {GCP, Models} from "../../shared";
-import {NotificationSchema} from "../../shared/models/Notification";
+import { NextFunction, Request, Response } from "express";
+import { GCP, Models } from "../../shared";
+import { NotificationSchema } from "../../shared/models/Notification";
 import * as jwt from "jsonwebtoken";
-import {v4} from "uuid";
+import { v4 } from "uuid";
 
-export async function get (req: Request, res: Response, next: NextFunction) {
+export async function get(req: Request, res: Response, next: NextFunction) {
 
     try {
 
@@ -27,7 +27,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
                 path: "data.payload.userId",
                 select: "profilePictureSource",
             }
-        ]).sort({createdAt: -1}).skip(Number(skip)).limit(15);
+        ]).sort({ createdAt: -1 }).skip(Number(skip)).limit(15);
 
 
 
@@ -36,11 +36,16 @@ export async function get (req: Request, res: Response, next: NextFunction) {
 
             return {
                 ...notification.toJSON(),
+                // @ts-ignore
                 userProfilePicture: notification?.data?.payload?.userId?.profilePictureSource,
                 eventCover:
+                    // @ts-ignore
                     notification?.data?.payload?.eventId?.cover?.snapshot ?
+                        // @ts-ignore
                         await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.snapshot) :
+                        // @ts-ignore
                         notification?.data?.payload?.eventId?.cover?.thumbnail ?
+                            // @ts-ignore
                             await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
                             null,
                 createdAt: notification.createdAt
@@ -55,28 +60,28 @@ export async function get (req: Request, res: Response, next: NextFunction) {
 
 }
 
-export async function count (req: Request, res: Response, next: NextFunction) {
+export async function count(req: Request, res: Response, next: NextFunction) {
     try {
         const count = await Models.Notification.countDocuments({
             user: req.user._id,
             acknowledgedAt: null
         });
 
-        res.status(200).json({count});
+        res.status(200).json({ count });
     } catch (e) {
         next(e);
     }
 }
 
-export async function markAsRead (req: Request, res: Response, next: NextFunction) {
+export async function markAsRead(req: Request, res: Response, next: NextFunction) {
     try {
-        const {notificationIds} = req.body;
+        const { notificationIds } = req.body;
 
         const query: any = {
             user: req.user._id,
         };
 
-        if(notificationIds.length > 0) {
+        if (notificationIds.length > 0) {
             query["_id"] = {
                 $in: notificationIds
             }
