@@ -29,7 +29,6 @@ import { RootStackParamList } from "../navigation";
 const { width } = Dimensions.get('window');
 
 
-
 function Headers({ media, hasPermission, deleteMedia }) {
 
 	const [sharing, setSharing] = useState(false);
@@ -196,8 +195,10 @@ export default function MediaView() {
 							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
 								<Pinchable maximumZoomScale={item.type === "video" ? 1 : 5}>
 									<View style={{ width, height: "100%" }}>
+
 										<TimestackMedia
 											type={item.type}
+											// priority={FastImage.priority.high}
 											source={item.storageLocation}
 											resizeMode={FastImage.resizeMode.contain}
 											style={{ zIndex: 1, width, height: "100%" }}
@@ -205,7 +206,7 @@ export default function MediaView() {
 										<TimestackMedia
 											type={"image"}
 											source={item.thumbnail}
-											priority={FastImage.priority.high}
+											// priority={FastImage.priority.high}
 											resizeMode={FastImage.resizeMode.contain}
 											style={{ width, height: "100%", resizeMode: "contain", position: "absolute", top: 0, left: 0 }}
 										/>
@@ -226,7 +227,7 @@ export default function MediaView() {
 			</View>
 			<View style={{ flex: 1, padding: 10, alignContent: "center", flexDirection: "row", backgroundColor: "white" }}>
 				<View>
-					<ProfilePicture location={media?.user?.profilePictureSource} width={35} height={35} />
+					<ProfilePicture userId={media?.user?.userId} location={media?.user?.profilePictureSource} width={35} height={35} />
 				</View>
 				<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
 					<View style={{ flexDirection: "column", justifyContent: "center" }}>

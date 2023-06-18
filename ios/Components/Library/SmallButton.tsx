@@ -1,0 +1,97 @@
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
+
+export default function BlackButton({
+    onPress,
+    body,
+    style,
+    fontSize = 15,
+    width = "100%",
+    variant = "default"
+}: {
+    onPress?: () => void,
+    body: string,
+    style?: any,
+    fontSize?: number,
+    width?: number | string,
+    variant?: "default" | "pending" | "added" | "positive" | "negative"
+}) {
+
+    let buttonStyle = blackButton;
+    if (variant === "pending") buttonStyle = StyleSheet.create({
+        container: {
+            backgroundColor: "#787880",
+            opacity: 0.16
+        },
+        text: {
+            color: "#FFFEFD",
+            textAlign: "center",
+            fontFamily: "Red Hat Display Semi Bold",
+        }
+    });
+
+    else if (variant === "added") buttonStyle = StyleSheet.create({
+        container: {
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "#A6A6A6",
+        },
+        text: {
+            color: "#A6A6A6",
+            textAlign: "center",
+            fontFamily: "Red Hat Display Semi Bold",
+        }
+    });
+
+    else if (variant === "positive") buttonStyle = StyleSheet.create({
+        container: {
+            backgroundColor: "#007AFF",
+        },
+        text: {
+            color: "white",
+            textAlign: "center",
+            fontFamily: "Red Hat Display Semi Bold",
+        }
+    });
+
+    else if (variant === "negative") buttonStyle = StyleSheet.create({
+        container: {
+            backgroundColor: "#FF3B30",
+        },
+        text: {
+            color: "white",
+            textAlign: "center",
+            fontFamily: "Red Hat Display Semi Bold",
+        }
+    });
+
+
+    return <TouchableOpacity onPress={onPress} style={{
+        ...buttonStyle.container,
+        ...style,
+        borderRadius: fontSize * 2,
+        width,
+        height: fontSize * 1.9,
+        justifyContent: "center",
+        alignContent: "center",
+    }}>
+        <Text style={{
+            ...buttonStyle.text,
+            fontSize,
+            justifyContent: "center",
+            alignContent: "center",
+        }}>
+            {body}
+        </Text>
+    </TouchableOpacity>
+}
+
+const blackButton = StyleSheet.create({
+    container: {
+        backgroundColor: "#000000",
+    },
+    text: {
+        color: "#FFFFFF",
+        textAlign: "center",
+        fontFamily: "Red Hat Display Semi Bold",
+    }
+})

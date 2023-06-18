@@ -152,6 +152,7 @@ export default function HomeScreen({ navigation, route }) {
 														<Text>{event.peopleCount - 6}</Text>
 													</View>
 													<ProfilePicture
+														userId={user.id}
 														key={i}
 														width={iconWidth}
 														height={iconWidth}
@@ -162,6 +163,7 @@ export default function HomeScreen({ navigation, route }) {
 										} else {
 											return (
 												<ProfilePicture
+													userId={user.id}
 													key={i}
 													style={{ marginRight: 5 }}
 													width={iconWidth}

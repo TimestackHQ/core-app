@@ -30,7 +30,6 @@ export default function TimestackMedia({
     /> : <FastImage
         style={{
             ...style,
-            zIndex: 0
         }}
         resizeMode={resizeMode}
         source={{

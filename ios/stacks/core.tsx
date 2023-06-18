@@ -11,7 +11,8 @@ import HTTPClient from "../httpClient";
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { AuthScreenNavigationProp, InviteScreenNavigationProp, NotificationsScreenNavigationProp } from "../navigation";
+import { AuthScreenNavigationProp, InviteScreenNavigationProp, NotificationsScreenNavigationProp, SocialProfileScreenNavigationProp } from "../navigation";
+import { ConnectionRequest } from "@shared-types/*";
 
 
 const CoreStack = createNativeStackNavigator();
@@ -20,7 +21,8 @@ export default function CoreNavigationStack() {
     const navigator = useNavigation<
         InviteScreenNavigationProp |
         AuthScreenNavigationProp |
-        NotificationsScreenNavigationProp
+        NotificationsScreenNavigationProp |
+        SocialProfileScreenNavigationProp
     >();
 
     const urlSource = Linking.useURL();
@@ -69,17 +71,30 @@ export default function CoreNavigationStack() {
         // push notifications reader
         const subscription = Notifications.addNotificationResponseReceivedListener(response => {
 
+            console.log(JSON.stringify(response));
+
             console.log("received notification response");
 
-            // processed notification link
             const notification = response.notification.request.content;
             const url = notification?.data.payload?.url;
             if (url) {
-
                 navigator.navigate("NotificationsStack", {
                     screen: "Notifications",
                 });
             };
+
+            if (!notification.data) return;
+            // @ts-ignore
+            const pushPayload: ConnectionRequest = notification.data;
+
+            console.log("push payload", pushPayload);
+
+
+            if (pushPayload.type === "connectionRequest") {
+                navigator.navigate("SocialProfile", {
+                    userId: pushPayload.payload.userId
+                });
+            }
 
         });
 

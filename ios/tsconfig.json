@@ -1,4 +1,10 @@
 {
-  "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "compilerOptions": {
+    "paths": {
+      "@shared-types/*": [
+        "../shared/@types/public"
+      ]
+    }
+  },
+  "extends": "expo/tsconfig.base",
 }

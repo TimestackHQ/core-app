@@ -63,6 +63,7 @@ export default function FutureScreen({ navigation }) {
 				}}>
 					<View style={{ flex: 1 }}>
 						<ProfilePicture
+							userId={user.id}
 							location={user?.profilePictureSource}
 							width={50}
 							height={50}

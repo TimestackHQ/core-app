@@ -40,6 +40,10 @@ export type RootStackParamList = {
     },
     Roll: {
         eventId: string,
+    },
+
+    SocialProfile: {
+        userId: string,
     }
 };
 
@@ -86,4 +90,9 @@ export type UploadScreenNavigationProp = StackNavigationProp<
 export type RollScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Roll'
+>;
+
+export type SocialProfileScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'SocialProfile'
 >;

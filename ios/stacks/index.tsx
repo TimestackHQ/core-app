@@ -16,6 +16,7 @@ import Upload from "../screens/Upload";
 import Roll from "../screens/Roll";
 import AddPeople from "../screens/AddPeople";
 import Profile from "../screens/ProfileScreen";
+import SocialProfile from "../screens/SocialProfile";
 
 
 
@@ -61,6 +62,8 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ headerShown: false }} name="Add" component={AddScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Notifications" component={NotificationsScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Profile" component={Profile} />
+
+			<Index.Screen options={{ headerShown: true }} name="SocialProfile" component={SocialProfile} />
 
 		</Index.Navigator>
 	);

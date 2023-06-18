@@ -19,7 +19,7 @@ import ProfilePicture from "../Components/ProfilePicture";
 import { Hyperlink } from "react-native-hyperlink";
 import * as WebBrowser from 'expo-web-browser';
 import TimestackMedia from "../Components/TimestackMedia";
-import { InviteScreenNavigationProp, RootStackParamList, UploadScreenNavigationProp } from "../navigation";
+import { InviteScreenNavigationProp, RootStackParamList, SocialProfileScreenNavigationProp, UploadScreenNavigationProp } from "../navigation";
 import { frontendUrl } from "../utils/io";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
@@ -148,7 +148,8 @@ export default function EventScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "Event">>();
 	const navigation = useNavigation<
 		InviteScreenNavigationProp |
-		UploadScreenNavigationProp
+		UploadScreenNavigationProp |
+		SocialProfileScreenNavigationProp
 	>();
 	const isFocused = useIsFocused();
 
@@ -380,7 +381,7 @@ export default function EventScreen() {
 							</View>
 
 						</View>
-						<TouchableWithoutFeedback onPress={peopleScreenNav}>
+						<TouchableWithoutFeedback >
 							<View style={{
 								flexDirection: 'row',
 								alignItems: 'center',
@@ -390,7 +391,7 @@ export default function EventScreen() {
 								{event?.people ? [...event?.people].map((user, i) => {
 									if (i === 6 && event?.peopleCount > 7) {
 										return (
-											<View style={{ marginRight: 5 }}>
+											<TouchableWithoutFeedback style={{ marginRight: 5 }}>
 												<View style={{
 													...styles.badge,
 													backgroundColor: "black",
@@ -404,21 +405,25 @@ export default function EventScreen() {
 												</View>
 												<ProfilePicture
 													key={i}
+													userId={user._id}
 													width={iconWidth}
 													height={iconWidth}
 													location={user.profilePictureSource}
 												/>
-											</View>
+											</TouchableWithoutFeedback>
 										);
 									} else {
 										return (
 											<ProfilePicture
 												key={i}
+												userId={user._id}
 												style={{ marginRight: 5 }}
 												width={iconWidth}
 												height={iconWidth}
 												location={user.profilePictureSource}
+												pressToProfile={true}
 											/>
+
 										);
 									}
 								}) : null}
