@@ -17,6 +17,7 @@ import Roll from "../screens/Roll";
 import AddPeople from "../screens/AddPeople";
 import Profile from "../screens/ProfileScreen";
 import SocialProfile from "../screens/SocialProfile";
+import UploadQueue from "../screens/UploadQueue";
 
 
 
@@ -64,6 +65,8 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ headerShown: false }} name="Profile" component={Profile} />
 
 			<Index.Screen options={{ headerShown: true }} name="SocialProfile" component={SocialProfile} />
+
+			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="UploadQueue" component={UploadQueue} />
 
 		</Index.Navigator>
 	);

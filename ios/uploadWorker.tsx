@@ -127,7 +127,10 @@ export default async function uploadWorker() {
 							}
 						});
 
-						xhr.open("POST", `${apiUrl}/v1/media/${media.eventId}`);
+						let endpoint = `${apiUrl}/v1/media/${media.holderId}`;
+						if (media.holderType === "socialProfile") endpoint = endpoint + "?profile=true";
+
+						xhr.open("POST", endpoint);
 						xhr.setRequestHeader("authorization", `Bearer ${await AsyncStorage.getItem("@session")}`);
 						xhr.onload = () => {
 							console.log(xhr.response);

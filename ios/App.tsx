@@ -23,6 +23,9 @@ export const setSession = async (session) => {
 
 function App() {
 
+
+    const navigationContainerRef = React.useRef();
+
     const [loaded] = useFonts({
         'Athelas Bold': require('./assets/fonts/Athelas-Bold.ttf'),
         'Red Hat Display Black': require('./assets/fonts/RedHatDisplay-Black.ttf'),
@@ -71,8 +74,12 @@ function App() {
         });
     }, []);
 
+
+    useEffect(() => {
+        console.log(navigationContainerRef.current);
+    }, [navigationContainerRef.current]);
     return loaded ?
-        <NavigationContainer>
+        <NavigationContainer ref={navigationContainerRef}>
             <OverflowMenuProvider>
                 <CoreNavigationStack />
             </OverflowMenuProvider>

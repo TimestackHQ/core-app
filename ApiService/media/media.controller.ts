@@ -98,19 +98,25 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
 
 export const viewMedia = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { eventId, mediaId } = req.params;
-        const event = await Models.Event.countDocuments({
-            _id: eventId,
-            users: {
-                $in: [req.user._id]
-            }
-        });
-        if (!event) {
+        const { holderId, mediaId } = req.params;
+        const holder = req.query?.profile ?
+            await Models.SocialProfile.findOne({
+                _id: holderId,
+                users: {
+                    $in: [req.user._id]
+                },
+            }) : await Models.Event.countDocuments({
+                _id: holderId,
+                users: {
+                    $in: [req.user._id]
+                }
+            });
+        if (!holder) {
             return res.sendStatus(404);
         }
         const media = await Models.Media.findOne({
             _id: mediaId,
-            event: eventId
+            event: holderId
         }).populate({
             path: "user",
             select: "firstName lastName profilePictureSource"
@@ -148,29 +154,55 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        console.log(req.body)
+        const holderId = req.params.holderId
 
-        const event = await Models.Event.findOne({
-            _id: req.params.eventId,
-            $or: [
-                {
-                    users: {
-                        $in: [req.user._id]
-                    }
-                },
-                {
-                    createdBy: req.user._id
+        let holderObject = null;
+
+        console.log(req.files)
+
+        if (req.query?.profile) {
+
+            console.log("profile")
+
+            holderObject = await Models.SocialProfile.findOne({
+                _id: holderId,
+                users: {
+                    $in: [req.user._id]
                 }
-            ]
-        });
-
-        if (!event) {
-            return res.sendStatus(404);
-        }
-        else if (!event.hasPermission(req.user._id)) {
-            return res.status(403).json({
-                message: "You don't have permission to upload to this event"
             });
+
+            if (holderObject && !holderObject?.permissions(req.user._id).canUploadMedia) {
+                return res.status(403).json({
+                    message: "You don't have permission to upload to this profile"
+                });
+            }
+
+        } else {
+
+            holderObject = await Models.Event.findOne({
+                _id: holderId,
+                $or: [
+                    {
+                        users: {
+                            $in: [req.user._id]
+                        }
+                    },
+                    {
+                        createdBy: req.user._id
+                    }
+                ]
+            });
+
+            if (holderObject && !holderObject?.hasPermission(req.user._id)) {
+                return res.status(403).json({
+                    message: "You don't have permission to upload to this event"
+                });
+            }
+
+        }
+
+        if (!holderObject) {
+            return res.sendStatus(404);
         }
 
         const fileId = uuid();
@@ -196,16 +228,16 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
             type: req.body.type ? req.body.type : file.mimetype.split("/")[0],
             group: "event",
             user: req.user._id,
-            metadata: {
+            metadata: req.body.metadata ? {
                 timestamp:
                     JSON.parse(req.body.metadata)?.timestamp
                         ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
                         : undefined
-            },
-            timestamp: JSON.parse(req.body.metadata)?.timestamp
+            } : null,
+            timestamp: req.body.metadata ? JSON.parse(req.body.metadata)?.timestamp
                 ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
-                : undefined,
-            event: event._id
+                : undefined : undefined,
+            event: holderObject._id
         }
 
 
@@ -213,8 +245,8 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 
         await media.save();
 
-        event.media.push(media._id);
-        await event.save();
+        holderObject.media.push(media._id);
+        await holderObject.save();
 
         res.status(200).json({
             message: "Media uploaded successfully",

@@ -17,6 +17,7 @@ import FastImage from "react-native-fast-image";
 import { RouteProp, useNavigation, useRoute, } from "@react-navigation/native";
 import { RollScreenNavigationProp, RootStackParamList } from "../navigation";
 import TimestackMedia from "../Components/TimestackMedia";
+import { UploadItem } from "../types/global";
 
 export default function Upload({ }) {
 
@@ -68,9 +69,9 @@ export default function Upload({ }) {
 		fetchMedia();
 
 		const queue = async () => {
-			const jobs = (await ExpoJobQueue.getJobs())
+			const jobs: UploadItem[] = (await ExpoJobQueue.getJobs())
 				.map(job => JSON.parse(job.payload))
-				.filter(job => job.eventId.toString() === route?.params?.eventId.toString())
+				.filter((job: UploadItem) => job.holderId.toString() === route?.params?.eventId.toString())
 				.reverse();
 
 			const pendingQueue = [
@@ -82,12 +83,10 @@ export default function Upload({ }) {
 						}
 					}),
 				...jobs.map(job => {
-					// if (!pendingMedia.map(pending => pending.uri).includes(job.uri)) {
 					return {
 						...job,
 						processed: false
 					}
-					// }
 				})
 			]
 
@@ -114,6 +113,7 @@ export default function Upload({ }) {
 		return () => {
 			clearInterval(remoteMedia);
 		}
+
 	}, [event]);
 
 	useEffect(() => {
@@ -138,7 +138,8 @@ export default function Upload({ }) {
 	const pickImage = async (eventId) => {
 
 		navigation.navigate("Roll", {
-			eventId
+			holderId: eventId,
+			holderType: "event"
 		});
 
 	};

@@ -3,7 +3,8 @@ export type UploadItem = {
     extension: string;
     uri: string;
     type: string;
-    eventId: string;
+    holderId: string;
+    holderType: "event" | "socialProfile";
     playableDuration: number;
     timestamp: number;
     location: string;

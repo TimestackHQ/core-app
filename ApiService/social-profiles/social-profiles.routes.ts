@@ -6,6 +6,7 @@ import {
     acceptProfile,
     addProfile,
     hasAccess,
+    mediaList,
     viewProfile
 } from "./social-profiles.controller";
 
@@ -15,6 +16,7 @@ router.get("/user/:userId", viewProfile);
 router.post("/user/:userId/add", addProfile);
 router.post("/user/:userId/accept", acceptProfile);
 router.get("/hasAccess", hasAccess);
+router.get("/:profileId/media", mediaList)
 
 
 export default router;

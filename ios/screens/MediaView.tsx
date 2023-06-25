@@ -87,7 +87,7 @@ export default function MediaView() {
 	const [currentIndex, setCurrentIndex] = useState(null);
 
 	const getGallery = () => {
-		HTTPClient(`/events/${route.params.eventId}/media?skip=${content.length}`, "GET")
+		HTTPClient(`/events/${route.params.holderId}/media?skip=${content.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
 			.then(res => {
 				setContent([...content, ...res.data.media]);
 
@@ -95,7 +95,7 @@ export default function MediaView() {
 	}
 
 	const deleteMedia = (id) => {
-		HTTPClient("/media/" + route.params.eventId + "/delete", "POST", { ids: [id] }).then(() => {
+		HTTPClient("/media/" + route.params.holderId + "/delete", "POST", { ids: [id] }).then(() => {
 			if (content.length === 1 || currentIndex === content.length - 1) {
 				navigator.goBack();
 				return;
@@ -130,7 +130,7 @@ export default function MediaView() {
 	useEffect(() => {
 		const id = content[currentIndex]?._id;
 		if (!id) return;
-		HTTPClient(`/media/view/${id}/${route.params?.eventId}`, "GET")
+		HTTPClient(`/media/view/${id}/${route.params?.holderId}${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`, "GET")
 			.then(async res => {
 				const timezone = getTimezone();
 

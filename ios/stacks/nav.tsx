@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ExpoJobQueue from "expo-job-queue";
 import FastImage from "react-native-fast-image";
 import { AddStackScreen, FutureStackScreen, HomeStackScreen, NotificationsStackScreen, ProfileStackScreen } from ".";
+import TimestackButton from "../Components/TimestackButton";
 
 const Tab = createBottomTabNavigator();
 export default function Nav() {
@@ -48,11 +49,7 @@ export default function Nav() {
                 component={AddStackScreen}
                 options={{
                     tabBarLabel: '',
-                    tabBarIcon: ({ color, size, focused }) => {
-                        if (focused) return <FastImage resizeMode='contain' style={{ width: 40, height: 40 }} source={require("../assets/icons/collection/timestack.png")} />
-                        return <FastImage resizeMode='contain' style={{ width: 40, height: 40 }} source={require("../assets/icons/collection/timestack.png")} />
-
-                    }
+                    tabBarIcon: ({ color, size, focused }) => <TimestackButton color={color} size={size} focused={focused} />
                 }}
             />
             <Tab.Screen

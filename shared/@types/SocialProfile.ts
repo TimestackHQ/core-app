@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 import { SharedProfileStatusType } from "../models/SocialProfile";
 
+export interface SocialProfilePermissionsInterface {
+    canAdd: boolean;
+    canAccept: boolean;
+    canUnblock: boolean;
+    canUploadMedia: boolean;
+}
+
+
 export interface SocialProfileInterface<T> {
     _id: mongoose.Types.ObjectId;
     users: T[];
@@ -11,6 +19,7 @@ export interface SocialProfileInterface<T> {
     blockedBy: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
+    permissions: (userId: mongoose.Types.ObjectId) => SocialProfilePermissionsInterface;
 }
 
 export interface UserInterface {

@@ -230,7 +230,7 @@ export default function EventScreen() {
 
 			})
 			.catch((error) => {
-				Alert.alert("Error", "Could not load event", [
+				Alert.alert("Error", "Could not load event" + JSON.stringify(error), [
 					{
 						text: "OK",
 						onPress: () => {
@@ -392,24 +392,26 @@ export default function EventScreen() {
 									if (i === 6 && event?.peopleCount > 7) {
 										return (
 											<TouchableWithoutFeedback style={{ marginRight: 5 }}>
-												<View style={{
-													...styles.badge,
-													backgroundColor: "black",
-													opacity: 0.6,
-													zIndex: 1,
-													position: "absolute",
-													right: 0,
-													bottom: 0,
-												}}>
-													<Text style={styles.badgeText}>{event.peopleCount - 6}</Text>
+												<View>
+													<View style={{
+														...styles.badge,
+														backgroundColor: "black",
+														opacity: 0.6,
+														zIndex: 1,
+														position: "absolute",
+														right: 0,
+														bottom: 0,
+													}}>
+														<Text style={styles.badgeText}>{event.peopleCount - 6}</Text>
+													</View>
+													<ProfilePicture
+														key={i}
+														userId={user?._id}
+														width={iconWidth}
+														height={iconWidth}
+														location={user.profilePictureSource}
+													/>
 												</View>
-												<ProfilePicture
-													key={i}
-													userId={user._id}
-													width={iconWidth}
-													height={iconWidth}
-													location={user.profilePictureSource}
-												/>
 											</TouchableWithoutFeedback>
 										);
 									} else {
@@ -491,7 +493,8 @@ export default function EventScreen() {
 						onPress={() => {
 							navigation.navigate("MediaView", {
 								mediaId: media._id,
-								eventId: event?._id,
+								holderId: event?._id,
+								holderType: "event",
 								content: gallery,
 								currentIndex: raw.index,
 								hasPermission: event?.hasPermission

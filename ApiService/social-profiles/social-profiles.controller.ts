@@ -18,10 +18,12 @@ const getProfile = async (userId: mongoose.Types.ObjectId, targetUserId: string)
         }
     }).select("-media").populate<UserSchema>({
         path: "users",
-        select: "firstName lastName username profilePictureSource"
-    }).lean();
+        select: "firstName lastName username profilePictureSource",
+    });
 
     if (profileDocument) {
+
+        const permissions = profileDocument.permissions(userId);
         profile = {
             _id: profileDocument._id,
             users: profileDocument.users
@@ -37,10 +39,12 @@ const getProfile = async (userId: mongoose.Types.ObjectId, targetUserId: string)
                 }
                 ),
             status: profileDocument.status,
-            canAdd: profileDocument.status === "NONE",
-            canAccept: profileDocument.status === "PENDING" && profileDocument.addedBy.toString() !== userId.toString(),
-            canUnblock: profileDocument.status === "BLOCKED" && profileDocument.blockedBy.toString() === userId.toString()
+            canAdd: permissions.canAdd,
+            canAccept: permissions.canAccept,
+            canUnblock: permissions.canUnblock
+
         }
+
     } else {
         const users = await Models.User.find({
             _id: {
@@ -197,5 +201,57 @@ export async function hasAccess(req: Request, res: Response) {
     } catch (Err) {
         console.log(Err);
         return res.sendStatus(500);
+    }
+}
+
+export const mediaList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const profile = await Models.SocialProfile.findOne({
+            _id: isObjectIdOrHexString(req.params.profileId) ? req.params.profileId : null,
+            users: {
+                $in: [req.user._id]
+            }
+        }).select({
+            media: 1,
+        }).populate({
+            path: "media",
+            select: "_id publicId storageLocation snapshot thumbnail createdAt user type",
+            match: {
+                user: req.query.me ? req.user._id : {
+                    $exists: true
+                }
+            },
+            options: {
+                sort: {
+                    timestamp: -1
+                },
+                limit: req.query?.limit ? Number(req.query.limit) : 30,
+                skip: req.query?.skip ? Number(req.query.skip) : 0
+            }
+        }).lean();
+
+
+        if (!profile) {
+            return res.sendStatus(404);
+        }
+
+        res.json({
+            media: (await Promise.all(profile.media.map(async (media: any) => {
+                return {
+                    _id: media._id,
+                    publicId: media.publicId,
+                    storageLocation: media.storageLocation ? await GCP.signedUrl(media.storageLocation) : undefined,
+                    snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
+                    thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+                    createdAt: media.createdAt,
+                    type: media.type.split("/")[0],
+                    user: media.user
+                }
+            })))
+        });
+
+
+    } catch (Err) {
+        next(Err);
     }
 }

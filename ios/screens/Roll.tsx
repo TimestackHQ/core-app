@@ -23,7 +23,8 @@ export default function Roll() {
 	const navigator = useNavigation();
 	const route = useRoute<RouteProp<{
 		params: {
-			eventId: string,
+			holderId: string,
+			holderType: "event" | "socialProfile"
 		}
 	}>>()
 
@@ -66,14 +67,15 @@ export default function Roll() {
 				console.log("payload:", {
 					uri: media.image.uri,
 					type: media.type,
-					eventId: route.params.eventId
+					holderId: route.params.holderId
 				})
 				ExpoJobQueue.addJob<UploadItem>("mediaQueueV9", {
 					filename: moment().unix() + "_" + v4() + "." + media.image.extension,
 					extension: media.image.extension,
 					uri: media.image.uri,
 					type: media.type,
-					eventId: route.params.eventId,
+					holderId: route.params.holderId,
+					holderType: route.params.holderType,
 					playableDuration: media.image.playableDuration,
 					timestamp: media.timestamp,
 					location: media.location,

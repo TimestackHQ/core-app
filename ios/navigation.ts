@@ -25,7 +25,8 @@ export type RootStackParamList = {
     Nofifications: undefined,
     MediaView: {
         mediaId: string
-        eventId: string
+        holderId: string,
+        holderType: "event" | "socialProfile",
         content: any[],
         currentIndex: number
         hasPermission: boolean
@@ -39,12 +40,20 @@ export type RootStackParamList = {
         event: any,
     },
     Roll: {
-        eventId: string,
+        holderId: string,
+        holderType: "event" | "socialProfile",
     },
 
     SocialProfile: {
         userId: string,
-    }
+    },
+
+    UploadQueue: {
+        holderId: string,
+        holderType: "event" | "socialProfile",
+    },
+
+
 };
 
 export type AuthScreenNavigationProp = StackNavigationProp<
@@ -95,4 +104,9 @@ export type RollScreenNavigationProp = StackNavigationProp<
 export type SocialProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'SocialProfile'
+>;
+
+export type UploadQueueScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'UploadQueue'
 >;
