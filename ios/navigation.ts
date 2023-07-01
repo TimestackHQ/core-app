@@ -1,4 +1,5 @@
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RollType } from "./types/global";
 
 export type RootStackParamList = {
     NotificationsStack: {
@@ -39,10 +40,7 @@ export type RootStackParamList = {
         eventId: string,
         event: any,
     },
-    Roll: {
-        holderId: string,
-        holderType: "event" | "socialProfile",
-    },
+    Roll: RollType,
 
     SocialProfile: {
         userId: string,

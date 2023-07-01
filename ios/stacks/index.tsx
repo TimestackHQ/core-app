@@ -57,8 +57,6 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
 			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
-
-
 			<Index.Screen options={{ headerShown: false }} name="Future" component={FutureScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Add" component={AddScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Notifications" component={NotificationsScreen} />

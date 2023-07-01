@@ -9,7 +9,7 @@ const router: Router = Router()
 
 router.post("/cover", authCheck, upload.any(), uploadCover);
 router.post("/:holderId", authCheck, upload.any(), uploadFile);
-router.post("/:eventId/delete", authCheck, HTTPValidator(deleteMemoriesValidator), deleteMemories);
+router.post("/:holderId/delete", authCheck, HTTPValidator(deleteMemoriesValidator), deleteMemories);
 router.get("/:publicId", get);
 router.get("/view/:mediaId/:holderId", authCheck, viewMedia);
 router.get("/:eventId/new", authCheck, getUploadedMedia);

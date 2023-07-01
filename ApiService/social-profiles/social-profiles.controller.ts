@@ -236,7 +236,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
         }
 
         res.json({
-            media: (await Promise.all(profile.media.map(async (media: any) => {
+            media: (await Promise.all(profile.media ? profile.media.map(async (media: any) => {
                 return {
                     _id: media._id,
                     publicId: media.publicId,
@@ -245,9 +245,10 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
                     createdAt: media.createdAt,
                     type: media.type.split("/")[0],
+                    hasPermission: media.user.toString() === req.user._id.toString(),
                     user: media.user
                 }
-            })))
+            }) : []))
         });
 
 

@@ -139,7 +139,8 @@ export default function Upload({ }) {
 
 		navigation.navigate("Roll", {
 			holderId: eventId,
-			holderType: "event"
+			holderType: "event",
+			holderImageUrl: event?.thumbnailUrl
 		});
 
 	};

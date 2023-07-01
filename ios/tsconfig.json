@@ -3,8 +3,11 @@
     "paths": {
       "@shared-types/*": [
         "../shared/@types/public"
-      ]
-    }
+      ],
+      "@store/*": [
+        "../store/hooks"
+      ],
+    },
   },
   "extends": "expo/tsconfig.base",
 }

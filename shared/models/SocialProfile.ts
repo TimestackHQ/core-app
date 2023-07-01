@@ -28,7 +28,8 @@ const socialProfileSchema = new mongoose.Schema({
     },
     media: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Media"
+        ref: "Media",
+        default: []
     }]
 }, {
     timestamps: true

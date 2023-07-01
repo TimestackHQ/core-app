@@ -16,7 +16,7 @@ export default function BlackButton({
     variant?: "default" | "pending" | "added" | "positive" | "negative"
 }) {
 
-    let buttonStyle = blackButton;
+    let buttonStyle: any = blackButton;
     if (variant === "pending") buttonStyle = StyleSheet.create({
         container: {
             backgroundColor: "#787880",
@@ -26,7 +26,7 @@ export default function BlackButton({
             color: "#FFFEFD",
             textAlign: "center",
             fontFamily: "Red Hat Display Semi Bold",
-        }
+        },
     });
 
     else if (variant === "added") buttonStyle = StyleSheet.create({
@@ -93,5 +93,13 @@ const blackButton = StyleSheet.create({
         color: "#FFFFFF",
         textAlign: "center",
         fontFamily: "Red Hat Display Semi Bold",
+        textShadowColor: "white",
+        textShadowOffset: {
+            width: 100,
+            height: 100,
+        },
+        textShadowRadius: 9000,
+        elevation: 50,
+
     }
 })

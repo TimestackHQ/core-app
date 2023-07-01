@@ -11,6 +11,8 @@ import { OverflowMenuProvider } from "react-navigation-header-buttons";
 import axios from 'axios';
 import uploadWorker from "./uploadWorker";
 import CoreNavigationStack from "./stacks/core";
+import store from './store'
+import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
 
 uploadWorker();
@@ -79,11 +81,14 @@ function App() {
         console.log(navigationContainerRef.current);
     }, [navigationContainerRef.current]);
     return loaded ?
-        <NavigationContainer ref={navigationContainerRef}>
-            <OverflowMenuProvider>
-                <CoreNavigationStack />
-            </OverflowMenuProvider>
-        </NavigationContainer>
+        <Provider store={store}>
+            <NavigationContainer ref={navigationContainerRef}>
+                <OverflowMenuProvider>
+                    <CoreNavigationStack />
+                </OverflowMenuProvider>
+            </NavigationContainer>
+        </Provider>
+
         : null;
 
 }

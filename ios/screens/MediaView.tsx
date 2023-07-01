@@ -31,6 +31,10 @@ const { width } = Dimensions.get('window');
 
 function Headers({ media, hasPermission, deleteMedia }) {
 
+	useEffect(() => {
+		console.log(media)
+	}, [media])
+
 	const [sharing, setSharing] = useState(false);
 	return <HeaderButtons>
 		<View>
@@ -95,7 +99,7 @@ export default function MediaView() {
 	}
 
 	const deleteMedia = (id) => {
-		HTTPClient("/media/" + route.params.holderId + "/delete", "POST", { ids: [id] }).then(() => {
+		HTTPClient(`/media/${route.params.holderId}/delete${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`, "POST", { ids: [id] }).then(() => {
 			if (content.length === 1 || currentIndex === content.length - 1) {
 				navigator.goBack();
 				return;
@@ -130,7 +134,10 @@ export default function MediaView() {
 	useEffect(() => {
 		const id = content[currentIndex]?._id;
 		if (!id) return;
-		HTTPClient(`/media/view/${id}/${route.params?.holderId}${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`, "GET")
+
+		const url = `/media/view/${id}/${route.params?.holderId}${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`;
+		console.log("Fetching media", url)
+		HTTPClient(url, "GET")
 			.then(async res => {
 				const timezone = getTimezone();
 
@@ -160,7 +167,7 @@ export default function MediaView() {
 						</Text>
 					</View>,
 
-					headerRight: () => <Headers media={res.data.media} deleteMedia={deleteMedia} hasPermission={route.params?.hasPermission} />
+					headerRight: () => <Headers media={res.data.media} deleteMedia={deleteMedia} hasPermission={res.data.media?.hasPermission} />
 
 				});
 			})

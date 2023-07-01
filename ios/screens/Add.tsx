@@ -27,7 +27,6 @@ import HTTPClient from "../httpClient";
 import { useEffect } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { getTimezone } from "../utils/time";
-// navigator.geolocation = require('react-native-geolocation-service');
 
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;

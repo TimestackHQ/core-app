@@ -10,3 +10,25 @@ export type UploadItem = {
     location: string;
     filesize: number;
 };
+
+export type RollType = ({
+    holderImageUrl?: string,
+} & (
+        {
+            holderId: string,
+            holderType: "event",
+        } | {
+            holderId: string,
+            holderType: "socialProfile",
+            profile: {
+                people: {
+                    firstName: string,
+                    lastName: string,
+                    username: string,
+                    profilePictureSource?: string,
+                }[]
+            }
+        }
+    )) | {
+        holderType: "none",
+    };

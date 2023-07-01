@@ -1,0 +1,6 @@
+{
+  "expo.jsEngine": "hermes",
+  "ffmpeg-kit-react-native.subspecs": [
+    "min-gpl"
+  ]
+}

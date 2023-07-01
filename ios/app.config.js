@@ -43,7 +43,7 @@ module.exports = {
     ],
     "ios": {
 
-      "jsEngine": "jsc",
+      "jsEngine": "hermes",
       "supportsTablet": false,
 
       "bundleIdentifier": "com.timestack.timestack",

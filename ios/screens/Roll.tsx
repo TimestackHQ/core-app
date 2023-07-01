@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import * as React from "react";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import * as _ from "lodash";
 import ExpoJobQueue from "expo-job-queue";
 import moment from "moment";
@@ -17,19 +17,22 @@ import { NetworkStateType } from "expo-network";
 import * as TimestackCoreModule from "../modules/timestack-core";
 import AndroidRoll from "../Components/AndroidRoll";
 import { UploadItem } from "../types/global";
+import { useAppDispatch } from "../store/hooks";
+import { setRoll } from "../store/rollState";
+import { RootStackParamList } from "../navigation";
+import ProfilePicture from "../Components/ProfilePicture";
 
 export default function Roll() {
 
 	const navigator = useNavigation();
-	const route = useRoute<RouteProp<{
-		params: {
-			holderId: string,
-			holderType: "event" | "socialProfile"
-		}
-	}>>()
+	const route = useRoute<RouteProp<RootStackParamList, "Roll">>()
 
 	const [selected, setSelected] = useState({});
 	const [selectionCounter, setSelectionCounter] = useState(0);
+
+	const dispatch = useAppDispatch();
+
+	const isFocused = useIsFocused();
 
 	async function hasAndroidPermission() {
 
@@ -50,8 +53,19 @@ export default function Roll() {
 		await checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 	}
 
-
-
+	useEffect(() => {
+		console.log("Hey", route.params);
+		if (isFocused) {
+			dispatch(setRoll({
+				...route.params
+			}));
+			setTimeout(() => {
+				dispatch(setRoll({
+					...route.params
+				}))
+			}, 1000);
+		}
+	}, [isFocused]);
 
 	const save = async () => {
 
@@ -62,33 +76,36 @@ export default function Roll() {
 		console.log(mediaSelected);
 
 		const upload = async () => {
-			for await (const media of mediaSelected) {
+			if (route.params.holderType !== "none") {
+				for await (const media of mediaSelected) {
 
-				console.log("payload:", {
-					uri: media.image.uri,
-					type: media.type,
-					holderId: route.params.holderId
-				})
-				ExpoJobQueue.addJob<UploadItem>("mediaQueueV9", {
-					filename: moment().unix() + "_" + v4() + "." + media.image.extension,
-					extension: media.image.extension,
-					uri: media.image.uri,
-					type: media.type,
-					holderId: route.params.holderId,
-					holderType: route.params.holderType,
-					playableDuration: media.image.playableDuration,
-					timestamp: media.timestamp,
-					location: media.location,
-					filesize: media.image.filesize,
-				})
+					console.log("payload:", {
+						uri: media.image.uri,
+						type: media.type,
+						holderId: route.params.holderId
+					})
+					ExpoJobQueue.addJob<UploadItem>("mediaQueueV9", {
+						filename: moment().unix() + "_" + v4() + "." + media.image.extension,
+						extension: media.image.extension,
+						uri: media.image.uri,
+						type: media.type,
+						holderId: route.params.holderId,
+						holderType: route.params.holderType,
+						playableDuration: media.image.playableDuration,
+						timestamp: media.timestamp,
+						location: media.location,
+						filesize: media.image.filesize,
+					})
+
+				}
+
+				await ExpoJobQueue.start();
+
+				console.log("JOB_QUEUE_STARTED")
+
+				navigator.goBack();
 
 			}
-
-			await ExpoJobQueue.start();
-
-			console.log("JOB_QUEUE_STARTED")
-
-			navigator.goBack();
 		}
 		const net = await Network.getNetworkStateAsync();
 		if (net.type === NetworkStateType.CELLULAR) {
@@ -134,15 +151,66 @@ export default function Roll() {
 	}
 
 	return <View style={{ flex: 1, flexDirection: "column" }}>
-		{/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', padding: 10 }}>
-			<TouchableOpacity onPress={save}>
+		{route.params.holderType === "socialProfile" ? <View style={{ flex: 2, justifyContent: 'center', padding: 15, paddingBottom: 0, backgroundColor: "#FFFEFD" }}>
+			{route.params.profile.people.length === 1 ? <View style={{
+				flexDirection: "row",
+				alignItems: "center",
+			}}>
+				<ProfilePicture width={50} height={50} location={route.params.profile.people[0].profilePictureSource} />
+				<View style={{ flex: 1, alignItems: "flex-start", flexDirection: "column", margin: 10 }}>
+					<Text style={{
+						fontSize: 20,
+						marginBottom: 0,
+						fontFamily: "Red Hat Display Bold",
+					}}>{route.params.profile.people[0].firstName} {route.params.profile.people[0].lastName}</Text>
+					<Text style={{
+						fontSize: 16,
+						marginTop: -5,
+						fontFamily: "Red Hat Display Regular",
+					}}>{route.params.profile.people[0].username}</Text>
+				</View>
+			</View> : null}
+		</View> : null}
+
+		<View style={{
+			backgroundColor: "#FFFEFD",
+			flexDirection: "row",
+			flex: 2,
+			justifyContent: 'space-between',
+		}}>
+			<View style={{
+				justifyContent: "flex-end",
+				flexGrow: 1,
+				flexDirection: "column",
+			}}>
 				<Text style={{
-					fontSize: 15,
-					fontFamily: "Red Hat Display Semi Bold",
-				}}>Upload</Text>
-			</TouchableOpacity>
-		</View> */}
-		<View style={{ flex: 25, alignContent: "center", justifyContent: "center", flexDirection: "row" }}>
+					fontSize: 32,
+					fontFamily: "Red Hat Display Bold",
+					paddingVertical: 5,
+					padding: 14,
+					paddingBottom: 10,
+					textAlign: "left",
+					textAlignVertical: "center",
+				}}>Recents</Text>
+			</View>
+			<View style={{
+				justifyContent: "center",
+			}}>
+				<TouchableOpacity>
+					<Text style={{
+						fontSize: 16,
+						fontFamily: "Red Hat Display Semi Bold",
+						paddingTop: 20,
+						padding: 15,
+						color: "#A6A6A6",
+						textAlign: "right",
+					}}>Clear</Text>
+				</TouchableOpacity>
+			</View>
+
+		</View>
+
+		<View style={{ flex: 20, alignContent: "center", justifyContent: "center", flexDirection: "row" }}>
 			{selectionCounter !== 0 ? <TouchableOpacity style={{
 				flex: 2,
 				zIndex: 3,

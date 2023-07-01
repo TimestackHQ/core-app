@@ -3,11 +3,17 @@ import ExpoJobQueue from "expo-job-queue";
 import FastImage from "react-native-fast-image";
 import { AddStackScreen, FutureStackScreen, HomeStackScreen, NotificationsStackScreen, ProfileStackScreen } from ".";
 import TimestackButton from "../Components/TimestackButton";
+import { useAppSelector } from "../store/hooks";
+import { useNavigation } from "@react-navigation/native";
+import { RollScreenNavigationProp } from "../navigation";
 
 const Tab = createBottomTabNavigator();
 export default function Nav() {
 
     ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
+    const rollState = useAppSelector(state => state.rollState);
+
+    const navigator = useNavigation<RollScreenNavigationProp>();
 
     return (
         <Tab.Navigator
@@ -47,6 +53,14 @@ export default function Nav() {
             <Tab.Screen
                 name="AddStack"
                 component={AddStackScreen}
+                listeners={({ }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        navigator.navigate("Roll", {
+                            ...rollState
+                        });
+                    },
+                })}
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ color, size, focused }) => <TimestackButton color={color} size={size} focused={focused} />
@@ -78,6 +92,7 @@ export default function Nav() {
             />
 
         </Tab.Navigator>
+
 
 
     );

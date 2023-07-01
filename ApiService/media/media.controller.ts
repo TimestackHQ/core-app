@@ -141,7 +141,9 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
                     firstName: media.user?.firstName,
                     lastName: media.user?.lastName,
                     profilePictureSource: media.user?.profilePictureSource
-                } : {}
+                } : {},
+                hasPermission:
+                    holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === media.user?._id.toString(),
             }
         });
     } catch (e) {
@@ -311,17 +313,25 @@ export async function getUploadedMedia(req: Request, res: Response, next: NextFu
 export async function deleteMemories(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const event = await Models.Event.findOne({
-            _id: req.params.eventId,
-            users: {
-                $in: [req.user._id]
-            }
-        });
+        const { holderId, mediaId } = req.params;
 
-        if (!event) {
+        const holder = req.query?.profile ?
+            await Models.SocialProfile.findOne({
+                _id: holderId,
+                users: {
+                    $in: [req.user._id]
+                },
+            }) : await Models.Event.findOne({
+                _id: holderId,
+                users: {
+                    $in: [req.user._id]
+                }
+            });
+
+        if (!holder) {
             return res.sendStatus(404);
         }
-        else if (!event.hasPermission(req.user._id)) {
+        else if ((holder instanceof Models.Event && !holder.hasPermission(req.user._id))) {
             return res.status(403).json({
                 message: "You don't have permission to delete media from this event"
             });
@@ -331,7 +341,7 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
             _id: {
                 $in: req.body.ids
             },
-            event: event._id,
+            event: holder._id,
         });
 
         await Models.Event.updateOne({
@@ -349,6 +359,7 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
 
         try {
             await Promise.all(media.map(async m => {
+                if (holder instanceof Models.SocialProfile && m.user.toString() !== req.user._id.toString()) return;
                 await GCP.deleteFile(m.storageLocation);
                 if (m.thumbnail) await GCP.deleteFile(m.thumbnail);
                 if (m.snapshot) await GCP.deleteFile(m.snapshot);

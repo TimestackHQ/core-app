@@ -27,5 +27,5 @@ export interface UserInterface {
     firstName: string;
     lastName: string;
     username: string;
-    profilePictureSource: string;
+    profilePictureSource?: string;
 }
