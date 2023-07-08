@@ -408,6 +408,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
         }
 
         res.json({
+            // @ts-ignore
             message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
             event: {
                 ...event.toJSON(),

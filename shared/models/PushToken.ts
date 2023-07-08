@@ -1,9 +1,8 @@
 import * as mongoose from "mongoose";
-import {commonProperties} from "./utils";
-import {v4 as uuid} from "uuid";
-import {MediaSchema} from "./Media";
-import {UserSchema} from "./User";
-import {isObjectIdOrHexString} from "mongoose";
+import { commonProperties } from "./utils";
+import { v4 as uuid } from "uuid";
+import { UserSchema } from "./User";
+import { isObjectIdOrHexString } from "mongoose";
 import axios from "axios";
 
 export interface PushTokenSchema extends mongoose.Document {
