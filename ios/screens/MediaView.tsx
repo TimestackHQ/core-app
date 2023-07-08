@@ -26,6 +26,16 @@ import TimestackMedia from "../Components/TimestackMedia";
 import mediaDownload from "../utils/mediaDownload";
 import Pinchable from 'react-native-pinchable';
 import { RootStackParamList } from "../navigation";
+import { BlurView } from "@react-native-community/blur";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+
+// optional
+const options = {
+	enableVibrateFallback: true,
+	ignoreAndroidSystemSettings: false,
+};
+
+
 const { width } = Dimensions.get('window');
 
 
@@ -89,6 +99,7 @@ export default function MediaView() {
 	const [hasPermission, setHasPermission] = useState(false);
 	const [downloading, setDownloading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(null);
+	const [isInGroup, setIsInGroup] = useState(0);
 
 	const getGallery = () => {
 		HTTPClient(`/events/${route.params.holderId}/media?skip=${content.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
@@ -127,12 +138,12 @@ export default function MediaView() {
 			setCurrentIndex(route.params?.currentIndex)
 		}
 
-
-
 	}, [isFocused]);
 
 	useEffect(() => {
-		const id = content[currentIndex]?._id;
+		const current = content[currentIndex];
+		const id = current?._id;
+		console.log(JSON.stringify(content[currentIndex], null, 2))
 		if (!id) return;
 
 		const url = `/media/view/${id}/${route.params?.holderId}${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`;
@@ -142,6 +153,17 @@ export default function MediaView() {
 				const timezone = getTimezone();
 
 				setMedia(res.data.media);
+
+				if (isInGroup == 1 && current?.isGroup) {
+					ReactNativeHapticFeedback.trigger("impactHeavy", options);
+					setIsInGroup(2);
+				} else if (isInGroup == 2 && !current?.isGroup) {
+					ReactNativeHapticFeedback.trigger("impactHeavy", options);
+					setIsInGroup(1);
+				} else {
+					if (current?.isGroup) setIsInGroup(2);
+					else setIsInGroup(1);
+				}
 
 				navigator.setOptions({
 					headerBackTitle: "Back",
@@ -189,6 +211,38 @@ export default function MediaView() {
 		<View style={{ backgroundColor: "white", flex: 1, flexDirection: "column" }}>
 			<View style={{ flex: 9 }}>
 				<View style={styles.container}>
+					{content[currentIndex]?.isGroup ? <BlurView
+						style={{
+							position: "absolute",
+							top: 0,
+							flex: 1,
+							margin: 10,
+							// height: groupPanelHeight,
+							padding: 0,
+							zIndex: 2,
+							height: 20,
+							paddingHorizontal: 10,
+							minWidth: 40,
+							borderRadius: 10,
+							alignContent: "center",
+							justifyContent: "center",
+							alignItems: "center",
+
+						}}
+						blurType="dark"
+						blurAmount={5}
+						reducedTransparencyFallbackColor="white"
+					>
+						<Text style={{
+							fontSize: 12,
+							color: "white",
+							fontFamily: "Red Hat Display Regular",
+							textAlign: "center",
+
+						}}>
+							{content[currentIndex]?.indexInGroup + 1} / {content[currentIndex]?.groupLength}
+						</Text>
+					</BlurView> : null}
 					<FlatList
 						data={content}
 						horizontal
@@ -198,29 +252,36 @@ export default function MediaView() {
 						getItemLayout={(data, index) => (
 							{ length: width, offset: width * index, index }
 						)}
-						renderItem={({ item }) => (
-							<TouchableWithoutFeedback onPress={() => handleSwipe('left')}>
-								<Pinchable maximumZoomScale={item.type === "video" ? 1 : 5}>
+						renderItem={({ item }) => {
+
+							const media = content[currentIndex];
+
+							return (
+								<TouchableWithoutFeedback >
 									<View style={{ width, height: "100%" }}>
 
-										<TimestackMedia
+										{item.type === "video" ? <TimestackMedia
 											type={item.type}
 											// priority={FastImage.priority.high}
 											source={item.storageLocation}
 											resizeMode={FastImage.resizeMode.contain}
 											style={{ zIndex: 1, width, height: "100%" }}
-										/>
-										<TimestackMedia
-											type={"image"}
-											source={item.thumbnail}
-											// priority={FastImage.priority.high}
-											resizeMode={FastImage.resizeMode.contain}
-											style={{ width, height: "100%", resizeMode: "contain", position: "absolute", top: 0, left: 0 }}
-										/>
+										/> : <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5}>
+											<View style={{ width, height: "100%" }}>
+
+												<TimestackMedia
+													type={item.type}
+													// priority={FastImage.priority.high}
+													source={item.storageLocation}
+													resizeMode={FastImage.resizeMode.contain}
+													style={{ zIndex: 1, width, height: "100%" }}
+												/>
+											</View>
+										</Pinchable>}
 									</View>
-								</Pinchable>
-							</TouchableWithoutFeedback>
-						)}
+								</TouchableWithoutFeedback>
+							)
+						}}
 						onScroll={(event) => {
 							const { contentOffset } = event.nativeEvent;
 							const index = Math.round(contentOffset.x / width);

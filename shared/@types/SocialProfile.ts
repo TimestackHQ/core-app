@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { SharedProfileStatusType } from "../models/SocialProfile";
+import { MediaType, MediaGroupType } from "./Media";
 
 export interface SocialProfilePermissionsInterface {
     canAdd: boolean;
@@ -10,20 +11,21 @@ export interface SocialProfilePermissionsInterface {
 
 
 export interface SocialProfileInterface<T> {
-    _id: mongoose.Types.ObjectId;
+    _id: mongoose.Schema.Types.ObjectId;
     users: T[];
-    pendingUsers: mongoose.Types.ObjectId[];
+    pendingUsers: mongoose.Schema.Types.ObjectId[];
     status: SharedProfileStatusType;
-    media: mongoose.Types.ObjectId[];
-    addedBy: mongoose.Types.ObjectId;
-    blockedBy: mongoose.Types.ObjectId;
+    media: MediaType[];
+    groups: MediaGroupType[];
+    addedBy: mongoose.Schema.Types.ObjectId;
+    blockedBy: mongoose.Schema.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
-    permissions: (userId: mongoose.Types.ObjectId) => SocialProfilePermissionsInterface;
+    permissions: (userId: mongoose.Schema.Types.ObjectId) => SocialProfilePermissionsInterface;
 }
 
 export interface UserInterface {
-    _id: mongoose.Types.ObjectId;
+    _id: mongoose.Schema.Types.ObjectId;
     firstName: string;
     lastName: string;
     username: string;

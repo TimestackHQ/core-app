@@ -39,7 +39,10 @@ export default function UploadQueue() {
                     height: 40,
                     justifyContent: "center",
                 }}
-                    onPress={() => alert("Cancel")}
+                    onPress={() => {
+                        console.log(ExpoJobQueue.registeredWorkers)
+                        ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV13");
+                    }}
                 >
                     <Text style={{
                         fontFamily: "Red Hat Display Regular", fontSize: 16, textAlign: "right",

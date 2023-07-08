@@ -37,7 +37,7 @@ export default function Nav() {
                     }
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="EventsStack"
                 component={FutureStackScreen}
                 options={{
@@ -48,7 +48,7 @@ export default function Nav() {
 
                     }
                 }}
-            />
+            /> */}
 
             <Tab.Screen
                 name="AddStack"
@@ -66,7 +66,7 @@ export default function Nav() {
                     tabBarIcon: ({ color, size, focused }) => <TimestackButton color={color} size={size} focused={focused} />
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="NotificationsStack"
                 component={NotificationsStackScreen}
                 options={{
@@ -77,7 +77,7 @@ export default function Nav() {
 
                     }
                 }}
-            />
+            /> */}
             <Tab.Screen
                 name="ProfileStack"
                 component={ProfileStackScreen}

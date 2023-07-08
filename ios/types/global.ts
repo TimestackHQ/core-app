@@ -9,6 +9,7 @@ export type UploadItem = {
     timestamp: number;
     location: string;
     filesize: number;
+    groupName?: string
 };
 
 export type RollType = ({

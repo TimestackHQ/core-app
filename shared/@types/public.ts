@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import { SharedProfileStatusType } from "../models/SocialProfile";
 import { UserInterface } from "./SocialProfile";
+import { AWSS3ObjectType } from "./global";
+import { MediaType } from "./Media";
 
 export interface SocialProfileInterface {
-    _id: mongoose.Types.ObjectId | null;
+    _id: mongoose.Schema.Types.ObjectId | null;
     users: UserInterface[],
     status: SharedProfileStatusType;
     canAdd: boolean;
@@ -21,4 +23,19 @@ export interface ConnectionRequest {
 
 export {
     UserInterface
+}
+
+export interface MediaInternetType {
+    _id: string;
+    publicId: string;
+    storageLocation?: AWSS3ObjectType,
+    snapshot?: AWSS3ObjectType;
+    thumbnail?: AWSS3ObjectType;
+    createdAt: Date;
+    type: string;
+    hasPermission: boolean;
+    user: string;
+    isGroup: boolean;
+    timestamp: Date;
+    groupMedia?: MediaType[];
 }

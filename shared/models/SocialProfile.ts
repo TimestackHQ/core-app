@@ -30,12 +30,30 @@ const socialProfileSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Media",
         default: []
+    }],
+    groups: [{
+        type: {
+            name: {
+                type: String,
+                required: true,
+                max: 100
+            },
+            media: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Media"
+            }],
+            timestamp: {
+                type: Date,
+                required: true,
+                default: Date.now
+            }
+        },
     }]
 }, {
     timestamps: true
 });
 
-socialProfileSchema.methods.permissions = function (userId: mongoose.Types.ObjectId): SocialProfilePermissionsInterface {
+socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId): SocialProfilePermissionsInterface {
     return {
         canAdd: this.status === "NONE",
         canAccept: this.status === "PENDING" && this.addedBy.toString() !== userId.toString(),
@@ -44,4 +62,4 @@ socialProfileSchema.methods.permissions = function (userId: mongoose.Types.Objec
     }
 }
 
-export default mongoose.model<SocialProfileInterface<mongoose.Types.ObjectId>>("SocialProfile", socialProfileSchema);
+export default mongoose.model<SocialProfileInterface<mongoose.Schema.Types.ObjectId>>("SocialProfile", socialProfileSchema);

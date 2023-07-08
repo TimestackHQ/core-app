@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import { commonProperties } from "./utils";
 import { v4 as uuid } from "uuid";
-import { MediaSchema } from "./Media";
+import { MediaType } from "../@types/Media";
 import { UserSchema } from "./User";
 import { isObjectIdOrHexString } from "mongoose";
 import { PushToken } from "./index";

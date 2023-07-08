@@ -1,6 +1,7 @@
 
 import * as AWS from 'aws-sdk';
 import * as aws4 from 'aws4';
+import { AWSS3ObjectType } from '../@types/global';
 
 const AWS_ACCESS_KEY_ID = 'AKIAUAFCOME3MI6RJV5J';
 const AWS_SECRET_ACCESS_KEY = '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';
@@ -10,7 +11,7 @@ AWS.config.update({
     secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-export const signedUrl = async (publicId: string) => {
+export const signedUrl = async (publicId: string): Promise<AWSS3ObjectType> => {
 
     var opts = {
         host: 'timestack-private.s3.ca-central-1.amazonaws.com',

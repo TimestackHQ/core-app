@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export type commonProperties = {
     createdAt: Date,
-    events: mongoose.Types.ObjectId[],
+    events: mongoose.Schema.Types.ObjectId[],
 }
 
 export const commonProperties = {

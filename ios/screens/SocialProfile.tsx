@@ -1,4 +1,4 @@
-import { SocialProfileInterface, UserInterface } from "@shared-types/public";
+import { MediaInternetType, SocialProfileInterface, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
@@ -16,6 +16,7 @@ import { setRoll } from "../store/rollState";
 import FastImage from "react-native-fast-image";
 import NoSharedMemories from "../Components/Library/NoSharedMemories";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { MediaType } from "react-native-image-picker";
 
 
 export default function SocialProfile({ }) {
@@ -34,7 +35,7 @@ export default function SocialProfile({ }) {
     const queueCounter = useQueueCounter(profile?._id.toString());
 
     const [user, setUser] = useState<UserInterface>(null);
-    const [gallery, setGallery] = useState<any[]>([]);
+    const [gallery, setGallery] = useState<MediaInternetType[]>([]);
     const [selected, setSelected] = useState({});
 
     useEffect(() => {
@@ -153,6 +154,23 @@ export default function SocialProfile({ }) {
     const refresh = () => {
         setRefreshing(true);
         getGallery(true);
+    }
+
+    const flattenGallery = () => {
+        const flatGallery: any[] = [];
+        gallery.forEach((media: MediaInternetType) => {
+            if (media.isGroup) media.groupMedia.forEach((mediaItem, indexInGroup) => flatGallery.push({
+                ...mediaItem,
+                isGroup: true,
+                groupLength: media.groupMedia.length,
+                indexInGroup
+            }));
+            else flatGallery.push({
+                ...media,
+                isGroup: false,
+            });
+        })
+        return flatGallery;
     }
 
 
@@ -289,12 +307,14 @@ export default function SocialProfile({ }) {
                                             setSelected(selectedMutable);
                                             return;
                                         } else {
+                                            const gallery = flattenGallery();
+                                            const index = gallery.findIndex((m: MediaInternetType) => m._id === media._id);
                                             navigator.navigate("MediaView", {
                                                 mediaId: media._id,
                                                 holderId: String(profile._id),
                                                 holderType: "socialProfile",
                                                 content: gallery,
-                                                currentIndex: raw.index,
+                                                currentIndex: index,
                                                 hasPermission: media.hasPermission,
                                             });
                                         }
@@ -302,6 +322,23 @@ export default function SocialProfile({ }) {
                                     }
                                 >
                                     <View>
+                                        {media.isGroup ? <View style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            width: "100%",
+                                            height: "100%",
+                                            zIndex: 1,
+                                            justifyContent: "flex-start",
+                                            alignItems: "flex-end"
+                                        }}>
+
+                                            <FastImage
+                                                source={require("../assets/icons/collection/group-white.png")}
+                                                style={{ width: 18, height: 18, margin: 10 }}
+                                            />
+
+                                        </View> : null}
                                         <TimestackMedia style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
                                     </View>
                                 </TouchableWithoutFeedback>

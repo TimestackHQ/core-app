@@ -4,5 +4,6 @@ export type ChangeEventPayload = {
 
 export type TimestackCoreViewProps = {
   onMediaPicked: (event: ChangeEventPayload) => void;
+  selectedPhotos?: string[];
   style?: any;
 };

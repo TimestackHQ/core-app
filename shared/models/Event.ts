@@ -1,9 +1,9 @@
 import * as mongoose from "mongoose";
 import { commonProperties } from "./utils";
 import { v4 as uuid } from "uuid";
-import { MediaSchema } from "./Media";
 import { UserSchema } from "./User";
 import { isObjectIdOrHexString } from "mongoose";
+import { MediaType } from "../@types/Media";
 
 export interface EventSchema extends mongoose.Document {
     name: string;
@@ -17,17 +17,17 @@ export interface EventSchema extends mongoose.Document {
     revisitsCache: {
         [key: string]: Date
     }
-    media: MediaSchema[] & mongoose.Schema.Types.ObjectId[],
-    createdBy: mongoose.Types.ObjectId;
-    users: mongoose.Types.ObjectId[];
-    invitees: mongoose.Types.ObjectId[];
+    media: MediaType[] & mongoose.Schema.Types.ObjectId[],
+    createdBy: mongoose.Schema.Types.ObjectId;
+    users: mongoose.Schema.Types.ObjectId[];
+    invitees: mongoose.Schema.Types.ObjectId[];
     nonUsersInvitees: {
         firstName?: string;
         lastName?: string;
         email?: string;
         phoneNumber?: string;
     }[];
-    cover: MediaSchema & mongoose.Schema.Types.ObjectId;
+    cover: MediaType & mongoose.Schema.Types.ObjectId;
     publicId: string;
     commonProperties: commonProperties;
     defaultPermission: "editor" | "viewer";
@@ -120,7 +120,7 @@ const EventSchema = new mongoose.Schema({
         default: uuid
     },
     cover: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: "Media"
     },

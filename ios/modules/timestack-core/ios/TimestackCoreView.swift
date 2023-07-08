@@ -7,6 +7,8 @@ class TimestackCoreView: ExpoView {
     private var mediaItems: [PHAsset] = []
     private var selectedItems: [PHAsset] = []
     private let onMediaPicked = EventDispatcher()
+    public var selectedImages: [String] = []
+
 
     required init(appContext: AppContext? = nil) {
         let layout = UICollectionViewFlowLayout()
@@ -36,10 +38,21 @@ class TimestackCoreView: ExpoView {
         collectionView.delegate = self
 
         fetchMediaItems()
+        
+        
+        
+        print("AppContent \(String(describing: appContext))")
+        
+        
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func setSelectedImages (selectedImagesList: [String]) {
+        print("Selected Images List: \(selectedImagesList)")
+        self.selectedImages = selectedImagesList
     }
 
     private func fetchMediaItems() {
@@ -78,38 +91,51 @@ extension TimestackCoreView: UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return mediaItems.count
     }
+    
+    private func isImageSelectable(_ asset: PHAsset) -> Bool {
+        let assetURI = "ph://\(asset.localIdentifier)"
+        return selectedImages.isEmpty || !selectedImages.contains(assetURI)
+    }
+
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let asset = mediaItems[indexPath.item]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MediaCell", for: indexPath) as! MediaCell
         let isSelected = selectedItems.contains(asset)
-        cell.configure(with: asset, isSelected: isSelected)
+        let isSelectable = isImageSelectable(asset) // Replace `isImageSelectable` with your own logic to determine if the image is selectable
+        cell.configure(with: asset, isSelected: isSelected, isSelectable: isSelectable)
         return cell
     }
 
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let asset = mediaItems[indexPath.item]
-        toggleSelection(for: asset)
-        collectionView.reloadItems(at: [indexPath])
+        
+        // Check if the selectedImages list is empty or if the asset's uri is present in selectedImages
+        if selectedImages.isEmpty || !selectedImages.contains("ph://\(asset.localIdentifier)") {
+            toggleSelection(for: asset)
+            collectionView.reloadItems(at: [indexPath])
 
-        let itemDetails: [String: Any] = [
-            "type": asset.mediaType == .image ? "image" : "video",
-            "group_name": "",
-            "image": [
-                "filename": asset.value(forKey: "filename") as? String ?? "",
-                "filepath": asset.location ?? "",
-                "uri": "ph://\(asset.localIdentifier)",
-                "height": asset.pixelHeight,
-                "width": asset.pixelWidth,
-                "playableDuration": Int(asset.duration),
-                "orientation": asset.pixelHeight > asset.pixelWidth ? 1 : 0
-            ] as [String : Any],
-            "timestamp": Int(asset.creationDate?.timeIntervalSince1970 ?? 0)
-        ]
+            let itemDetails: [String: Any] = [
+                "type": asset.mediaType == .image ? "image" : "video",
+                "group_name": "",
+                "image": [
+                    "filename": asset.value(forKey: "filename") as? String ?? "",
+                    "filepath": asset.location ?? "",
+                    "uri": "ph://\(asset.localIdentifier)",
+                    "height": asset.pixelHeight,
+                    "width": asset.pixelWidth,
+                    "playableDuration": Int(asset.duration),
+                    "orientation": asset.pixelHeight > asset.pixelWidth ? 1 : 0
+                ] as [String : Any],
+                "timestamp": Int(asset.creationDate?.timeIntervalSince1970 ?? 0)
+            ]
 
-        let picked = selectedItems.contains(asset)
-        onMediaPicked(itemDetails, picked: picked)
+            let picked = selectedItems.contains(asset)
+            onMediaPicked(itemDetails, picked: picked)
+        }
     }
+
 
     private func toggleSelection(for asset: PHAsset) {
         if selectedItems.contains(asset) {
@@ -126,7 +152,7 @@ class MediaCell: UICollectionViewCell {
     private let favoriteHeart = UIImageView()
     private let selectedIcon = UIImageView()
     private let circleIcon = UIImageView()
-    private let selectedOverlayView = UIView()
+    private let selectedOverlayLayer = CALayer()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -134,7 +160,7 @@ class MediaCell: UICollectionViewCell {
         setupDurationLabel()
         setupFavoriteHeart()
         setupSelectedIcon()
-        setupSelectedOverlayView()
+        setupSelectedOverlayLayer()
     }
 
     required init?(coder: NSCoder) {
@@ -143,7 +169,7 @@ class MediaCell: UICollectionViewCell {
         setupDurationLabel()
         setupFavoriteHeart()
         setupSelectedIcon()
-        setupSelectedOverlayView()
+        setupSelectedOverlayLayer()
     }
 
     private func setupImageView() {
@@ -229,24 +255,16 @@ class MediaCell: UICollectionViewCell {
             selectedIcon.widthAnchor.constraint(equalToConstant: 18),
             selectedIcon.heightAnchor.constraint(equalToConstant: 18)
         ])
-        
     }
 
-    private func setupSelectedOverlayView() {
-        selectedOverlayView.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-        selectedOverlayView.isHidden = true
-        contentView.addSubview(selectedOverlayView)
-
-        selectedOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            selectedOverlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            selectedOverlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            selectedOverlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            selectedOverlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
+    private func setupSelectedOverlayLayer() {
+        selectedOverlayLayer.backgroundColor = UIColor.black.cgColor
+        selectedOverlayLayer.opacity = 0.8
+        selectedOverlayLayer.isHidden = true
+        contentView.layer.addSublayer(selectedOverlayLayer)
     }
 
-    func configure(with asset: PHAsset, isSelected: Bool) {
+    func configure(with asset: PHAsset, isSelected: Bool, isSelectable: Bool) {
         durationLabel.isHidden = asset.mediaType != .video
         favoriteHeart.isHidden = !asset.isFavorite
 
@@ -254,12 +272,18 @@ class MediaCell: UICollectionViewCell {
         imageView.layer.removeAllAnimations()
         selectedIcon.layer.removeAllAnimations()
         circleIcon.layer.removeAllAnimations()
-        selectedOverlayView.layer.removeAllAnimations()
+        selectedOverlayLayer.removeAllAnimations()
 
         // Update opacity and visibility
         self.imageView.alpha = isSelected ? 0.8 : 1.0
         self.selectedIcon.isHidden = !isSelected
         self.circleIcon.isHidden = !isSelected
+
+        if isSelected || !isSelectable {
+            selectedOverlayLayer.isHidden = true
+        } else {
+            selectedOverlayLayer.isHidden = false
+        }
 
         if asset.mediaType == .video {
             let durationString = formattedDuration(asset.duration)
@@ -271,22 +295,16 @@ class MediaCell: UICollectionViewCell {
         } else {
             let manager = PHImageManager.default()
             let options = PHImageRequestOptions()
-            options.isSynchronous = false
-            options.deliveryMode = .opportunistic
-            options.resizeMode = .exact
-
-            let targetSize = CGSize(width: frame.size.width * UIScreen.main.scale, height: frame.size.height * UIScreen.main.scale)
-
-            manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { [weak self] result, _ in
-                if let image = result {
-                    self?.imageView.image = image
+            options.isNetworkAccessAllowed = true
+            manager.requestImage(for: asset, targetSize: imageView.bounds.size, contentMode: .aspectFill, options: options) { [weak self] image, _ in
+                guard let self = self else { return }
+                if let image = image {
+                    self.imageView.image = image
                     ImageCache.shared.storeImage(image, forKey: asset.localIdentifier)
                 }
             }
         }
     }
-
-
 
     private func formattedDuration(_ duration: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
@@ -300,7 +318,7 @@ class MediaCell: UICollectionViewCell {
         durationLabel.text = ""
         favoriteHeart.isHidden = true
         selectedIcon.isHidden = true
-        selectedOverlayView.isHidden = true
+        selectedOverlayLayer.isHidden = true
         imageView.alpha = 1.0
     }
 }

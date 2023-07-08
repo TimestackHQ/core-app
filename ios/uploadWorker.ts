@@ -17,8 +17,8 @@ const apiUrl = Constants.expoConfig.extra.apiUrl;
 export default async function uploadWorker() {
 	try {
 
-		// await ExpoJobQueue.removeJob("mediaQueueV9");
-		ExpoJobQueue.addWorker("mediaQueueV9", async (media: UploadItem) => {
+		// await ExpoJobQueue.removeJob("mediaQueueV13");
+		ExpoJobQueue.addWorker("mediaQueueV13", async (media: UploadItem) => {
 			return new Promise(async (resolve, reject) => {
 				try {
 
@@ -82,7 +82,6 @@ export default async function uploadWorker() {
 					formData.append('metadata', JSON.stringify({
 						timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
 					}));
-
 					// @ts-ignore
 					formData.append('media', {
 						uri: mediaList[0],
@@ -128,7 +127,14 @@ export default async function uploadWorker() {
 						});
 
 						let endpoint = `${apiUrl}/v1/media/${media.holderId}`;
-						if (media.holderType === "socialProfile") endpoint = endpoint + "?profile=true";
+
+						if (media.holderType === "socialProfile") {
+							endpoint += "?profile=true";
+						}
+
+						if (media.groupName) {
+							endpoint += endpoint.includes("?") ? "&groupName=" + media.groupName : "?groupName=" + media.groupName;
+						}
 
 						xhr.open("POST", endpoint);
 						xhr.setRequestHeader("authorization", `Bearer ${await AsyncStorage.getItem("@session")}`);

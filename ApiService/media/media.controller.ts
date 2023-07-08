@@ -160,7 +160,7 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 
         let holderObject = null;
 
-        console.log(req.files)
+        console.log(req)
 
         if (req.query?.profile) {
 
@@ -247,8 +247,33 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 
         await media.save();
 
-        holderObject.media.push(media._id);
-        await holderObject.save();
+        if (holderObject instanceof Models.SocialProfile) {
+            if (req.query.groupName) {
+                let inserted = false;
+                for (const group of holderObject.groups) {
+                    if (group.name.toString() === req.query.groupName) {
+                        group.media.push(media._id);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    holderObject.groups.push({
+                        name: String(req.query.groupName),
+                        media: [media._id],
+                        timestamp: media.timestamp
+                    });
+                }
+            } else {
+                holderObject.media.push(media._id);
+            }
+            await holderObject.save();
+
+        } else {
+            holderObject.media.push(media._id);
+            await holderObject.save();
+        }
+
 
         res.status(200).json({
             message: "Media uploaded successfully",

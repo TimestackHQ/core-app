@@ -1,11 +1,11 @@
-import {commonProperties} from "./utils";
+import { commonProperties } from "./utils";
 import mongoose from "mongoose";
 import * as moment from "moment";
 import * as twilio from "twilio";
-import {Logger, sendTextMessage} from "../index";
+import { Logger, sendTextMessage } from "../index";
 
 export interface SMSCodeSchema extends mongoose.Document {
-    user: mongoose.Types.ObjectId;
+    user: mongoose.Schema.Types.ObjectId;
     code: string;
     phoneNumber: string;
     expiresAt: Date;
@@ -18,7 +18,7 @@ export interface SMSCodeSchema extends mongoose.Document {
 
 const SMSCodeSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },
@@ -49,14 +49,14 @@ const SMSCodeSchema = new mongoose.Schema({
 SMSCodeSchema.methods.sendSMS = async function (code: number) {
     const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
     try {
-        if(process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "development") {
             Logger(`SMS sent to ${this.phoneNumber} with code: ${code}`);
             return true;
         } else {
             const message = await sendTextMessage(
                 'This is your Timestack authentication code.\n' +
                 '\n' +
-                'We will never ask you to share this code. \n\n\ Code: '+ code,
+                'We will never ask you to share this code. \n\n\ Code: ' + code,
                 this.phoneNumber,
 
             )

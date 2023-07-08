@@ -47,9 +47,9 @@ export default function UploadQueueTracker({ holderId, holderType, variant, styl
             style={{
                 borderRadius: 10,
             }}
-            blurType="light"
+            blurType="xlight"
             blurAmount={10}
-            reducedTransparencyFallbackColor="white"
+            reducedTransparencyFallbackColor="xwhite"
         >
 
 

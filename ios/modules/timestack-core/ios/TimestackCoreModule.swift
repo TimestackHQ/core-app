@@ -18,6 +18,11 @@ public class TimestackCoreModule: Module {
             Prop("name") { (view: TimestackCoreView, prop: String) in
                 print(prop)
             }
+            Prop("selectedPhotos") { (view: TimestackCoreView, prop: [String]) in
+                
+                view.setSelectedImages(selectedImagesList: prop)
+                
+            }
             Events(
                 "onMediaPicked"
             )
@@ -157,68 +162,21 @@ public class TimestackCoreModule: Module {
     private func compressVideo(asset: AVAsset, maxWidth: Int?, maxHeight: Int?) -> URL? {
         let fileName = "\(UUID().uuidString).mp4"
         let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
-
+        
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) else {
             return nil
         }
-
+        
         exportSession.outputFileType = .mp4
         exportSession.outputURL = outputURL
-
-        let videoComposition = AVMutableVideoComposition()
-
-        let videoTrack = asset.tracks(withMediaType: .video).first
-        let naturalSize = videoTrack?.naturalSize ?? .zero
-        let preferredTransform = videoTrack?.preferredTransform
-
-        var targetSize: CGSize
-        if abs(preferredTransform!.b) == 1 && abs(preferredTransform!.c) == 1 {
-            // Portrait mode video
-            targetSize = CGSize(width: naturalSize.height, height: naturalSize.width)
-        } else {
-            // Landscape or square video
-            targetSize = naturalSize
-        }
-
-        // Adjust target size based on the maximum width and height while maintaining aspect ratio
-        if let maxWidth = maxWidth, let maxHeight = maxHeight {
-            let targetAspectRatio = targetSize.width / targetSize.height
-            let maxAspectRatio = CGFloat(maxWidth) / CGFloat(maxHeight)
-
-            if targetAspectRatio > maxAspectRatio {
-                // Adjust width to match the maximum width, and calculate height based on aspect ratio
-                targetSize.width = CGFloat(maxWidth)
-                targetSize.height = targetSize.width / targetAspectRatio
-            } else {
-                // Adjust height to match the maximum height, and calculate width based on aspect ratio
-                targetSize.height = CGFloat(maxHeight)
-                targetSize.width = targetSize.height * targetAspectRatio
-            }
-        }
-
-        let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
-
-        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack!)
-
-        // Set the transform on the layer instruction
-        layerInstruction.setTransform(preferredTransform!, at: .zero)
-
-        instruction.layerInstructions = [layerInstruction]
-        videoComposition.instructions = [instruction]
-
-        videoComposition.renderSize = targetSize
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
-
-        exportSession.videoComposition = videoComposition
-
+        
         let semaphore = DispatchSemaphore(value: 0)
-
+        
         exportSession.exportAsynchronously {
             defer {
                 semaphore.signal()
             }
-
+            
             if exportSession.status == .completed {
                 print("Video compression completed")
             } else if exportSession.status == .failed {
@@ -227,9 +185,9 @@ public class TimestackCoreModule: Module {
                 print("Video compression cancelled")
             }
         }
-
+        
         _ = semaphore.wait(timeout: .distantFuture)
-
+        
         return outputURL
     }
 

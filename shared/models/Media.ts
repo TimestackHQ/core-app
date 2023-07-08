@@ -2,21 +2,7 @@ import * as mongoose from "mongoose";
 import { v4 as uuid } from "uuid";
 import { GCP } from "../index";
 import { UserSchema } from "./User";
-
-export interface MediaSchema extends mongoose.Document {
-    publicId: string;
-    storageLocation: string;
-    user: mongoose.Types.ObjectId & UserSchema;
-    createdAt: Date;
-    type: string;
-    group: string;
-    thumbnail: string;
-    snapshot: string;
-    active: boolean;
-    event: mongoose.Types.ObjectId;
-    metadata: any;
-    getStorageLocation: (type?: ("thumbnail" | "snapshot")) => Promise<string>;
-}
+import { MediaType } from "../@types/Media";
 
 const MediaSchema = new mongoose.Schema({
 
@@ -73,7 +59,7 @@ const MediaSchema = new mongoose.Schema({
     event: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Event",
-    }
+    },
 });
 
 MediaSchema.methods.getStorageLocation = async function (type?: "thumbnail" | "snapshot") {
@@ -93,5 +79,5 @@ MediaSchema.methods.getStorageLocation = async function (type?: "thumbnail" | "s
 
 }
 
-export default mongoose.model<MediaSchema>("Media", MediaSchema);
+export default mongoose.model<MediaType>("Media", MediaSchema);
 

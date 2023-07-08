@@ -237,7 +237,7 @@ export default function Upload({ }) {
 										},
 										{
 											text: "OK", onPress: async () => {
-												await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV9");
+												await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV13");
 												setPendingMedia([]);
 											}
 										}

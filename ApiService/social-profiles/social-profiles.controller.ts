@@ -7,9 +7,10 @@ import { ObjectId } from "mongoose";
 import moment = require("moment");
 import mongoose from "mongoose";
 import { UserSchema } from "../../shared/models/User";
-import { SocialProfileInterface } from "../../shared/@types/public";
+import { MediaInternetType, SocialProfileInterface } from "../../shared/@types/public";
+import { MediaGroupType, MediaType } from "../../shared/@types/Media";
 
-const getProfile = async (userId: mongoose.Types.ObjectId, targetUserId: string) => {
+const getProfile = async (userId: mongoose.Schema.Types.ObjectId, targetUserId: string) => {
 
     let profile: SocialProfileInterface;
     const profileDocument = await Models.SocialProfile.findOne({
@@ -206,49 +207,130 @@ export async function hasAccess(req: Request, res: Response) {
 
 export const mediaList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const profile = await Models.SocialProfile.findOne({
+
+        const profileQuery = {
             _id: isObjectIdOrHexString(req.params.profileId) ? req.params.profileId : null,
             users: {
                 $in: [req.user._id]
             }
-        }).select({
-            media: 1,
-        }).populate({
+        }
+        const mediaPopulation = {
             path: "media",
-            select: "_id publicId storageLocation snapshot thumbnail createdAt user type",
+            select: "_id publicId storageLocation snapshot thumbnail createdAt user type timestamp",
             match: {
                 user: req.query.me ? req.user._id : {
                     $exists: true
                 }
             },
-            options: {
-                sort: {
-                    timestamp: -1
+        }
+
+        const profile = await Models.SocialProfile.findOne(profileQuery)
+            .select({
+                media: 1,
+            }).populate({
+                ...mediaPopulation,
+                options: {
+                    sort: {
+                        timestamp: -1
+                    },
+                    limit: req.query?.limit ? Number(req.query.limit) : 30,
+                    skip: req.query?.skip ? Number(req.query.skip) : 0
+                }
+            });
+
+        if (!profile) {
+            return res.sendStatus(404);
+        }
+
+        const profileWithGroups = profile.media.length !== 0 ? await Models.SocialProfile.findOne(profileQuery)
+            .select({
+                groups: 1,
+            }).populate({
+                path: "groups",
+                match: {
+                    timestamp: Number(req.query?.skip) === 0 ? {
+                        $lte: profile?.media[0]?.timestamp,
+                        $gte: profile?.media[profile?.media.length - 1]?.timestamp
+                    } : {
+                        $lte: profile?.media[0]?.timestamp,
+                        $gt: profile?.media[profile?.media.length - 1]?.timestamp
+                    }
                 },
-                limit: req.query?.limit ? Number(req.query.limit) : 30,
-                skip: req.query?.skip ? Number(req.query.skip) : 0
-            }
-        }).lean();
+                populate: {
+                    path: "media",
+                    select: "_id publicId storageLocation snapshot thumbnail createdAt user type timestamp",
+                    match: {
+                        user: req.query.me ? req.user._id : {
+                            $exists: true
+                        }
+                    },
+                    options: {
+                        // sort: {
+                        //     _id: 1
+                        // },
+                    }
+                }
+            }) : [];
+
+        console.log(JSON.stringify(profileWithGroups, null, 2))
 
 
         if (!profile) {
             return res.sendStatus(404);
         }
 
+        const mediaFormatter = async (media: MediaType) => ({
+            _id: media._id,
+            publicId: media.publicId,
+            storageLocation: media.storageLocation ? await GCP.signedUrl(media.storageLocation) : undefined,
+            snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
+            thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+            createdAt: media.createdAt,
+            type: media.type.split("/")[0],
+            hasPermission: media.user.toString() === req.user._id.toString(),
+            user: String(media.user),
+            timestamp: media.timestamp,
+        })
+
         res.json({
-            media: (await Promise.all(profile.media ? profile.media.map(async (media: any) => {
-                return {
-                    _id: media._id,
-                    publicId: media.publicId,
-                    storageLocation: media.storageLocation ? await GCP.signedUrl(media.storageLocation) : undefined,
-                    snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
-                    thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
-                    createdAt: media.createdAt,
-                    type: media.type.split("/")[0],
-                    hasPermission: media.user.toString() === req.user._id.toString(),
-                    user: media.user
-                }
-            }) : []))
+            media: [
+                ...(
+                    await Promise.all(profile.media ? profile.media.map(async (media: MediaType) => {
+                        if (media instanceof mongoose.Schema.Types.ObjectId) throw new Error("media is not populated");
+                        const mediaResponse: MediaInternetType = {
+                            ...(await mediaFormatter(media)),
+                            isGroup: false,
+
+                        }
+                        return mediaResponse;
+                    }
+                    ) : [])
+                ),
+                ...(
+                    // @ts-ignore
+                    await Promise.all(profileWithGroups?.groups ? profileWithGroups?.groups?.filter(group => group.media[0]).map(async (group: MediaGroupType) => {
+                        const media = group.media[0];
+                        if (media instanceof mongoose.Schema.Types.ObjectId) throw new Error("media is not populated");
+                        const mediaResponse = {
+                            ...(await mediaFormatter(media)),
+                            isGroup: true,
+                            group: group.name,
+                            groupMedia: (await Promise.all(group.media.map(async (media: mongoose.Schema.Types.ObjectId | MediaType) => {
+                                if (media instanceof mongoose.Schema.Types.ObjectId) throw new Error("media is not populated");
+                                return {
+                                    ...(await mediaFormatter(media)),
+                                }
+                            }))).sort((a, b) => {
+                                return moment(b.timestamp).unix() - moment(a.timestamp).unix();
+                            })
+                        }
+                        return mediaResponse;
+                    }
+                    ) : [])
+                )
+            ].sort((a, b) => {
+                return moment(b.timestamp).unix() - moment(a.timestamp).unix();
+            })
         });
 
 

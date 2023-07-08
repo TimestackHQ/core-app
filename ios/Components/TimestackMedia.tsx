@@ -18,33 +18,40 @@ export default function TimestackMedia({
 }) {
 
     return source ? type === "video" ? <Video
-        muted={true}
+
         paused={true}
-        style={style}
+        controls={true}
+        style={{
+            ...style,
+            zIndex: 10,
+        }}
+        pictureInPicture={true}
         source={{
             uri: "https://" + source.host + source.path,
             headers: source.headers,
             cache: FastImage.cacheControl.immutable,
             priority: priority
         }}
-    /> : <FastImage
-        style={{
-            ...style,
-        }}
-        resizeMode={resizeMode}
-        source={{
-            uri: "https://" + source.host + source.path,
-            // @ts-ignore
-            headers: source.headers,
-            cache: FastImage.cacheControl.immutable,
-            priority: priority
-        }}
-    /> : <View
-        style={{
-            ...style,
-            borderWidth: 1,
-            borderColor: "black"
-        }}
-    />
+    /> :
+        <FastImage
+            style={{
+                ...style,
+            }}
+            resizeMode={resizeMode}
+            source={{
+                uri: "https://" + source.host + source.path,
+                // @ts-ignore
+                headers: source.headers,
+                cache: FastImage.cacheControl.immutable,
+                priority: priority
+            }}
+        />
+        : <View
+            style={{
+                ...style,
+                borderWidth: 1,
+                borderColor: "black"
+            }}
+        />
 
 }
