@@ -43,6 +43,8 @@ module.exports = {
     ],
     "ios": {
 
+      "runtimeVersion": "exposdk:48.0.0",
+
       "jsEngine": "hermes",
       "supportsTablet": false,
 

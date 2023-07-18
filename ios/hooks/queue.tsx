@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import ExpoJobQueue from "expo-job-queue";
 import { UploadItem } from "../types/global";
+import {uploadQueueWorker} from "../App";
 
 export const useQueueCounter = (holderId: string) => {
     const [queueCounter, setQueueCounter] = useState(0);
 
     const fetchJobs = async () => {
         if (!holderId) return;
-        const jobs = (await ExpoJobQueue.getJobs())
-            .map(job => JSON.parse(job.payload))
-            .filter((job) => String(job.holderId) === String(holderId))
-            .reverse();
+        const jobs = await uploadQueueWorker.getAllJobs();
 
         setQueueCounter(jobs.length);
     };
@@ -32,8 +29,8 @@ export const useQueue = (holderId: string): UploadItem[] => {
 
     const fetchJobs = async () => {
         if (!holderId) return;
-        const jobs: UploadItem[] = (await ExpoJobQueue.getJobs())
-            .map(job => JSON.parse(job.payload))
+        const jobs: UploadItem[] = (await uploadQueueWorker.getAllJobs())
+            .map(job => job.item)
             .filter((job) => job.holderId.toString() === holderId.toString())
             .reverse();
 

@@ -190,6 +190,7 @@ export default function EventScreen() {
 		HTTPClient("/events/" + route.params.eventId, "GET")
 			.then((response) => {
 
+				console.log(response.data.event.people);
 				if (response.data?.message === "joinRequired") {
 					navigation.navigate("Invite", {
 						eventId: route.params?.eventId

@@ -9,13 +9,18 @@ import * as Updates from "expo-updates";
 import { NavigationContainer } from "@react-navigation/native";
 import { OverflowMenuProvider } from "react-navigation-header-buttons";
 import axios from 'axios';
-import uploadWorker from "./uploadWorker";
 import CoreNavigationStack from "./stacks/core";
 import store from './store'
 import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
+import {UploadJobsRepository} from "./utils/UploadJobsQueue";
 
-uploadWorker();
+export const uploadQueueWorker = new UploadJobsRepository();
+uploadQueueWorker.init().then(async () => {
+    await uploadQueueWorker.clearUploads()
+    uploadQueueWorker.runQueueWatcher();
+    uploadQueueWorker.startQueue();
+});
 
 export const setSession = async (session) => {
     console.log("SETTING SESSION");
@@ -24,9 +29,6 @@ export const setSession = async (session) => {
 
 
 function App() {
-
-
-    const navigationContainerRef = React.useRef();
 
     const [loaded] = useFonts({
         'Athelas Bold': require('./assets/fonts/Athelas-Bold.ttf'),
@@ -76,13 +78,9 @@ function App() {
         });
     }, []);
 
-
-    useEffect(() => {
-        console.log(navigationContainerRef.current);
-    }, [navigationContainerRef.current]);
     return loaded ?
         <Provider store={store}>
-            <NavigationContainer ref={navigationContainerRef}>
+            <NavigationContainer>
                 <OverflowMenuProvider>
                     <CoreNavigationStack />
                 </OverflowMenuProvider>

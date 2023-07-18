@@ -15,6 +15,7 @@ export default function ProfilePicture({ userId, location, width, height, style,
 	pressToProfile?: boolean
 }) {
 
+
 	const navigator = useNavigation<SocialProfileScreenNavigationProp>();
 
 	return <TouchableWithoutFeedback onPress={() => {

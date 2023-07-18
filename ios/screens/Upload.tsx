@@ -10,7 +10,7 @@ import * as React from "react";
 import HTTPClient from "../httpClient";
 import { useEffect } from "react";
 import * as _ from "lodash";
-import ExpoJobQueue from "expo-job-queue";
+
 import Video from 'react-native-video';
 import UploadViewFlatList from "../Components/UploadViewFlatList";
 import FastImage from "react-native-fast-image";
@@ -18,6 +18,7 @@ import { RouteProp, useNavigation, useRoute, } from "@react-navigation/native";
 import { RollScreenNavigationProp, RootStackParamList } from "../navigation";
 import TimestackMedia from "../Components/TimestackMedia";
 import { UploadItem } from "../types/global";
+import {uploadQueueWorker} from "../App";
 
 export default function Upload({ }) {
 
@@ -69,8 +70,8 @@ export default function Upload({ }) {
 		fetchMedia();
 
 		const queue = async () => {
-			const jobs: UploadItem[] = (await ExpoJobQueue.getJobs())
-				.map(job => JSON.parse(job.payload))
+			const jobs: UploadItem[] = (await uploadQueueWorker.getAllJobs())
+				.map(job => job.item)
 				.filter((job: UploadItem) => job.holderId.toString() === route?.params?.eventId.toString())
 				.reverse();
 
@@ -237,7 +238,7 @@ export default function Upload({ }) {
 										},
 										{
 											text: "OK", onPress: async () => {
-												await ExpoJobQueue.removeAllJobsForWorker("mediaQueueV13");
+												await uploadQueueWorker.clearUploads();
 												setPendingMedia([]);
 											}
 										}

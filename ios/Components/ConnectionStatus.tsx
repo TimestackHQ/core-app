@@ -1,6 +1,7 @@
 import { SocialProfileInterface, UserInterface } from "@shared-types/*";
 import { View, Alert } from "react-native";
 import SmallButton from "./Library/SmallButton";
+import moment from "moment";
 import HTTPClient from "../httpClient";
 
 export default function ConnectionStatus({ profile, user, refresh, style }: {
@@ -43,7 +44,7 @@ export default function ConnectionStatus({ profile, user, refresh, style }: {
             ])
         }} body={"Respond"} fontSize={20} width={"40%"} /> : null}
         {profile?.status === "PENDING" && !profile.canAccept ? <SmallButton variant="pending" onPress={refresh} body={"Pending"} fontSize={20} width={"100%"} /> : null}
-        {profile?.status === "ACTIVE" ? <SmallButton variant="added" onPress={refresh} body={"XXX days"} fontSize={20} width={"100%"} /> : null}
+        {profile?.status === "ACTIVE" ? <SmallButton variant="added" onPress={refresh} body={moment.duration(moment().diff(moment(profile.activeSince))).asDays().toFixed(0) + " days"} fontSize={20} width={"100%"} /> : null}
     </View>
 
 }

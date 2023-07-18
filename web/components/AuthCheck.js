@@ -32,8 +32,7 @@ export default function AuthCheck({children}) {
 
 				if(
 					eventId && window.localStorage.getItem("TIMESTACK_TOKEN") &&
-					(err.response?.data?.status === "waitlist" ||
-						err.response?.data?.status === "unconfirmed")
+						err.response?.data?.status === "unconfirmed"
 				){
 					// await Router.push("/auth?eventId="+eventId);
 					await NativeNavigate("Auth", []);

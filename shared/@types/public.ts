@@ -11,6 +11,14 @@ export interface SocialProfileInterface {
     canAdd: boolean;
     canAccept: boolean;
     canUnblock: boolean;
+    mutualProfilesToDisplay: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        profilePictureSource?: string;
+    }[];
+    mutualProfilesCount: number;
+    activeSince?: Date;
 }
 
 export interface ConnectionRequest {

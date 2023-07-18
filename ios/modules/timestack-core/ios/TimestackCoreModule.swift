@@ -163,26 +163,57 @@ public class TimestackCoreModule: Module {
         let fileName = "\(UUID().uuidString).mp4"
         let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
         
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) else {
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
             return nil
         }
         
         exportSession.outputFileType = .mp4
         exportSession.outputURL = outputURL
         
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30) // Set frame duration to 30 FPS
+        videoComposition.renderSize = CGSize(width: maxWidth ?? 0, height: maxHeight ?? 0) // Set maximum width and height
+        
+        // Create video composition instructions
+        let instruction = AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: asset.duration)
+        
+        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: asset.tracks(withMediaType: .video)[0])
+        instruction.layerInstructions = [layerInstruction]
+        
+        videoComposition.instructions = [instruction]
+        
+        exportSession.videoComposition = videoComposition
+        
         let semaphore = DispatchSemaphore(value: 0)
+        
+        // Start a timer to print the progress every second
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+        timer.schedule(deadline: .now(), repeating: .seconds(1))
+        timer.setEventHandler {
+            let progress = exportSession.progress * 100.0
+            print("Compression progress - URI: \(outputURL.absoluteString), State: \(exportSession.status.rawValue), Percentage: \(progress)%")
+        }
+        timer.resume()
         
         exportSession.exportAsynchronously {
             defer {
+                // Signal the semaphore and cancel the timer
                 semaphore.signal()
+                timer.cancel()
             }
             
-            if exportSession.status == .completed {
+            switch exportSession.status {
+            case .completed:
                 print("Video compression completed")
-            } else if exportSession.status == .failed {
-                print("Video compression failed: \(exportSession.error?.localizedDescription ?? "")")
-            } else if exportSession.status == .cancelled {
+            case .failed:
+                let errorDescription = exportSession.error?.localizedDescription ?? "Unknown error"
+                print("Video compression failed: \(errorDescription)")
+                // Handle the failure appropriately without terminating the app
+            case .cancelled:
                 print("Video compression cancelled")
+            default:
+                break
             }
         }
         
@@ -190,6 +221,7 @@ public class TimestackCoreModule: Module {
         
         return outputURL
     }
+
 
 
     

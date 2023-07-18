@@ -42,6 +42,7 @@ export default function HomeScreen({ navigation, route }) {
 		HTTPClient(`/events?skip=${clean ? 0 : events.length}` + String(query ? "&q=" + query : ""), "GET").then((res) => {
 			if (res.data.events.length !== 0) setEvents(clean ? [...res.data.events] : [...events, ...res.data.events]);
 			else if (clear) setEvents([]);
+			console.log(events.map((event) => event.users));
 			setLoading(false);
 		}).catch(err => {
 			// alert("An error occurred while loading your events. Please try again later.")

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import * as React from "react";
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import * as _ from "lodash";
-import ExpoJobQueue from "expo-job-queue";
+
 import moment from "moment";
 import { v4 } from "uuid";
 import * as Network from "expo-network";
@@ -25,6 +25,7 @@ import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
 import FastImage from "react-native-fast-image";
 import { BlurView } from "@react-native-community/blur";
 import { v4 as uuid } from "uuid";
+import {uploadQueueWorker} from "../App";
 
 const groupPanelHeight = 65;
 
@@ -106,25 +107,26 @@ export default function Roll() {
 						holderId: route.params.holderId,
 						groupName: media.group ? media.group : null,
 					})
-					ExpoJobQueue.addJob<UploadItem>("mediaQueueV13", {
-						filename: moment().unix() + "_" + v4() + "." + media.image.extension,
-						extension: media.image.extension,
-						uri: media.image.uri,
-						type: media.type,
+					uploadQueueWorker.addJob({
+						id: v4(),
+						item: {
+							filename: moment().unix() + "_" + v4() + "." + media.image.extension,
+							extension: media.image.extension,
+							uri: media.image.uri,
+							type: media.type,
+							holderId: route.params.holderId,
+							holderType: route.params.holderType,
+							playableDuration: media.image.playableDuration,
+							timestamp: media.timestamp,
+							location: media.location,
+							filesize: media.image.filesize,
+							groupName: media.group ? media.group : null
+						},
 						holderId: route.params.holderId,
-						holderType: route.params.holderType,
-						playableDuration: media.image.playableDuration,
-						timestamp: media.timestamp,
-						location: media.location,
-						filesize: media.image.filesize,
-						groupName: media.group ? media.group : null
+						status: "pending",
 					})
 
 				}
-
-				await ExpoJobQueue.start();
-
-				console.log("JOB_QUEUE_STARTED")
 
 				navigator.goBack();
 

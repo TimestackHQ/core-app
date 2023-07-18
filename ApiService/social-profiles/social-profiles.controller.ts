@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { GCP, Models, isGreaterVersion } from "../../shared";
 import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
-import { getBuffer, standardEventPopulation } from "./events.tools";
-import { ObjectId } from "mongoose";
 import moment = require("moment");
 import mongoose from "mongoose";
 import { UserSchema } from "../../shared/models/User";
@@ -19,8 +17,58 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId, targetUserId: 
         }
     }).select("-media").populate<UserSchema>({
         path: "users",
-        select: "firstName lastName username profilePictureSource",
+        select: "firstName lastName username profilePictureSource"
     });
+
+    const userProfiles = await Models.SocialProfile.find({
+        users: {
+            $in: [userId],
+            $nin: [targetUserId]
+        }
+    }).select("_id").lean();
+
+    console.log(userProfiles);
+
+    const userProfilesIds = userProfiles.map((profile: any) => profile._id);
+
+    const mutualsProfiles = await Models.SocialProfile.find({
+        _id: {
+            $in: userProfilesIds
+        },
+        status: "ACTIVE",
+        users: {
+            $in: [targetUserId],
+            $nin: [userId]
+        },
+        limit: 3
+    }).select("users").populate({
+        path: "users",
+        select: "firstName lastName username profilePictureSource"
+    }).lean();
+
+    const mutualProfilesCount = await Models.SocialProfile.countDocuments({
+        _id: {
+            $in: userProfilesIds
+        },
+        status: "ACTIVE",
+        users: {
+            $in: [targetUserId]
+        },
+    });
+
+    const mutualsObject = {
+        mutualProfilesToDisplay: mutualsProfiles.map((mutual: any) => {
+            const mutualUser = mutual.users.filter((user: any) => user._id.toString() !== userId.toString())[0];
+            return {
+                _id: mutualUser._id,
+                firstName: mutualUser.firstName,
+                lastName: mutualUser.lastName,
+                profilePictureSource: mutualUser.profilePictureSource,
+            }
+        }),
+        mutualProfilesCount
+    }
+
 
     if (profileDocument) {
 
@@ -42,8 +90,9 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId, targetUserId: 
             status: profileDocument.status,
             canAdd: permissions.canAdd,
             canAccept: permissions.canAccept,
-            canUnblock: permissions.canUnblock
-
+            canUnblock: permissions.canUnblock,
+            activeSince: profileDocument.createdAt,
+            ...mutualsObject
         }
 
     } else {
@@ -67,7 +116,8 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId, targetUserId: 
             status: "NONE",
             canAdd: true,
             canAccept: false,
-            canUnblock: false
+            canUnblock: false,
+            ...mutualsObject
         }
     }
 
@@ -271,9 +321,6 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     }
                 }
             }) : [];
-
-        console.log(JSON.stringify(profileWithGroups, null, 2))
-
 
         if (!profile) {
             return res.sendStatus(404);

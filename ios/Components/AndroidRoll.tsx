@@ -13,7 +13,7 @@ import FastImage from "react-native-fast-image";
 import * as React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as _ from "lodash";
-import ExpoJobQueue from "expo-job-queue";
+
 import moment from "moment";
 import { v4 } from "uuid";
 import * as Network from "expo-network";

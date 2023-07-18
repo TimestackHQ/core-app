@@ -1,5 +1,3 @@
-import * as FileSystem from "expo-file-system";
-import Constants from "expo-constants";
 import {
 	Image,
 	TouchableOpacity,
@@ -16,18 +14,18 @@ import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigat
 import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
 import { getTimezone } from "../utils/time";
-import Video from "react-native-video";
 import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
 import { HeaderButtons, HiddenItem, OverflowMenu } from "react-navigation-header-buttons";
 import * as React from "react";
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import TimestackMedia from "../Components/TimestackMedia";
 import mediaDownload from "../utils/mediaDownload";
 import Pinchable from 'react-native-pinchable';
 import { RootStackParamList } from "../navigation";
 import { BlurView } from "@react-native-community/blur";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { Viewport } from '@skele/components'
+import InnerMediaHolder from "../Components/InnerMediaHolder";
 
 // optional
 const options = {
@@ -41,10 +39,6 @@ const { width } = Dimensions.get('window');
 
 function Headers({ media, hasPermission, deleteMedia }) {
 
-	useEffect(() => {
-		console.log(media)
-	}, [media])
-
 	const [sharing, setSharing] = useState(false);
 	return <HeaderButtons>
 		<View>
@@ -54,7 +48,7 @@ function Headers({ media, hasPermission, deleteMedia }) {
 			setSharing(true);
 			try {
 
-				mediaDownload(media?.storageLocation, "share", setSharing, false);
+				await mediaDownload(media?.storageLocation, "share", setSharing, false);
 
 				return;
 			} catch (e) {
@@ -100,6 +94,7 @@ export default function MediaView() {
 	const [downloading, setDownloading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(null);
 	const [isInGroup, setIsInGroup] = useState(0);
+	const [itemInView, setItemInView] = useState(null);
 
 	const getGallery = () => {
 		HTTPClient(`/events/${route.params.holderId}/media?skip=${content.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
@@ -143,7 +138,6 @@ export default function MediaView() {
 	useEffect(() => {
 		const current = content[currentIndex];
 		const id = current?._id;
-		console.log(JSON.stringify(content[currentIndex], null, 2))
 		if (!id) return;
 
 		const url = `/media/view/${id}/${route.params?.holderId}${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`;
@@ -207,6 +201,14 @@ export default function MediaView() {
 
 	}, [currentIndex, content]);
 
+
+	const onViewCallBack = React.useCallback((event)=> {
+		setItemInView(event.viewableItems[0].item._id);
+		console.log("Item in view", event.viewableItems[0].item._id);
+	}, []) // any dependencies that require the function to be "redeclared"
+
+	const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 })
+
 	return (
 		<View style={{ backgroundColor: "white", flex: 1, flexDirection: "column" }}>
 			<View style={{ flex: 9 }}>
@@ -246,6 +248,8 @@ export default function MediaView() {
 					<FlatList
 						data={content}
 						horizontal
+						viewabilityConfig={viewConfigRef.current}
+						onViewableItemsChanged={onViewCallBack}
 						showsHorizontalScrollIndicator={false}
 						pagingEnabled
 						initialScrollIndex={currentIndex}
@@ -256,30 +260,12 @@ export default function MediaView() {
 
 							const media = content[currentIndex];
 
+
+
 							return (
-								<TouchableWithoutFeedback >
-									<View style={{ width, height: "100%" }}>
 
-										{item.type === "video" ? <TimestackMedia
-											type={item.type}
-											// priority={FastImage.priority.high}
-											source={item.storageLocation}
-											resizeMode={FastImage.resizeMode.contain}
-											style={{ zIndex: 1, width, height: "100%" }}
-										/> : <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5}>
-											<View style={{ width, height: "100%" }}>
+								<InnerMediaHolder item={item} itemInView={itemInView === item._id} />
 
-												<TimestackMedia
-													type={item.type}
-													// priority={FastImage.priority.high}
-													source={item.storageLocation}
-													resizeMode={FastImage.resizeMode.contain}
-													style={{ zIndex: 1, width, height: "100%" }}
-												/>
-											</View>
-										</Pinchable>}
-									</View>
-								</TouchableWithoutFeedback>
 							)
 						}}
 						onScroll={(event) => {

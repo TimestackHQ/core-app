@@ -1,7 +1,7 @@
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { UploadItem } from "../types/global";
 import { useEffect, useState } from "react";
-import ExpoJobQueue from "expo-job-queue";
+
 import { RootStackParamList, UploadScreenNavigationProp } from "../navigation";
 import { FlashList } from "@shopify/flash-list";
 import { FlatList } from "react-native-gesture-handler";
@@ -10,6 +10,7 @@ import { useQueue, useQueueCounter } from "../hooks/queue";
 import FastImage from "react-native-fast-image";
 import { set } from "lodash";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
+import {uploadQueueWorker} from "../App";
 
 export default function UploadQueue() {
 
@@ -39,9 +40,8 @@ export default function UploadQueue() {
                     height: 40,
                     justifyContent: "center",
                 }}
-                    onPress={() => {
-                        console.log(ExpoJobQueue.registeredWorkers)
-                        ExpoJobQueue.cancelAllJobsForWorker("mediaQueueV13");
+                    onPress={async () => {
+                        uploadQueueWorker.clearUploads();
                     }}
                 >
                     <Text style={{

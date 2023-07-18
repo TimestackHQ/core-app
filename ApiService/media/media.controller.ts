@@ -164,8 +164,6 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 
         if (req.query?.profile) {
 
-            console.log("profile")
-
             holderObject = await Models.SocialProfile.findOne({
                 _id: holderId,
                 users: {

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ExpoJobQueue from "expo-job-queue";
+
 import FastImage from "react-native-fast-image";
 import { AddStackScreen, FutureStackScreen, HomeStackScreen, NotificationsStackScreen, ProfileStackScreen } from ".";
 import TimestackButton from "../Components/TimestackButton";
@@ -10,7 +10,6 @@ import { RollScreenNavigationProp } from "../navigation";
 const Tab = createBottomTabNavigator();
 export default function Nav() {
 
-    ExpoJobQueue.start().then(() => console.log("JOB_QUEUE_STARTED"));
     const rollState = useAppSelector(state => state.rollState);
 
     const navigator = useNavigation<RollScreenNavigationProp>();

@@ -9,23 +9,28 @@ export default function TimestackMedia({
     resizeMode,
     style,
     priority,
+    onLoad
 }: {
     source: Request,
     type?: "image" | "video",
     resizeMode?: ResizeMode,
     style?: any,
-    priority?: Priority
+    priority?: Priority,
+    onLoad?: (loaded: boolean) => void
 }) {
 
     return source ? type === "video" ? <Video
-
-        paused={true}
+        autoplay={false}
+        paused={false}
         controls={true}
+        onLoad={() => setTimeout(() => onLoad(true), 250)}
         style={{
             ...style,
             zIndex: 10,
+            backgroundColor: "transparent"
+
         }}
-        pictureInPicture={true}
+        ignoreSilentSwitch="ignore"
         source={{
             uri: "https://" + source.host + source.path,
             headers: source.headers,

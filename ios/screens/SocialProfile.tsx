@@ -17,6 +17,8 @@ import FastImage from "react-native-fast-image";
 import NoSharedMemories from "../Components/Library/NoSharedMemories";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { MediaType } from "react-native-image-picker";
+import {uploadQueueWorker} from "../App";
+
 
 
 export default function SocialProfile({ }) {
@@ -110,11 +112,20 @@ export default function SocialProfile({ }) {
         })
     }, [selectionMode]);
 
+    useEffect(() => {
+
+        setInterval(async () => {
+            console.log(await uploadQueueWorker.getAllJobs());
+        }, 1000)
+
+    }, [selected]);
+
 
     const getGallery = (flush = false) => {
         if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
             .then(res => {
-                setGallery(flush ? [...res.data.media] : [...gallery, ...res.data.media]);
+                if (flush) setGallery([...res.data.media]);
+                else setGallery([...gallery, ...res.data.media]);
             });
     }
 
@@ -152,6 +163,7 @@ export default function SocialProfile({ }) {
     }, [profile, user]);
 
     const refresh = () => {
+        console.log("refreshing");
         setRefreshing(true);
         getGallery(true);
     }
