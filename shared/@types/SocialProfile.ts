@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { SharedProfileStatusType } from "../models/SocialProfile";
-import { MediaType, MediaGroupType } from "./Media";
+import { SOCIAL_PROFILE_STATUSES } from "../consts";
+import { ExtendedMongoDocument } from "./global";
 
 export interface SocialProfilePermissionsInterface {
     canAdd: boolean;
@@ -10,22 +10,25 @@ export interface SocialProfilePermissionsInterface {
 }
 
 
-export interface SocialProfileInterface<T> {
-    _id: mongoose.Schema.Types.ObjectId;
-    users: T[];
-    pendingUsers: mongoose.Schema.Types.ObjectId[];
-    status: SharedProfileStatusType;
-    media: MediaType[];
-    groups: MediaGroupType[];
-    addedBy: mongoose.Schema.Types.ObjectId;
-    blockedBy: mongoose.Schema.Types.ObjectId;
+export interface SocialProfileInterface extends ExtendedMongoDocument {
+    _id: mongoose.Schema.Types.ObjectId/***/;
+    users: (mongoose.Schema.Types.ObjectId/***/ | UserInterface)[];
+    pendingUsers: mongoose.Schema.Types.ObjectId/***/[];
+    status: typeof SOCIAL_PROFILE_STATUSES[number]
+    addedBy: mongoose.Schema.Types.ObjectId/***/;
+    blockedBy: mongoose.Schema.Types.ObjectId/***/;
     createdAt: Date;
     updatedAt: Date;
-    permissions: (userId: mongoose.Schema.Types.ObjectId) => SocialProfilePermissionsInterface;
+    content: {
+        contentId: mongoose.Schema.Types.ObjectId/***/;
+        contentType: "media" | "mediaGroup";
+        createdAt: Date;
+    }[];
+    permissions: (userId: mongoose.Schema.Types.ObjectId/***/) => SocialProfilePermissionsInterface;
 }
 
 export interface UserInterface {
-    _id: mongoose.Schema.Types.ObjectId;
+    _id: mongoose.Schema.Types.ObjectId/***/;
     firstName: string;
     lastName: string;
     username: string;

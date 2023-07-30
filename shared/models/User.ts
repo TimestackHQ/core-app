@@ -1,10 +1,12 @@
 import * as mongoose from "mongoose";
 import * as jwt from "jsonwebtoken";
-import {commonProperties} from "./utils";
+import { commonProperties } from "./utils";
 import SMSCode from "./SMSCode";
-import {Logger} from "../index";
+import { Logger } from "../index";
+import { ExtendedMongoDocument } from "../@types/global";
+import { ExtendedMongoSchema } from "./helpers";
 
-export interface UserSchema extends mongoose.Document {
+export interface IUser extends ExtendedMongoDocument {
     firstName?: string;
     lastName?: string;
     username: string;
@@ -23,7 +25,7 @@ export interface UserSchema extends mongoose.Document {
     setUsername: (username: string) => void;
 }
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new ExtendedMongoSchema({
     firstName: {
         type: String,
         required: false,
@@ -48,7 +50,7 @@ const UserSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         unique: true,
-        set: (field: string) => field.replace(/\s/g,''),
+        set: (field: string) => field.replace(/\s/g, ''),
     },
     isConfirmed: {
         type: Boolean,
@@ -97,7 +99,7 @@ UserSchema.methods.initSMSLogin = async function () {
 }
 
 UserSchema.methods.checkSMSCode = async function (code: string) {
-    const smsCode = await SMSCode.findOne({user: this._id, code: code, isConfirmed: false}).sort({createdAt: -1});
+    const smsCode = await SMSCode.findOne({ user: this._id, code: code, isConfirmed: false }).sort({ createdAt: -1 });
     if (!smsCode) return false;
 
     smsCode.isConfirmed = true;
@@ -114,7 +116,7 @@ UserSchema.methods.generateSessionToken = async function () {
         email: this.email,
         phoneNumber: this.phoneNumber,
         isConfirmed: this.isConfirmed,
-    }, String(process.env.JWT_SECRET), {expiresIn: "1w"});
+    }, String(process.env.JWT_SECRET), { expiresIn: "1w" });
 }
 
 UserSchema.methods.pushEvent = function (eventName: string, payload: string) {
@@ -129,7 +131,7 @@ UserSchema.methods.pushEvent = function (eventName: string, payload: string) {
 }
 
 UserSchema.methods.setUsername = function (username: string) {
-    this.username = username.replace(/\s/g,'').toLowerCase();
+    this.username = username.replace(/\s/g, '').toLowerCase();
 }
 
-export default mongoose.model<UserSchema>("User", UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);

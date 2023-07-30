@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { GCP, Models } from "../../shared";
+import { AWS, Models } from "../../shared";
 import * as jwt from "jsonwebtoken";
 import { v4 } from "uuid";
 
@@ -47,7 +47,7 @@ export async function picture(req: Request, res: Response, next: NextFunction) {
 
         const fileName = v4() + "." + file.originalname.split(".").pop();
 
-        const location = await GCP.upload(fileName, <Buffer>file.buffer, "timestack-profile-pictures");
+        const location = await AWS.upload(fileName, <Buffer>file.buffer, "timestack-profile-pictures");
 
         req.user.profilePictureSource = location;
         await req.user.save();

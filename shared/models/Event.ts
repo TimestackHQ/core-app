@@ -1,11 +1,12 @@
 import * as mongoose from "mongoose";
 import { commonProperties } from "./utils";
 import { v4 as uuid } from "uuid";
-import { UserSchema } from "./User";
+import { IUser } from "./User";
 import { isObjectIdOrHexString } from "mongoose";
-import { MediaType } from "../@types/Media";
+import { IMedia } from "../@types/Media";
+import { ExtendedMongoSchema, UUIDProperty } from "./helpers";
 
-export interface EventSchema extends mongoose.Document {
+export interface IEvent extends mongoose.Document {
     name: string;
     startsAt: Date;
     endsAt?: Date;
@@ -17,28 +18,29 @@ export interface EventSchema extends mongoose.Document {
     revisitsCache: {
         [key: string]: Date
     }
-    media: MediaType[] & mongoose.Schema.Types.ObjectId[],
-    createdBy: mongoose.Schema.Types.ObjectId;
-    users: mongoose.Schema.Types.ObjectId[];
-    invitees: mongoose.Schema.Types.ObjectId[];
+    media: IMedia[] & mongoose.Schema.Types.ObjectId/***/[],
+    createdBy: mongoose.Schema.Types.ObjectId/***/;
+    users: mongoose.Schema.Types.ObjectId/***/[];
+    invitees: mongoose.Schema.Types.ObjectId/***/[];
     nonUsersInvitees: {
         firstName?: string;
         lastName?: string;
         email?: string;
         phoneNumber?: string;
     }[];
-    cover: MediaType & mongoose.Schema.Types.ObjectId;
+    cover: IMedia | mongoose.Schema.Types.ObjectId/***/;
     publicId: string;
     commonProperties: commonProperties;
     defaultPermission: "editor" | "viewer";
-    exclusionList: mongoose.Schema.Types.ObjectId[];
-    mutedList: mongoose.Schema.Types.ObjectId[];
-    people: (userId: mongoose.Schema.Types.ObjectId) => (UserSchema & { type: String })[];
-    hasPermission: (userId: mongoose.Schema.Types.ObjectId) => boolean;
+    exclusionList: mongoose.Schema.Types.ObjectId/***/[];
+    mutedList: mongoose.Schema.Types.ObjectId/***/[];
+    people: (userId: mongoose.Schema.Types.ObjectId/***/) => (IUser & { type: String })[];
+    hasPermission: (userId: mongoose.Schema.Types.ObjectId/***/) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
 }
 
-const EventSchema = new mongoose.Schema({
+const EventSchema = new ExtendedMongoSchema({
+
     name: {
         type: String,
         required: true,
@@ -81,19 +83,19 @@ const EventSchema = new mongoose.Schema({
         default: {},
     },
     media: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "Media"
     }],
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
     },
     users: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId/***/],
         ref: "User",
     },
     invitees: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId/***/],
         ref: "User",
     },
     nonUsersInvitees: [{
@@ -120,7 +122,7 @@ const EventSchema = new mongoose.Schema({
         default: uuid
     },
     cover: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         required: false,
         ref: "Media"
     },
@@ -131,11 +133,11 @@ const EventSchema = new mongoose.Schema({
         enum: ["viewer", "editor"],
     },
     exclusionList: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
     }],
     mutedList: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId/***/],
         ref: "User",
         default: []
     },
@@ -143,7 +145,7 @@ const EventSchema = new mongoose.Schema({
     ...commonProperties,
 });
 
-EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
+EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId/***/) {
 
     return [
         ...this.users.map((user: any) => {
@@ -169,7 +171,7 @@ EventSchema.methods.people = function (userId: mongoose.Schema.Types.ObjectId) {
     ]
 }
 
-EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.ObjectId) {
+EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.ObjectId/***/) {
 
     if (this.defaultPermission === "editor") return !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
     else if (this.defaultPermission === "viewer") return this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
@@ -182,31 +184,5 @@ EventSchema.index({
     location: 'text'
 });
 
-
-// EventSchema.methods.ics = async function (organizer: UserSchema, users: UserSchema[]) {
-//
-//     return ics.createEvent({
-//         title: this.name,
-//         start: [this.start.getFullYear(), this.start.getMonth() + 1, this.start.getDate(), this.start.getHours(), this.start.getMinutes()],
-//         duration: {
-//             minutes: moment(this.end).diff(moment(this.start), "minutes"),
-//             hours: moment(this.end).diff(moment(this.start), "hours")
-//         },
-//         status: "CONFIRMED",
-//         organizer: {
-//             name: organizer.firstName + " " + organizer.lastName,
-//             email: organizer?.email
-//         },
-//         attendees: users.filter(user => user.email).map((user: UserSchema) => {
-//             return {
-//                 name: user.firstName + " " + user.lastName,
-//                 email: user?.email,
-//                 rsvp: false,
-//             }
-//         }),
-//         busyStatus: "BUSY",
-//     })
-// }
-
-export default mongoose.model<EventSchema>("Event", EventSchema);
+export default mongoose.model<IEvent>("Event", EventSchema);
 

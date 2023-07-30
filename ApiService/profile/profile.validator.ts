@@ -1,5 +1,5 @@
 import * as Joi from "joi";
-import {PhoneNumberValidator} from "../../shared";
+import { PhoneNumberValidator } from "../../shared";
 
 export const editProfileValidator = (body: unknown): Joi.ValidationResult => {
 

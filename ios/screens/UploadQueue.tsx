@@ -1,16 +1,20 @@
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { UploadItem } from "../types/global";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { RootStackParamList, UploadScreenNavigationProp } from "../navigation";
 import { FlashList } from "@shopify/flash-list";
 import { FlatList } from "react-native-gesture-handler";
-import { Image, Text, Touchable, TouchableOpacity, View } from "react-native";
+import {ActivityIndicator, Image, Text, Touchable, TouchableOpacity, View} from "react-native";
 import { useQueue, useQueueCounter } from "../hooks/queue";
 import FastImage from "react-native-fast-image";
 import { set } from "lodash";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
 import {uploadQueueWorker} from "../App";
+import {CompressionProgressEvent, UploadItemJob} from "../utils/UploadJobsQueue";
+import {TimestackCoreNativeCompressionListener} from "../modules/timestack-core";
+import CircularProgress from "react-native-circular-progress-indicator";
+import Spinner from "../Components/Library/Spinner";
 
 export default function UploadQueue() {
 
@@ -19,16 +23,52 @@ export default function UploadQueue() {
     const isFocused = useIsFocused();
 
     // @ts-ignore
-    const jobs: UploadItem[] = useQueue(String(route.params?.holderId));
+    // const jobs: UploadItemJob[] = useQueue(String(route.params?.holderId));
     const jobsCount = useQueueCounter(String(route.params?.holderId));
 
-    const [devJobs, setDevJobs] = useState<UploadItem[]>([]);
+    const [jobs, setJobs] = useState<UploadItemJob[]>([]);
+
+    const fetchJobs = async () => {
+        const holderId = String(route.params?.holderId)
+        if (!holderId) return;
+        const jobs: UploadItemJob[] = (await uploadQueueWorker.getAllJobs())
+            .filter((job) => job.holderId.toString() === holderId.toString())
+            .reverse();
+
+        setJobs(jobs);
+    };
+
+    useEffect(() => {
+        (async () => {
+            await fetchJobs();
+            for(let i = 0; i > -1; i) {
+                await fetchJobs();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        })();
+    }, []); // Runs the effect once, when the component mounts
+
+    const [compressionStatus, setCompressionStatus] = useState<CompressionProgressEvent>({
+        itemId: "",
+        progress: 0,
+    });
+
+    const [devJobs, setDevJobs] = useState<UploadItemJob[]>([]);
 
     useEffect(() => {
         (async () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
             setDevJobs(jobs);
-        })()
+        })();
+
+        TimestackCoreNativeCompressionListener(async (eventRaw) => {
+
+            const event: CompressionProgressEvent = eventRaw;
+
+            console.log(event);
+
+            setCompressionStatus(event);
+        })
     }, []);
 
     return (
@@ -51,54 +91,80 @@ export default function UploadQueue() {
                 </TouchableOpacity>
             </View>
             <FlatList
-                data={jobs}
-                renderItem={({ item }) => (
-                    <View style={{ flex: 1, marginHorizontal: 10, flexDirection: "row", }}>
-                        <View style={{ flex: 1, borderRadius: 100, marginVertical: 10 }}>
-                            <Image
-                                source={{
-                                    uri: item.uri,
-                                }}
-                                resizeMode="cover"
-                                style={{
-                                    flex: 1,
-                                    width: 60,
-                                    height: 90,
-                                    borderRadius: 10,
-                                }}
-                            />
-                        </View>
-                        <View style={{ flex: 1, alignItems: "flex-start", justifyContent: "center" }}>
-                            <Text style={{
-                                fontFamily: "Red Hat Display Semi Bold",
-                                fontSize: 18,
-                            }}>{item.filesize}</Text>
-                        </View>
-                        <View style={{ flex: 2, alignItems: "flex-end", justifyContent: "center" }}>
-                            <View style={{
-                                width: 100,
-                                height: 30,
-                                borderRadius: 100,
-                                alignItems: "flex-start",
-                                backgroundColor: "#F0F0F0",
-                                justifyContent: "center"
-                            }}>
+                data={new Array(...jobs).reverse()}
+                renderItem={(entry) => {
+                    const item = entry.item.item;
+
+                    return (
+                        <View style={{ flex: 1, marginHorizontal: 10, flexDirection: "row", }}>
+                            <View style={{ flex: 1, borderRadius: 100, marginVertical: 10 }}>
+                                <Image
+                                    source={{
+                                        uri: item.uri,
+                                    }}
+                                    resizeMode="cover"
+                                    style={{
+                                        flex: 1,
+                                        width: 60,
+                                        height: 90,
+                                        borderRadius: 10,
+                                    }}
+                                />
+                            </View>
+                            <View style={{ flex: 1, alignItems: "flex-start", justifyContent: "center" }}>
                                 <Text style={{
-                                    color: "#A6A6A6",
-                                    fontFamily: "Red Hat Display Regular",
-                                    fontSize: 16,
-                                    top: 4,
-                                    flex: 1,
-                                    width: "100%",
-                                    textAlignVertical: "center",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                }}>Pending</Text>
+                                    fontFamily: "Red Hat Display Semi Bold",
+                                    fontSize: 18,
+                                }}>{item.filesize}</Text>
+                            </View>
+                            <View style={{ flex: 2, alignItems: "flex-end", justifyContent: "center" }}>
+                                {compressionStatus.itemId === entry.item.id ? <React.Fragment>
+                                    {compressionStatus.progress === 0 ?
+                                        <View style={{
+                                            width: 24,
+                                            height: 24,
+                                        }}>
+                                            <Spinner/>
+                                        </View> :
+                                        <CircularProgress
+                                        radius={12}
+                                        activeStrokeWidth={4}
+                                        inActiveStrokeWidth={4}
+                                        inActiveStrokeOpacity={0.3}
+                                        circleBackgroundColor={"transparent"}
+                                        activeStrokeColor={"#007AFF"}
+                                        showProgressValue={false}
+                                        value={compressionStatus.progress}
+                                    />}
+                                </React.Fragment> : <View style={{
+                                    width: 100,
+                                    height: 30,
+                                    borderRadius: 100,
+                                    alignItems: "flex-start",
+                                    backgroundColor: "#F0F0F0",
+                                    justifyContent: "center"
+                                }}>
+
+
+                                    <Text style={{
+                                        color: "#A6A6A6",
+                                        fontFamily: "Red Hat Display Regular",
+                                        fontSize: 16,
+                                        top: 4,
+                                        flex: 1,
+                                        width: "100%",
+                                        textAlignVertical: "center",
+                                        textAlign: "center",
+                                        justifyContent: "center",
+                                    }}>
+                                        Pending
+                                    </Text>
+                                </View>}
                             </View>
                         </View>
-                    </View>
-                )}
-                keyExtractor={item => item?.uri}
+                    )
+                }}
+                keyExtractor={item => item?.item?.uri}
                 numColumns={1}
             />
         </View>

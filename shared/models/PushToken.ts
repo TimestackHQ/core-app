@@ -1,25 +1,24 @@
 import * as mongoose from "mongoose";
-import { commonProperties } from "./utils";
-import { v4 as uuid } from "uuid";
-import { UserSchema } from "./User";
-import { isObjectIdOrHexString } from "mongoose";
+import { IUser } from "./User";
 import axios from "axios";
+import { ExtendedMongoDocument } from "../@types/global";
+import { ExtendedMongoSchema } from "./helpers";
 
-export interface PushTokenSchema extends mongoose.Document {
+export interface IPushToken extends ExtendedMongoDocument {
     to: string;
-    user?: mongoose.Schema.Types.ObjectId | UserSchema;
+    user?: mongoose.Schema.Types.ObjectId/***/ | IUser;
     createdAt: Date;
     ipAddress: string;
     notify: (title: string, body: string, data: any) => Promise<void>;
 }
 
-const PushTokenSchema = new mongoose.Schema({
+const PushTokenSchema = new ExtendedMongoSchema({
     to: {
         type: String,
         required: true,
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
         required: false,
     },
@@ -41,5 +40,5 @@ PushTokenSchema.methods.notify = async function (title: string, body: string, da
     });
 
 }
-export default mongoose.model<PushTokenSchema>("PushToken", PushTokenSchema);
+export default mongoose.model<IPushToken>("PushToken", PushTokenSchema);
 

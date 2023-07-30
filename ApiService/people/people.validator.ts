@@ -1,6 +1,4 @@
 import * as Joi from "joi";
-import {isObjectIdJoiValidator, PhoneNumberValidator} from "../../shared";
-
 
 const availabilityValidator = Joi.object({
     start: Joi.date().required(),

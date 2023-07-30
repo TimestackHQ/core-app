@@ -1,83 +1,104 @@
 import * as mongoose from "mongoose";
-import { v4 as uuid } from "uuid";
-import { GCP } from "../index";
-import { UserSchema } from "./User";
-import { MediaType } from "../@types/Media";
+import { AWS } from "../index";
+import { IMedia } from "../@types/Media";
+import { MEDIA_QUALITY_OPTIONS, MEDIA_STATUSES, PRIMITIVE_MEDIA_QUALITY } from "../consts";
+import { ExtendedMongoSchema } from "./helpers";
+import { AWSS3ObjectType } from "../@types/global";
 
-const MediaSchema = new mongoose.Schema({
+const MediaSchema = new ExtendedMongoSchema({
 
-    publicId: {
-        type: String,
-        required: true,
-        default: uuid,
-    },
-    storageLocation: {
-        type: String,
-        required: true,
-    },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
     },
-    type: {
-        type: String,
-        required: true,
-    },
-    group: {
-        type: String,
-        required: true,
-        enum: ["cover", "event"],
-    },
-    active: {
-        type: Boolean,
-        required: true,
-        default: true,
-    },
-    thumbnail: {
-        type: String,
-        required: false
-    },
-    snapshot: {
-        type: String,
-        required: false
-    },
-    metadata: {
-        timestamp: {
+
+    files: {
+        storageLocation: {
+            type: String,
+            required: true,
+        },
+        expiresAt: {
             type: Date,
             required: false,
+        },
+        quality: {
+            type: String,
+            required: true,
+            enum: MEDIA_QUALITY_OPTIONS
+        },
+        format: {
+            type: String,
+            required: true,
+            enum: MEDIA_QUALITY_OPTIONS
         }
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+
+    metadata: {
+        type: Object,
+        required: true,
+        default: {}
     },
+
     timestamp: {
         type: Date,
         default: Date.now,
-        required: false,
+        required: true
     },
-    event: {
-        type: mongoose.Schema.Types.ObjectId,
+
+    status: {
+        type: String,
+        required: true,
+        enum: MEDIA_STATUSES
+    },
+
+    relatedEvents: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "Event",
-    },
+    }],
+
+    relatedGroups: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
+        ref: "Group",
+    }],
+
+    relatedUsers: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
+        ref: "User",
+    }]
+
 });
 
-MediaSchema.methods.getStorageLocation = async function (type?: "thumbnail" | "snapshot") {
+// TODO: Link with IMedia Type
+MediaSchema.methods.getThumbnailLocation = async (): Promise<AWSS3ObjectType> => {
+    // TODO: This is a hacky way to get around the fact that this is undefined
+    // @ts-ignore
+    const media: IMedia = this;
 
-    if (type === "snapshot" && this?.snapshot) {
-        console.log(this.snapshot)
-        return await GCP.signedUrl(this.snapshot)
-    }
+    const lowestQualityFile = media.files.map(file => {
+        return {
+            ...file,
+            rank: MEDIA_QUALITY_OPTIONS.indexOf(file.quality)
+        }
+    }).sort((a, b) => a.rank - b.rank)[0];
 
-    if (!type) {
-        console.log(this.publicId)
-        return await GCP.signedUrl(this.publicId)
-    }
-
-    console.log(this.thumbnail)
-    return await GCP.signedUrl(this.thumbnail)
-
+    return await AWS.signedUrl(lowestQualityFile.storage.path);
 }
 
-export default mongoose.model<MediaType>("Media", MediaSchema);
+// TODO: Same here
+MediaSchema.methods.getFullsizeLocation = async (): Promise<AWSS3ObjectType> => {
+    // TODO: This is a hacky way to get around the fact that this is undefined
+    // @ts-ignore
+    const media: IMedia = this;
+
+    const highestQualityFile = media.files.map(file => {
+        return {
+            ...file,
+            rank: MEDIA_QUALITY_OPTIONS.indexOf(file.quality)
+        }
+    }).sort((a, b) => b.rank - a.rank)[0];
+
+    return await AWS.signedUrl(highestQualityFile.storage.path);
+}
+
+export default mongoose.model<IMedia>("Media", MediaSchema);
 

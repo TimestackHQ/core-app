@@ -2,7 +2,7 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 
 // Import the native module. On web, it will be resolved to TimestackCore.web.ts
 // and on native platforms to TimestackCore.ts
-import TimestackCoreModule from './src/TimestackCoreModule';
+import TimestackCoreModule, { TimestackCoreNativeCompressionListener } from './src/TimestackCoreModule';
 import TimestackCoreView from './src/TimestackCoreView';
 import { ChangeEventPayload, TimestackCoreViewProps } from './src/TimestackCore.types';
 
@@ -11,8 +11,14 @@ export const Name = TimestackCoreModule.Name;
 
 export const NativeClientVersion = TimestackCoreModule.NativeClientVersion;
 
-export async function fetchImage(assetIdentifier: string, mediaTypeString: string, maxWidth?: number, maxHeight?: number, videoLength?: number) {
-  return await TimestackCoreModule.fetchImage(assetIdentifier, mediaTypeString, maxWidth, maxHeight, videoLength);
+export async function fetchImage(itemId: string, assetIdentifier: string, mediaTypeString: string, maxWidth?: number, maxHeight?: number, videoLength?: number) {
+  return await TimestackCoreModule.fetchImage(itemId, assetIdentifier, mediaTypeString, maxWidth, maxHeight, videoLength);
 }
 
-export { TimestackCoreView, TimestackCoreViewProps, ChangeEventPayload };
+export async function uploadFile(files: { [key: string]: string }, urlLocation: string, httpMethod: string, headers: {
+  "Authorization": string,
+}, jsonBody: { [key: string]: string } = {}) {
+  return await TimestackCoreModule.uploadFile(files, urlLocation, httpMethod, headers, jsonBody);
+}
+
+export { TimestackCoreView, TimestackCoreViewProps, ChangeEventPayload, TimestackCoreNativeCompressionListener };

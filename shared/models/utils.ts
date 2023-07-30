@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export type commonProperties = {
     createdAt: Date,
-    events: mongoose.Schema.Types.ObjectId[],
+    events: mongoose.Schema.Types.ObjectId/***/[],
 }
 
 export const commonProperties = {
@@ -12,7 +12,7 @@ export const commonProperties = {
         required: true,
     },
     events: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId/***/],
         default: [],
         required: true,
         ref: "EventSourcing",

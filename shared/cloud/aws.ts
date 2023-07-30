@@ -11,18 +11,18 @@ AWS.config.update({
     secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-export const signedUrl = async (publicId: string): Promise<AWSS3ObjectType> => {
-
-    var opts = {
+export const signedUrl = async (publicId: string): Promise<AWSS3ObjectType> => aws4.sign(
+    {
         host: 'timestack-private.s3.ca-central-1.amazonaws.com',
         path: '/media/' + publicId,
         service: 's3',
         region: 'ca-central-1'
+    },
+    {
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY
     }
-
-    return aws4.sign(opts, { accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY });
-
-}
+);
 
 export const upload = async (publicId: string, buffer: Buffer, bucketName: "timestack-profile-pictures" | "timestack-private" = "timestack-private"): Promise<string> => {
     const s3 = new AWS.S3();

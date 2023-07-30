@@ -9,6 +9,7 @@ import moment from "moment/moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {apiUrl} from "./io";
 import axios from "axios";
+import {TimestackCoreNativeCompressionListener} from "../modules/timestack-core";
 
 export interface UploadItemJob {
     id: string,
@@ -17,12 +18,18 @@ export interface UploadItemJob {
     status: "pending" | "processing" | "failed"
 }
 
-const databaseName = 'queueDatabase';
+export interface CompressionProgressEvent {
+    itemId: string
+    progress: number,
+}
+
+const databaseName = 'queueDatabase1';
 
 export class UploadJobsRepository extends Repository<UploadItemJob> {
 
     private status: "running" | "stopped" = "stopped";
     private fetchingPendingUpload = false;
+    private connected = false;
 
 
     constructor() {
@@ -47,8 +54,38 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 	`,
         }
 
-        const migrations = new Migrations(databaseName, statements)
-        await migrations.migrate()
+        const migrations = new Migrations(databaseName, statements);
+        await migrations.migrate();
+
+        console.log("Registering compression listener...")
+        TimestackCoreNativeCompressionListener(async (eventRaw) => {
+
+            const event: CompressionProgressEvent = eventRaw;
+            const percentage = Number(Number(event.progress).toFixed(0));
+
+            console.log(event)
+
+            // const upload = await this.query({
+            //     where: {id: {equals: event.itemId}},
+            //     limit: 1
+            // });
+            //
+            // console.log("hey", upload)
+            //
+            // if(!upload) return;
+            // if(percentage !== 100) await this.updateUpload(event.itemId, "processing", {
+            //     ...upload[0].item,
+            //     compressionProgress: percentage
+            // });
+            //
+            // const after = await this.find(event.itemId)
+            //
+            //
+            // console.log("after", after.item.compressionProgress)
+        })
+
+
+
     }
 
     async updateUpload(id: string, status: UploadItemJob['status'], item: UploadItemJob['item']) {
@@ -88,8 +125,6 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     runQueueWatcher() {
         const interval = setInterval(async () => {
 
-            console.log("running queue watcher");
-
             if(this.fetchingPendingUpload || this.status === "stopped") return;
 
             this.fetchingPendingUpload = true;
@@ -97,7 +132,6 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
             const pendingJob = await this.getOnePendingUpload();
 
             if(pendingJob) {
-                console.log("running job", pendingJob.item.uri);
                 await this.runJob(pendingJob);
             }
 
@@ -129,35 +163,27 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 
             await this.updateUpload(job.id, "processing", job.item);
 
-            console.log(media)
             console.log("------> ", media.uri, FileSystem.documentDirectory + media.filename);
 
             const mediaList: string[] = [];
 
-            console.log(media.uri);
 
             if (Platform.OS === "ios") {
                 if (media.type === "video") {
 
-                    const waitingInterval = setInterval(() => {
-                        console.log("waiting for video to be processed", media.uri);
-                    }, 1000);
-
-                    const video = await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type, 1080, 1080)
+                    const video = await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), media.type, 1080, 1080)
 
                     console.log(video)
                     const videoPath: string = video.compressedURL;
-                    const thumbnailPath: string = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 300)).compressedURL;
+                    const thumbnailPath: string = (await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), "image", 300)).compressedURL;
+
                     mediaList.push(videoPath, thumbnailPath);
-                    console.log(mediaList);
                 }
 
                 else {
-                    const image = await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), media.type)
-                    console.log(image);
+                    const image = await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), media.type)
                     const imagePath: string = image.compressedURL;
-                    console.log(imagePath);
-                    const thumbnailPath: string = (await TimestackCoreModule.fetchImage(media.uri.replace("ph://", ""), "image", 600, 600)).compressedURL;
+                    const thumbnailPath: string = (await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), "image", 600, 600)).compressedURL;
 
                     mediaList.push(imagePath, thumbnailPath);
                 }
@@ -194,77 +220,54 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 
             }
 
-            console.log("GOT FILE>>>><<<<");
 
-            const formData = new FormData();
-            formData.append('metadata', JSON.stringify({
-                timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
-            }));
+            const isAvailable = await Promise.all(
+                mediaList.map(async (mediaPath) => {
+                    try {
+                        const { exists } = await FileSystem.getInfoAsync(mediaPath);
+                        return exists;
+                    } catch (error) {
+                        console.log('Error checking media:', error);
+                        return false;
+                    }
+                })
+            );
 
-            formData.append('media', {
-                // @ts-ignore
-                uri: mediaList[0],
-                name:
-                    Platform.OS === "ios" ? mediaList[0].split("/").pop() + String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[0].split("/").pop(),
-                type: `image/${media.type === "video" ? "mp4" : "jpeg"}`,
-            });
+            const allAvailable = isAvailable.every((available) => available);
 
-            formData.append('thumbnail', {
-                // @ts-ignore
-                uri: mediaList[1],
-                name:
-                    Platform.OS === "ios" ? mediaList[1].split("/").pop() + String(media.type === "video" ? ".mp4" : ".jpeg") : mediaList[1].split("/").pop(),
-                type: `image/${media.type === "video" ? "mp4" : "jpeg"}`,
-            });
-
-            formData.append('type', media.type === "video" ? "video/mp4" : "image/jpeg");
-
-            try {
-
-                let startTime = new Date().getTime();
-
-                const config = {
-                    onUploadProgress: (progressEvent) => {
-                        console.log(progressEvent);
-                        if (progressEvent.lengthComputable) {
-                            const uploadedBytes = progressEvent.loaded;
-                            const uploadPercentage = (uploadedBytes / progressEvent.total) * 100;
-                            const currentTime = new Date().getTime();
-                            const elapsedTime = (currentTime - startTime) / 1000; // Convert to seconds
-                            const uploadSpeed = uploadedBytes / elapsedTime; // Calculate speed in bytes per second
-
-                            // Convert to appropriate units
-                            const speedInKB = uploadSpeed / 1024;
-                            const speedInMB = speedInKB / 1024;
-
-                            console.log(
-                                `Upload progress: ${uploadPercentage.toFixed(2)}% - Speed: ${speedInMB.toFixed(2)} MB/s`
-                            );
-                        }
-                    },
-                    headers: {
-                        'authorization': `Bearer ${await AsyncStorage.getItem("@session")}`,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                };
-
-                let endpoint = `${apiUrl}/v1/media/${media.holderId}`;
-
-                if (media.holderType === "socialProfile") {
-                    endpoint += "?profile=true";
-                }
-
-                if (media.groupName) {
-                    endpoint += endpoint.includes("?") ? "&groupName=" + media.groupName : "?groupName=" + media.groupName;
-                }
-
-                const response = await axios.post(endpoint, formData, config);
-                console.log(response.data);
-
-                startTime = new Date().getTime();
-            } catch (error) {
-                console.log(error);
+            if (!allAvailable) {
+                alert("Error: Some media is missing");
+                throw new Error("Some media is missing");
             }
+
+            let endpoint = `${apiUrl}/v1/media/${media.holderId}?type=${media.type === "video" ? "video/mp4" : "image/jpeg"}`;
+
+            if (media.holderType === "socialProfile") {
+                endpoint += "&profile=true"
+            }
+
+
+            const upload = await TimestackCoreModule.uploadFile(
+                {
+                    media: mediaList[0],
+                    thumbnail: mediaList[1],
+                },
+                endpoint,
+                "POST",
+                {
+                    Authorization: `Bearer ${await AsyncStorage.getItem('@session')}`,
+                },
+                // {
+                //     metadata: JSON.stringify({
+                //         timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
+                //     }),
+                //     type: media.type === "video" ? "video/mp4" : "image/jpeg"
+                //
+                // }
+
+            );
+
+            console.log("Result", upload);
 
 
         } catch (err) {
@@ -279,3 +282,4 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     }
 
 }
+

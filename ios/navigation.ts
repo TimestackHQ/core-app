@@ -1,5 +1,6 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RollType } from "./types/global";
+import {MediaHolderTypesType} from "@shared-types/*";
 
 export type RootStackParamList = {
     NotificationsStack: {
@@ -23,11 +24,11 @@ export type RootStackParamList = {
         eventName: string,
         eventThumbnail: string,
     }
-    Nofifications: undefined,
+    Notifications: undefined,
     MediaView: {
         mediaId: string
         holderId: string,
-        holderType: "event" | "socialProfile",
+        holderType: MediaHolderTypesType,
         content: any[],
         currentIndex: number
         hasPermission: boolean
@@ -76,7 +77,7 @@ export type EditEventScreenNavigationProp = StackNavigationProp<
 
 export type NotificationsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
-    'Nofifications'
+    'Notifications'
 >;
 
 export type MediaViewScreenNavigationProp = StackNavigationProp<

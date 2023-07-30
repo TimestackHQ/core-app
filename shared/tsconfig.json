@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "removeComments": true,
+
+    "outDir": "./.dist",
+    "lib": [
+      "ESNext"
+    ]
+
+  },
+
+  "watchOptions": {
+    "excludeDirectories": ["node_modules", "dist"],
+  },
+
+//  "include": ["./", "../shared"],
+  "exclude": ["src/__tests__/**/*"],
+
+  "ts-node": {
+    "swc": true
+  }
+
+}

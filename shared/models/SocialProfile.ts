@@ -1,59 +1,48 @@
 import mongoose, { mongo } from "mongoose";
 import { SocialProfileInterface, SocialProfilePermissionsInterface } from "../@types/SocialProfile";
+import { SOCIAL_PROFILE_STATUSES } from "../consts";
+import { ExtendedMongoSchema } from "./helpers";
 
-const status = ["NONE", "PENDING", "ACTIVE", "BLOCKED"] as const;
-export type SharedProfileStatusType = typeof status[number];
+export type SharedProfileStatusType = typeof SOCIAL_PROFILE_STATUSES[number];
 
-const socialProfileSchema = new mongoose.Schema({
+const socialProfileSchema = new ExtendedMongoSchema({
     users: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     }],
     pendingUsers: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     }],
     status: {
         type: String,
-        enum: status,
+        enum: SOCIAL_PROFILE_STATUSES,
         default: "PENDING"
     },
     addedBy: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     },
     blockedBy: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     },
-    media: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Media",
-        default: []
-    }],
-    groups: [{
-        type: {
-            name: {
-                type: String,
-                required: true,
-                max: 100
-            },
-            media: [{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Media"
-            }],
-            timestamp: {
-                type: Date,
-                required: true,
-                default: Date.now
-            }
-        },
-    }]
+    content: [new ExtendedMongoSchema({
+        contentId: mongoose.Schema.Types.ObjectId/***/,
+        contentType: {
+            type: String,
+            enum: ["media", "group"]
+        }
+    }, {
+        timestamps: {
+            createdAt: true,
+        }
+    })]
 }, {
     timestamps: true
 });
 
-socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId): SocialProfilePermissionsInterface {
+socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId/***/): SocialProfilePermissionsInterface {
     return {
         canAdd: this.status === "NONE",
         canAccept: this.status === "PENDING" && this.addedBy.toString() !== userId.toString(),
@@ -62,4 +51,4 @@ socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Type
     }
 }
 
-export default mongoose.model<SocialProfileInterface<mongoose.Schema.Types.ObjectId>>("SocialProfile", socialProfileSchema);
+export default mongoose.model<SocialProfileInterface>("SocialProfile", socialProfileSchema);

@@ -1,11 +1,15 @@
-import { requireNativeModule } from 'expo-modules-core';
+import {EventEmitter, requireNativeModule, Subscription} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-// It loads the native module object from the JSI or falls back to
-// the bridge module (from NativeModulesProxy) if the remote debugger is on.
-// export default ;
+const TimeCore = Platform.OS === "android" ? {} : requireNativeModule('TimestackCore');
 
-const module = Platform.OS === "android" ? {} : requireNativeModule('TimestackCore');
-export default module
+export function TimestackCoreNativeCompressionListener (listener): Subscription {
+
+    const emitter = new EventEmitter(TimeCore);
+    return emitter.addListener('onFetchImageProgress', listener);
+
+}
+
+export default TimeCore
 
 

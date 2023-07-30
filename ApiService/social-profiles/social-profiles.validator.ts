@@ -1,5 +1,4 @@
 import * as Joi from "joi";
-import { isObjectIdJoiValidator, PhoneNumberValidator } from "../../shared";
 
 export const createEventValidator = (body: unknown): Joi.ValidationResult => {
 
@@ -10,7 +9,7 @@ export const createEventValidator = (body: unknown): Joi.ValidationResult => {
         location: Joi.string(),
         about: Joi.string(),
         cover: Joi.string(),
-        invitees: Joi.array().items(isObjectIdJoiValidator).required(),
+        invitees: Joi.array().items(Joi.string()).required(),
         locationMapsPayload: Joi.any(),
         defaultPermission: Joi.string().valid("editor", "viewer"),
     });
@@ -26,7 +25,7 @@ export const updateEventValidator = (body: unknown): Joi.ValidationResult => {
         location: Joi.string(),
         about: Joi.string(),
         cover: Joi.string(),
-        invitees: Joi.array().items(isObjectIdJoiValidator),
+        invitees: Joi.array().items(Joi.string()),
         locationMapsPayload: Joi.any(),
         status: Joi.string().valid("public", "private"),
     });
@@ -36,8 +35,8 @@ export const updateEventValidator = (body: unknown): Joi.ValidationResult => {
 
 export const updatePeopleValidator = (body: unknown): Joi.ValidationResult => {
     const schema = Joi.object({
-        add: Joi.array().items(isObjectIdJoiValidator).required(),
-        remove: Joi.array().items(isObjectIdJoiValidator).required(),
+        add: Joi.array().items(Joi.string()).required(),
+        remove: Joi.array().items(Joi.string()).required(),
     });
 
     return schema.validate(body);

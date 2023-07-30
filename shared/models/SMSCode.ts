@@ -1,11 +1,12 @@
 import { commonProperties } from "./utils";
 import mongoose from "mongoose";
-import * as moment from "moment";
-import * as twilio from "twilio";
+import moment from "moment";
+import twilio from "twilio";
 import { Logger, sendTextMessage } from "../index";
+import { ExtendedMongoDocument } from "../@types/global";
 
-export interface SMSCodeSchema extends mongoose.Document {
-    user: mongoose.Schema.Types.ObjectId;
+export interface ISMSCode extends ExtendedMongoDocument {
+    user: mongoose.Schema.Types.ObjectId/***/;
     code: string;
     phoneNumber: string;
     expiresAt: Date;
@@ -15,10 +16,10 @@ export interface SMSCodeSchema extends mongoose.Document {
 
     sendSMS: (code: number) => Promise<boolean>;
 }
-
+/** */
 const SMSCodeSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
         required: true,
     },
@@ -72,4 +73,4 @@ SMSCodeSchema.methods.sendSMS = async function (code: number) {
     }
 }
 
-export default mongoose.model<SMSCodeSchema>("SMSCode", SMSCodeSchema);
+export default mongoose.model<ISMSCode>("SMSCode", SMSCodeSchema);

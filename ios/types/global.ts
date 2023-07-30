@@ -10,6 +10,7 @@ export type UploadItem = {
     location: string;
     filesize: number;
     groupName?: string
+    compressionProgress: number;
 };
 
 export type RollType = ({

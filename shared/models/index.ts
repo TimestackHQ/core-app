@@ -1,6 +1,7 @@
 import Event from "./Event"
 import EventSourcing from "./EventSourcing"
 import Media from "./Media";
+import MediaGroup from "./MediaGroup";
 import SMSCode from "./SMSCode";
 import Notification from "./Notification";
 import PushToken from "./PushToken";
@@ -11,6 +12,7 @@ export {
     Event,
     EventSourcing,
     Media,
+    MediaGroup,
     SMSCode,
     Notification,
     PushToken,

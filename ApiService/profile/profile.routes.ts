@@ -1,8 +1,8 @@
-import {Router} from "express";
-import {editProfileValidator} from "./profile.validator";
-import {HTTPValidator} from "../../shared";
-import {editProfile, get, picture} from "./profile.controller";
-import * as multer from "multer";
+import { Router } from "express";
+import { editProfileValidator } from "./profile.validator";
+import { HTTPValidator } from "../../shared";
+import { editProfile, get, picture } from "./profile.controller";
+import multer from "multer";
 const upload = multer();
 
 const router: Router = Router()

@@ -1,56 +1,57 @@
 import { NextFunction, Request, Response } from "express";
-import { GCP, Logger, Models } from "../../shared";
+import { AWS, Logger, Models } from "../../shared";
 import { v4 as uuid } from 'uuid';
 import moment = require("moment");
+import { IUser } from "shared/models/User";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const file: Express.Multer.File | undefined = req.file;
+        // const file: Express.Multer.File | undefined = req.file;
 
-        const fileId = uuid();
+        // const fileId = uuid();
 
-        // @ts-ignore
-        const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
-        const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
-        const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
-
-
-        await GCP.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
-        if (snapshot) {
-            await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
-        }
+        // // @ts-ignore
+        // const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
+        // const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
+        // const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
 
 
-        const media = new Models.Media({
-            publicId: fileId,
-            // @ts-ignore
-            storageLocation: thumbnail.originalname,
-            thumbnail: thumbnail.originalname,
-            snapshot: snapshot ? snapshot.originalname : undefined,
-            // @ts-ignore
-            type: thumbnail.mimetype,
-            group: "cover",
-            user: req.user._id,
-            timestamp: new Date(),
-        });
+        // await AWS.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
+        // if (snapshot) {
+        //     await AWS.upload(snapshot.originalname, <Buffer>snapshot.buffer);
+        // }
 
-        await media.save();
 
-        res.status(200).json({
-            message: "Cover uploaded successfully",
-            media: {
-                publicId: media.publicId,
-                storageLocation: media.storageLocation,
-            },
-        });
+        // const media = new Models.Media({
+        //     publicId: fileId,
+        //     // @ts-ignore
+        //     storageLocation: thumbnail.originalname,
+        //     thumbnail: thumbnail.originalname,
+        //     snapshot: snapshot ? snapshot.originalname : undefined,
+        //     // @ts-ignore
+        //     type: thumbnail.mimetype,
+        //     group: "cover",
+        //     user: req.user._id,
+        //     timestamp: new Date(),
+        // });
 
-        await GCP.upload(mediaFile.originalname, <Buffer>mediaFile.buffer);
+        // await media.save();
 
-        media.storageLocation = mediaFile.originalname;
-        media.type = mediaFile.mimetype;
-        await media.save();
+        // res.status(200).json({
+        //     message: "Cover uploaded successfully",
+        //     media: {
+        //         publicId: media._id,
+        //         storageLocation: media.storage.path,
+        //     },
+        // });
+
+        // await AWS.upload(mediaFile.originalname, <Buffer>mediaFile.buffer);
+
+        // media.storageLocation = mediaFile.originalname;
+        // media.type = mediaFile.mimetype;
+        // await media.save();
 
 
 
@@ -74,22 +75,11 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
             return res.sendStatus(404);
         }
 
-        if (media?.snapshot && req.query?.snapshot == "true") {
-            return res.send(await GCP.signedUrl(media.snapshot));
+        if (req.query?.thumbnail) {
+            return res.json(await media.getThumbnailLocation());
+        } else {
+            return res.json(await media.getFullsizeLocation());
         }
-
-        if (media?.thumbnail && (req.query?.thumbnail == "true" || req.query?.snapshot == "true")) {
-            return res.send(await GCP.signedUrl(media.thumbnail));
-        }
-
-        if (media?.thumbnail === media?.storageLocation) {
-            return res.send(await GCP.signedUrl(media.thumbnail));
-        }
-
-
-        console.log(await GCP.signedUrl(media.storageLocation))
-        return res.send(await GCP.signedUrl(media.storageLocation));
-
     } catch (e) {
         next(e);
     }
@@ -126,24 +116,25 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
             return res.sendStatus(404);
         }
 
+        const user = media.user as IUser;
+
+
         return res.json({
+
+
             media: {
                 _id: media?._id,
-                publicId: media.publicId,
-                fileName: media.storageLocation,
-                storageLocation: await GCP.signedUrl(media?.storageLocation),
-                snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
-                thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+                storageLocation: await media.getFullsizeLocation(),
+                thumbnail: await media.getThumbnailLocation(),
                 timestamp: media.metadata.timestamp,
-                type: media.type.split("/")[0],
                 user: media.user ? {
-                    _id: media.user._id,
-                    firstName: media.user?.firstName,
-                    lastName: media.user?.lastName,
-                    profilePictureSource: media.user?.profilePictureSource
+                    _id: user._id,
+                    firstName: user?.firstName,
+                    lastName: user?.lastName,
+                    profilePictureSource: user?.profilePictureSource
                 } : {},
                 hasPermission:
-                    holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === media.user?._id.toString(),
+                    holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
             }
         });
     } catch (e) {
@@ -152,13 +143,13 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 
 }
 
-export async function upload(req: Request, res: Response, next: NextFunction) {
+export async function createMedia(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const holderId = req.params.holderId
+        const holderId = req.params.holderId;
 
-        let holderObject = null;
+        let holderObject;
 
         console.log(req)
 
@@ -213,9 +204,9 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
         const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
 
 
-        await GCP.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
+        await AWS.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
         if (snapshot) {
-            await GCP.upload(snapshot.originalname, <Buffer>snapshot.buffer);
+            await AWS.upload(snapshot.originalname, <Buffer>snapshot.buffer);
         }
 
         const body = {
@@ -241,49 +232,49 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
         }
 
 
-        const media = new Models.Media(body);
+        // const media = new Models.Media(body);
 
-        await media.save();
+        // await media.save();
 
-        if (holderObject instanceof Models.SocialProfile) {
-            if (req.query.groupName) {
-                let inserted = false;
-                for (const group of holderObject.groups) {
-                    if (group.name.toString() === req.query.groupName) {
-                        group.media.push(media._id);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) {
-                    holderObject.groups.push({
-                        name: String(req.query.groupName),
-                        media: [media._id],
-                        timestamp: media.timestamp
-                    });
-                }
-            } else {
-                holderObject.media.push(media._id);
-            }
-            await holderObject.save();
+        // if (holderObject instanceof Models.SocialProfile) {
+        //     if (req.query.groupName) {
+        //         let inserted = false;
+        //         for (const group of holderObject.groups) {
+        //             if (group.name.toString() === req.query.groupName) {
+        //                 group.media.push(media._id);
+        //                 inserted = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (!inserted) {
+        //             holderObject.groups.push({
+        //                 name: String(req.query.groupName),
+        //                 media: [media._id],
+        //                 timestamp: media.timestamp
+        //             });
+        //         }
+        //     } else {
+        //         holderObject.media.push(media._id);
+        //     }
+        //     await holderObject.save();
 
-        } else {
-            holderObject.media.push(media._id);
-            await holderObject.save();
-        }
+        // } else {
+        //     holderObject.media.push(media._id);
+        //     await holderObject.save();
+        // }
 
 
-        res.status(200).json({
-            message: "Media uploaded successfully",
-            media: {
-                publicId: media.publicId,
-                storageLocation: media.storageLocation,
-            }
-        });
+        // res.status(200).json({
+        //     message: "Media uploaded successfully",
+        //     media: {
+        //         publicId: media.publicId,
+        //         storageLocation: media.storageLocation,
+        //     }
+        // });
 
-        await GCP.upload(file.originalname, <Buffer>file.buffer);
-        media.storageLocation = file.originalname;
-        await media.save();
+        // await AWS.upload(file.originalname, <Buffer>file.buffer);
+        // media.storageLocation = file.originalname;
+        // await media.save();
 
     } catch (e) {
         next(e);
@@ -292,51 +283,10 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
 }
 
 
-
-export async function getUploadedMedia(req: Request, res: Response, next: NextFunction) {
-    try {
-
-
-        if (!req.query?.gte) {
-            return res.status(400).json({
-                message: "gte is required"
-            });
-        }
-
-        const event = await Models.Event.findOne({
-            _id: req.params.eventId,
-            users: {
-                $in: [req.user._id]
-            }
-        });
-
-        if (!event) return res.sendStatus(404);
-
-        const newMedia = await Models.Media.find({
-            event: event._id,
-            user: req.user._id,
-            group: "event",
-            createdAt: {
-                $gte: moment(String(req.query?.gte)).toDate()
-            }
-        })
-            .select("publicId")
-            .sort({ createdAt: 1 });
-
-        return res.json({
-            media: newMedia.map(m => m.publicId),
-            mediaCount: event.media.length
-        });
-
-    } catch (err) {
-        next(err);
-    }
-}
-
 export async function deleteMemories(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const { holderId, mediaId } = req.params;
+        const { holderId, ids } = req.params;
 
         const holder = req.query?.profile ?
             await Models.SocialProfile.findOne({
@@ -362,9 +312,8 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
 
         const media = await Models.Media.find({
             _id: {
-                $in: req.body.ids
-            },
-            event: holder._id,
+                $in: ids
+            }
         });
 
         await Models.Event.updateOne({
@@ -383,9 +332,9 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
         try {
             await Promise.all(media.map(async m => {
                 if (holder instanceof Models.SocialProfile && m.user.toString() !== req.user._id.toString()) return;
-                await GCP.deleteFile(m.storageLocation);
-                if (m.thumbnail) await GCP.deleteFile(m.thumbnail);
-                if (m.snapshot) await GCP.deleteFile(m.snapshot);
+                await Promise.all(m.files.map(async f => {
+                    await AWS.deleteFile(f.storage.path);
+                }));
                 await Models.Media.deleteOne({
                     _id: m._id
                 });
@@ -393,14 +342,6 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
         } catch (Err) {
             console.log(Err);
         }
-
-
-        await Models.Media.deleteMany({
-            _id: {
-                $in: media.map(m => m._id)
-            },
-            user: req.user._id,
-        });
 
 
         return res.sendStatus(200);

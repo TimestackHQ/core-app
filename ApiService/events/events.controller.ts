@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { GCP, Models, isGreaterVersion } from "../../shared";
+import { AWS, Models, isGreaterVersion } from "../../shared";
 import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
-import { getBuffer, standardEventPopulation } from "./events.tools";
 import { ObjectId } from "bson";
 import moment = require("moment");
+import { IMedia } from "shared/@types/Media";
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -80,19 +80,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
 
 export async function getPeople(req: Request, res: Response, next: NextFunction) {
     try {
-        const event = await Models.Event.findOne({
-            $or: [
-                {
-                    publicId: req.params.eventId
-                },
-                {
-                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
-                }
-            ],
-            users: {
-                $all: [req.user._id],
-            },
-        }).select("users invitees defaultPermission exclusionList status").populate([{
+        const event = await Models.Event.findById(req.params.eventId).select("users invitees defaultPermission exclusionList status").populate([{
             path: "cover",
             select: "publicId thumbnail snapshot"
         }, {
@@ -179,7 +167,7 @@ export async function updateEvent(req: Request, res: Response, next: NextFunctio
         event.about = req.body?.about ? req.body.about : event?.about;
         event.location = req.body?.location ? req.body.location : event?.location;
         event.locationMapsPayload = req.body?.locationMapsPayload ? req.body.locationMapsPayload : event?.locationMapsPayload;
-        event.cover = cover?._id ? cover._id : event?.cover;
+        cover?._id ? event.cover = cover?._id : null;
         event.status = req.body?.status ? req.body.status : event?.status;
 
 
@@ -204,22 +192,9 @@ export async function leaveEvent(req: Request, res: Response, next: NextFunction
     try {
 
         const update = await Models.Event.updateOne({
-            $and: [{
-                $or: [
-                    {
-                        publicId: req.params.eventId
-                    },
-                    {
-                        _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
-                    }
-                ]
-            }
-            ],
+            _id: req.params.eventId,
             users: {
-                $in: [new ObjectId(req.user._id)],
-                // $size: {
-                //     $gt: 1
-                // }
+                $in: [new ObjectId(req.user._id)]
             }
         }, {
             $pull: {
@@ -279,8 +254,11 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
             }])
             .select("-media");
 
+
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
+
+                const cover = event.cover as IMedia;
 
                 const media = await Models.Media.countDocuments({
                     event: event._id
@@ -298,7 +276,7 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
                     people: [
                         ...event.users,
                     ],
-                    thumbnailUrl: event?.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined
+                    thumbnailUrl: await cover.getThumbnailLocation(),
                 }
 
             }))
@@ -326,27 +304,24 @@ export async function getAllInvites(req: Request, res: Response, next: NextFunct
             path: "invitees",
             select: "profilePictureSource"
         }])
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1 });
 
         res.json({
             events: await Promise.all(events.map(async (event, i) => {
 
-                let buffer = undefined;
-                if (i < 4) {
-                    buffer = await getBuffer(event);
-                }
+
+                const cover = event.cover as IMedia;
 
                 return {
                     _id: event._id,
                     publicId: event.publicId,
                     name: event.name,
-                    cover: event.cover?.publicId,
+                    cover: cover?._id,
                     peopleCount: event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
                     users: undefined,
                     invitees: undefined,
                     nonUsersInvitees: undefined,
-                    people: event.people(req.user._id),
-                    buffer
+                    people: event.people(req.user._id)
                 }
             }))
         })
@@ -359,19 +334,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
 
     try {
 
-        const event = await Models.Event.findOne({
-            $and: [{
-                $or: [
-                    {
-                        publicId: req.params.eventId
-                    },
-                    {
-                        _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
-                    }
-                ]
-            }
-            ],
-        }).populate([
+        const event = await Models.Event.findById(req.params.eventId).populate([
             {
                 path: "cover",
                 select: "publicId thumbnail snapshot storageLocation"
@@ -385,6 +348,13 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
             },
         ]).select("-events");
 
+        if (!event) {
+            return res.status(404).json({
+                message: "Event not found"
+            })
+        }
+
+        const cover = event.cover as IMedia;
 
         if (!event) {
             return res.status(404).json({
@@ -412,7 +382,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
             message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
             event: {
                 ...event.toJSON(),
-                cover: event.cover?.publicId,
+                cover: cover?._id,
                 peopleCount: peopleCount?.users?.length,
                 mediaCount: event.media.length,
                 users: undefined,
@@ -422,8 +392,8 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
 
-                thumbnailUrl: event.cover?.thumbnail ? await GCP.signedUrl(event.cover.thumbnail) : undefined,
-                storageLocation: event.cover?.storageLocation ? await GCP.signedUrl(event.cover.storageLocation) : undefined
+                thumbnailUrl: await cover.getThumbnailLocation(),
+                storageLocation: await cover.getFullsizeLocation(),
             }
         })
     } catch (e) {
@@ -689,9 +659,9 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 return {
                     _id: media._id,
                     publicId: media.publicId,
-                    storageLocation: media.storageLocation ? await GCP.signedUrl(media.storageLocation) : undefined,
-                    snapshot: media.snapshot ? await GCP.signedUrl(media.snapshot) : undefined,
-                    thumbnail: media.thumbnail ? await GCP.signedUrl(media.thumbnail) : undefined,
+                    storageLocation: media.storageLocation ? await AWS.signedUrl(media.storageLocation) : undefined,
+                    snapshot: media.snapshot ? await AWS.signedUrl(media.snapshot) : undefined,
+                    thumbnail: media.thumbnail ? await AWS.signedUrl(media.thumbnail) : undefined,
                     createdAt: media.createdAt,
                     type: media.type.split("/")[0],
                     user: media.user

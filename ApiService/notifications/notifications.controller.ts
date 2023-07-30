@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { GCP, Models } from "../../shared";
-import { NotificationSchema } from "../../shared/models/Notification";
-import * as jwt from "jsonwebtoken";
-import { v4 } from "uuid";
+import { AWS, Models } from "../../shared";
 
 export async function get(req: Request, res: Response, next: NextFunction) {
 
@@ -42,11 +39,11 @@ export async function get(req: Request, res: Response, next: NextFunction) {
                     // @ts-ignore
                     notification?.data?.payload?.eventId?.cover?.snapshot ?
                         // @ts-ignore
-                        await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.snapshot) :
+                        await AWS.signedUrl(notification?.data?.payload?.eventId?.cover?.snapshot) :
                         // @ts-ignore
                         notification?.data?.payload?.eventId?.cover?.thumbnail ?
                             // @ts-ignore
-                            await GCP.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
+                            await AWS.signedUrl(notification?.data?.payload?.eventId?.cover?.thumbnail) :
                             null,
                 createdAt: notification.createdAt
             }

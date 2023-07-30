@@ -1,22 +1,20 @@
 import * as mongoose from "mongoose";
-import { commonProperties } from "./utils";
-import { v4 as uuid } from "uuid";
-import { MediaType } from "../@types/Media";
-import { UserSchema } from "./User";
-import { isObjectIdOrHexString } from "mongoose";
+import { IUser } from "./User";
 import { PushToken } from "./index";
-import { EventSchema } from "./Event";
 import { ConnectionRequest } from "../@types/public";
+import { ExtendedMongoDocument } from "../@types/global";
+import { IEvent } from "./Event";
 
-export interface NotificationSchema extends mongoose.Document {
-    user?: mongoose.Schema.Types.ObjectId | UserSchema;
+export interface INotification extends ExtendedMongoDocument {
+
+    user?: mongoose.Schema.Types.ObjectId/***/ | IUser;
     title: string;
     body: string;
     data: ConnectionRequest | null | {
         type: string;
         payload: {
-            eventId?: mongoose.Schema.Types.ObjectId & EventSchema;
-            userId?: mongoose.Schema.Types.ObjectId & UserSchema;
+            eventId?: mongoose.Schema.Types.ObjectId/***/ & IEvent;
+            userId?: mongoose.Schema.Types.ObjectId/***/ & IUser;
             eventName?: string;
             userName?: string;
         }
@@ -29,7 +27,7 @@ export interface NotificationSchema extends mongoose.Document {
 
 const NotificationSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User",
         required: true,
     },
@@ -50,30 +48,6 @@ const NotificationSchema = new mongoose.Schema({
             type: Object,
             required: true,
         }
-        // {
-        //     url: {
-        //         type: String,
-        //         required: false,
-        //     },
-        //     eventId: {
-        //         type: mongoose.Schema.Types.ObjectId,
-        //         ref: "Event",
-        //         required: false,
-        //     },
-        //     userId: {
-        //         type: mongoose.Schema.Types.ObjectId,
-        //         ref: "User",
-        //         required: false,
-        //     },
-        //     eventName: {
-        //         type: String,
-        //         required: false,
-        //     },
-        //     userName: {
-        //         type: String,
-        //         required: false,
-        //     },
-        // }
     },
 
     acknowledgedAt: {
@@ -104,5 +78,5 @@ NotificationSchema.methods.notify = async function () {
 
 }
 
-export default mongoose.model<NotificationSchema>("Notification", NotificationSchema);
+export default mongoose.model<INotification>("Notification", NotificationSchema);
 

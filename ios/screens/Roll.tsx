@@ -9,14 +9,12 @@ import { useEffect, useState } from "react";
 import * as React from "react";
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import * as _ from "lodash";
-
 import moment from "moment";
 import { v4 } from "uuid";
 import * as Network from "expo-network";
 import { NetworkStateType } from "expo-network";
 import * as TimestackCoreModule from "../modules/timestack-core";
 import AndroidRoll from "../Components/AndroidRoll";
-import { UploadItem } from "../types/global";
 import { useAppDispatch } from "../store/hooks";
 import { setRoll } from "../store/rollState";
 import { RootStackParamList } from "../navigation";
@@ -120,7 +118,8 @@ export default function Roll() {
 							timestamp: media.timestamp,
 							location: media.location,
 							filesize: media.image.filesize,
-							groupName: media.group ? media.group : null
+							groupName: media.group ? media.group : null,
+							compressionProgress: 0,
 						},
 						holderId: route.params.holderId,
 						status: "pending",
