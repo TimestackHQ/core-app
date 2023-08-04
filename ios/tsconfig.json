@@ -4,6 +4,9 @@
       "@shared-types/*": [
         "../shared/@types/public"
       ],
+      "@api-types/*": [
+        "../ApiService/@types/public"
+      ],
       "@store/*": [
         "../store/hooks"
       ],

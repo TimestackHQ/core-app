@@ -2,10 +2,12 @@ import * as React from "react";
 import { useEffect } from "react";
 import { Image, StatusBar, View, Text, Platform, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+    QueryClient, QueryClientProvider
+} from "react-query";
 import * as Application from 'expo-application';
 import { useFonts } from "expo-font";
 import * as Linking from "expo-linking";
-import * as Updates from "expo-updates";
 import { NavigationContainer } from "@react-navigation/native";
 import { OverflowMenuProvider } from "react-navigation-header-buttons";
 import axios from 'axios';
@@ -13,7 +15,7 @@ import CoreNavigationStack from "./stacks/core";
 import store from './store'
 import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
-import {UploadJobsRepository} from "./utils/UploadJobsQueue";
+import { UploadJobsRepository } from "./utils/UploadJobsQueue";
 
 export const uploadQueueWorker = new UploadJobsRepository();
 uploadQueueWorker.init().then(async () => {
@@ -26,6 +28,8 @@ export const setSession = async (session) => {
     console.log("SETTING SESSION");
     await AsyncStorage.setItem('@session', session);
 }
+
+const queryClient = new QueryClient()
 
 
 function App() {
@@ -41,7 +45,7 @@ function App() {
         'Red Hat Display Medium Italic': require('./assets/fonts/RedHatDisplay-MediumItalic.ttf'),
         'Red Hat Display Regular': require('./assets/fonts/RedHatDisplay-Regular.ttf'),
         'Red Hat Display Semi Bold': require('./assets/fonts/RedHatDisplay-SemiBold.ttf'),
-        'Red Hat Display Semi Bold Italic': require('./assets/fonts/RedHatDisplay-SemiBoldItalic.ttf'),
+        'Red Hat Display Semi Bold Italic': require('./assets/fonts/RedHatDisplay-SemiBoldItalic.ttf')
     });
 
     StatusBar.setBarStyle('dark-content', true);
@@ -80,11 +84,13 @@ function App() {
 
     return loaded ?
         <Provider store={store}>
-            <NavigationContainer>
-                <OverflowMenuProvider>
-                    <CoreNavigationStack />
-                </OverflowMenuProvider>
-            </NavigationContainer>
+            <QueryClientProvider client={queryClient}>
+                <NavigationContainer>
+                    <OverflowMenuProvider>
+                        <CoreNavigationStack />
+                    </OverflowMenuProvider>
+                </NavigationContainer>
+            </QueryClientProvider>
         </Provider>
 
         : null;

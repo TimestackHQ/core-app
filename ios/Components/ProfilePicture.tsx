@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import HTTPClient from "../httpClient";
@@ -27,10 +27,14 @@ export default function ProfilePicture({ userId, location, width, height, style,
 		});
 	}}>
 		<View>
-			<FastImage
+			{String(location).startsWith("https://") ? <FastImage
 				style={{ borderRadius: 1000, objectFit: "cover", width: width ? width : 90, height: height ? height : 90, ...style }}
-				source={location ? { uri: location } : require("../assets/icons/profile.png")}
-			/>
+				source={{ uri: location }}
+			/> : <Image
+				style={{ borderRadius: 1000, objectFit: "cover", width: width ? width : 90, height: height ? height : 90, ...style }}
+				// @ts-ignore
+				source={location}
+			/>}
 		</View>
 	</TouchableWithoutFeedback>;
 }

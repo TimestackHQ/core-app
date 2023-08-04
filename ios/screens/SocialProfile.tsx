@@ -1,40 +1,42 @@
-import { MediaInternetType, SocialProfileInterface, UserInterface } from "@shared-types/public";
+import { MediaInternetType, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
-import HTTPClient from "../httpClient";
 import { MediaViewScreenNavigationProp, RollScreenNavigationProp, RootStackParamList, UploadQueueScreenNavigationProp } from "../navigation";
 import ProfilePicture from "../Components/ProfilePicture";
 import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import ConnectionStatus from "../Components/ConnectionStatus";
 import TimestackMedia from "../Components/TimestackMedia";
 import { RollType } from "../types/global";
-import { useQueueCounter } from "../hooks/queue";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
 import { useAppDispatch } from '../store/hooks'
 import { setRoll } from "../store/rollState";
 import FastImage from "react-native-fast-image";
 import NoSharedMemories from "../Components/Library/NoSharedMemories";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
-import { MediaType } from "react-native-image-picker";
-import {uploadQueueWorker} from "../App";
+import { uploadQueueWorker } from "../App";
+import { useQuery } from "react-query";
+import { getSocialProfile } from "../queries/profiles";
 
 
 
 export default function SocialProfile({ }) {
 
     const dispatch = useAppDispatch()
-    const [profile, setProfile] = useState<SocialProfileInterface>(null);
 
     const [selectionMode, setSelectionMode] = useState(false);
     const route = useRoute<RouteProp<RootStackParamList, "SocialProfile">>();
     const navigator = useNavigation<RollScreenNavigationProp | UploadQueueScreenNavigationProp | MediaViewScreenNavigationProp>();
     const isFocused = useIsFocused();
     const [refreshing, setRefreshing] = useState(false);
+
+    const { data: profile } = useQuery(["social-profiles", { userId: route.params?.userId }], getSocialProfile, {
+        enabled: !!route.params?.userId
+    })
     const [tab, setTab] = useState<
         "memories" | "events"
     >("memories");
-    const queueCounter = useQueueCounter(profile?._id.toString());
+    const queueCounter = 0//useQueueCounter(profile?._id.toString());
 
     const [user, setUser] = useState<UserInterface>(null);
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
@@ -49,47 +51,59 @@ export default function SocialProfile({ }) {
 
     useEffect(() => {
 
-
-
-
-        if (isFocused) {
-
-            HTTPClient("/social-profiles/user/" + route.params?.userId, "GET").then(res => {
-                setProfile(res.data);
-                const user: UserInterface = res.data.users[0]
-                setUser(user);
-                const payload: RollType = {
-                    holderId: res.data._id,
-                    holderType: "socialProfile",
-                    holderImageUrl: res.data.users[0].profilePictureSource,
-                    profile: {
-                        people: [{
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            profilePictureSource: user.profilePictureSource,
-                            username: user.username,
-                        }]
-                    }
-
+        if (profile) {
+            const user: UserInterface = profile.users[0]
+            const payload: RollType = {
+                holderId: profile._id,
+                holderType: "socialProfile",
+                holderImageUrl: profile.users[0].profilePictureSource,
+                profile: {
+                    people: [{
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        profilePictureSource: user.profilePictureSource,
+                        username: user.username,
+                    }]
                 }
+            }
 
-                console.log(payload);
-                dispatch(setRoll(payload))
-                setTimeout(getGallery, 0);
-            })
-                .catch((error) => {
-                    console.log(error);
-                })
-                .finally(() => {
-                    setRefreshing(false);
-                });
-        } else {
-            console.log("unfocused")
-
+            dispatch(setRoll(payload))
+            setTimeout(getGallery, 0);
+            navigator.setOptions({
+                headerBackTitle: "Back",
+                headerShown: true,
+                headerTitle: () => (
+                    <View style={{ flex: 1, flexDirection: "row" }}>
+                        <View style={{ flex: 1, alignItems: "flex-end" }}>
+                            <ProfilePicture
+                                userId={String(user?._id)}
+                                width={42}
+                                height={42}
+                                style={{ marginRight: 10 }}
+                                location={user?.profilePictureSource}
+                            />
+                        </View>
+                        <View style={{ flex: 3, alignItems: "flex-start" }}>
+                            <Text style={{
+                                fontSize: 18, fontFamily: "Red Hat Display Bold",
+                                marginBottom: 0
+                            }}>
+                                {user?.firstName} {user?.lastName}
+                            </Text>
+                            <Text style={{
+                                fontSize: 16, fontFamily: "Red Hat Display Regular", marginTop: -5
+                            }}>
+                                {user?.username}
+                            </Text>
+                        </View>
+                    </View>
+                )
+            });
         }
 
+        console.log(profile);
 
-    }, [isFocused, refreshing]);
+    }, [profile]);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -122,50 +136,17 @@ export default function SocialProfile({ }) {
 
 
     const getGallery = (flush = false) => {
-        if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
-            .then(res => {
-                if (flush) setGallery([...res.data.media]);
-                else setGallery([...gallery, ...res.data.media]);
-            });
+        // if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
+        //     .then(res => {
+        //         if (flush) setGallery([...res.data.media]);
+        //         else setGallery([...gallery, ...res.data.media]);
+        //     });
     }
 
-    useEffect(() => {
-        navigator.setOptions({
-            headerBackTitle: "Back",
-            headerShown: true,
-            headerTitle: () => (
-                <View style={{ flex: 1, flexDirection: "row" }}>
-                    <View style={{ flex: 1, alignItems: "flex-end" }}>
-                        <ProfilePicture
-                            userId={String(user?._id)}
-                            width={42}
-                            height={42}
-                            style={{ marginRight: 10 }}
-                            location={user?.profilePictureSource}
-                        />
-                    </View>
-                    <View style={{ flex: 3, alignItems: "flex-start" }}>
-                        <Text style={{
-                            fontSize: 18, fontFamily: "Red Hat Display Bold",
-                            marginBottom: 0
-                        }}>
-                            {user?.firstName} {user?.lastName}
-                        </Text>
-                        <Text style={{
-                            fontSize: 16, fontFamily: "Red Hat Display Regular", marginTop: -5
-                        }}>
-                            {user?.username}
-                        </Text>
-                    </View>
-                </View>
-            )
-        });
-    }, [profile, user]);
 
     const refresh = () => {
         console.log("refreshing");
         setRefreshing(true);
-        getGallery(true);
     }
 
     const flattenGallery = () => {
@@ -234,8 +215,7 @@ export default function SocialProfile({ }) {
 
 
                     <FlatList
-                        onEndReached={() => getGallery()
-                        }
+                        onEndReached={() => getGallery()}
                         refreshControl={< RefreshControl refreshing={refreshing} onRefresh={() => {
                             refresh()
                         }} />}

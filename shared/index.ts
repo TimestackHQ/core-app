@@ -5,6 +5,7 @@ import Joi from "joi";
 import { ValidationResult } from "joi";
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
+import JoiObjectId from "joi-objectid";
 import { isObjectIdOrHexString } from "mongoose";
 import {
     SecretsManagerClient,
@@ -57,13 +58,13 @@ export async function config() {
 
 }
 
-export const HTTPValidator = (validator: (arg0: unknown) => ValidationResult) => {
+export const HTTPValidator = (validator: (arg0: any) => ValidationResult, target: "body" | "query" = "body") => {
     return (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
-        const { error } = validator(req.body);
+        const { error } = validator(req[target]);
         if (error)
             res.status(400).json({
                 message: Object(error)?.details[0].message
@@ -122,8 +123,12 @@ export function sendTextMessage(body: string, to: string, mediaUrl?: string) {
         });
 }
 
+const isObjectIdJoiValidator = JoiObjectId(Joi);
+
+
 export {
     isObjectIdOrHexString,
+    isObjectIdJoiValidator,
     Models,
     AWS
 }

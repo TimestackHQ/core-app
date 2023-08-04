@@ -86,6 +86,7 @@ export default function NotificationsPage() {
 					// position: "absolute",
 					// top: "40px",
 					padding: "5px",
+					paddingTop: "0px",
 					paddingRight: "0px",
 					borderRightColor: "black",
 					borderWidth: "10px",
@@ -111,12 +112,11 @@ export default function NotificationsPage() {
 					</div>: null}
 					{invites.length !== 0 ? <hr style={{marginLeft: "10px", marginRight: "10px", marginTop: "5px", width: "92%"}}/> : null}
 					<div className={"col-12"} style={{
-						paddingTop: "-50px",
+						paddingTop: "-60px",
 						marginRight: "-5px",
 						paddingRight: "0px",
 						height: "10px",
 					}}>
-						<h1>Notifications</h1>
 						<InfiniteScroll
 							dataLength={notifications.length} //This is important field to render the next data
 							next={getNotifications}

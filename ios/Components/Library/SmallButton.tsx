@@ -1,6 +1,6 @@
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
-export default function BlackButton({
+export default function SmallButton({
     onPress,
     body,
     style,

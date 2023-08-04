@@ -9,7 +9,7 @@ import EventScreen from "../screens/Event";
 import HomeScreen from "../screens/HomeScreen";
 import FutureScreen from "../screens/Future";
 import AddScreen from "../screens/Add";
-import NotificationsScreen from "../screens/Notifications";
+import NotificationsScreen, { NotificationsScreenHeader } from "../screens/Notifications";
 import EditEvent from "../screens/EditEvent";
 import MediaView from "../screens/MediaView";
 import Upload from "../screens/Upload";
@@ -18,6 +18,7 @@ import AddPeople from "../screens/AddPeople";
 import Profile from "../screens/ProfileScreen";
 import SocialProfile from "../screens/SocialProfile";
 import UploadQueue from "../screens/UploadQueue";
+import TextComponent from "../Components/Library/Text";
 
 
 
@@ -59,7 +60,17 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
 			<Index.Screen options={{ headerShown: false }} name="Future" component={FutureScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Add" component={AddScreen} />
-			<Index.Screen options={{ headerShown: false }} name="Notifications" component={NotificationsScreen} />
+			<Index.Screen options={{
+				headerShadowVisible: true,
+				headerTransparent: true,
+				headerBackTitleVisible: true,
+				headerBackTitle: "Notifications",
+				headerBackTitleStyle: {
+					fontSize: 30,
+					fontFamily: "Red Hat Display Semi Bold",
+				}
+			}}
+				name="Notifications" component={NotificationsScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Profile" component={Profile} />
 
 			<Index.Screen options={{ headerShown: true }} name="SocialProfile" component={SocialProfile} />

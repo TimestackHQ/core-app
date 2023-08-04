@@ -4,15 +4,25 @@ import { isObjectIdOrHexString } from "../../shared";
 import moment = require("moment");
 import * as _ from "lodash";
 
-export async function findPeople(req: Request, res: Response, next: NextFunction) {
+export type PeopleSearchResult = {
+    people: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        username: string;
+        profilePictureSource?: string;
+    }[]
+}
+
+export async function findPeople(req: Request, res: Response<PeopleSearchResult>, next: NextFunction) {
 
     try {
 
         const people = await Models.User.find({ $text: { $search: String(req.query.q) } }).limit(10).lean();
 
         res.json({
-            people: people.filter(people => people?.username !== req.user.username).map((person: any) => ({
-                _id: person._id,
+            people: people.filter(people => people?.username !== req.user.username).map((person) => ({
+                _id: person._id.toString(),
                 firstName: person.firstName,
                 lastName: person.lastName,
                 username: person.username,

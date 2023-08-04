@@ -3,6 +3,8 @@ import { AWS, Logger, Models } from "../../shared";
 import { v4 as uuid } from 'uuid';
 import moment = require("moment");
 import { IUser } from "shared/models/User";
+import { MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "shared/consts";
+import { IMedia } from "shared/@types/Media";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
@@ -143,138 +145,51 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 
 }
 
+export type CreateMediaType = {
+    mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
+    mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
+    metadata: any
+}
+
 export async function createMedia(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const holderId = req.params.holderId;
+        const query: CreateMediaType = req.query as CreateMediaType;
 
-        let holderObject;
+        console.log(req.files)
 
-        console.log(req)
 
-        if (req.query?.profile) {
-
-            holderObject = await Models.SocialProfile.findOne({
-                _id: holderId,
-                users: {
-                    $in: [req.user._id]
-                }
+        if (!req.files) {
+            return res.status(400).json({
+                message: "No file provided"
             });
-
-            if (holderObject && !holderObject?.permissions(req.user._id).canUploadMedia) {
-                return res.status(403).json({
-                    message: "You don't have permission to upload to this profile"
-                });
-            }
-
-        } else {
-
-            holderObject = await Models.Event.findOne({
-                _id: holderId,
-                $or: [
-                    {
-                        users: {
-                            $in: [req.user._id]
-                        }
-                    },
-                    {
-                        createdBy: req.user._id
-                    }
-                ]
-            });
-
-            if (holderObject && !holderObject?.hasPermission(req.user._id)) {
-                return res.status(403).json({
-                    message: "You don't have permission to upload to this event"
-                });
-            }
-
         }
 
-        if (!holderObject) {
-            return res.sendStatus(404);
-        }
-
-        const fileId = uuid();
-
-        // @ts-ignore
-        const file = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
-        const thumbnail = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
-        const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
+        console.log(req.files)
 
 
-        await AWS.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
-        if (snapshot) {
-            await AWS.upload(snapshot.originalname, <Buffer>snapshot.buffer);
-        }
-
-        const body = {
-            publicId: fileId,
-            // @ts-ignore
-            storageLocation: thumbnail.originalname,
-            thumbnail: thumbnail.originalname,
-            snapshot: snapshot ? snapshot.originalname : undefined,
-            // @ts-ignore
-            type: req.body.type ? req.body.type : file.mimetype.split("/")[0],
-            group: "event",
+        const media = new Models.Media({
             user: req.user._id,
-            metadata: req.body.metadata ? {
-                timestamp:
-                    JSON.parse(req.body.metadata)?.timestamp
-                        ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
-                        : undefined
-            } : null,
-            timestamp: req.body.metadata ? JSON.parse(req.body.metadata)?.timestamp
-                ? moment(JSON.parse(req.body.metadata)?.timestamp).toDate()
+            metadata: req.query.metadata,
+            timestamp: req.query.metadata ? JSON.parse(query.metadata)?.timestamp
+                ? moment(JSON.parse(query.metadata)?.timestamp).toDate()
                 : undefined : undefined,
-            event: holderObject._id
-        }
+        });
+
+        await media.save();
+
+        // const thumbnail = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
 
 
-        // const media = new Models.Media(body);
-
-        // await media.save();
-
-        // if (holderObject instanceof Models.SocialProfile) {
-        //     if (req.query.groupName) {
-        //         let inserted = false;
-        //         for (const group of holderObject.groups) {
-        //             if (group.name.toString() === req.query.groupName) {
-        //                 group.media.push(media._id);
-        //                 inserted = true;
-        //                 break;
-        //             }
-        //         }
-        //         if (!inserted) {
-        //             holderObject.groups.push({
-        //                 name: String(req.query.groupName),
-        //                 media: [media._id],
-        //                 timestamp: media.timestamp
-        //             });
-        //         }
-        //     } else {
-        //         holderObject.media.push(media._id);
-        //     }
-        //     await holderObject.save();
-
-        // } else {
-        //     holderObject.media.push(media._id);
-        //     await holderObject.save();
-        // }
-
-
-        // res.status(200).json({
-        //     message: "Media uploaded successfully",
-        //     media: {
-        //         publicId: media.publicId,
-        //         storageLocation: media.storageLocation,
-        //     }
-        // });
+        res.status(200).json({
+            message: "Media uploaded successfully",
+            media: {
+                _id: media._id
+            }
+        });
 
         // await AWS.upload(file.originalname, <Buffer>file.buffer);
-        // media.storageLocation = file.originalname;
-        // await media.save();
 
     } catch (e) {
         next(e);

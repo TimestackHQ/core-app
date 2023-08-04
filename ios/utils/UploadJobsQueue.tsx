@@ -1,15 +1,15 @@
-import {UploadItem} from "../types/global";
-import {ColumnMapping, columnTypes, IStatement, Repository, sql, Migrations} from "expo-sqlite-orm";
+import { UploadItem } from "../types/global";
+import { ColumnMapping, columnTypes, IStatement, Repository, sql, Migrations } from "expo-sqlite-orm";
 import * as FileSystem from "expo-file-system";
-import {Platform} from "react-native";
+import { Platform } from "react-native";
 import * as TimestackCoreModule from "../modules/timestack-core";
 import uuid from "react-native-uuid";
-import {generateScreenshot, processPhoto, processVideo} from "./compression";
+import { generateScreenshot, processPhoto, processVideo } from "./compression";
 import moment from "moment/moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {apiUrl} from "./io";
+import { apiUrl } from "./io";
 import axios from "axios";
-import {TimestackCoreNativeCompressionListener} from "../modules/timestack-core";
+import { TimestackCoreNativeCompressionListener } from "../modules/timestack-core";
 
 export interface UploadItemJob {
     id: string,
@@ -106,14 +106,14 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     }
 
     async clearAllProcessingUploads() {
-        const uploads = await this.query({ where: {status: {equals: "processing"}}});
-        for(const upload of uploads) {
+        const uploads = await this.query({ where: { status: { equals: "processing" } } });
+        for (const upload of uploads) {
             await this.updateUpload(upload.id, "pending", upload.item);
         }
     }
 
     async getOnePendingUpload(): Promise<UploadItemJob> {
-        const response = await this.query({ where: {status: {equals: "pending"}}, limit: 1});
+        const response = await this.query({ where: { status: { equals: "pending" } }, limit: 1 });
         // alert(JSON.stringify(response));
         return response[0];
     }
@@ -125,13 +125,13 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     runQueueWatcher() {
         const interval = setInterval(async () => {
 
-            if(this.fetchingPendingUpload || this.status === "stopped") return;
+            if (this.fetchingPendingUpload || this.status === "stopped") return;
 
             this.fetchingPendingUpload = true;
 
             const pendingJob = await this.getOnePendingUpload();
 
-            if(pendingJob) {
+            if (pendingJob) {
                 await this.runJob(pendingJob);
             }
 
@@ -154,7 +154,7 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
         this.status = "stopped";
     }
 
-    private async runJob (job: UploadItemJob) {
+    private async runJob(job: UploadItemJob) {
 
         const media = job.item;
 
@@ -173,7 +173,6 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 
                     const video = await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), media.type, 1080, 1080)
 
-                    console.log(video)
                     const videoPath: string = video.compressedURL;
                     const thumbnailPath: string = (await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), "image", 300)).compressedURL;
 

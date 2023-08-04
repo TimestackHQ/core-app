@@ -12,7 +12,7 @@ const MediaSchema = new ExtendedMongoSchema({
         ref: "User",
     },
 
-    files: {
+    files: [{
         storageLocation: {
             type: String,
             required: true,
@@ -31,7 +31,7 @@ const MediaSchema = new ExtendedMongoSchema({
             required: true,
             enum: MEDIA_QUALITY_OPTIONS
         }
-    },
+    }],
 
     metadata: {
         type: Object,
@@ -48,6 +48,7 @@ const MediaSchema = new ExtendedMongoSchema({
     status: {
         type: String,
         required: true,
+        default: MEDIA_STATUSES.find(status => status === "active"),
         enum: MEDIA_STATUSES
     },
 

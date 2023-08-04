@@ -7,8 +7,8 @@ import { ExtendedMongoDocument } from "../@types/global";
 import { ExtendedMongoSchema } from "./helpers";
 
 export interface IUser extends ExtendedMongoDocument {
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     username: string;
     email?: string;
     phoneNumber?: string;
@@ -29,11 +29,13 @@ const UserSchema = new ExtendedMongoSchema({
     firstName: {
         type: String,
         required: false,
+        default: "none",
         set: (field: string) => field.trim(),
     },
     lastName: {
         type: String,
         required: false,
+        default: "none",
         set: (field: string) => field.trim(),
     },
     username: {

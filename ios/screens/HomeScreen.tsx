@@ -1,60 +1,57 @@
 import {
-	Image,
 	RefreshControl,
 	SafeAreaView,
-	Text,
 	View,
-	StyleSheet,
 	FlatList,
-	TouchableWithoutFeedback, TextInput,
+	TextInput,
+	ScrollView
 } from "react-native";
 import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Onboarding from "../Components/Onboarding";
 import HTTPClient from "../httpClient";
-import FastImage from "react-native-fast-image";
-import { dateFormatter } from "../utils/time";
-import ProfilePicture from "../Components/ProfilePicture";
-import TimestackMedia from "../Components/TimestackMedia";
+import { EventBannerButton } from "../Components/Events/EventBannerButton";
+import CreateEvent from "../Components/Skeletons/CreateEvent";
+import TextComponent from "../Components/Library/Text";
+import ListOfPeople from "../Components/People/List";
+import SmallButton from "../Components/Library/SmallButton";
+import MaterialCommunityIcon from "@expo/vector-icons/MaterialCommunityIcons";
+import IconBadge from 'react-native-icon-badge';
+import { BlurView } from "@react-native-community/blur";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { AuthScreenNavigationProp, NotificationsScreenNavigationProp } from "../navigation";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useQuery, useQueryClient } from "react-query";
+import { getPeople } from "../queries/people";
+import { PeopleSearchResult } from "@api-types/api";
 
-export default function HomeScreen({ navigation, route }) {
+export default function HomeScreen({ route }) {
 
-
-	const [firstLoad, setFirstLoad] = React.useState(true);
 	const [refreshing, setRefreshing] = React.useState(true);
-	const [id, setId] = React.useState("null");
-	const isFocused = navigation.isFocused();
+	const isFocused = useIsFocused();
+	const navigation = useNavigation<
+		AuthScreenNavigationProp |
+		NotificationsScreenNavigationProp
+	>();
+
+	// const queryClient = useQueryClient();
+
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const { data: people, status: peopleStatus } = useQuery(["people", { searchQuery }], getPeople, {
+		enabled: searchQuery !== "",
+	})
 
 	const onRefresh = () => {
 		setRefreshing(true);
-		setId(Math.random().toString(36).substring(7));
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
 	};
-
-	const [events, setEvents] = React.useState([]);
-	const [query, setQuery] = React.useState("");
-	const [loading, setLoading] = React.useState(true);
-
-	const getEvents = (clear = undefined, searching = undefined, query = undefined) => {
-		const clean = (searching && query !== "") || clear;
-		HTTPClient(`/events?skip=${clean ? 0 : events.length}` + String(query ? "&q=" + query : ""), "GET").then((res) => {
-			if (res.data.events.length !== 0) setEvents(clean ? [...res.data.events] : [...events, ...res.data.events]);
-			else if (clear) setEvents([]);
-			console.log(events.map((event) => event.users));
-			setLoading(false);
-		}).catch(err => {
-			// alert("An error occurred while loading your events. Please try again later.")
-		})
-	}
 
 	useEffect(() => {
 		(async () => {
 			if (!(await AsyncStorage.getItem("@session"))) {
 				navigation.navigate("Auth");
 			}
-			getEvents();
 		})();
 	}, []);
 
@@ -63,157 +60,148 @@ export default function HomeScreen({ navigation, route }) {
 	}, [route.params?.updatedId]);
 
 	useEffect(() => {
-		(async () => {
-
-			await AsyncStorage.getItem("@first").then((value) => {
-				setRefreshing(false)
-				if (value === null) {
-					setFirstLoad(true);
-				} else {
-					setFirstLoad(false);
-				}
-			});
-			if (isFocused && route.params?.refresh) {
-				setRefreshing(true);
-				onRefresh();
-			}
-		})();
-	});
-
-
+		console.log("people", people);
+	}, [people]);
 
 	return <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-		{!firstLoad ? <View style={{ flexDirection: "row", marginLeft: 5, marginRight: 10, alignContent: "flex-end" }}>
-			<FastImage style={{ width: 35, height: 35 }} source={require("../assets/icons/collection/timestack.png")} />
-			<TextInput style={{ borderRadius: 10, backgroundColor: "#F2F2F2", margin: 5, marginTop: 5, padding: 6, fontFamily: "Red Hat Display Regular", width: "90%" }} placeholder="Search" onChangeText={(text) => {
-				setQuery(text);
-				getEvents(true, true, text);
+		<View style={{ flexDirection: "row", marginLeft: 5, marginRight: 10, alignContent: "flex-end", alignItems: "center" }}>
+			<TextInput style={{ flex: 1, fontSize: 16, borderRadius: 10, backgroundColor: "#F2F2F2", margin: 5, marginTop: 5, padding: 10, fontFamily: "Red Hat Display Regular" }} placeholder="Search" onChangeText={setSearchQuery} />
+			<TouchableOpacity onPress={() => navigation.push("Notifications")}>
+				<IconBadge
+					IconBadgeStyle={
+						{
+							// width: 10,
+							height: 20,
+							paddingHorizontal: 5,
+							backgroundColor: '#FF3B30'
+						}
+					}
+					// Hidden={this.state.BadgeCount == 0}
+					BadgeElement={
+						<TextComponent fontFamily="Semi Bold" fontSize={13} style={{ color: "white" }}>4</TextComponent>
+					}
+					MainElement={<MaterialCommunityIcon
+						size={28}
+						style={{ alignSelf: "center", margin: 5, borderColor: "green" }}
+						name="bell-outline"
+					/>}
+				/>
+			</TouchableOpacity>
+		</View>
+
+		{searchQuery === "" ? <React.Fragment>
+			<View style={{ paddingTop: 10, paddingVertical: 10 }}>
+				<TextComponent style={{ marginHorizontal: 10 }} fontFamily="Semi Bold" fontSize={16}>
+					Events
+				</TextComponent>
+				<ScrollView
+					showsHorizontalScrollIndicator={false}
+					style={{
+						paddingLeft: 5,
+					}}
+					alwaysBounceHorizontal={false}
+					overScrollMode="never"
+					horizontal={true}
+				>
+					<CreateEvent />
+					{/* <CreateEvent />
+				<CreateEvent />
+
+				<CreateEvent /> */}
+				</ScrollView>
+
+			</View>
+
+			<View style={{
+				width: "100%",
+				height: 1,
+				backgroundColor: "rgba(60, 60, 67, 0.36)",
 			}} />
-		</View> : null}
-		{!firstLoad ? <View style={{
-			borderBottomColor: '#E5E5E5',
-			borderBottomWidth: 1,
-			marginBottom: 5,
-			paddingBottom: 0
-		}}>
-			<Text style={{ fontSize: 30, marginHorizontal: 10, marginTop: 5, marginBottom: 5, fontFamily: "Red Hat Display Semi Bold" }}>My Timewall</Text>
-		</View> : null}
 
-		{!firstLoad ? <View style={{ flex: 1, paddingTop: 0 }}>
-			{events.length === 0 && !query && !loading ? <Image style={{ marginLeft: "2%", width: "96%", height: "100%", resizeMode: "contain" }} source={require("../assets/timewall.png")} /> : <FlatList
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => getEvents(true)} />}
-				data={events}
-				renderItem={(raw) => {
-					const event = raw.item;
-					return <TouchableWithoutFeedback onPress={() => navigation.navigate("Event", {
-						eventId: event.publicId,
-						eventName: event.name,
-						eventLocation: event.location,
-						thumbnailUrl: event.thumbnailUrl,
-					})}>
-						<View style={{ flexDirection: "row", flex: 1, ...styles.shadow, margin: 10, borderRadius: 15, height: 125 }}>
-							<View style={{ flex: 3 }}>
-								<TimestackMedia style={{
-									width: "100%",
-									height: "100%",
-									borderRadius: 15,
-									objectFit: "cover",
-									borderColor: "black",
-									borderWidth: 1,
-								}} source={event?.thumbnailUrl} />
-							</View>
-							<View style={{ flex: 8, paddingLeft: 10, paddingTop: 10, zIndex: 10 }}>
-								<Text style={{
-									fontSize: 15,
-									fontFamily: "Red Hat Display Semi Bold",
-									marginRight: 5
-								}}>{event.name}</Text>
-								<View style={{ justifyContent: "flex-end", flex: 1 }}>
-									<Text style={{ fontSize: 12, fontFamily: "Red Hat Display Regular", marginTop: 5 }}>{event.location}</Text>
-									<Text style={{ fontSize: 12, fontFamily: "Red Hat Display Regular", marginTop: 0 }}>{dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null)}</Text>
-								</View>
-								<View style={{
-									flexDirection: 'row',
-									alignItems: 'center',
-									marginVertical: 5,
-								}}>
+			<View style={{
 
-									{event?.people ? [...event?.people].map((user, i) => {
-										if (i === 6 && event?.peopleCount > 7) {
-											return (
-												<View style={{ marginRight: 5 }}>
-													<View style={{
-														backgroundColor: "black",
-														opacity: 0.6,
-														zIndex: 1,
-														position: "absolute",
-														right: 0,
-														bottom: 0,
-													}}>
-														<Text>{event.peopleCount - 6}</Text>
-													</View>
-													<ProfilePicture
-														userId={user.id}
-														key={i}
-														width={iconWidth}
-														height={iconWidth}
-														location={user.profilePictureSource}
-													/>
-												</View>
-											);
-										} else {
-											return (
-												<ProfilePicture
-													userId={user.id}
-													key={i}
-													style={{ marginRight: 5 }}
-													width={iconWidth}
-													height={iconWidth}
-													location={user.profilePictureSource}
-												/>
-											);
-										}
-									}) : null}
+			}}>
+				<BlurView
+					style={{
+						position: "absolute",
+						top: 0,
+						padding: 10,
+						zIndex: 1,
+						width: "100%",
+						flexDirection: "row", justifyContent: "space-between", alignItems: "center"
+					}}
+					blurType="light"
+					blurAmount={20}
+					reducedTransparencyFallbackColor="light"
+				>
+					<TextComponent fontFamily="Semi Bold" fontSize={16}>
+						Recents
+					</TextComponent>
+					<SmallButton
+						variant="positive"
+						body="Add People"
+						fontSize={16}
+						width={120}
+					/>
+				</BlurView>
+				<View style={{
+					paddingTop: 0
+				}}>
 
-								</View>
-							</View>
-							<View style={{ flex: 2, paddingTop: 15, flexDirection: "row", justifyContent: 'flex-end' }}>
-								<Text style={{ fontSize: 12, fontFamily: "Red Hat Display Semi Bold", paddingTop: -10 }}>{event?.mediaCount}</Text>
-								<FastImage style={{ width: 10, height: 10, marginTop: 3, marginLeft: 2, marginRight: 15 }} source={require("../assets/icons/collection/picture.png")} />
+					<ListOfPeople
+						people={[{
+							_id: "",
+							firstName: "Sofia",
+							lastName: "McVetty",
+							username: "sofia",
+							profilePictureSource: require("../assets/templates/sofia.png")
+						}]}
+						style={{ height: "100%", paddingTop: 50, padding: 10 }}
+						loading={false}
+					/>
 
-							</View>
-						</View>
-					</TouchableWithoutFeedback>
-				}}
-				numColumns={1}
-				keyExtractor={(item, index) => index.toString()}
-				onEndReached={() => getEvents(false)}
-				onEndReachedThreshold={0.5}
-				style={{ flex: 1, paddingTop: 0 }}
-			/>}
-		</View> : <Onboarding setFirstLoad={setFirstLoad} />}
+				</View>
+			</View>
+
+		</React.Fragment> : <React.Fragment>
+			<View style={{
+
+			}}>
+				<BlurView
+					style={{
+						position: "absolute",
+						top: 0,
+						padding: 10,
+						zIndex: 1,
+						width: "100%",
+						flexDirection: "row", justifyContent: "space-between", alignItems: "center"
+					}}
+					blurType="light"
+					blurAmount={20}
+					reducedTransparencyFallbackColor="light"
+				>
+					<TextComponent fontFamily="Semi Bold" fontSize={16}>
+						Recents
+					</TextComponent>
+					<SmallButton
+						variant="positive"
+						body="Add People"
+						fontSize={16}
+						width={120}
+					/>
+				</BlurView>
+				<View style={{
+					paddingTop: 0
+				}}>
+					<ListOfPeople
+						people={people?.people || []}
+						style={{ height: "100%", paddingTop: 50, padding: 10 }}
+						loading={peopleStatus === "loading"}
+					/>
+				</View>
+			</View>
+		</React.Fragment>}
+
 	</SafeAreaView>
 
 }
-
-const iconWidth = 25;
-
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	shadow: {
-		backgroundColor: 'white',
-		shadowColor: 'black',
-		shadowOffset: {
-			width: 0,
-			height: 0,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 5,
-		elevation: 0,
-	},
-});

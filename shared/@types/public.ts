@@ -12,7 +12,7 @@ export {
 export type MediaHolderTypesType = typeof MEDIA_HOLDER_TYPES[number];
 
 export interface SocialProfileInterface {
-    _id: mongoose.Schema.Types.ObjectId/***/ | null;
+    _id: string;
     users: UserInterface[],
     status: SharedProfileStatusType;
     canAdd: boolean;

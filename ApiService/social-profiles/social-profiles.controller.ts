@@ -10,13 +10,18 @@ import { MediaInternetType, SocialProfileInterface } from "../../shared/@types/p
 const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUserId: string) => {
 
     let profile: SocialProfileInterface;
-    const profileDocument = await Models.SocialProfile.findOne({
+    let profileDocument = await Models.SocialProfile.findOne({
         users: {
             $all: [userId, targetUserId]
         }
     }).select("-media").populate<IUser>({
         path: "users",
-        select: "firstName lastName username profilePictureSource"
+        select: {
+            firstName: 1,
+            lastName: 1,
+            username: 1,
+            profilePictureSource: 1,
+        }
     });
 
     const userProfiles = await Models.SocialProfile.find({
@@ -69,41 +74,41 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
     }
 
 
-    if (profileDocument) {
+    if (!profileDocument) {
 
-        const permissions = profileDocument.permissions(userId);
-        profile = {
-            _id: profileDocument._id,
-            users: profileDocument.users
-                .filter((user: any) => userId.toString() === targetUserId.toString() || user._id.toString() !== userId.toString())
-                .map((user: any) => {
-                    return {
-                        _id: user._id,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        profilePictureSource: user.profilePictureSource,
-                        username: user.username
-                    }
-                }
-                ),
-            status: profileDocument.status,
-            canAdd: permissions.canAdd,
-            canAccept: permissions.canAccept,
-            canUnblock: permissions.canUnblock,
-            activeSince: profileDocument.createdAt,
-            ...mutualsObject
+        await Models.SocialProfile.create({
+            users: [userId, targetUserId],
+            status: "NONE",
+            addedBy: userId
+        });
+
+        profileDocument = await Models.SocialProfile.findOne({
+            users: {
+                $all: [userId, targetUserId]
+            }
+        }).select("-media").populate<IUser>({
+            path: "users",
+            select: {
+                firstName: 1,
+                lastName: 1,
+                username: 1,
+                profilePictureSource: 1,
+            }
+        });
+
+        if (!profileDocument) {
+            throw new Error("Profile not found, doesn't make sense");
         }
 
-    } else {
-        const users = await Models.User.find({
-            _id: {
-                $in: [userId, targetUserId]
-            }
-        }).select("firstName lastName username profilePictureSource").lean();
 
-        profile = {
-            _id: null,
-            users: users.filter((user: any) => userId.toString() === targetUserId.toString() || user._id.toString() !== userId.toString()).map((user: any) => {
+    }
+
+    const permissions = profileDocument.permissions(userId);
+    profile = {
+        _id: profileDocument._id.toString(),
+        users: profileDocument.users
+            .filter((user: any) => userId.toString() === targetUserId.toString() || user._id.toString() !== userId.toString())
+            .map((user: any) => {
                 return {
                     _id: user._id,
                     firstName: user.firstName,
@@ -111,20 +116,21 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
                     profilePictureSource: user.profilePictureSource,
                     username: user.username
                 }
-            }),
-            status: "NONE",
-            canAdd: true,
-            canAccept: false,
-            canUnblock: false,
-            ...mutualsObject
-        }
+            }
+            ),
+        status: profileDocument.status,
+        canAdd: permissions.canAdd,
+        canAccept: permissions.canAccept,
+        canUnblock: permissions.canUnblock,
+        activeSince: profileDocument.createdAt,
+        ...mutualsObject
     }
 
     return profile;
 
 }
 
-export async function viewProfile(req: Request, res: Response) {
+export async function viewProfile(req: Request, res: Response<SocialProfileInterface>) {
     try {
 
         const userId = req.user._id;
@@ -234,6 +240,10 @@ export async function acceptProfile(req: Request, res: Response) {
 
 export async function hasAccess(req: Request, res: Response) {
     try {
+
+        if (process.env.NODE_ENV === "development") {
+            return res.sendStatus(200);
+        }
 
         const profilesCount = await Models.SocialProfile.countDocuments({
             users: {
@@ -355,4 +365,45 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
     } catch (Err) {
         next(Err);
     }
+}
+
+export const get = async (req: Request, res: Response) => {
+
+    try {
+
+        const SocialProfiles = await Models.SocialProfile.find({
+            users: {
+                $in: [req.user._id]
+            },
+            status: {
+                $nin: ["BLOCKED", "NONE"]
+            }
+        }).populate({
+            path: "users",
+            match: {
+                _id: {
+                    $ne: req.user._id
+                }
+            },
+            select: {
+                firstName: 1,
+                lastName: 1,
+                username: 1,
+                profilePictureSource: 1,
+            },
+            options: {
+                skip: req.query?.skip ? Number(req.query.skip) : 0,
+                limit: req.query?.limit ? Number(req.query.limit) : 30
+            }
+        }).lean();
+
+        return res.json(SocialProfiles);
+
+
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
 }

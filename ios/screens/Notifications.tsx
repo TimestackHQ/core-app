@@ -1,6 +1,15 @@
 import * as React from "react";
 import { RefreshControl, SafeAreaView, ScrollView } from "react-native";
 import Viewer from "../Components/Viewer";
+import TextComponent from "../Components/Library/Text";
+
+export function NotificationsScreenHeader() {
+	return <SafeAreaView>
+		<TextComponent fontFamily="Semi Bold" fontSize={10}>
+			Notifications
+		</TextComponent>
+	</SafeAreaView>
+}
 
 export default function NotificationsScreen({ navigation }) {
 

@@ -2,6 +2,7 @@
 import * as AWS from 'aws-sdk';
 import * as aws4 from 'aws4';
 import { AWSS3ObjectType } from '../@types/global';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 
 const AWS_ACCESS_KEY_ID = 'AKIAUAFCOME3MI6RJV5J';
 const AWS_SECRET_ACCESS_KEY = '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';
@@ -34,7 +35,7 @@ export const upload = async (publicId: string, buffer: Buffer, bucketName: "time
     };
 
     return new Promise((resolve, reject) => {
-        s3.upload(params, (err: any, data: any) => {
+        s3.upload(params, (err, data: ManagedUpload.SendData) => {
             if (err) {
                 reject(err);
             } else {

@@ -5,6 +5,7 @@ import {
 import {
     acceptProfile,
     addProfile,
+    get,
     hasAccess,
     mediaList,
     viewProfile
@@ -12,6 +13,7 @@ import {
 
 const router: Router = Router()
 
+router.get("/", get)
 router.get("/user/:userId", viewProfile);
 router.post("/user/:userId/add", addProfile);
 router.post("/user/:userId/accept", acceptProfile);
