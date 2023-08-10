@@ -31,4 +31,4 @@ const contentSchema = new ExtendedMongoSchema({
     }
 });
 
-export default mongoose.model("Content", contentSchema);
+export default mongoose.model<IContent>("Content", contentSchema);

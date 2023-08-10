@@ -6,7 +6,14 @@ import HTTPClient from "../httpClient";
 import { useNavigation } from "@react-navigation/native";
 import { SocialProfileScreenNavigationProp } from "../navigation";
 
-export default function ProfilePicture({ userId, location, width, height, style, pressToProfile = false }: {
+export default function ProfilePicture({
+   userId,
+   location = require("../assets/icons/profile.png"),
+   width,
+   height,
+   style,
+   pressToProfile = false
+}: {
 	userId?: string,
 	location?: string,
 	width?: number,
@@ -14,7 +21,6 @@ export default function ProfilePicture({ userId, location, width, height, style,
 	style?: any,
 	pressToProfile?: boolean
 }) {
-
 
 	const navigator = useNavigation<SocialProfileScreenNavigationProp>();
 

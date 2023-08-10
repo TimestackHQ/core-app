@@ -202,7 +202,6 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
         };
 
         const thumbnailStorageLocation = await AWS.upload(thumbnailFilename, <Buffer>thumbnailFile.buffer);
-            const mediaStorageLocation = await AWS.upload(mediaFilename, <Buffer>mediaFile.buffer);
 
         const media = new Models.Media({
             files: [{
@@ -213,14 +212,6 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                 },
                 format: thumbnailFilename.split(".").pop(),
                 quality: "lowest",
-            }, {
-                storage: {
-                    path: mediaStorageLocation.Key,
-                    bucket: mediaStorageLocation.Bucket,
-                    url: mediaStorageLocation.Location,
-                },
-                format: mediaFilename.split(".").pop(),
-                quality: query.mediaQuality,
             }],
             type: IMAGE_FORMAT_OPTIONS.includes(mediaFilename.split(".").pop() as typeof IMAGE_FORMAT_OPTIONS[number]) ? "image" : "video",
             user: req.user._id,
@@ -296,15 +287,34 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 
 
                 media.relatedSocialProfiles.push(profile?._id);
-                await media.save();
 
             }
         }
+
+        await media.save();
 
         res.status(200).json({
             message: "Media uploaded successfully",
             media: {
                 _id: media._id
+            }
+        });
+
+        const mediaStorageLocation = await AWS.upload(mediaFilename, <Buffer>mediaFile.buffer);
+
+        await Models.Media.updateOne({
+            _id: media._id
+        }, {
+            $push: {
+                files: {
+                    storage: {
+                        path: mediaStorageLocation.Key,
+                        bucket: mediaStorageLocation.Bucket,
+                        url: mediaStorageLocation.Location,
+                    },
+                    format: mediaFilename.split(".").pop(),
+                    quality: query.mediaQuality,
+                }
             }
         });
 

@@ -53,5 +53,6 @@ export type MediaInternetType = {
     timestamp: Date;
     isGroup: boolean;
     isPlaceholder: boolean;
+    isProcessing: boolean;
     indexInGroup: number;
 }

@@ -79,8 +79,7 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
 
         await Models.SocialProfile.create({
             users: [userId, targetUserId],
-            status: "NONE",
-            addedBy: userId
+            status: "NONE"
         });
 
         profileDocument = await Models.SocialProfile.findOne({
@@ -128,6 +127,85 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
     }
 
     return profile;
+
+}
+
+const clearProfile = async (profile: SocialProfileInterface) => {
+
+    if(profile.status !== "PENDING") return false;
+    const profileDocument = await Models.SocialProfile.findOne({
+        _id: profile._id
+    }).select({
+        content: 1
+    });
+
+    if(!profileDocument) return false;
+
+    const allContent = profileDocument.content;
+
+    for await (const contentId of allContent) {
+        const content = await Models.Content.findOne({
+            _id: contentId
+        });
+
+        if(!content) continue;
+
+        if(content.contentType === "mediaGroup") {
+            const mediaGroup = await Models.MediaGroup.findOne({
+                _id: content.contentId
+            }).select({
+                media: 1
+            }).populate<IMedia>({
+                path: "media",
+                select: {
+                    files: 1
+                }
+            });
+
+            if(!mediaGroup) continue;
+
+            for await (const mediaRaw of mediaGroup.media) {
+
+                const media = mediaRaw as IMedia;
+                await Promise.allSettled(media.files.map(async (file) => {
+                    await AWS.deleteFile(file.storage.path);
+                }));
+                await Models.Media.deleteOne({
+                    _id: media._id
+                });
+
+            }
+        } else if(content.contentType === "media") {
+            const media = await Models.Media.findOne({
+                _id: content.contentId
+            }).select({
+                files: 1
+            });
+
+            if(!media) continue;
+
+            await Promise.allSettled(media.files.map(async (file) => {
+                await AWS.deleteFile(file.storage.path);
+            }));
+            await Models.Media.deleteOne({
+                _id: media._id
+            });
+        }
+
+        await Models.SocialProfile.updateOne({
+            _id: profile._id
+        }, {
+            $pull: {
+                content: content._id
+            }
+        });
+
+        await Models.Content.deleteOne({
+            _id: content._id
+        });
+    }
+
+    return true;
 
 }
 
@@ -239,6 +317,40 @@ export async function acceptProfile(req: Request, res: Response) {
 
 }
 
+export async function declineProfile (req: Request, res: Response) {
+    try {
+
+        const userId = req.user._id;
+        const targetUserId = req.params.userId;
+
+        if (!isObjectIdOrHexString(targetUserId)) {
+            return res.sendStatus(400);
+        }
+
+        const profile = await getProfile(userId, targetUserId);
+        if(profile.status !== "PENDING") {
+            return res.sendStatus(400);
+        }
+
+        if (!profile._id) {
+            return res.sendStatus(400);
+        }
+
+        await clearProfile(profile);
+
+        await Models.SocialProfile.updateOne({ _id: profile._id }, {
+            status: "NONE",
+        });
+
+        return res.sendStatus(200);
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+}
+
 export async function hasAccess(req: Request, res: Response) {
     try {
 
@@ -324,8 +436,10 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
         const mediaContent = (await Promise.all(content.map(async (contentHolder): Promise<MediaInternetType> => {
             const content = contentHolder.payload;
 
+            let response: MediaInternetType | null = null;
+
             if (content instanceof Models.Media) {
-                return {
+                response = {
                     _id: content._id.toString(),
                     fullsize: await content.getFullsizeLocation(),
                     thumbnail: await content.getThumbnailLocation(),
@@ -339,12 +453,13 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                     groupLength: 0,
                     isPlaceholder: false,
                     indexInGroup: 0,
+                    isProcessing: false,
                 }
             } else if (content instanceof Models.MediaGroup) {
                 const media = await Models.Media.findById(content.media[0]);
 
                 if (!media) throw new Error("Media not found");
-                return {
+                response = {
                     _id: media._id.toString(),
                     fullsize: await media.getFullsizeLocation(),
                     thumbnail: await media.getThumbnailLocation(),
@@ -358,9 +473,16 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                     mediaList: (content.media as mongoose.Schema.Types.ObjectId[]).map(id => id.toString()),
                     isPlaceholder: false,
                     indexInGroup: 0,
+                    isProcessing: false,
                 }
             }
-            throw new Error("Unknown content type");
+
+            if(!response) throw new Error("Response is undefined");
+
+            return {
+                ...response,
+                isProcessing: response?.thumbnail?.path === response?.fullsize?.path,
+            }
         }))).sort((a, b) => moment(b.createdAt).unix() - moment(a.createdAt).unix())
 
         res.json({

@@ -122,27 +122,9 @@ public class TimestackCoreModule: Module {
             httpHeaders: [String: String],
             urlParams: [String: String]?
         ) -> Int in
-            // Find a photo or video file to extract the EXIF timestamp
-            var exifTimestamp: String?
-
-            for (_, path) in files {
-                if let fileURL = URL(string: path),
-                    let fileData = try? Data(contentsOf: fileURL),
-                    let imageSource = CGImageSourceCreateWithData(fileData as CFData, nil),
-                    let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String: Any],
-                    let exifData = imageProperties[kCGImagePropertyExifDictionary as String] as? [String: Any],
-                    let timestamp = exifData[kCGImagePropertyExifDateTimeOriginal as String] as? String {
-                    exifTimestamp = timestamp
-                    break
-                }
-            }
-
+            
             // Construct the query parameters string
             var queryParamsString = ""
-
-            if let exifTimestamp = exifTimestamp {
-                queryParamsString += "exifTimestamp=\(exifTimestamp)&"
-            }
 
             if let urlParams = urlParams {
                 queryParamsString += urlParams.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
@@ -247,9 +229,21 @@ public class TimestackCoreModule: Module {
 
         var compressedURL: URL?
 
-        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: requestOptions) { (image, _) in
-            if let compressedImage = image {
-                compressedURL = self.saveCompressedImage(compressedImage)
+        if asset.sourceType == .typeCloudShared || asset.sourceType == .typeiTunesSynced {
+            let options = PHImageRequestOptions()
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = .highQualityFormat
+
+            imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: options) { (image, info) in
+                if let compressedImage = image {
+                    compressedURL = self.saveCompressedImage(compressedImage)
+                }
+            }
+        } else {
+            imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: requestOptions) { (image, _) in
+                if let compressedImage = image {
+                    compressedURL = self.saveCompressedImage(compressedImage)
+                }
             }
         }
 
@@ -348,9 +342,8 @@ public class TimestackCoreModule: Module {
     }
     
     
-    
     private func saveCompressedImage(_ image: UIImage) -> URL? {
-        let targetSize: CGFloat = 0.5 * 1024 * 1024 // 1MB
+        let targetSize: CGFloat = 0.5 * 1024 * 1024 // 0.5MB
         
         var compressionQuality: CGFloat = 1.0
         var imageData = image.jpegData(compressionQuality: compressionQuality)
@@ -364,7 +357,8 @@ public class TimestackCoreModule: Module {
             return nil
         }
         
-        let uniqueFileName = ProcessInfo.processInfo.globallyUniqueString
+        let fileExtension = "jpg" // Use ".jpg" extension for JPEG images
+        let uniqueFileName = "\(ProcessInfo.processInfo.globallyUniqueString).\(fileExtension)"
         let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(uniqueFileName)
         
         do {
@@ -375,6 +369,7 @@ public class TimestackCoreModule: Module {
             return nil
         }
     }
+
     
     private func createImageNode(asset: PHAsset, compressedURL: URL?) -> [String: Any] {
         var node: [String: Any] = [:]

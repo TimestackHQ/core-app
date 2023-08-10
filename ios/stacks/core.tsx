@@ -1,4 +1,4 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Linking from "expo-linking";
 import { useEffect, useState } from "react";
@@ -8,18 +8,11 @@ import Nav from "./nav";
 import Invite from "../screens/Invite";
 import * as Notifications from "expo-notifications";
 import HTTPClient from "../httpClient";
-
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { AuthScreenNavigationProp, InviteScreenNavigationProp, NotificationsScreenNavigationProp, SocialProfileScreenNavigationProp } from "../navigation";
 import { ConnectionRequest } from "@shared-types/*";
 
-import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
-
 const CoreStack = createNativeStackNavigator();
 
-
-const Stack = createSharedElementStackNavigator();
 export default function CoreNavigationStack() {
 
     const navigator = useNavigation<

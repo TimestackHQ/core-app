@@ -1,6 +1,7 @@
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function SmallButton({
+    notClickable,
     onPress,
     body,
     style,
@@ -8,6 +9,7 @@ export default function SmallButton({
     width = "100%",
     variant = "default"
 }: {
+    notClickable?: boolean,
     onPress?: () => void,
     body: string,
     style?: any,
@@ -65,7 +67,7 @@ export default function SmallButton({
     });
 
 
-    return <TouchableOpacity onPress={onPress} style={{
+    return <TouchableOpacity  disabled={notClickable} onPress={onPress} style={{
         ...buttonStyle.container,
         ...style,
         borderRadius: fontSize * 2,

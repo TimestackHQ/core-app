@@ -20,6 +20,7 @@ import { useQuery } from "react-query";
 import { getSocialProfile } from "../queries/profiles";
 import HTTPClient from "../httpClient";
 import { flattenGallery } from "../utils/gallery";
+import TextComponent from "../Components/Library/Text";
 
 
 
@@ -33,7 +34,7 @@ export default function SocialProfile({ }) {
     const isFocused = useIsFocused();
     const [refreshing, setRefreshing] = useState(false);
 
-    const { data: profile } = useQuery(["social-profiles", { userId: route.params?.userId }], getSocialProfile, {
+    const { data: profile, refetch: refetchProfile } = useQuery(["social-profiles", { userId: route.params?.userId }], getSocialProfile, {
         enabled: !!route.params?.userId
     })
     const [tab, setTab] = useState<
@@ -41,7 +42,7 @@ export default function SocialProfile({ }) {
     >("memories");
     const queueCounter = 0//useQueueCounter(profile?._id.toString());
 
-    const [user, setUser] = useState<UserInterface>(null);
+    const [user, setUser] = useState<UserInterface>(profile?.users[0] || null);
     const [page, setPage] = useState(0);
     const pageSize = 12;
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
@@ -89,17 +90,16 @@ export default function SocialProfile({ }) {
                             />
                         </View>
                         <View style={{ flex: 3, alignItems: "flex-start" }}>
-                            <Text style={{
-                                fontSize: 18, fontFamily: "Red Hat Display Bold",
+                            <TextComponent numberOfLines={1} ellipsizeMode="tail" fontFamily={"Bold"} fontSize={18} style={{
                                 marginBottom: 0
                             }}>
                                 {user?.firstName} {user?.lastName}
-                            </Text>
-                            <Text style={{
-                                fontSize: 16, fontFamily: "Red Hat Display Regular", marginTop: -5
+                            </TextComponent>
+                            <TextComponent fontFamily={"Regular"} fontSize={16} style={{
+                                marginTop: -5
                             }}>
                                 {user?.username}
-                            </Text>
+                            </TextComponent>
                         </View>
                     </View>
                 )
@@ -152,7 +152,10 @@ export default function SocialProfile({ }) {
     }
 
 
-    const refresh = () => getGallery(true);
+    const refresh = () => {
+        getGallery(true);
+        refetchProfile();
+    }
 
     return <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column" }}>
         {
@@ -211,7 +214,7 @@ export default function SocialProfile({ }) {
                             <View style={{ flex: 1, flexDirection: "column" }}>
                                 <View style={{ flex: 1, flexDirection: "row" }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
-                                        <ConnectionStatus style={{ flex: 1, width: 150, margin: 15 }} refresh={refresh} profile={profile} user={user} />
+                                        <ConnectionStatus style={{ flex: 1, width: 150, margin: 15 }} refresh={refetchProfile} profile={profile} user={user} />
                                     </View>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                     </View>

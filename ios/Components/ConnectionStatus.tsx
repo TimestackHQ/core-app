@@ -28,13 +28,22 @@ export default function ConnectionStatus({ profile, user, refresh, style }: {
             });
     }
 
+    const decline = () => {
+        HTTPClient("/social-profiles/user/" + user._id + "/decline", "POST")
+            .then(refresh)
+            .catch(err => {
+                console.log(err);
+            });
+    }
 
-    return <View style={{ flex: 1, flexDirection: "row", ...style }}>
-        {profile?.status === "NONE" ? <SmallButton variant="default" onPress={add} body={"Add"} fontSize={20} width={"100%"} /> : null}
+
+    return user ? <View style={{ flex: 1, flexDirection: "row", ...style }}>
+        {profile?.status === "NONE" ? <SmallButton variant="default" onPress={add} body={"Add"} fontSize={20}  /> : null}
         {profile?.status === "PENDING" && profile.canAccept ? <SmallButton variant="positive" onPress={() => {
             Alert.alert(`Accept ${user?.firstName}'s request?`, "", [
                 {
                     text: "Decline",
+                    onPress: decline
                 },
                 {
                     text: "Accept",
@@ -42,9 +51,20 @@ export default function ConnectionStatus({ profile, user, refresh, style }: {
                     style: "default"
                 }
             ])
-        }} body={"Respond"} fontSize={20} width={"40%"} /> : null}
-        {profile?.status === "PENDING" && !profile.canAccept ? <SmallButton variant="pending" onPress={refresh} body={"Pending"} fontSize={20} width={"100%"} /> : null}
-        {profile?.status === "ACTIVE" ? <SmallButton variant="added" onPress={refresh} body={moment.duration(moment().diff(moment(profile.activeSince))).asDays().toFixed(0) + " days"} fontSize={20} width={"100%"} /> : null}
-    </View>
+        }} body={"Respond"} fontSize={20}  /> : null}
+        {profile?.status === "PENDING" && !profile.canAccept ? <SmallButton variant="pending" body={"Pending"} fontSize={20} onPress={() => {
+            Alert.alert(`Cancel add request ?`, "", [
+                {
+                    text: "Cancel",
+                },
+                {
+                    text: "Yes",
+                    onPress: decline,
+                    style: "default"
+                }
+            ])}
+        } /> : null}
+        {profile?.status === "ACTIVE" ? <SmallButton notClickable variant="added" onPress={refresh} body={moment.duration(moment().diff(moment(profile.activeSince))).asDays().toFixed(0) + " days"} fontSize={20} /> : null}
+    </View> : null
 
 }
