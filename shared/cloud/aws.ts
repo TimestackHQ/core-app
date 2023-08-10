@@ -35,7 +35,7 @@ export const upload = async (publicId: string, buffer: Buffer, bucketName: "time
     };
 
     return new Promise((resolve, reject) => {
-        s3.upload(params, (err, data: ManagedUpload.SendData) => {
+        s3.upload(params, (err: any, data: ManagedUpload.SendData) => {
             if (err) {
                 reject(err);
             } else {

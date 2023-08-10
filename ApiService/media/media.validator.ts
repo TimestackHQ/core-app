@@ -1,5 +1,4 @@
 import * as Joi from "joi";
-import { isObjectIdJoiValidator } from "../../shared";
 import { CreateMediaType } from "./media.controller";
 import { MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "../../shared/consts";
 
@@ -31,7 +30,7 @@ export const getUploadedMediaValidator = (body: unknown): Joi.ValidationResult =
 export const deleteMemoriesValidator = (body: unknown): Joi.ValidationResult => {
 
     const schema = Joi.object({
-        ids: Joi.array().items(isObjectIdJoiValidator).required(),
+        ids: Joi.array().required(),
     });
     return schema.validate(body);
 

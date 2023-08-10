@@ -5,7 +5,6 @@ import Joi from "joi";
 import { ValidationResult } from "joi";
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
-import JoiObjectId from "joi-objectid";
 import { isObjectIdOrHexString } from "mongoose";
 import * as AWS from "./cloud/aws";
 
@@ -95,12 +94,9 @@ export function sendTextMessage(body: string, to: string, mediaUrl?: string) {
         });
 }
 
-const isObjectIdJoiValidator = JoiObjectId(Joi);
-
 
 export {
     isObjectIdOrHexString,
-    isObjectIdJoiValidator,
     Models,
     AWS
 }
