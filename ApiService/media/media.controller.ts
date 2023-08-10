@@ -7,7 +7,7 @@ import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_Q
 import { IMedia } from "../../shared/@types/Media";
 import { AWSS3ObjectType } from "shared/@types/global";
 import { PersonType } from "../@types";
-import mongoose, { mongo } from "mongoose";
+import mongoose, {mongo, Promise} from "mongoose";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
@@ -354,39 +354,44 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
             });
         }
 
-        const media = await Models.Media.find({
+        const content = await Models.Content.find({
             _id: {
                 $in: ids
             }
         });
 
-        await Models.Event.updateOne({
-            _id: req.params.eventId,
-            users: {
-                $in: [req.user._id]
-            },
-        }, {
+        for await (const item of content) {
+            if(item.contentType === "mediaGroup") {
+                const mediaGroup = await Models.MediaGroup.findOne({
+                    _id: item.contentId
+                }).populate<IMedia>("media");
+
+                for await (const media of mediaGroup?.media || []) {
+                    await Promise.allSettled((media as IMedia).files.map(files => AWS.deleteFile(files.storage.path)));
+                    await (media as IMedia).remove();
+                }
+
+                await mediaGroup?.remove();
+
+            } else if (item.contentType === "media") {
+                const media = await Models.Media.findOne({
+                    _id: item.contentId
+                }).populate<IMedia>("files");
+
+                await Promise.allSettled(media?.files.map(files => AWS.deleteFile(files.storage.path)));
+                await media?.remove();
+            }
+
+            await item.remove();
+        }
+
+        await holder.updateOne({
             $pull: {
-                media: {
-                    $in: media.map(m => m._id)
+                content: {
+                    $in: ids
                 }
             }
         });
-
-        try {
-            await Promise.all(media.map(async m => {
-                if (holder instanceof Models.SocialProfile && m.user.toString() !== req.user._id.toString()) return;
-                await Promise.all(m.files.map(async f => {
-                    await AWS.deleteFile(f.storage.path);
-                }));
-                await Models.Media.deleteOne({
-                    _id: m._id
-                });
-            }));
-        } catch (Err) {
-            console.log(Err);
-        }
-
 
         return res.sendStatus(200);
 

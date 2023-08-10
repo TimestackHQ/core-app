@@ -20,7 +20,7 @@ export default function UploadQueue() {
 
     const route = useRoute<RouteProp<RootStackParamList, "UploadQueue">>();
 
-    const [jobs, setJobs] = useState<UploadItemJob[]>([]);
+    const jobs = useQueue(route.params?.holderId);
 
     const fetchJobs = async () => {
         const holderId = String(route.params?.holderId)
@@ -29,7 +29,6 @@ export default function UploadQueue() {
             .filter((job) => job.holderId.toString() === holderId.toString())
             .reverse();
 
-        setJobs(jobs);
     };
 
     useEffect(() => {

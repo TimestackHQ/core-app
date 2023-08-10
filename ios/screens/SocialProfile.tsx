@@ -46,7 +46,7 @@ export default function SocialProfile({ }) {
     const [page, setPage] = useState(0);
     const pageSize = 12;
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
-    const [selected, setSelected] = useState({});
+    const [selected, setSelected] = useState<{[key: string]: MediaInternetType}>({});
 
     useEffect(() => {
         console.log(queueCounter);
@@ -194,6 +194,12 @@ export default function SocialProfile({ }) {
                                     {Object.keys(selected).length} {Object.keys(selected).length !== 1 ? "Memories" : "Memory"} selected
                                 </Text>
                                 <TouchableWithoutFeedback style={{ width: "100%" }} onPress={() => {
+
+                                    if (Object.keys(selected).length) {
+                                        HTTPClient(`/${profile._id}/delete?profile=true`, "POST", {
+                                            ids: Object.keys(selected).map(key => selected[key]._id)
+                                        }).then(refresh);
+                                    }
 
                                 }}>
                                     <Image alt={"Cassis 2022"} style={{ borderRadius: 0, width: 30, height: 30, opacity: !Object.keys(selected).length ? 1 : 0.5 }} source={require("../assets/icons/Remove.png")} />

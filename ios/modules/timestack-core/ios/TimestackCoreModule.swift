@@ -206,6 +206,7 @@ public class TimestackCoreModule: Module {
         let requestOptions = PHImageRequestOptions()
         requestOptions.isSynchronous = true
         requestOptions.deliveryMode = .highQualityFormat // Adjust delivery mode as needed
+        requestOptions.isNetworkAccessAllowed = true
 
         let imageManager = PHImageManager.default()
 
@@ -229,23 +230,13 @@ public class TimestackCoreModule: Module {
 
         var compressedURL: URL?
 
-        if asset.sourceType == .typeCloudShared || asset.sourceType == .typeiTunesSynced {
-            let options = PHImageRequestOptions()
-            options.isNetworkAccessAllowed = true
-            options.deliveryMode = .highQualityFormat
-
-            imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: options) { (image, info) in
-                if let compressedImage = image {
-                    compressedURL = self.saveCompressedImage(compressedImage)
-                }
-            }
-        } else {
-            imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: requestOptions) { (image, _) in
-                if let compressedImage = image {
-                    compressedURL = self.saveCompressedImage(compressedImage)
-                }
+       
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: requestOptions) { (image, _) in
+            if let compressedImage = image {
+                compressedURL = self.saveCompressedImage(compressedImage)
             }
         }
+        
 
         return compressedURL
     }
