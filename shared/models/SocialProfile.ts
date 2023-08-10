@@ -2,6 +2,7 @@ import mongoose, { mongo } from "mongoose";
 import { SocialProfileInterface, SocialProfilePermissionsInterface } from "../@types/SocialProfile";
 import { SOCIAL_PROFILE_STATUSES } from "../consts";
 import { ExtendedMongoSchema } from "./helpers";
+import ContentSchema from "./Content";
 
 export type SharedProfileStatusType = typeof SOCIAL_PROFILE_STATUSES[number];
 
@@ -27,19 +28,12 @@ const socialProfileSchema = new ExtendedMongoSchema({
         type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     },
-    content: [new ExtendedMongoSchema({
-        contentId: mongoose.Schema.Types.ObjectId/***/,
-        contentType: {
-            type: String,
-            enum: ["media", "group"]
-        }
-    }, {
-        timestamps: {
-            createdAt: true,
-        }
-    })]
-}, {
-    timestamps: true
+    content: {
+        type: [mongoose.Schema.Types.ObjectId]/***/,
+        default: [],
+        ref: "Content",
+        required: true
+    }
 });
 
 socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId/***/): SocialProfilePermissionsInterface {

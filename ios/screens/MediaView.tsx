@@ -1,3 +1,4 @@
+import _ from "lodash";
 import {
 	Image,
 	TouchableOpacity,
@@ -18,14 +19,14 @@ import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
 import { HeaderButtons, HiddenItem, OverflowMenu } from "react-navigation-header-buttons";
 import * as React from "react";
-import TimestackMedia from "../Components/TimestackMedia";
 import mediaDownload from "../utils/mediaDownload";
-import Pinchable from 'react-native-pinchable';
 import { RootStackParamList } from "../navigation";
 import { BlurView } from "@react-native-community/blur";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
-import { Viewport } from '@skele/components'
 import InnerMediaHolder from "../Components/InnerMediaHolder";
+import { MediaInView } from "@api-types/public";
+import { flatten } from "lodash";
+import { MediaInternetType } from "@shared-types/*";
 
 // optional
 const options = {
@@ -88,8 +89,8 @@ export default function MediaView() {
 	const route = useRoute<RouteProp<RootStackParamList, "MediaView">>();
 	const isFocused = useIsFocused();
 
-	const [content, setContent] = useState(route.params?.content);
-	const [media, setMedia] = useState(null);
+	const [gallery, setGallery] = useState(route.params?.content);
+	const [media, setMedia] = useState<MediaInView>(null);
 	const [hasPermission, setHasPermission] = useState(false);
 	const [downloading, setDownloading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(null);
@@ -97,20 +98,20 @@ export default function MediaView() {
 	const [itemInView, setItemInView] = useState(null);
 
 	const getGallery = () => {
-		HTTPClient(`/events/${route.params.holderId}/media?skip=${content.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
+		HTTPClient(`/social-profiles/${route.params.holderId}/media?skip=${gallery.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
 			.then(res => {
-				setContent([...content, ...res.data.media]);
-
+				const newGallery: MediaInternetType[] = res.data.content;
+				setGallery(_.uniq([...gallery, ...flatten(newGallery)]));
 			});
 	}
 
 	const deleteMedia = (id) => {
 		HTTPClient(`/media/${route.params.holderId}/delete${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`, "POST", { ids: [id] }).then(() => {
-			if (content.length === 1 || currentIndex === content.length - 1) {
+			if (gallery.length === 1 || currentIndex === gallery.length - 1) {
 				navigator.goBack();
 				return;
 			}
-			setContent(content.filter((item) => item._id !== id));
+			setGallery(gallery.filter((item) => item._id !== id));
 		}).catch(err => {
 			console.log(err.response);
 			alert("Error deleting. Please try again.")
@@ -129,14 +130,14 @@ export default function MediaView() {
 
 		if (isFocused) {
 			setHasPermission(Boolean(route.params?.hasPermission));
-			setContent(route.params?.content);
+			setGallery(route.params?.content);
 			setCurrentIndex(route.params?.currentIndex)
 		}
 
 	}, [isFocused]);
 
 	useEffect(() => {
-		const current = content[currentIndex];
+		const current = gallery[currentIndex];
 		const id = current?._id;
 		if (!id) return;
 
@@ -162,6 +163,7 @@ export default function MediaView() {
 				navigator.setOptions({
 					headerBackTitle: "Back",
 					headerBackButtonVisible: true,
+					headerBackTitleVisible: true,
 					headerShown: true,
 					headerTitle: () => res.data.media?.timestamp ? (
 						<View>
@@ -199,10 +201,10 @@ export default function MediaView() {
 				])
 			});
 
-	}, [currentIndex, content]);
+	}, [currentIndex, gallery]);
 
 
-	const onViewCallBack = React.useCallback((event)=> {
+	const onViewCallBack = React.useCallback((event) => {
 		setItemInView(event.viewableItems[0].item._id);
 		console.log("Item in view", event.viewableItems[0].item._id);
 	}, []) // any dependencies that require the function to be "redeclared"
@@ -213,7 +215,7 @@ export default function MediaView() {
 		<View style={{ backgroundColor: "white", flex: 1, flexDirection: "column" }}>
 			<View style={{ flex: 9 }}>
 				<View style={styles.container}>
-					{content[currentIndex]?.isGroup ? <BlurView
+					{gallery[currentIndex]?.isGroup ? <BlurView
 						style={{
 							position: "absolute",
 							top: 0,
@@ -242,11 +244,11 @@ export default function MediaView() {
 							textAlign: "center",
 
 						}}>
-							{content[currentIndex]?.indexInGroup + 1} / {content[currentIndex]?.groupLength}
+							{gallery[currentIndex]?.indexInGroup + 1} / {gallery[currentIndex]?.groupLength}
 						</Text>
 					</BlurView> : null}
 					<FlatList
-						data={content}
+						data={gallery}
 						horizontal
 						viewabilityConfig={viewConfigRef.current}
 						onViewableItemsChanged={onViewCallBack}
@@ -257,15 +259,14 @@ export default function MediaView() {
 							{ length: width, offset: width * index, index }
 						)}
 						renderItem={({ item }) => {
-
-							const media = content[currentIndex];
-
-
-
+							console.log("itemId", item._id)
 							return (
-
-								<InnerMediaHolder item={item} itemInView={itemInView === item._id} />
-
+								<InnerMediaHolder
+									item={item}
+									itemInView={itemInView === item._id}
+									holderId={route.params?.holderId}
+									holderType={route.params?.holderType}
+								/>
 							)
 						}}
 						onScroll={(event) => {
@@ -281,7 +282,7 @@ export default function MediaView() {
 			</View>
 			<View style={{ flex: 1, padding: 10, alignContent: "center", flexDirection: "row", backgroundColor: "white" }}>
 				<View>
-					<ProfilePicture userId={media?.user?.userId} location={media?.user?.profilePictureSource} width={35} height={35} />
+					<ProfilePicture userId={media?.user?._id} location={media?.user?.profilePictureSource} width={35} height={35} />
 				</View>
 				<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
 					<View style={{ flexDirection: "column", justifyContent: "center" }}>
@@ -294,7 +295,7 @@ export default function MediaView() {
 				<ActivityIndicator animating={downloading} style={{ position: 'absolute', right: 40, marginTop: 5 }} color={"#4fc711"} />
 				<TouchableOpacity onPress={async () => {
 					setDownloading(true);
-					mediaDownload(media?.storageLocation, "download", setDownloading, false);
+					mediaDownload(media.fullsize, "download", setDownloading, false);
 				}
 				} disabled={downloading} style={{ position: 'absolute', right: 10, marginTop: 15, marginRight: 5 }} >
 					<FastImage

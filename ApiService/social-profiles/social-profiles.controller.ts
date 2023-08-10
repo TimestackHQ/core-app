@@ -3,6 +3,7 @@ import { AWS, Models, isGreaterVersion } from "../../shared";
 import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
 import mongoose from "mongoose";
+import moment from "moment";
 import { IUser } from "../../shared/models/User";
 import { IMedia } from "../../shared/@types/Media";
 import { MediaInternetType, SocialProfileInterface } from "../../shared/@types/public";
@@ -263,106 +264,112 @@ export async function hasAccess(req: Request, res: Response) {
     }
 }
 
-export const mediaList = async (req: Request, res: Response, next: NextFunction) => {
+export const mediaList = async (req: Request, res: Response<{ content: MediaInternetType[] }>, next: NextFunction) => {
     try {
 
-        const profileQuery = {
-            _id: isObjectIdOrHexString(req.params.profileId) ? req.params.profileId : null,
+        const profile = await Models.SocialProfile.findOne({
+            _id: req.params.profileId,
             users: {
                 $in: [req.user._id]
+            },
+            status: {
+                $in: ["ACTIVE", "PENDING"]
             }
-        }
-
-        const profile = await Models.SocialProfile.findOne(profileQuery)
-            .select({
-                content: 1,
-            }).populate({
+        })
+            .select("content")
+            .populate([{
                 path: "content",
                 options: {
-                    limit: req.query?.limit ? Number(req.query.limit) : 30,
-                    skip: req.query?.skip ? Number(req.query.skip) : 0
+                    limit: 30,
+                    skip: req.query?.skip ? Number(req.query.skip) : 0,
+                    sort: {
+                        createdAt: 1
+                    }
                 }
-            });
+            }]);
 
 
         if (!profile) {
             return res.sendStatus(404);
         }
-
-        const contentReferences = profile.content;
+        if (profile.content.length === 0) {
+            return res.json({
+                content: []
+            })
+        }
 
         const media = await Models.Media.find({
             _id: {
-                $in: contentReferences.map((contentReference) => contentReference.contentType === "media")
+                $in: profile.content.filter((contentReference) => contentReference.contentType === "media").map((contentReference) => contentReference.contentId)
             }
         });
 
         const groups = await Models.MediaGroup.find({
             _id: {
-                $in: contentReferences.map((contentReference) => contentReference.contentType === "mediaGroup")
+                $in: profile.content.filter((contentReference) => contentReference.contentType === "mediaGroup").map((contentReference) => contentReference.contentId)
             }
         });
 
         const content = [
             ...media.map(media => ({
-                payload: media.toObject(),
+                payload: media,
                 createdAt: media.createdAt,
-                type: "media"
             })),
             ...groups.map(group => ({
-                payload: group.toObject(),
+                payload: group,
                 createdAt: group.createdAt,
-                type: "mediaGroup"
             }))
-        ]
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        ];
 
+        const mediaContent = (await Promise.all(content.map(async (contentHolder): Promise<MediaInternetType> => {
+            const content = contentHolder.payload;
 
-        const mediaFormatter = async (media: IMedia) => ({
-            _id: media._id,
-            storageLocation: await media.getFullsizeLocation(),
-            thumbnail: await media.getThumbnailLocation(),
-            createdAt: media.createdAt,
-            hasPermission: media.user.toString() === req.user._id.toString(),
-            user: String(media.user),
-            timestamp: media.timestamp,
-        });
+            if (content instanceof Models.Media) {
+                return {
+                    _id: content._id.toString(),
+                    fullsize: await content.getFullsizeLocation(),
+                    thumbnail: await content.getThumbnailLocation(),
+                    createdAt: content.createdAt,
+                    hasPermission: content.user.toString() === req.user._id.toString(),
+                    user: content.user.toString(),
+                    timestamp: content.timestamp,
+                    type: content?.type,
+                    mediaList: [],
+                    isGroup: false,
+                    groupLength: 0,
+                    isPlaceholder: false,
+                    indexInGroup: 0,
+                }
+            } else if (content instanceof Models.MediaGroup) {
+                const media = await Models.Media.findById(content.media[0]);
+
+                if (!media) throw new Error("Media not found");
+                return {
+                    _id: media._id.toString(),
+                    fullsize: await media.getFullsizeLocation(),
+                    thumbnail: await media.getThumbnailLocation(),
+                    createdAt: media.createdAt,
+                    hasPermission: media.user.toString() === req.user._id.toString(),
+                    user: media.user.toString(),
+                    timestamp: media.timestamp,
+                    type: media?.type,
+                    isGroup: true,
+                    groupLength: content.media.length,
+                    mediaList: (content.media as mongoose.Schema.Types.ObjectId[]).map(id => id.toString()),
+                    isPlaceholder: false,
+                    indexInGroup: 0,
+                }
+            }
+            throw new Error("Unknown content type");
+        }))).sort((a, b) => moment(b.createdAt).unix() - moment(a.createdAt).unix())
 
         res.json({
-            content: await Promise.all(content.map(async (content) => {
-                if (content instanceof Models.Media) {
-                    return {
-                        _id: content._id,
-                        content: {
-                            storageLocation: await content.getFullsizeLocation(),
-                            thumbnail: await content.getThumbnailLocation(),
-                            createdAt: content.createdAt,
-                            hasPermission: content.user.toString() === req.user._id.toString(),
-                            user: content.user,
-                            timestamp: content.timestamp,
-                        }
-                    }
-                } else if (content instanceof Models.MediaGroup) {
-                    const media = await Models.Media.findById(content.media[0]);
-
-                    if (!media) return;
-                    return {
-                        _id: content._id,
-                        firstMedia: {
-                            storageLocation: await media.getFullsizeLocation(),
-                            thumbnail: await media.getThumbnailLocation(),
-                            createdAt: media.createdAt,
-                            hasPermission: media.user.toString() === req.user._id.toString(),
-                            user: media.user,
-                            timestamp: media.timestamp,
-                        }
-                    }
-                }
-            }))
+            content: mediaContent
         });
 
 
     } catch (Err) {
+        console.log(Err);
         next(Err);
     }
 }

@@ -14,8 +14,12 @@ import { RouteProp } from '@react-navigation/native';
 import { AuthScreenNavigationProp, InviteScreenNavigationProp, NotificationsScreenNavigationProp, SocialProfileScreenNavigationProp } from "../navigation";
 import { ConnectionRequest } from "@shared-types/*";
 
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 
 const CoreStack = createNativeStackNavigator();
+
+
+const Stack = createSharedElementStackNavigator();
 export default function CoreNavigationStack() {
 
     const navigator = useNavigation<
@@ -113,7 +117,7 @@ export default function CoreNavigationStack() {
             <CoreStack.Screen name="Auth" component={AuthScreen} />
             <CoreStack.Screen name="Invite" component={Invite} />
             <CoreStack.Screen
-                options={{ presentation: "formSheet" }}
+                options={{ presentation: "modal" }}
                 name="Error" component={ErrorScreen}
             />
 

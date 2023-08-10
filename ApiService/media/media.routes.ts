@@ -13,10 +13,10 @@ const upload = multer();
 
 const router: Router = Router()
 
-router.post("/", authCheck, upload.single("mediaFile"), HTTPValidator(createMediaValidator, "query"), createMedia);
+router.post("/", authCheck, upload.fields([{ name: 'mediaFile', maxCount: 1 }, { name: "mediaThumbnail", maxCount: 1 }]), HTTPValidator(createMediaValidator, "query"), createMedia);
 router.post("/cover", authCheck, upload.any(), uploadCover);
 router.post("/:holderId/delete", authCheck, HTTPValidator(deleteMemoriesValidator), deleteMemories);
-router.get("/:publicId", get);
+router.get("/:mediaId", get);
 router.get("/view/:mediaId/:holderId", authCheck, viewMedia);
 
 

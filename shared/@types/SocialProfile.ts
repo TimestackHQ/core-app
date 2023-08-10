@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { SOCIAL_PROFILE_STATUSES } from "../consts";
 import { ExtendedMongoDocument } from "./global";
+import { IContent } from "../models/Content";
 
 export interface SocialProfilePermissionsInterface {
     canAdd: boolean;
@@ -19,11 +20,7 @@ export interface SocialProfileInterface extends ExtendedMongoDocument {
     blockedBy: mongoose.Schema.Types.ObjectId/***/;
     createdAt: Date;
     updatedAt: Date;
-    content: {
-        contentId: mongoose.Schema.Types.ObjectId/***/;
-        contentType: "media" | "mediaGroup";
-        createdAt: Date;
-    }[];
+    content: IContent[];
     permissions: (userId: mongoose.Schema.Types.ObjectId/***/) => SocialProfilePermissionsInterface;
 }
 

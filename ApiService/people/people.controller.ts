@@ -3,15 +3,10 @@ import { Logger, Models } from "../../shared";
 import { isObjectIdOrHexString } from "../../shared";
 import moment = require("moment");
 import * as _ from "lodash";
+import { PersonType } from "../@types";
 
 export type PeopleSearchResult = {
-    people: {
-        _id: string;
-        firstName: string;
-        lastName: string;
-        username: string;
-        profilePictureSource?: string;
-    }[]
+    people: PersonType[]
 }
 
 export async function findPeople(req: Request, res: Response<PeopleSearchResult>, next: NextFunction) {

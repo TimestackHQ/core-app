@@ -19,12 +19,6 @@ import Spinner from "../Components/Library/Spinner";
 export default function UploadQueue() {
 
     const route = useRoute<RouteProp<RootStackParamList, "UploadQueue">>();
-    const navigator = useNavigation();
-    const isFocused = useIsFocused();
-
-    // @ts-ignore
-    // const jobs: UploadItemJob[] = useQueue(String(route.params?.holderId));
-    const jobsCount = useQueueCounter(String(route.params?.holderId));
 
     const [jobs, setJobs] = useState<UploadItemJob[]>([]);
 
@@ -43,7 +37,9 @@ export default function UploadQueue() {
             await fetchJobs();
             for(let i = 0; i > -1; i) {
                 await fetchJobs();
+                console.log("Fetching jobs...")
                 await new Promise(resolve => setTimeout(resolve, 1000));
+                console.log("Done fetching jobs...")
             }
         })();
     }, []); // Runs the effect once, when the component mounts

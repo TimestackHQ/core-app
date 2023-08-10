@@ -6,9 +6,13 @@ import { MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from 
 export const createMediaValidator = (body: CreateMediaType): Joi.ValidationResult => {
 
     const schema = Joi.object({
+        exifTimestamp: Joi.string(),
+        uploadLocalDeviceRef: Joi.string(),
         mediaQuality: Joi.string().valid(...MEDIA_QUALITY_OPTIONS).required(),
         mediaFormat: Joi.string().valid(...MEDIA_FORMAT_OPTIONS).required(),
         metadata: Joi.object(),
+        holderId: Joi.string().required(),
+        holderType: Joi.string().valid(...MEDIA_HOLDER_TYPES).required(),
     });
 
     return schema.validate(body);

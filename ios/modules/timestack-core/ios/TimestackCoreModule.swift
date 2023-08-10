@@ -3,6 +3,7 @@ import ExpoModulesCore
 import React
 import Photos
 import UIKit
+import MobileCoreServices
 
 public class TimestackCoreModule: Module {
     
@@ -119,78 +120,93 @@ public class TimestackCoreModule: Module {
             urlLocation: String,
             httpMethod: String,
             httpHeaders: [String: String],
-            jsonBody: [String: Any]?
+            urlParams: [String: String]?
         ) -> Int in
-            // Create a URLRequest with the specified URL and HTTP method
-            var request = URLRequest(url: URL(string: urlLocation)!)
-            request.httpMethod = httpMethod
+            // Find a photo or video file to extract the EXIF timestamp
+            var exifTimestamp: String?
+
+            for (_, path) in files {
+                if let fileURL = URL(string: path),
+                    let fileData = try? Data(contentsOf: fileURL),
+                    let imageSource = CGImageSourceCreateWithData(fileData as CFData, nil),
+                    let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String: Any],
+                    let exifData = imageProperties[kCGImagePropertyExifDictionary as String] as? [String: Any],
+                    let timestamp = exifData[kCGImagePropertyExifDateTimeOriginal as String] as? String {
+                    exifTimestamp = timestamp
+                    break
+                }
+            }
+
+            // Construct the query parameters string
+            var queryParamsString = ""
+
+            if let exifTimestamp = exifTimestamp {
+                queryParamsString += "exifTimestamp=\(exifTimestamp)&"
+            }
+
+            if let urlParams = urlParams {
+                queryParamsString += urlParams.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+            }
+
+            // Append the query parameters to the URL if they exist
+            let urlStringWithParams = queryParamsString.isEmpty ? urlLocation : "\(urlLocation)?\(queryParamsString)"
             
+            // Create a URLRequest with the specified URL and HTTP method
+            var request = URLRequest(url: URL(string: urlStringWithParams)!)
+            request.httpMethod = httpMethod
+
             // Set the HTTP headers
             for (key, value) in httpHeaders {
                 request.setValue(value, forHTTPHeaderField: key)
             }
-            
+
             // Create the body data for multipart/form-data
             let boundary = "Boundary-\(UUID().uuidString)"
             request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
             var bodyData = Data()
-            
+
             // Append each file to the body data
             for (name, path) in files {
                 guard let fileURL = URL(string: path), let fileData = try? Data(contentsOf: fileURL) else {
                     return 1
                 }
-                
+
                 bodyData.append("--\(boundary)\r\n".data(using: .utf8)!)
                 bodyData.append("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(fileURL.lastPathComponent)\"\r\n".data(using: .utf8)!)
                 bodyData.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
                 bodyData.append(fileData)
                 bodyData.append("\r\n".data(using: .utf8)!)
             }
-            
-            // Append the JSON body if provided
-            if let jsonBody = jsonBody {
-                for (key, value) in jsonBody {
-                    let jsonValue: Any
-                    if let data = try? JSONSerialization.data(withJSONObject: value, options: []) {
-                        jsonValue = String(data: data, encoding: .utf8) ?? ""
-                    } else {
-                        jsonValue = String(describing: value)
-                    }
-                    
-                    bodyData.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    bodyData.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-                    bodyData.append("\(jsonValue)\r\n".data(using: .utf8)!)
-                }
-            }
-            
+
             // Add the closing boundary
             bodyData.append("--\(boundary)--\r\n".data(using: .utf8)!)
-            
+
             // Set the request body as the multipart/form-data body data
             request.httpBody = bodyData
-            
+
             // Perform the HTTP request
             let semaphore = DispatchSemaphore(value: 0)
             var statusCode = 0
-            
+
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 defer {
                     semaphore.signal()
                 }
-                
+
                 if let httpResponse = response as? HTTPURLResponse {
                     statusCode = httpResponse.statusCode
                 } else {
                     statusCode = 1
                 }
             }
-            
+
             task.resume()
             _ = semaphore.wait(timeout: .distantFuture)
-            
+
             return statusCode
         }
+
+
     }
     
     private func convertToMediaType(_ mediaTypeString: String) -> PHAssetMediaType? {

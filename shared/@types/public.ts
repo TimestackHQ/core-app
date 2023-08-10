@@ -40,17 +40,18 @@ export {
     UserInterface
 }
 
-export interface MediaInternetType {
+export type MediaInternetType = {
     _id: string;
-    publicId: string;
-    storageLocation?: AWSS3ObjectType,
-    snapshot?: AWSS3ObjectType;
+    fullsize?: AWSS3ObjectType,
     thumbnail?: AWSS3ObjectType;
     createdAt: Date;
-    type: string;
+    type: "image" | "video";
     hasPermission: boolean;
     user: string;
-    isGroup: boolean;
+    mediaList: string[]
+    groupLength: number;
     timestamp: Date;
-    groupMedia?: IMedia[];
+    isGroup: boolean;
+    isPlaceholder: boolean;
+    indexInGroup: number;
 }

@@ -5,6 +5,7 @@ import { ExtendedMongoSchema } from "./helpers";
 import { IMedia } from "../@types/Media";
 
 export interface IMediaGroup extends ExtendedMongoSchema {
+    uploadLocalDeviceRef: string,
     media: (mongoose.Schema.Types.ObjectId/***/ | IMedia)[];
     status: typeof MEDIA_GROUP_STATUSES[number];
     relatedEvents: (mongoose.Schema.Types.ObjectId/***/ | Event)[];
@@ -15,6 +16,11 @@ export interface IMediaGroup extends ExtendedMongoSchema {
 }
 
 export const MediaGroupSchema = new ExtendedMongoSchema({
+    uploadLocalDeviceRef: {
+        type: String,
+        required: true,
+        select: false
+    },
     media: [{
         type: mongoose.Schema.Types.ObjectId/***/,
         ref: "Media",
@@ -22,6 +28,7 @@ export const MediaGroupSchema = new ExtendedMongoSchema({
     status: {
         type: String,
         required: true,
+        default: MEDIA_GROUP_STATUSES.find(status => status === "active"),
         enum: MEDIA_GROUP_STATUSES
     },
     relatedEvents: [{

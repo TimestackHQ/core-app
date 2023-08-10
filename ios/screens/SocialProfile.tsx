@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { MediaInternetType, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
@@ -17,6 +18,8 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { uploadQueueWorker } from "../App";
 import { useQuery } from "react-query";
 import { getSocialProfile } from "../queries/profiles";
+import HTTPClient from "../httpClient";
+import { flattenGallery } from "../utils/gallery";
 
 
 
@@ -39,6 +42,8 @@ export default function SocialProfile({ }) {
     const queueCounter = 0//useQueueCounter(profile?._id.toString());
 
     const [user, setUser] = useState<UserInterface>(null);
+    const [page, setPage] = useState(0);
+    const pageSize = 12;
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
     const [selected, setSelected] = useState({});
 
@@ -136,36 +141,18 @@ export default function SocialProfile({ }) {
 
 
     const getGallery = (flush = false) => {
-        // if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
-        //     .then(res => {
-        //         if (flush) setGallery([...res.data.media]);
-        //         else setGallery([...gallery, ...res.data.media]);
-        //     });
-    }
-
-
-    const refresh = () => {
-        console.log("refreshing");
         setRefreshing(true);
+        if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
+            .then(res => {
+                const content: MediaInternetType[] = res.data.content;
+                if (flush) setGallery(_.uniq([...content]));
+                else setGallery(_.uniq([...gallery, ...content]));
+            })
+            .finally(() => setRefreshing(false));
     }
 
-    const flattenGallery = () => {
-        const flatGallery: any[] = [];
-        gallery.forEach((media: MediaInternetType) => {
-            if (media.isGroup) media.groupMedia.forEach((mediaItem, indexInGroup) => flatGallery.push({
-                ...mediaItem,
-                isGroup: true,
-                groupLength: media.groupMedia.length,
-                indexInGroup
-            }));
-            else flatGallery.push({
-                ...media,
-                isGroup: false,
-            });
-        })
-        return flatGallery;
-    }
 
+    const refresh = () => getGallery(true);
 
     return <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column" }}>
         {
@@ -299,13 +286,13 @@ export default function SocialProfile({ }) {
                                             setSelected(selectedMutable);
                                             return;
                                         } else {
-                                            const gallery = flattenGallery();
-                                            const index = gallery.findIndex((m: MediaInternetType) => m._id === media._id);
+                                            const flattenedGallery = flattenGallery(gallery);
+                                            const index = flattenedGallery.findIndex((m: MediaInternetType) => m._id === media._id);
                                             navigator.navigate("MediaView", {
                                                 mediaId: media._id,
                                                 holderId: String(profile._id),
                                                 holderType: "socialProfile",
-                                                content: gallery,
+                                                content: flattenedGallery,
                                                 currentIndex: index,
                                                 hasPermission: media.hasPermission,
                                             });

@@ -2,9 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { AWS, Logger, Models } from "../../shared";
 import { v4 as uuid } from 'uuid';
 import moment = require("moment");
-import { IUser } from "shared/models/User";
-import { MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "shared/consts";
-import { IMedia } from "shared/@types/Media";
+import { IUser } from "../../shared/models/User";
+import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS, MEDIA_TYPES } from "../../shared/consts";
+import { IMedia } from "../../shared/@types/Media";
+import { AWSS3ObjectType } from "shared/@types/global";
+import { PersonType } from "../@types";
+import mongoose, { mongo } from "mongoose";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
@@ -68,27 +71,39 @@ export async function uploadCover(req: Request, res: Response, next: NextFunctio
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const { publicId } = req.params;
+        const { mediaId } = req.params;
+
         const media = await Models.Media.findOne({
-            publicId,
+            _id: mediaId,
         });
 
-        if (!media) {
+        if (!media || media.status !== "active") {
             return res.sendStatus(404);
         }
 
-        if (req.query?.thumbnail) {
-            return res.json(await media.getThumbnailLocation());
-        } else {
-            return res.json(await media.getFullsizeLocation());
-        }
+        console.log(media)
+        return res.json({
+            thumbnail: await media.getThumbnailLocation(),
+            fullsize: await media.getFullsizeLocation(),
+        });
     } catch (e) {
         next(e);
     }
 
 }
 
-export const viewMedia = async (req: Request, res: Response, next: NextFunction) => {
+export type MediaInView = {
+    _id: string;
+    thumbnail: AWSS3ObjectType;
+    fullsize: AWSS3ObjectType;
+    timestamp: Date;
+    user?: PersonType
+    hasPermission: Boolean
+}
+
+export const viewMedia = async (req: Request, res: Response<{
+    media: MediaInView
+}>, next: NextFunction) => {
     try {
         const { holderId, mediaId } = req.params;
         const holder = req.query?.profile ?
@@ -125,16 +140,17 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 
 
             media: {
-                _id: media?._id,
-                storageLocation: await media.getFullsizeLocation(),
+                _id: media?._id.toString(),
+                fullsize: await media.getFullsizeLocation(),
                 thumbnail: await media.getThumbnailLocation(),
                 timestamp: media.metadata.timestamp,
                 user: media.user ? {
-                    _id: user._id,
+                    _id: user._id.toString(),
                     firstName: user?.firstName,
                     lastName: user?.lastName,
+                    username: user.username,
                     profilePictureSource: user?.profilePictureSource
-                } : {},
+                } : undefined,
                 hasPermission:
                     holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
             }
@@ -146,9 +162,12 @@ export const viewMedia = async (req: Request, res: Response, next: NextFunction)
 }
 
 export type CreateMediaType = {
+    uploadLocalDeviceRef?: string,
+    holderId: string,
+    holderType: typeof MEDIA_HOLDER_TYPES[number],
     mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
     mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
-    metadata: any
+    metadata?: any
 }
 
 export async function createMedia(req: Request, res: Response, next: NextFunction) {
@@ -158,18 +177,52 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
         const query: CreateMediaType = req.query as CreateMediaType;
 
         console.log(req.files)
-
-
         if (!req.files) {
             return res.status(400).json({
                 message: "No file provided"
             });
         }
 
-        console.log(req.files)
+        console.log(req.files);
 
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        const thumbnailFile = files["mediaThumbnail"][0];
+        const mediaFile = files["mediaFile"][0];
+
+        const thumbnailFilename = `${uuid()}.${thumbnailFile.originalname.split(".").pop()?.toLowerCase()}`;
+        const mediaFilename = `${uuid()}.${mediaFile.originalname.split(".").pop()?.toLowerCase()}`;
+
+        if (
+            !MEDIA_FORMAT_OPTIONS.includes(thumbnailFilename.split(".").pop() as typeof MEDIA_FORMAT_OPTIONS[number]) ||
+            !MEDIA_FORMAT_OPTIONS.includes(mediaFilename.split(".").pop() as typeof MEDIA_FORMAT_OPTIONS[number])
+        ) {
+            return res.status(400).json({
+                message: "Invalid file format"
+            });
+        };
+
+        const thumbnailStorageLocation = await AWS.upload(thumbnailFilename, <Buffer>thumbnailFile.buffer);
+            const mediaStorageLocation = await AWS.upload(mediaFilename, <Buffer>mediaFile.buffer);
 
         const media = new Models.Media({
+            files: [{
+                storage: {
+                    path: thumbnailStorageLocation.Key,
+                    bucket: thumbnailStorageLocation.Bucket,
+                    url: thumbnailStorageLocation.Location,
+                },
+                format: thumbnailFilename.split(".").pop(),
+                quality: "lowest",
+            }, {
+                storage: {
+                    path: mediaStorageLocation.Key,
+                    bucket: mediaStorageLocation.Bucket,
+                    url: mediaStorageLocation.Location,
+                },
+                format: mediaFilename.split(".").pop(),
+                quality: query.mediaQuality,
+            }],
+            type: IMAGE_FORMAT_OPTIONS.includes(mediaFilename.split(".").pop() as typeof IMAGE_FORMAT_OPTIONS[number]) ? "image" : "video",
             user: req.user._id,
             metadata: req.query.metadata,
             timestamp: req.query.metadata ? JSON.parse(query.metadata)?.timestamp
@@ -179,8 +232,74 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 
         await media.save();
 
-        // const thumbnail = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
+        if (query.holderType === "socialProfile") {
+            const profile = await Models.SocialProfile.findOne({
+                _id: query.holderId,
+                users: {
+                    $in: [req.user._id]
+                },
+            });
 
+
+            if (profile && profile?.permissions(req.user._id).canUploadMedia) {
+
+                const groupQuery = {
+                    uploadLocalDeviceRef: query.uploadLocalDeviceRef,
+                    relatedSocialProfiles: {
+                        $in: profile._id
+                    }
+                }
+                
+                if (query.uploadLocalDeviceRef) {
+                    let group = await Models.MediaGroup.findOneAndUpdate(groupQuery, {
+                        $push: {
+                            media: media._id
+                        }
+                    });
+                    if (!group) {
+
+                        group = await Models.MediaGroup.create({
+                            uploadLocalDeviceRef: query.uploadLocalDeviceRef,
+                            relatedSocialProfiles: [profile._id],
+                            media: [media._id]
+                        });
+
+                        const content = await Models.Content.create({
+                            contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
+                            contentId: group._id,
+                            createdAt: new Date(),
+                        });
+
+                        await profile.updateOne({
+                            $push: {
+                                content: content._id
+                            }
+                        });
+
+                        media.relatedGroups.push(group._id as unknown as mongoose.Schema.Types.ObjectId);
+
+                    }
+
+                } else {
+                    const content = await Models.Content.create({
+                        contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
+                        contentId: media._id,
+                        createdAt: new Date(),
+                    });
+
+                    await profile.updateOne({
+                        $push: {
+                            content: content._id
+                        }
+                    });
+                }
+
+
+                media.relatedSocialProfiles.push(profile?._id);
+                await media.save();
+
+            }
+        }
 
         res.status(200).json({
             message: "Media uploaded successfully",
@@ -189,11 +308,11 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
             }
         });
 
-        // await AWS.upload(file.originalname, <Buffer>file.buffer);
-
     } catch (e) {
         next(e);
     }
+
+
 
 }
 

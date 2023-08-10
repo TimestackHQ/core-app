@@ -158,7 +158,6 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 
         const media = job.item;
 
-        let waitingInterval;
         try {
 
             await this.updateUpload(job.id, "processing", job.item);
@@ -239,35 +238,26 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
                 throw new Error("Some media is missing");
             }
 
-            let endpoint = `${apiUrl}/v1/media/${media.holderId}?type=${media.type === "video" ? "video/mp4" : "image/jpeg"}`;
-
-            if (media.holderType === "socialProfile") {
-                endpoint += "&profile=true"
-            }
-
-
             const upload = await TimestackCoreModule.uploadFile(
                 {
-                    media: mediaList[0],
-                    thumbnail: mediaList[1],
+                    mediaFile: mediaList[0],
+                    mediaThumbnail: mediaList[1],
                 },
-                endpoint,
+                `${apiUrl}/v1/media`,
                 "POST",
                 {
                     Authorization: `Bearer ${await AsyncStorage.getItem('@session')}`,
                 },
-                // {
-                //     metadata: JSON.stringify({
-                //         timestamp: media?.timestamp ? moment.unix(media?.timestamp) : undefined,
-                //     }),
-                //     type: media.type === "video" ? "video/mp4" : "image/jpeg"
-                //
-                // }
-
+                {
+                    holderId: media.holderId,
+                    holderType: media.holderType,
+                    mediaQuality: "high",
+                    mediaFormat: media.type === "video" ? "mp4" : "jpeg",
+                    uploadLocalDeviceRef: media.groupName
+                }
             );
 
             console.log("Result", upload);
-
 
         } catch (err) {
 

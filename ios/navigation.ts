@@ -1,6 +1,6 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RollType } from "./types/global";
-import {MediaHolderTypesType} from "@shared-types/*";
+import { MediaHolderTypesType, MediaInternetType } from "@shared-types/*";
 
 export type RootStackParamList = {
     NotificationsStack: {
@@ -29,7 +29,7 @@ export type RootStackParamList = {
         mediaId: string
         holderId: string,
         holderType: MediaHolderTypesType,
-        content: any[],
+        content: MediaInternetType[],
         currentIndex: number
         hasPermission: boolean
     },

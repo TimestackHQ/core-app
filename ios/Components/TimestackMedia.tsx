@@ -2,6 +2,7 @@ import FastImage, { Priority, ResizeMode } from "react-native-fast-image"
 import Video from "react-native-video";
 import { Request } from "aws4";
 import { View } from "react-native";
+import {SharedElement} from "react-navigation-shared-element";
 
 export default function TimestackMedia({
     source,
@@ -32,7 +33,7 @@ export default function TimestackMedia({
         }}
         ignoreSilentSwitch="ignore"
         source={{
-            uri: "https://" + source.host + source.path,
+            uri: `https://${source.host}/${source.path}`,
             headers: source.headers,
             cache: FastImage.cacheControl.immutable,
             priority: priority
@@ -44,7 +45,7 @@ export default function TimestackMedia({
             }}
             resizeMode={resizeMode}
             source={{
-                uri: "https://" + source.host + source.path,
+                uri: `https://${source.host}/${source.path}`,
                 // @ts-ignore
                 headers: source.headers,
                 cache: FastImage.cacheControl.immutable,

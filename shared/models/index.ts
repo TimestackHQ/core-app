@@ -1,3 +1,4 @@
+import Content from "./Content";
 import Event from "./Event"
 import EventSourcing from "./EventSourcing"
 import Media from "./Media";
@@ -9,6 +10,7 @@ import User from "./User";
 import SocialProfile from "./SocialProfile";
 
 export {
+    Content,
     Event,
     EventSourcing,
     Media,

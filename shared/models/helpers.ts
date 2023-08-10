@@ -12,13 +12,7 @@ export const UUIDProperty = {
 
 export class ExtendedMongoSchema extends mongoose.Schema {
     constructor(definition: mongoose.SchemaDefinition, options?: mongoose.SchemaOptions) {
-        super({
-            ...definition,
-            // _id: {
-            //     type: mongoose.Schema.Types.ObjectId/***/,
-            //     required: true
-            // }
-        }, options);
+        super(definition, options);
     }
 
 }

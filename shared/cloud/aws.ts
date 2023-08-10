@@ -12,10 +12,10 @@ AWS.config.update({
     secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-export const signedUrl = async (publicId: string): Promise<AWSS3ObjectType> => aws4.sign(
+export const signedUrl = async (path: string): Promise<AWSS3ObjectType> => aws4.sign(
     {
         host: 'timestack-private.s3.ca-central-1.amazonaws.com',
-        path: '/media/' + publicId,
+        path,
         service: 's3',
         region: 'ca-central-1'
     },
@@ -25,7 +25,7 @@ export const signedUrl = async (publicId: string): Promise<AWSS3ObjectType> => a
     }
 );
 
-export const upload = async (publicId: string, buffer: Buffer, bucketName: "timestack-profile-pictures" | "timestack-private" = "timestack-private"): Promise<string> => {
+export const upload = async (publicId: string, buffer: Buffer, bucketName: "timestack-profile-pictures" | "timestack-private" = "timestack-private"): Promise<ManagedUpload.SendData> => {
     const s3 = new AWS.S3();
 
     const params = {
@@ -40,7 +40,7 @@ export const upload = async (publicId: string, buffer: Buffer, bucketName: "time
                 reject(err);
             } else {
                 console.log(data);
-                resolve(data.Location);
+                resolve(data);
             }
         });
     });

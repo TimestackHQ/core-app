@@ -7,10 +7,6 @@ import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import JoiObjectId from "joi-objectid";
 import { isObjectIdOrHexString } from "mongoose";
-import {
-    SecretsManagerClient,
-    GetSecretValueCommand,
-} from "@aws-sdk/client-secrets-manager";
 import * as AWS from "./cloud/aws";
 
 export const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
@@ -22,30 +18,6 @@ export function Logger(...args: any[]) {
 export async function config() {
 
     try {
-
-        const secret_name = "prod/rest-api";
-
-        const client = new SecretsManagerClient({
-            region: "ca-central-1",
-        });
-
-        let response;
-
-        try {
-            response = await client.send(
-                new GetSecretValueCommand({
-                    SecretId: secret_name,
-                    VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
-                })
-            );
-
-            console.log(response)
-        } catch (error) {
-            console.log(error)
-            // For a list of exceptions thrown, see
-            // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-            // throw error;
-        }
         await mongoose.connect(String(process.env.MONGODB_URI), {
 
         });
