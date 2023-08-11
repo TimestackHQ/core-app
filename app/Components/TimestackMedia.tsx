@@ -35,7 +35,6 @@ export default function TimestackMedia({
         source={{
             uri: `https://${source.host}/${source.path}`,
             headers: source.headers,
-            cache: FastImage.cacheControl.immutable,
             priority: priority
         }}
     /> :
@@ -48,7 +47,6 @@ export default function TimestackMedia({
                 uri: `https://${source.host}/${source.path}`,
                 // @ts-ignore
                 headers: source.headers,
-                cache: FastImage.cacheControl.immutable,
                 priority: priority
             }}
         />

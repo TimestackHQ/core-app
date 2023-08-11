@@ -52,13 +52,13 @@ export default function InnerMediaHolder({ item, itemInView, holderId, holderTyp
                     backgroundColor: "transparent",
                     width, height: "100%",
                 }}>
-                {/*{item.type === "image" ? <TimestackMedia*/}
-                {/*    type={media.type}*/}
-                {/*    onLoad={setVideoLoaded}*/}
-                {/*    source={media.fullsize}*/}
-                {/*    resizeMode={FastImage.resizeMode.contain}*/}
-                {/*    style={{ position: "absolute", top: 0,  zIndex: 1, width, height: "100%", backgroundColor: "transparent" }}*/}
-                {/*/>: null}*/}
+                {item.type === "image" ? <TimestackMedia
+                    type={media.type}
+                    onLoad={setVideoLoaded}
+                    source={media.fullsize}
+                    resizeMode={FastImage.resizeMode.contain}
+                    style={{ position: "absolute", top: 0,  zIndex: 1, width, height: "100%", backgroundColor: "transparent" }}
+                />: null}
 
                 {item.type === "image" ? <TimestackMedia
                         type={"image"}

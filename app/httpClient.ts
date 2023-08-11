@@ -12,8 +12,8 @@ axiosRetry(axios, {
 	retryCondition: (error) => {
 		return !(error.response?.status < 499);
 	},
-	onRetry: (retryCount, error) => {
-		console.log(error);
+	onRetry: (retryCount, error, requestConfig) => {
+		console.log(error, requestConfig.url);
 		console.log(`Retrying ${retryCount} times`);
 	}
 

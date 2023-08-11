@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiUrl } from "./io";
 import axios from "axios";
 import { TimestackCoreNativeCompressionListener } from "../modules/timestack-core";
+import * as React from "react";
 
 export interface UploadItemJob {
     id: string,
@@ -271,4 +272,7 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     }
 
 }
+
+
+export const QueueContext = React.createContext([null, null]);
 

@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { UploadItem } from "../types/global";
-import {uploadQueueWorker} from "../App";
-import {UploadItemJob} from "../utils/UploadJobsQueue";
+import {UploadItemJob, UploadJobsRepository} from "../utils/UploadJobsQueue";
+
+
+const uploadQueueWorker = new UploadJobsRepository();
+uploadQueueWorker.init().then(async () => {
+    await uploadQueueWorker.clearUploads()
+    uploadQueueWorker.runQueueWatcher();
+    uploadQueueWorker.startQueue();
+});
 
 export const useQueueCounter = (holderId: string) => {
     const [queueCounter, setQueueCounter] = useState(0);
@@ -30,13 +37,15 @@ export const useQueue = (holderId: string): UploadItemJob[] => {
 
     const fetchJobs = async () => {
         if (!holderId) return;
+        console.log("Fetching jobs")
         const jobs = await uploadQueueWorker.getAllJobs();
+        console.log("Jobs", jobs)
 
         setJobs(jobs);
     };
 
     useEffect(() => {
-        const interval = setInterval(fetchJobs, 100); // Calls fetchJobs every 100 milliseconds
+        const interval = setInterval(fetchJobs, 1000); // Calls fetchJobs every 100 milliseconds
 
         return () => {
             clearInterval(interval); // Clears the interval when the component unmounts

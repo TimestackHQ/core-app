@@ -15,22 +15,16 @@ import CoreNavigationStack from "./stacks/core";
 import store from './store'
 import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
-import { UploadJobsRepository } from "./utils/UploadJobsQueue";
+import {QueueContext, UploadJobsRepository} from "./utils/UploadJobsQueue";
+import {useQueue, useQueueCounter} from "./hooks/queue";
 
-export const uploadQueueWorker = new UploadJobsRepository();
-uploadQueueWorker.init().then(async () => {
-    await uploadQueueWorker.clearUploads()
-    uploadQueueWorker.runQueueWatcher();
-    uploadQueueWorker.startQueue();
-});
 
 export const setSession = async (session) => {
     console.log("SETTING SESSION");
     await AsyncStorage.setItem('@session', session);
 }
 
-const queryClient = new QueryClient()
-
+const queryClient = new QueryClient();
 
 function App() {
 
@@ -82,15 +76,19 @@ function App() {
         });
     }, []);
 
+
     return loaded ?
         <Provider store={store}>
-            <QueryClientProvider client={queryClient}>
-                <NavigationContainer>
-                    <OverflowMenuProvider>
-                        <CoreNavigationStack />
-                    </OverflowMenuProvider>
-                </NavigationContainer>
-            </QueryClientProvider>
+            <QueueContext.Provider value={[useQueue, useQueueCounter]}>
+                <QueryClientProvider client={queryClient}>
+                    <NavigationContainer>
+                        <OverflowMenuProvider>
+                            <CoreNavigationStack />
+                        </OverflowMenuProvider>
+                    </NavigationContainer>
+                </QueryClientProvider>
+            </QueueContext.Provider>
+
         </Provider>
 
         : null;
