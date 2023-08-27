@@ -2,9 +2,12 @@ import FastImage, { Priority, ResizeMode } from "react-native-fast-image"
 import Video from "react-native-video";
 import { Request } from "aws4";
 import { View } from "react-native";
+import convertToProxyURL from 'react-native-video-cache';
 import {SharedElement} from "react-navigation-shared-element";
 
 export default function TimestackMedia({
+    autoPlay = false,
+    itemInView,
     source,
     type = "image",
     resizeMode,
@@ -12,6 +15,8 @@ export default function TimestackMedia({
     priority,
     onLoad
 }: {
+    autoPlay?: boolean,
+    itemInView: boolean,
     source: Request,
     type?: "image" | "video",
     resizeMode?: ResizeMode,
@@ -21,10 +26,9 @@ export default function TimestackMedia({
 }) {
 
     return source ? type === "video" ? <Video
-        autoplay={false}
-        paused={false}
+        paused={!autoPlay}
         controls={true}
-        onLoad={() => setTimeout(() => onLoad(true), 250)}
+        onReadyForDisplay={(value) => onLoad(true)}
         style={{
             ...style,
             zIndex: 10,

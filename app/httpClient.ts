@@ -19,9 +19,9 @@ axiosRetry(axios, {
 
 });
 
-async function HTTPClient(path: string, method?: "GET" | "POST", data?: any, headers?: { [key: string]: string }): Promise<any>;
-async function HTTPClient<T>(path: string, method?: "GET" | "POST", data?: any, headers?: { [key: string]: string }): Promise<AxiosResponse<T>>;
-async function HTTPClient<T>(path: string, method: "GET" | "POST" = "GET", data?: any, headers?: {
+async function HTTPClient(path: string, method?: "GET" | "POST" | "PUT", data?: any, headers?: { [key: string]: string }): Promise<any>;
+async function HTTPClient<T>(path: string, method?: "GET" | "POST" | "PUT", data?: any, headers?: { [key: string]: string }): Promise<AxiosResponse<T>>;
+async function HTTPClient<T>(path: string, method: "GET" | "POST" | "PUT" = "GET", data?: any, headers?: {
 	[key: string]: string
 }) {
 

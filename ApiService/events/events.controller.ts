@@ -5,6 +5,9 @@ import * as _ from "lodash";
 import { ObjectId } from "bson";
 import moment = require("moment");
 import { IMedia } from "shared/@types/Media";
+import { MediaInternetType } from "../../shared/@types/public";
+import mongoose from "mongoose";
+import {EventObject} from "../@types/dto";
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -32,7 +35,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
             about: req.body?.about,
             location: req.body?.location,
             locationMapsPayload: req.body?.locationMapsPayload,
-            cover: cover?._id,
+            cover: cover?._id || undefined,
             users: [req.user._id],
             defaultPermission: req.body?.defaultPermission,
             exclusionList: req.body.defaultPermission === "viewer" ? [req.user._id] : [],
@@ -330,7 +333,10 @@ export async function getAllInvites(req: Request, res: Response, next: NextFunct
     }
 }
 
-export async function getEvent(req: Request, res: Response, next: NextFunction) {
+export async function getEvent(req: Request, res: Response<{
+    message: string,
+    event?: EventObject
+}>, next: NextFunction) {
 
     try {
 
@@ -355,6 +361,8 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
         }
 
         const cover = event.cover as IMedia;
+
+        console.log(cover)
 
         if (!event) {
             return res.status(404).json({
@@ -381,19 +389,22 @@ export async function getEvent(req: Request, res: Response, next: NextFunction) 
             // @ts-ignore
             message: !event.users?.map(u => u._id.toString()).includes(req.user?._id.toString()) ? "joinRequired" : undefined,
             event: {
-                ...event.toJSON(),
-                cover: cover?._id,
-                peopleCount: peopleCount?.users?.length,
-                mediaCount: event.media.length,
-                users: undefined,
-                invitees: undefined,
-                nonUsersInvitees: undefined,
+                _id: event._id.toString(),
+                name: event.name,
+                startsAt: event.startsAt,
+                endsAt: event?.endsAt,
+                location: event?.location,
+                about: event?.about,
+                locationMapsPayload: event?.locationMapsPayload,
+                status: event?.status,
+                revisits: event.revisits,
+                peopleCount: peopleCount?.users?.length || 0,
+                mediaCount: event.content.length,
                 people: event.people(req.user._id),
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
-
-                thumbnailUrl: await cover.getThumbnailLocation(),
-                storageLocation: await cover.getFullsizeLocation(),
+                // thumbnailUrl: await cover?.getThumbnailLocation(),
+                // storageLocation: await cover?.getFullsizeLocation(),
             }
         })
     } catch (e) {
@@ -621,52 +632,120 @@ export const joinEvent = async (req: any, res: any, next: any) => {
 
 export const mediaList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const event = await Models.Event.findOne({
-            $or: [
-                {
-                    publicId: req.params.eventId
-                },
-                {
-                    _id: isObjectIdOrHexString(req.params.eventId) ? req.params.eventId : null
-                }
-            ]
-        }).select({
-            media: 1,
-        }).populate({
-            path: "media",
-            select: "_id publicId storageLocation snapshot thumbnail createdAt user type",
-            match: {
-                user: req.query.me ? req.user._id : {
-                    $exists: true
+
+
+        const event = await Models.Event.findById(req.params.eventId).populate([
+            {
+                path: "cover",
+                select: "publicId thumbnail snapshot storageLocation"
+            },
+            {
+                path: "users",
+                select: "firstName lastName profilePictureSource username",
+                options: {
+                    limit: 7
                 }
             },
-            options: {
-                sort: {
-                    timestamp: -1
-                },
-                limit: req.query?.limit ? Number(req.query.limit) : 30,
-                skip: req.query?.skip ? Number(req.query.skip) : 0
-            }
-        }).lean();
-
+        ])
+            .select("content")
+            .populate([{
+                path: "content",
+                options: {
+                    limit: 30,
+                    skip: req.query?.skip ? Number(req.query.skip) : 0,
+                    sort: {
+                        createdAt: 1
+                    }
+                }
+            }])
+            .lean();
 
         if (!event) {
             return res.sendStatus(404);
         }
+        if (event.content.length === 0) {
+            return res.json({
+                content: []
+            })
+        }
+
+        const media = await Models.Media.find({
+            _id: {
+                $in: event.content.filter((contentReference) => contentReference.contentType === "media").map((contentReference) => contentReference.contentId)
+            }
+        });
+
+        const groups = await Models.MediaGroup.find({
+            _id: {
+                $in: event.content.filter((contentReference) => contentReference.contentType === "mediaGroup").map((contentReference) => contentReference.contentId)
+            }
+        });
+
+        const content = [
+            ...media.map(media => ({
+                payload: media,
+                createdAt: media.createdAt,
+            })),
+            ...groups.map(group => ({
+                payload: group,
+                createdAt: group.createdAt,
+            }))
+        ];
+
+        const mediaContent = (await Promise.all(content.map(async (contentHolder): Promise<MediaInternetType> => {
+            const content = contentHolder.payload;
+
+            let response: MediaInternetType | null = null;
+
+            if (content instanceof Models.Media) {
+                response = {
+                    _id: content._id.toString(),
+                    fullsize: await content.getFullsizeLocation(),
+                    thumbnail: await content.getThumbnailLocation(),
+                    createdAt: content.createdAt,
+                    hasPermission: content.user.toString() === req.user._id.toString(),
+                    user: content.user.toString(),
+                    timestamp: content.timestamp,
+                    type: content?.type,
+                    mediaList: [],
+                    isGroup: false,
+                    groupLength: 0,
+                    isPlaceholder: false,
+                    indexInGroup: 0,
+                    isProcessing: false,
+                }
+            } else if (content instanceof Models.MediaGroup) {
+                const media = await Models.Media.findById(content.media[0]);
+
+                if (!media) throw new Error("Media not found");
+                response = {
+                    _id: media._id.toString(),
+                    fullsize: await media.getFullsizeLocation(),
+                    thumbnail: await media.getThumbnailLocation(),
+                    createdAt: media.createdAt,
+                    hasPermission: media.user.toString() === req.user._id.toString(),
+                    user: media.user.toString(),
+                    timestamp: media.timestamp,
+                    type: media?.type,
+                    isGroup: true,
+                    groupLength: content.media.length,
+                    mediaList: (content.media as mongoose.Schema.Types.ObjectId[]).map(id => id.toString()),
+                    isPlaceholder: false,
+                    indexInGroup: 0,
+                    isProcessing: false,
+                }
+            }
+
+            if(!response) throw new Error("Response is undefined");
+
+            return {
+                ...response,
+                isProcessing: response?.thumbnail?.path === response?.fullsize?.path,
+            }
+        }))).sort((a, b) => moment(b.createdAt).unix() - moment(a.createdAt).unix())
 
         res.json({
-            media: (await Promise.all(event.media.map(async (media: any) => {
-                return {
-                    _id: media._id,
-                    publicId: media.publicId,
-                    storageLocation: media.storageLocation ? await AWS.signedUrl(media.storageLocation) : undefined,
-                    snapshot: media.snapshot ? await AWS.signedUrl(media.snapshot) : undefined,
-                    thumbnail: media.thumbnail ? await AWS.signedUrl(media.thumbnail) : undefined,
-                    createdAt: media.createdAt,
-                    type: media.type.split("/")[0],
-                    user: media.user
-                }
-            })))
+            content: mediaContent
         });
 
 

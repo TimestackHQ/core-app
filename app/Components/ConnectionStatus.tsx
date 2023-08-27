@@ -11,6 +11,8 @@ export default function ConnectionStatus({ profile, user, refresh, style }: {
     style?: any
 }) {
 
+    if(!user || !profile) return null;
+
     const add = () => {
         HTTPClient("/social-profiles/user/" + user._id + "/add", "POST")
             .then(refresh)
@@ -64,7 +66,7 @@ export default function ConnectionStatus({ profile, user, refresh, style }: {
                 }
             ])}
         } /> : null}
-        {profile?.status === "ACTIVE" ? <SmallButton notClickable variant="added" onPress={refresh} body={moment.duration(moment().diff(moment(profile.activeSince))).asDays().toFixed(0) + " days"} fontSize={20} /> : null}
+        {profile?.status === "ACTIVE" ? <SmallButton notClickable variant="added" onPress={refresh} body={Math.abs(moment.duration(moment().diff(moment(profile.activeSince))).asDays()).toFixed(0) + " days"} fontSize={20} /> : null}
     </View> : null
 
 }

@@ -20,7 +20,9 @@ router.post("/user/:userId/add", addProfile);
 router.post("/user/:userId/accept", acceptProfile);
 router.post("/user/:userId/decline", declineProfile);
 router.get("/hasAccess", hasAccess);
-router.get("/:profileId/media", mediaList)
+router.get("/:profileId/media", mediaList);
+
+
 
 
 export default router;

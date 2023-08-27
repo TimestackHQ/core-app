@@ -12,7 +12,6 @@ import HTTPClient from "./httpClient";
 import axios from "axios";
 import Constants from "expo-constants";
 import { ModalView } from 'react-native-ios-modal';
-import Upload from "./screens/Upload";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -134,7 +133,7 @@ export default function Main({baseRoute, frontendUrl, navigation}) {
                 }))}
             } ref={modalRef}>
 
-                {modalData.type === "upload" ? <Upload payload={modalData.payload}/> : null}
+                {/*{modalData.type === "upload" ? <Upload payload={modalData.payload}/> : null}*/}
 
             </ModalView>
             {/*<StatusBar*/}

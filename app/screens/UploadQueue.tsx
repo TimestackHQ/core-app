@@ -1,16 +1,15 @@
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { UploadItem } from "../types/global";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 
 import { RootStackParamList, UploadScreenNavigationProp } from "../navigation";
 import { FlashList } from "@shopify/flash-list";
 import { FlatList } from "react-native-gesture-handler";
 import {ActivityIndicator, Image, Text, Touchable, TouchableOpacity, View} from "react-native";
-import { useQueue, useQueueCounter } from "../hooks/queue";
+import {QueueContext, uploadQueueWorker, useQueue, useQueueCounter} from "../hooks/queue";
 import FastImage from "react-native-fast-image";
 import { set } from "lodash";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
-import {uploadQueueWorker} from "../App";
 import {CompressionProgressEvent, UploadItemJob} from "../utils/UploadJobsQueue";
 import {TimestackCoreNativeCompressionListener} from "../modules/timestack-core";
 import CircularProgress from "react-native-circular-progress-indicator";
@@ -20,12 +19,14 @@ export default function UploadQueue() {
 
     const route = useRoute<RouteProp<RootStackParamList, "UploadQueue">>();
 
-    const jobs = useQueue(route.params?.holderId);
+    const [queueCounter, rawQueue] = useContext(QueueContext);
 
+    // @ts-ignore
+    const queue: UploadItemJob[] = rawQueue;
     const fetchJobs = async () => {
         const holderId = String(route.params?.holderId)
         if (!holderId) return;
-        const jobs: UploadItemJob[] = (await uploadQueueWorker.getAllJobs())
+        const jobs: UploadItemJob[] = queue
             .filter((job) => job.holderId.toString() === holderId.toString())
             .reverse();
 
@@ -48,13 +49,7 @@ export default function UploadQueue() {
         progress: 0,
     });
 
-    const [devJobs, setDevJobs] = useState<UploadItemJob[]>([]);
-
     useEffect(() => {
-        (async () => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            setDevJobs(jobs);
-        })();
 
         TimestackCoreNativeCompressionListener(async (eventRaw) => {
 
@@ -76,7 +71,7 @@ export default function UploadQueue() {
                     justifyContent: "center",
                 }}
                     onPress={async () => {
-                        uploadQueueWorker.clearUploads();
+                        await uploadQueueWorker.clearUploads();
                     }}
                 >
                     <Text style={{
@@ -86,7 +81,7 @@ export default function UploadQueue() {
                 </TouchableOpacity>
             </View>
             <FlatList
-                data={new Array(...jobs).reverse()}
+                data={new Array(...queue)}
                 renderItem={(entry) => {
                     const item = entry.item.item;
 

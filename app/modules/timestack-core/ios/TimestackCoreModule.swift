@@ -121,7 +121,9 @@ public class TimestackCoreModule: Module {
             httpMethod: String,
             httpHeaders: [String: String],
             urlParams: [String: String]?
-        ) -> Int in
+        ) -> [String: Any] in
+            
+            var response: [String: Any] = [:]
             
             // Construct the query parameters string
             var queryParamsString = ""
@@ -150,7 +152,8 @@ public class TimestackCoreModule: Module {
             // Append each file to the body data
             for (name, path) in files {
                 guard let fileURL = URL(string: path), let fileData = try? Data(contentsOf: fileURL) else {
-                    return 1
+                    response["statusCode"] = 1
+                    return response
                 }
 
                 bodyData.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -169,7 +172,8 @@ public class TimestackCoreModule: Module {
             // Perform the HTTP request
             let semaphore = DispatchSemaphore(value: 0)
             var statusCode = 0
-
+            var responseBodyData: Data?
+            
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 defer {
                     semaphore.signal()
@@ -177,6 +181,7 @@ public class TimestackCoreModule: Module {
 
                 if let httpResponse = response as? HTTPURLResponse {
                     statusCode = httpResponse.statusCode
+                    responseBodyData = data
                 } else {
                     statusCode = 1
                 }
@@ -185,8 +190,11 @@ public class TimestackCoreModule: Module {
             task.resume()
             _ = semaphore.wait(timeout: .distantFuture)
 
-            return statusCode
+            response["statusCode"] = statusCode
+            response["body"] = responseBodyData
+            return response
         }
+
 
 
     }

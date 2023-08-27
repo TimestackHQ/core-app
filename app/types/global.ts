@@ -4,7 +4,7 @@ export type UploadItem = {
     uri: string;
     type: string;
     holderId: string;
-    holderType: "event" | "socialProfile";
+    holderType: "event" | "socialProfile" | "cover";
     playableDuration: number;
     timestamp: number;
     location: string;

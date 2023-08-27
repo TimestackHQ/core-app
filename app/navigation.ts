@@ -3,6 +3,9 @@ import { RollType } from "./types/global";
 import { MediaHolderTypesType, MediaInternetType } from "@shared-types/*";
 
 export type RootStackParamList = {
+    Add: {
+
+    }
     NotificationsStack: {
         screen: "Notifications"
     }
@@ -35,7 +38,6 @@ export type RootStackParamList = {
     },
     AddPeople: {
         eventId: string,
-        event: string,
     },
     Upload: {
         eventId: string,
@@ -52,8 +54,17 @@ export type RootStackParamList = {
         holderType: "event" | "socialProfile",
     },
 
+    Mutuals: {
+        targetUserId: string,
+    }
+
 
 };
+
+export type AddScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Add'
+>;
 
 export type AuthScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -108,4 +119,9 @@ export type SocialProfileScreenNavigationProp = StackNavigationProp<
 export type UploadQueueScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'UploadQueue'
+>;
+
+export type MutualsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Mutuals'
 >;

@@ -23,7 +23,7 @@ import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
 import FastImage from "react-native-fast-image";
 import { BlurView } from "@react-native-community/blur";
 import { v4 as uuid } from "uuid";
-import {uploadQueueWorker} from "../App";
+import {uploadQueueWorker} from "../hooks/queue";
 
 const groupPanelHeight = 65;
 

@@ -19,9 +19,21 @@ import ProfilePicture from "../Components/ProfilePicture";
 import { Hyperlink } from "react-native-hyperlink";
 import * as WebBrowser from 'expo-web-browser';
 import TimestackMedia from "../Components/TimestackMedia";
-import { InviteScreenNavigationProp, RootStackParamList, SocialProfileScreenNavigationProp, UploadScreenNavigationProp } from "../navigation";
+import {
+	InviteScreenNavigationProp,
+	RollScreenNavigationProp,
+	RootStackParamList,
+	SocialProfileScreenNavigationProp,
+	UploadScreenNavigationProp
+} from "../navigation";
 import { frontendUrl } from "../utils/io";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import {useQuery} from "react-query";
+import {getSocialProfile} from "../queries/profiles";
+import {getEvent} from "../queries/events";
+import {EventObject} from "@api-types/*";
+import {MediaInternetType} from "@shared-types/*";
+import _ from "lodash";
 
 
 function Picker(props) {
@@ -64,6 +76,10 @@ function Headers({
 	route,
 	navigation,
 	event,
+}: {
+	route: any,
+	navigation: any,
+	event: EventObject
 }) {
 
 	const [muted, setMuted] = useState(event?.muted);
@@ -148,141 +164,57 @@ export default function EventScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, "Event">>();
 	const navigation = useNavigation<
 		InviteScreenNavigationProp |
-		UploadScreenNavigationProp |
+		RollScreenNavigationProp |
 		SocialProfileScreenNavigationProp
 	>();
 	const isFocused = useIsFocused();
 
 	const [refreshing, setRefreshing] = React.useState(false);
-	const [refreshEnabled, setRefreshEnabled] = React.useState(true);
-	const [uploadUsed, setUploadUsed] = React.useState(false);
 	const [tab, setTab] = React.useState("memories");
 
-	const [event, setEvent] = useState(null);
-	const [loaded, setLoaded] = useState(false);
-	const [uri, setUri] = useState("");
-	const [gallery, setGallery] = useState([]);
-	const [moreToLoad, setMoreToLoad] = useState(true);
-	const [viewMenu, setViewMenu] = useState(false);
+	const { data: event, refetch, status } = useQuery(["event", { eventId: route.params.eventId }], getEvent, {
+		enabled: !!route.params?.eventId
+	});
 
-	const refresh = () => {
-		fetchEvent();
-		setTimeout(() => {
-			setRefreshing(false);
-		}, 1000);
-	}
+
+	const [gallery, setGallery] = useState<MediaInternetType[]>([]);
+	const [viewMenu, setViewMenu] = useState(false);
 
 	const getGallery = (flush = false) => {
 		setGallery(flush ? [] : gallery)
-		HTTPClient(`/events/${route.params.eventId}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
+		HTTPClient(`/events/${event?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
 			.then(res => {
-				setGallery(flush ? [...res.data.media] : [...gallery, ...res.data.media]);
-				if (res.data.media.length === 0) setMoreToLoad(false);
-			});
+				const content: MediaInternetType[] = res.data.content;
+				if (flush) setGallery(_.uniq([...content]));
+				else setGallery(_.uniq([...gallery, ...content]));
+			})
+			.finally(() => setRefreshing(false));
+
 	}
 
-	const fetchEvent = () => {
-
-		setEvent({
-			name: route.params?.eventName,
-		})
-
-		HTTPClient("/events/" + route.params.eventId, "GET")
-			.then((response) => {
-
-				console.log(response.data.event.people);
-				if (response.data?.message === "joinRequired") {
-					navigation.navigate("Invite", {
-						eventId: route.params?.eventId
-					});
-				}
-
-				navigation.setOptions({
-					headerShown: true,
-					headerBackTitleStyle: {
-						fontSize: 200,
-					},
-					headerRight: () => <Headers
-						route={route}
-						navigation={navigation}
-						event={response.data.event}
-					/>,
-				});
-
-				setEvent(response.data.event);
-				setLoaded(true);
-				getGallery(true);
-
-				if (!uploadUsed) {
-					if (route.params?.openUpload) {
-						setTimeout(() => {
-							navigation.navigate("Upload", {
-								eventId: response.data.event?._id, event: response.data.event
-							});
-							setUploadUsed(true);
-						}, 1000);
-					}
-				}
-
-
-
-				HTTPClient("/media/" + response.data.event.cover + "?snapshot=true").then(res => setUri(res.data))
-					.catch(err => { });
-
-			})
-			.catch((error) => {
-				Alert.alert("Error", "Could not load event" + JSON.stringify(error), [
-					{
-						text: "OK",
-						onPress: () => {
-							navigation.goBack();
-						}
-					}
-				])
-			})
-
-
-
-
-
-
-	};
-
 	useEffect(() => {
-		if (isFocused) {
-			HTTPClient("/events/" + route.params.eventId + "?noBuffer=true").then(res => {
-				if (
-					(res.data.event?.mediaCount !== event?.mediaCount)
-					|| (res.data.event?.name !== event?.name)
-					|| (res.data.event?.location !== event?.location)
-					|| (res.data.event?.about !== event?.about)
-					|| (res.data.event?.startsAt !== event?.startsAt)
-					|| (res.data.event?.endsAt !== event?.endsAt)
-					|| (res.data.event?.cover !== event?.cover)
-					// || (res.data.event?.peopleCount !== event?.peopleCount)
-				) {
-					refresh();
-				}
-			});
-		}
+		navigation.setOptions({
+			headerShown: true,
+			headerBackTitleStyle: {
+				fontSize: 200,
+			},
+			headerRight: () => <Headers
+				route={route}
+				navigation={navigation}
+				event={event}
+			/>,
+		});
+		getGallery(true);
+	}, [event])
 
-	}, [isFocused]);
 
 	const peopleScreenNav = () => {
-		navigation.navigate("AddPeople", { eventId: event?._id, event: event });
+		navigation.navigate("AddPeople", { eventId: event?._id });
 		setViewMenu(false);
 	}
 
 
-	useEffect(() => {
-		fetchEvent()
-		if (route?.params?.refresh) setRefreshEnabled(true);
-		setRefreshEnabled(false);
-
-	}, [])
-
-
-	return !loaded ? <View style={{ flex: 1, backgroundColor: "white" }} /> : <View style={{ flex: 1, backgroundColor: "white" }}>
+	return status === "loading" ? <View style={{ flex: 1, backgroundColor: "white" }} /> : <View style={{ flex: 1, backgroundColor: "white" }}>
 		<View style={{ zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row" }}>
 			<TouchableWithoutFeedback style={{}} onPress={() => setViewMenu(!viewMenu)}>
 				<FastImage source={require("../assets/icons/collection/action_button.png")} style={{ width: 45, height: 45 }} />
@@ -295,7 +227,7 @@ export default function EventScreen() {
 						<Text style={styles.actionButtonText}>People</Text>
 					</TouchableOpacity>
 					{event?.hasPermission ? <TouchableOpacity onPress={() => {
-						navigation.navigate("Upload", { eventId: event?._id, event: event });
+						navigation.navigate("Roll", { holderId: event?._id, holderType: "event" });
 						setViewMenu(false);
 					}}
 						style={styles.actionButton}
@@ -306,7 +238,7 @@ export default function EventScreen() {
 			) : null}
 		</View>
 		<FlatList
-			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchEvent} />}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}
 			style={{ height: "100%", width: "100%", position: "absolute", top: 0, zIndex: 1 }}
 			ListHeaderComponent={
 				<View>
@@ -314,7 +246,7 @@ export default function EventScreen() {
 
 					<View style={{ flexDirection: "row" }}>
 						<View style={{ flex: 2, margin: 10 }}>
-							<TimestackMedia source={event?.thumbnailUrl} style={{
+							<TimestackMedia itemInView source={event?.thumbnailUrl} style={{
 								width: "100%",
 								height: 200,
 								borderRadius: 10,
@@ -407,7 +339,7 @@ export default function EventScreen() {
 													</View>
 													<ProfilePicture
 														key={i}
-														userId={user?._id}
+														userId={user?._id.toString()}
 														width={iconWidth}
 														height={iconWidth}
 														location={user.profilePictureSource}
@@ -419,7 +351,7 @@ export default function EventScreen() {
 										return (
 											<ProfilePicture
 												key={i}
-												userId={user._id}
+												userId={user._id.toString()}
 												style={{ marginRight: 5 }}
 												width={iconWidth}
 												height={iconWidth}
@@ -503,7 +435,7 @@ export default function EventScreen() {
 						}
 						}>
 						<View>
-							<TimestackMedia style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
+							<TimestackMedia itemInView style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
 						</View>
 					</TouchableWithoutFeedback>
 				</View>

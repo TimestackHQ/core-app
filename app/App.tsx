@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { Image, StatusBar, View, Text, Platform, Alert } from "react-native";
+import { StatusBar, Platform, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
     QueryClient, QueryClientProvider
@@ -15,8 +15,7 @@ import CoreNavigationStack from "./stacks/core";
 import store from './store'
 import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
-import {QueueContext, UploadJobsRepository} from "./utils/UploadJobsQueue";
-import {useQueue, useQueueCounter} from "./hooks/queue";
+import {QueueContext, useQueue, useQueueCounter} from "./hooks/queue";
 
 
 export const setSession = async (session) => {
@@ -76,10 +75,13 @@ function App() {
         });
     }, []);
 
+    const queueCounter = useQueueCounter();
+    const queue = useQueue();
+
 
     return loaded ?
         <Provider store={store}>
-            <QueueContext.Provider value={[useQueue, useQueueCounter]}>
+            <QueueContext.Provider value={[queueCounter, queue]}>
                 <QueryClientProvider client={queryClient}>
                     <NavigationContainer>
                         <OverflowMenuProvider>

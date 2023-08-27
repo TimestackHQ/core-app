@@ -4,9 +4,10 @@ import { isObjectIdOrHexString } from "../../shared";
 import * as _ from "lodash";
 import mongoose from "mongoose";
 import moment from "moment";
-import { IUser } from "../../shared/models/User";
+import User, { IUser } from "../../shared/models/User";
 import { IMedia } from "../../shared/@types/Media";
 import { MediaInternetType, SocialProfileInterface } from "../../shared/@types/public";
+import {PeopleSearchResult} from "../people/people.controller";
 
 const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUserId: string) => {
 
@@ -35,45 +36,6 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
     console.log(userProfiles);
 
     const userProfilesIds = userProfiles.map((profile: any) => profile._id);
-
-    const mutualsProfiles = await Models.SocialProfile.find({
-        _id: {
-            $in: userProfilesIds
-        },
-        status: "ACTIVE",
-        users: {
-            $in: [targetUserId],
-            $nin: [userId]
-        },
-        limit: 3
-    }).select("users").populate({
-        path: "users",
-        select: "firstName lastName username profilePictureSource"
-    }).lean();
-
-    const mutualProfilesCount = await Models.SocialProfile.countDocuments({
-        _id: {
-            $in: userProfilesIds
-        },
-        status: "ACTIVE",
-        users: {
-            $in: [targetUserId]
-        },
-    });
-
-    const mutualsObject = {
-        mutualProfilesToDisplay: mutualsProfiles.map((mutual: any) => {
-            const mutualUser = mutual.users.filter((user: any) => user._id.toString() !== userId.toString())[0];
-            return {
-                _id: mutualUser._id,
-                firstName: mutualUser.firstName,
-                lastName: mutualUser.lastName,
-                profilePictureSource: mutualUser.profilePictureSource,
-            }
-        }),
-        mutualProfilesCount
-    }
-
 
     if (!profileDocument) {
 
@@ -123,7 +85,6 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
         canAccept: permissions.canAccept,
         canUnblock: permissions.canUnblock,
         activeSince: profileDocument.createdAt,
-        ...mutualsObject
     }
 
     return profile;
@@ -496,7 +457,7 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
     }
 }
 
-export const get = async (req: Request, res: Response) => {
+export const get = async (req: Request, res: Response<PeopleSearchResult>) => {
 
     try {
 
@@ -507,7 +468,7 @@ export const get = async (req: Request, res: Response) => {
             status: {
                 $nin: ["BLOCKED", "NONE"]
             }
-        }).populate({
+        }).populate<IUser>({
             path: "users",
             match: {
                 _id: {
@@ -522,11 +483,27 @@ export const get = async (req: Request, res: Response) => {
             },
             options: {
                 skip: req.query?.skip ? Number(req.query.skip) : 0,
-                limit: req.query?.limit ? Number(req.query.limit) : 30
+                limit: req.query?.limit ? Number(req.query.limit) : 30,
+                sort: {
+                    updatedAt: -1
+                }
             }
         }).lean();
 
-        return res.json(SocialProfiles);
+
+        return res.json({
+            people: SocialProfiles.map(profile => {
+                const user: IUser = profile.users[0] as IUser;
+
+                return {
+                    _id: user._id.toString(),
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    username: user.username,
+                    profilePictureSource: user.profilePictureSource,
+                }
+            })
+        });
 
 
 
@@ -536,3 +513,4 @@ export const get = async (req: Request, res: Response) => {
     }
 
 }
+

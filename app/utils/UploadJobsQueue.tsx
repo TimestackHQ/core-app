@@ -272,7 +272,3 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
     }
 
 }
-
-
-export const QueueContext = React.createContext([null, null]);
-

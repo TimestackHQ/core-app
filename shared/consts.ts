@@ -24,7 +24,8 @@ export const MEDIA_FORMAT_OPTIONS = [
     "jpg",
     "heic",
     "jpg",
-    "mov"
+    "mov",
+    "png"
 ] as const;
 
 export const VIDEO_FORMAT_OPTIONS = [

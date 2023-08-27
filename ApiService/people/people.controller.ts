@@ -4,6 +4,7 @@ import { isObjectIdOrHexString } from "../../shared";
 import moment = require("moment");
 import * as _ from "lodash";
 import { PersonType } from "../@types";
+import mongoose from "mongoose";
 
 export type PeopleSearchResult = {
     people: PersonType[]
@@ -90,3 +91,63 @@ export async function future(req: Request, res: Response, next: NextFunction) {
 
     }
 }
+
+export const getMutuals = async (req: Request, res: Response) => {
+    try {
+
+        const targetUserId = req.params.targetUserId;
+
+        const profiles = await Models.SocialProfile.find({
+            users: {
+                $in: [req.user._id],
+                $nin: [targetUserId]
+            },
+            status: {
+                $nin: ["BLOCKED", "NONE"]
+            }
+        }).select("users");
+
+        const users = profiles.map(profile => profile.users.filter(userId => userId.toString() !== req.user._id.toString() && userId.toString() !== targetUserId.toString())[0].toString());
+
+        const targetUserProfiles = await Models.SocialProfile.find({
+            users: {
+                $in: [targetUserId],
+                $nin: [req.user._id]
+            },
+            status: {
+                $nin: ["BLOCKED", "NONE"]
+            }
+        }).select("users");
+
+        const targetUsers = targetUserProfiles.map(profile => profile.users.filter(userId => userId.toString() !== req.user._id.toString() && userId.toString() !== targetUserId.toString())[0].toString());
+
+        const mutuals = users.filter(user => targetUsers.includes(user));
+
+        const mutualUsers = await Models.User.find({
+            _id: {
+                $in: mutuals
+            }
+        }).select("firstName lastName username profilePictureSource");
+
+        return res.json({
+            mutualCount: mutuals.length,
+            mutuals: mutualUsers.map(user => ({
+                _id: user._id.toString(),
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
+                profilePictureSource: user.profilePictureSource,
+            }))
+        });
+
+
+
+    } catch(err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+}
+
+
+

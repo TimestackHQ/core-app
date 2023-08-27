@@ -168,6 +168,11 @@ export type CreateMediaType = {
     mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
     mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
     metadata?: any
+} | {
+    mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
+    mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
+    holderType: "cover",
+    metadata?: any
 }
 
 export async function createMedia(req: Request, res: Response, next: NextFunction) {
@@ -223,21 +228,26 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 
         await media.save();
 
-        if (query.holderType === "socialProfile") {
-            const profile = await Models.SocialProfile.findOne({
+        if (query.holderType === "socialProfile" || query.holderType === "event") {
+            const holder = query.holderType === "socialProfile" ? await Models.SocialProfile.findOne({
                 _id: query.holderId,
                 users: {
                     $in: [req.user._id]
                 },
-            });
+            }) : query.holderType === "event" ? await Models.Event.findOne({
+                _id: query.holderId,
+                users: {
+                    $in: [req.user._id]
+                }
+            }) : undefined;
 
 
-            if (profile && profile?.permissions(req.user._id).canUploadMedia) {
+            if (holder && holder?.permissions(req.user._id).canUploadMedia) {
 
                 const groupQuery = {
                     uploadLocalDeviceRef: query.uploadLocalDeviceRef,
                     relatedSocialProfiles: {
-                        $in: profile._id
+                        $in: holder._id
                     }
                 }
                 
@@ -251,7 +261,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 
                         group = await Models.MediaGroup.create({
                             uploadLocalDeviceRef: query.uploadLocalDeviceRef,
-                            relatedSocialProfiles: [profile._id],
+                            relatedSocialProfiles: [holder._id],
                             media: [media._id]
                         });
 
@@ -261,7 +271,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                             createdAt: new Date(),
                         });
 
-                        await profile.updateOne({
+                        await holder.updateOne({
                             $push: {
                                 content: content._id
                             }
@@ -278,7 +288,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         createdAt: new Date(),
                     });
 
-                    await profile.updateOne({
+                    await holder.updateOne({
                         $push: {
                             content: content._id
                         }
@@ -286,7 +296,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                 }
 
 
-                media.relatedSocialProfiles.push(profile?._id);
+                media.relatedSocialProfiles.push(holder?._id);
 
             }
         }

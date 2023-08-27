@@ -12,13 +12,13 @@ import AddScreen from "../screens/Add";
 import NotificationsScreen, { NotificationsScreenHeader } from "../screens/Notifications";
 import EditEvent from "../screens/EditEvent";
 import MediaView from "../screens/MediaView";
-import Upload from "../screens/Upload";
 import Roll from "../screens/Roll";
 import AddPeople from "../screens/AddPeople";
 import Profile from "../screens/ProfileScreen";
 import SocialProfile from "../screens/SocialProfile";
 import UploadQueue from "../screens/UploadQueue";
 import TextComponent from "../Components/Library/Text";
+import MutualsScreen from "../screens/Mutuals";
 
 
 
@@ -54,7 +54,6 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="EditEvent" component={EditEvent} />
-			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Upload" component={Upload} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
 			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
@@ -76,6 +75,8 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ headerShown: true }} name="SocialProfile" component={SocialProfile} />
 
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="UploadQueue" component={UploadQueue} />
+
+			<Index.Screen options={{headerBackTitle: "Hey"}} name={"Mutuals"} component={MutualsScreen}/>
 
 		</Index.Navigator>
 	);

@@ -17,7 +17,10 @@ export async function fetchImage(itemId: string, assetIdentifier: string, mediaT
 
 export async function uploadFile(files: { [key: string]: string }, urlLocation: string, httpMethod: string, headers: {
   "Authorization": string,
-}, urlParams: { [key: string]: string } = {}) {
+}, urlParams: { [key: string]: string } = {}): Promise<{
+    statusCode: string,
+    body?: any,
+}> {
   return await TimestackCoreModule.uploadFile(files, urlLocation, httpMethod, headers, urlParams);
 }
 

@@ -1,27 +1,27 @@
 import _ from "lodash";
 import { MediaInternetType, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState} from "react";
+import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import FastImage from "react-native-fast-image";
 import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { MediaViewScreenNavigationProp, RollScreenNavigationProp, RootStackParamList, UploadQueueScreenNavigationProp } from "../navigation";
 import ProfilePicture from "../Components/ProfilePicture";
-import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import ConnectionStatus from "../Components/ConnectionStatus";
 import TimestackMedia from "../Components/TimestackMedia";
 import { RollType } from "../types/global";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
 import { useAppDispatch } from '../store/hooks'
 import { setRoll } from "../store/rollState";
-import FastImage from "react-native-fast-image";
 import NoSharedMemories from "../Components/Library/NoSharedMemories";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
-import { uploadQueueWorker } from "../App";
 import { useQuery } from "react-query";
 import { getSocialProfile } from "../queries/profiles";
 import HTTPClient from "../httpClient";
 import { flattenGallery } from "../utils/gallery";
 import TextComponent from "../Components/Library/Text";
-
+import {getMutuals} from "../queries/people";
+import Mutuals from "../Components/People/Mutuals";
 
 
 export default function SocialProfile({ }) {
@@ -36,7 +36,10 @@ export default function SocialProfile({ }) {
 
     const { data: profile, refetch: refetchProfile } = useQuery(["social-profiles", { userId: route.params?.userId }], getSocialProfile, {
         enabled: !!route.params?.userId
-    })
+    });
+    const { data: mutuals } = useQuery(["get-mutuals", { targetUserId: route.params?.userId, getAll: false }], getMutuals, {
+        enabled: !!route.params?.userId
+    });
     const [tab, setTab] = useState<
         "memories" | "events"
     >("memories");
@@ -131,15 +134,6 @@ export default function SocialProfile({ }) {
         })
     }, [selectionMode]);
 
-    useEffect(() => {
-
-        setInterval(async () => {
-            console.log(await uploadQueueWorker.getAllJobs());
-        }, 1000)
-
-    }, [selected]);
-
-
     const getGallery = (flush = false) => {
         setRefreshing(true);
         if (profile?._id) HTTPClient(`/social-profiles/${profile?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
@@ -218,13 +212,31 @@ export default function SocialProfile({ }) {
                         data={gallery}
                         ListHeaderComponent={() => !selectionMode ? (
                             <View style={{ flex: 1, flexDirection: "column" }}>
-                                <View style={{ flex: 1, flexDirection: "row" }}>
+                                <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10 }}>
+                                    <FastImage
+                                        source={require("../assets/skeletons/timegraph.png")}
+                                        style={{ width: "100%", height: 160}}
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                                <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 15, marginVertical: 0}}>
+                                    <Mutuals
+                                        targetUserId={route.params?.userId}
+                                        mutualCount={40}
+                                        mutuals={mutuals?.mutuals ? [
+                                        ...mutuals?.mutuals,
+                                        ...mutuals?.mutuals,
+                                        ...mutuals?.mutuals,
+                                    ] : []} />
+                                </View>
+                                <View style={{ flex: 1, flexDirection: "row", marginVertical:10 }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
-                                        <ConnectionStatus style={{ flex: 1, width: 150, margin: 15 }} refresh={refetchProfile} profile={profile} user={user} />
+                                        <ConnectionStatus style={{ flex: 1, width: 150, marginHorizontal: 15 }} refresh={refetchProfile} profile={profile} user={user} />
                                     </View>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                     </View>
                                 </View>
+
                                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                                     <View style={{
                                         flex: 1,
@@ -327,7 +339,7 @@ export default function SocialProfile({ }) {
                                             />
 
                                         </View> : null}
-                                        <TimestackMedia style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
+                                        <TimestackMedia itemInView style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
                                     </View>
                                 </TouchableWithoutFeedback>
                             </View>

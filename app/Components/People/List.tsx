@@ -1,5 +1,5 @@
 import { ComponentType, ElementType } from "react";
-import { FlatList, Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
+import {FlatList, Image, RefreshControl, ScrollView, Text, TouchableWithoutFeedback, View} from "react-native";
 import TextComponent from "../Library/Text";
 import ProfilePicture from "../ProfilePicture";
 import { FlashList } from "@shopify/flash-list";
@@ -7,7 +7,8 @@ import { PeopleSearchResult } from "@api-types/public";
 import { useNavigation } from "@react-navigation/native";
 import { SocialProfileScreenNavigationProp } from "../../navigation";
 
-export default function ListOfPeople({ ListHeaderComponent, people, style }: {
+export default function ListOfPeople({ refresh, ListHeaderComponent, people, style, loading }: {
+    refresh: () => void,
     ListHeaderComponent?: any,
     people: PeopleSearchResult["people"],
     style?: any,
@@ -16,7 +17,59 @@ export default function ListOfPeople({ ListHeaderComponent, people, style }: {
 
     const navigator = useNavigation<SocialProfileScreenNavigationProp>();
     return <View>
-        <FlatList
+        {loading ? <View
+            style={{...style}}
+        >
+            {[new Array(10).fill(0).map((_, index) => {
+                return <View style={{
+            marginVertical: 5,
+            flexDirection: "row",
+        }}>
+            <View style={{
+        }}>
+            <View
+            style={{
+            width: 50,
+            height: 50,
+            borderRadius: 50,
+            backgroundColor: "rgba(0,0,0,0.1)",
+        }}
+            />
+
+            </View>
+
+            <View style={{
+            alignItems: "flex-start",
+            justifyContent: "center",
+            paddingLeft: 10,
+            width: "100%"
+        }}>
+            <View
+            style={{
+            width: 200,
+            height: 10,
+            marginBottom: 5,
+            borderRadius: 10,
+            backgroundColor: "rgba(0,0,0,0.1)",
+        }}
+            />
+            <View
+            style={{
+            width: 75,
+            height: 10,
+            borderRadius: 10,
+            backgroundColor: "rgba(0,0,0,0.1)",
+        }}
+            />
+            </View>
+
+            </View>
+            })]}
+        </View>: <FlatList
+            refreshControl={<RefreshControl
+                refreshing={loading}
+                onRefresh={refresh}
+            />}
             ListHeaderComponent={ListHeaderComponent}
             style={{ ...style }}
             data={people}
@@ -69,7 +122,7 @@ export default function ListOfPeople({ ListHeaderComponent, people, style }: {
                 </TouchableWithoutFeedback>
             }}
             keyExtractor={(item, index) => index.toString()}
-        />
+        />}
     </View>
 
 }

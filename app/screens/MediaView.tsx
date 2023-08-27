@@ -258,10 +258,13 @@ export default function MediaView() {
 						getItemLayout={(data, index) => (
 							{ length: width, offset: width * index, index }
 						)}
-						renderItem={({ item }) => {
+						keyExtractor={(item) => item._id}
+						renderItem={({ item, index }) => {
 							console.log("itemId", item._id)
 							return (
 								<InnerMediaHolder
+									selfIndex={index}
+									currentIndex={currentIndex}
 									item={item}
 									itemInView={itemInView === item._id}
 									holderId={route.params?.holderId}

@@ -5,6 +5,8 @@ import { IUser } from "./User";
 import { isObjectIdOrHexString } from "mongoose";
 import { IMedia } from "../@types/Media";
 import { ExtendedMongoSchema, UUIDProperty } from "./helpers";
+import {IContent} from "./Content";
+import {SocialProfilePermissionsInterface} from "../@types/SocialProfile";
 
 export interface IEvent extends mongoose.Document {
     name: string;
@@ -18,7 +20,7 @@ export interface IEvent extends mongoose.Document {
     revisitsCache: {
         [key: string]: Date
     }
-    media: IMedia[] & mongoose.Schema.Types.ObjectId/***/[],
+    content: IContent[];
     createdBy: mongoose.Schema.Types.ObjectId/***/;
     users: mongoose.Schema.Types.ObjectId/***/[];
     invitees: mongoose.Schema.Types.ObjectId/***/[];
@@ -37,6 +39,10 @@ export interface IEvent extends mongoose.Document {
     people: (userId: mongoose.Schema.Types.ObjectId/***/) => (IUser & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId/***/) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
+    permissions: (userId: mongoose.Schema.Types.ObjectId/***/) => {
+        canUploadMedia: boolean;
+    };
+
 }
 
 const EventSchema = new ExtendedMongoSchema({
@@ -82,9 +88,9 @@ const EventSchema = new ExtendedMongoSchema({
         required: true,
         default: {},
     },
-    media: [{
+    content: [{
         type: mongoose.Schema.Types.ObjectId/***/,
-        ref: "Media"
+        ref: "Content"
     }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId/***/,
@@ -176,6 +182,18 @@ EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.Obje
     if (this.defaultPermission === "editor") return !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
     else if (this.defaultPermission === "viewer") return this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
     else return false;
+
+}
+
+EventSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId/***/) {
+
+    let canUploadMedia = false;
+    if (this.defaultPermission === "editor") canUploadMedia = !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+    else if (this.defaultPermission === "viewer") canUploadMedia = this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
+
+    return {
+        canUploadMedia,
+    }
 
 }
 

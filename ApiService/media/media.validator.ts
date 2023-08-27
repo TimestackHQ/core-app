@@ -11,7 +11,7 @@ export const createMediaValidator = (body: CreateMediaType): Joi.ValidationResul
         mediaFormat: Joi.string().valid(...MEDIA_FORMAT_OPTIONS).required(),
         metadata: Joi.object(),
         holderId: Joi.string().required(),
-        holderType: Joi.string().valid(...MEDIA_HOLDER_TYPES).required(),
+        holderType: Joi.string().valid(...MEDIA_HOLDER_TYPES, "cover").required(),
     });
 
     return schema.validate(body);

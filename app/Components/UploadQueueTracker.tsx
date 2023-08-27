@@ -1,9 +1,10 @@
 import { BlurView } from "@react-native-community/blur";
-import { useQueueCounter } from "../hooks/queue";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { ActivityIndicator, Text, Touchable, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { UploadQueueScreenNavigationProp } from "../navigation";
+import {QueueContext} from "../hooks/queue";
+import TextComponent from "../Components/Library/Text";
 
 export default function UploadQueueTracker({ holderId, holderType, variant, style }: {
     holderId: string,
@@ -13,7 +14,7 @@ export default function UploadQueueTracker({ holderId, holderType, variant, styl
 }) {
 
     const navigator = useNavigation<UploadQueueScreenNavigationProp>();
-    const queueCounter = useQueueCounter(holderId);
+    const [queueCounter] = useContext(QueueContext);
 
     const [visible, setVisible] = useState(true);
 
@@ -61,15 +62,16 @@ export default function UploadQueueTracker({ holderId, holderType, variant, styl
             }} style={{ width: "100%", height: "100%", paddingLeft: 10, paddingRight: 11, paddingTop: 4, paddingBottom: 4, borderRadius: 8, overflow: 'hidden', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
                 <View style={{ flexDirection: "row", height: "100%" }}>
                     <ActivityIndicator animating={true} style={{ marginTop: 8, marginRight: 10, height: "50%", }} color={"black"} />
-                    <Text style={{
-                        fontFamily: "Red Hat Display Regular",
-                        textAlign: "right",
-                        alignContent: "flex-end",
-                        justifyContent: "flex-end",
-                        top: 5,
-                        fontSize: 16
-
-                    }}>{queueCounter} remaining</Text>
+                    <TextComponent
+                        fontFamily={"Regular"}
+                        fontSize={16}
+                        style={{
+                            textAlign: "right",
+                            alignContent: "flex-end",
+                            justifyContent: "flex-end",
+                            top: 5
+                        }}
+                    >{queueCounter} remaining</TextComponent>
                 </View>
                 <Text style={{
                     fontFamily: "Red Hat Display Regular",

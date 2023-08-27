@@ -27,6 +27,8 @@ import HTTPClient from "../httpClient";
 import { useEffect } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { getTimezone } from "../utils/time";
+import * as FileSystem from "expo-file-system";
+import * as TimestackCoreModule from "../modules/timestack-core";
 
 
 const apiUrl = Constants.expoConfig.extra.apiUrl;
@@ -64,52 +66,27 @@ export default function AddScreen({ navigation }) {
 
 				console.log(result)
 
-				const mediaId = uuid.v4();
 				const media = result.assets[0];
 
-				setCover(media);
-				const uri = media?.type === "video"
-					? await processVideo(mediaId, media.uri, 15, 25, 600, 10)
-					: await processPhoto(mediaId, media.uri, 5, true);
-				const thumbnail = media?.type === "video"
-					? await processVideo(mediaId + ".thumbnail", media.uri, 15, 25, 600, 10)
-					: await processPhoto(mediaId + ".thumbnail", media.uri, 5, true);
-				const snapshot = media?.type === "video" ? await generateScreenshot(mediaId + "snapshot", URIError) : null
-
-				const formData = new FormData();
-				// @ts-ignore
-				formData.append('media', {
-					uri: uri,
-					name: uri.split("/").pop(),
-					type: media.type === "video" ? "video/mp4" : "image/jpeg"
-				});
-				// @ts-ignore
-				formData.append('thumbnail', {
-					uri: thumbnail,
-					name: thumbnail.split("/").pop(),
-					type: media.type === "video" ? "video/mp4" : "image/jpeg"
-				});
-				// @ts-ignore
-				if (snapshot) formData.append('snapshot', {
-					uri: snapshot,
-					name: snapshot.split("/").pop(),
-					type: "image/jpeg"
-				});
-
-				axios.post(apiUrl + "/v1/media/cover", formData, {
-					headers: {
-						authorization: "Bearer " + (await AsyncStorage.getItem("@session")),
-						"Content-Type": "multipart/form-data",
+				const upload = await TimestackCoreModule.uploadFile(
+					{
+						mediaFile: media.uri,
+						mediaThumbnail: media.uri,
+					},
+					`${apiUrl}/v1/media`,
+					"POST",
+					{
+						Authorization: `Bearer ${await AsyncStorage.getItem('@session')}`,
+					},
+					{
+						holderId: "none",
+						holderType: "cover",
+						mediaQuality: "high",
+						mediaFormat: media.type === "video" ? "mp4" : "jpeg",
 					}
-				})
-					.then((res) => {
-						console.log(res)
-						setUploadedCover(res.data);
-					})
-					.catch((err) => {
-						console.log(JSON.stringify(err));
-					})
-					.finally(() => setLoadingCover(false));
+				);
+
+				console.log("Result", upload);
 
 			}
 

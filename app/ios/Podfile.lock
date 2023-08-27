@@ -1,6 +1,7 @@
 PODS:
   - ASN1Decoder (1.8.0)
   - boost (1.76.0)
+  - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
   - EASClient (0.5.1):
     - ExpoModulesCore
@@ -148,6 +149,10 @@ PODS:
   - hermes-engine (0.71.8):
     - hermes-engine/Pre-built (= 0.71.8)
   - hermes-engine/Pre-built (0.71.8)
+  - KTVCocoaHTTPServer (1.0.0):
+    - CocoaAsyncSocket
+  - KTVHTTPCache (2.0.1):
+    - KTVCocoaHTTPServer
   - libevent (2.1.12)
   - libwebp (1.2.4):
     - libwebp/demux (= 1.2.4)
@@ -436,6 +441,9 @@ PODS:
   - react-native-video (5.2.1):
     - React-Core
     - react-native-video/Video (= 5.2.1)
+  - react-native-video-cache (2.7.3):
+    - KTVHTTPCache (~> 2.0.0)
+    - React
   - react-native-video/Video (5.2.1):
     - React-Core
   - react-native-webview (11.26.0):
@@ -657,6 +665,7 @@ DEPENDENCIES:
   - react-native-pinchable (from `../node_modules/react-native-pinchable`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -691,8 +700,11 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - ASN1Decoder
+    - CocoaAsyncSocket
     - ffmpeg-kit-ios-min-gpl
     - fmt
+    - KTVCocoaHTTPServer
+    - KTVHTTPCache
     - libevent
     - libwebp
     - SDWebImage
@@ -822,6 +834,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-video-cache:
+    :path: "../node_modules/react-native-video-cache"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -886,6 +900,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
   EXApplication: d8f53a7eee90a870a75656280e8d4b85726ea903
@@ -923,6 +938,8 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 47986d26692ae75ee7a17ab049caee8864f855de
+  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
+  KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -950,6 +967,7 @@ SPEC CHECKSUMS:
   react-native-pinchable: b4381b0807d15c12b14bfacd927128f52d96f0f1
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
+  react-native-video-cache: 1f3d0b6841c9cc962ded4ba70b412f121c8e9620
   react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-perflogger: d21f182895de9d1b077f8a3cd00011095c8c9100
   React-RCTActionSheet: 0151f83ef92d2a7139bba7dfdbc8066632a6d47b

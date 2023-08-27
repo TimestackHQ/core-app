@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import { UploadItem } from "../types/global";
 import {UploadItemJob, UploadJobsRepository} from "../utils/UploadJobsQueue";
+import * as React from "react";
 
 
-const uploadQueueWorker = new UploadJobsRepository();
+export const uploadQueueWorker = new UploadJobsRepository();
 uploadQueueWorker.init().then(async () => {
     await uploadQueueWorker.clearUploads()
     uploadQueueWorker.runQueueWatcher();
     uploadQueueWorker.startQueue();
 });
 
-export const useQueueCounter = (holderId: string) => {
+export const useQueueCounter = () => {
     const [queueCounter, setQueueCounter] = useState(0);
 
     const fetchJobs = async () => {
-        if (!holderId) return;
         const jobs = await uploadQueueWorker.getAllJobs();
 
         setQueueCounter(jobs.length);
@@ -31,12 +31,11 @@ export const useQueueCounter = (holderId: string) => {
     return queueCounter;
 };
 
-export const useQueue = (holderId: string): UploadItemJob[] => {
+export const useQueue = (): UploadItemJob[] => {
 
     const [jobs, setJobs] = useState<UploadItemJob[]>([]);
 
     const fetchJobs = async () => {
-        if (!holderId) return;
         console.log("Fetching jobs")
         const jobs = await uploadQueueWorker.getAllJobs();
         console.log("Jobs", jobs)
@@ -54,3 +53,5 @@ export const useQueue = (holderId: string): UploadItemJob[] => {
 
     return jobs;
 }
+
+export const QueueContext = React.createContext([0, []]);
