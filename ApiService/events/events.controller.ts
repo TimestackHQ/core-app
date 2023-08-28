@@ -20,9 +20,7 @@ export async function createEvent(req: Request, res: Response, next: NextFunctio
             }
         });
 
-        const cover = await Models.Media.findOne({
-            publicId: req.body.cover
-        });
+        const cover = await Models.Media.findById(req.body?.cover);
 
         const event = new Models.Event({
             name: req.body.name,
@@ -246,7 +244,6 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
             .skip(Number(skip)).limit(10)
             .populate([{
                 path: "cover",
-                select: "publicId thumbnail snapshot"
             },
             {
                 path: "users",
@@ -262,6 +259,8 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
             events: await Promise.all(events.map(async (event, i) => {
 
                 const cover = event.cover as IMedia;
+
+                console.log(cover)
 
                 const media = await Models.Media.countDocuments({
                     event: event._id
@@ -279,7 +278,8 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
                     people: [
                         ...event.users,
                     ],
-                    thumbnailUrl: await cover.getThumbnailLocation(),
+                    content: undefined,
+                    thumbnailUrl: await cover?.getThumbnailLocation(),
                 }
 
             }))
@@ -291,7 +291,9 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
 
 }
 
-export async function getAllInvites(req: Request, res: Response, next: NextFunction) {
+export async function getAllInvites(req: Request, res: Response<{
+    events: EventObject[]
+}>, next: NextFunction) {
     try {
         const events = await Models.Event.find({
             invitees: {
@@ -316,15 +318,22 @@ export async function getAllInvites(req: Request, res: Response, next: NextFunct
                 const cover = event.cover as IMedia;
 
                 return {
-                    _id: event._id,
-                    publicId: event.publicId,
+                    _id: event._id.toString(),
                     name: event.name,
-                    cover: cover?._id,
-                    peopleCount: event.users?.length + event.invitees?.length + event.nonUsersInvitees?.length,
-                    users: undefined,
-                    invitees: undefined,
-                    nonUsersInvitees: undefined,
-                    people: event.people(req.user._id)
+                    startsAt: event.startsAt,
+                    endsAt: event?.endsAt,
+                    location: event?.location,
+                    about: event?.about,
+                    locationMapsPayload: event?.locationMapsPayload,
+                    status: event?.status,
+                    revisits: event.revisits,
+                    peopleCount: event?.users?.length || 0,
+                    mediaCount: event.content.length,
+                    people: event.people(req.user._id),
+                    hasPermission: event.hasPermission(req.user._id),
+                    muted: event.mutedList?.includes(req.user._id.toString()),
+                    thumbnailUrl: await cover?.getThumbnailLocation(),
+                    storageLocation: await cover?.getFullsizeLocation(),
                 }
             }))
         })
@@ -343,7 +352,6 @@ export async function getEvent(req: Request, res: Response<{
         const event = await Models.Event.findById(req.params.eventId).populate([
             {
                 path: "cover",
-                select: "publicId thumbnail snapshot storageLocation"
             },
             {
                 path: "users",
@@ -403,8 +411,8 @@ export async function getEvent(req: Request, res: Response<{
                 people: event.people(req.user._id),
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
-                // thumbnailUrl: await cover?.getThumbnailLocation(),
-                // storageLocation: await cover?.getFullsizeLocation(),
+                thumbnailUrl: await cover?.getThumbnailLocation(),
+                storageLocation: await cover?.getFullsizeLocation(),
             }
         })
     } catch (e) {

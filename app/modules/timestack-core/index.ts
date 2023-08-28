@@ -19,7 +19,7 @@ export async function uploadFile(files: { [key: string]: string }, urlLocation: 
   "Authorization": string,
 }, urlParams: { [key: string]: string } = {}): Promise<{
     statusCode: string,
-    body?: any,
+    body?: string,
 }> {
   return await TimestackCoreModule.uploadFile(files, urlLocation, httpMethod, headers, urlParams);
 }

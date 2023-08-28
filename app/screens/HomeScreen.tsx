@@ -18,13 +18,21 @@ import MaterialCommunityIcon from "@expo/vector-icons/MaterialCommunityIcons";
 import IconBadge from 'react-native-icon-badge';
 import { BlurView } from "@react-native-community/blur";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import {AddScreenNavigationProp, AuthScreenNavigationProp, NotificationsScreenNavigationProp} from "../navigation";
+import {
+	AddScreenNavigationProp,
+	AuthScreenNavigationProp,
+	EventScreenNavigationProp,
+	NotificationsScreenNavigationProp
+} from "../navigation";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useQuery, useQueryClient } from "react-query";
 import { getPeople } from "../queries/people";
 import { listProfiles } from "../queries/profiles";
 import { PeopleSearchResult } from "@api-types/api";
 import {SearchBar} from "react-native-elements";
+import {getEvents} from "../queries/events";
+import MaterialIcon from "@expo/vector-icons/MaterialIcons";
+import TimestackMedia from "../Components/TimestackMedia";
 
 export default function HomeScreen({ route }) {
 
@@ -32,7 +40,8 @@ export default function HomeScreen({ route }) {
 	const isFocused = useIsFocused();
 	const navigation = useNavigation<
 		AuthScreenNavigationProp |
-		NotificationsScreenNavigationProp
+		NotificationsScreenNavigationProp |
+		EventScreenNavigationProp
 	>();
 
 	// const queryClient = useQueryClient();
@@ -42,6 +51,7 @@ export default function HomeScreen({ route }) {
 		enabled: searchQuery !== "",
 	});
 
+	const { data: events, status: eventsStatus, refetch: refreshEvents } = useQuery(["events", {}], getEvents);
 	const { data: profiles, status: profilesStatus, refetch: refreshProfiles } = useQuery(["profiles", { searchQuery }], listProfiles, {
 	});
 
@@ -137,10 +147,37 @@ export default function HomeScreen({ route }) {
 					horizontal={true}
 				>
 					<CreateEvent />
-					{/* <CreateEvent />
-				<CreateEvent />
-
-				<CreateEvent /> */}
+					{events ? events.map((event, index) => {
+						return <TouchableOpacity style={{
+							width: 120,
+							height: 160
+						}} onPress={() => navigation.navigate("Event", {
+							eventId: event._id,
+						})}>
+							<View style={{
+								flex: 1,
+								backgroundColor: 'rgba(241,241,241,0.15)',
+								justifyContent: 'center',
+								alignItems: 'center',
+								borderRadius: 18,
+								margin: 5
+							}}>
+								<TextComponent fontFamily={"Athelas"} fontSize={16} style={{
+									position: "absolute",
+									zIndex: 1,
+									textAlign: "center",
+									padding:10,
+									height: "100%",
+									color: event.thumbnailUrl ? "white" : "black",
+								}}>{event.name}</TextComponent>
+								<TimestackMedia itemInView={true} source={event.thumbnailUrl} style={{
+									width: "100%",
+									height: "100%",
+									borderRadius: 18,
+								}} />
+							</View>
+						</TouchableOpacity>
+					}) : null}
 				</ScrollView>
 
 			</View>
@@ -178,7 +215,10 @@ export default function HomeScreen({ route }) {
 				}}>
 
 					<ListOfPeople
-						refresh={refreshProfiles}
+						refresh={() => {
+							refreshProfiles();
+							refreshEvents();
+						}}
 						people={profiles}
 						style={{ height: "100%", padding: 10, paddingTop: 0 }}
 						loading={profilesStatus === "loading"}

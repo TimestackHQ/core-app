@@ -42,14 +42,16 @@ export default function AddScreen({ navigation }) {
 	const [endDateOpen, setEndDateOpen] = React.useState(false);
 	const [location, setLocation] = React.useState("");
 	const [about, setAbout] = React.useState("");
-	const [uploadedCover, setUploadedCover] = React.useState(null);
 	const [locationMapsPayload, setLocationMapsPayload] = React.useState(null);
 	const [isEnabled, setIsEnabled] = React.useState(true);
 
 
 
 	const [loadingCover, setLoadingCover] = React.useState(false);
-	const [cover, setCover] = React.useState(null);
+	const [cover, setCover] = React.useState<{
+		localUri: string,
+		mediaId: string}>(null)
+
 	const [nextScreen, setNextScreen] = React.useState(false);
 	const [keyBoardOpen, setKeyBoardOpen] = React.useState(false);
 
@@ -86,7 +88,14 @@ export default function AddScreen({ navigation }) {
 					}
 				);
 
-				console.log("Result", upload);
+				const responseBody = JSON.parse(upload.body);
+
+				console.log("cover media id", responseBody.media._id);
+
+				setCover({
+					localUri: media.uri,
+					mediaId: responseBody.media._id
+				});
 
 			}
 
@@ -107,7 +116,6 @@ export default function AddScreen({ navigation }) {
 		setEndDate(null);
 		setLocation("");
 		setAbout("");
-		setUploadedCover(null);
 		setCover(null);
 		setNextScreen(false)
 	}
@@ -121,7 +129,7 @@ export default function AddScreen({ navigation }) {
 			location: location ? location : undefined,
 			about: about ? about : undefined,
 			invitees: [],
-			cover: uploadedCover ? uploadedCover.media.publicId : undefined,
+			cover: cover ? cover.mediaId : undefined,
 			locationMapsPayload: locationMapsPayload ? locationMapsPayload : undefined,
 			defaultPermission: isEnabled ? "editor" : "viewer"
 		}).then((res) => {
@@ -463,20 +471,10 @@ export default function AddScreen({ navigation }) {
 				alignItems: "center",
 			}}>
 				<TouchableWithoutFeedback onPress={importCover}>
-					{cover?.type === "video" ?
-						<Video
-							source={{ uri: cover.uri }}
-							muted={true}
-							resizeMode="cover"
-							style={{
-								borderRadius: 35, width: 220, height: 280
-							}}
-						/>
-						: <FastImage
-							style={{ borderRadius: 35, width: 220, height: 280 }}
-							source={cover?.uri ? { uri: cover.uri } : require("../assets/add-media.png")}
-						/>
-					}
+					<FastImage
+						style={{ borderRadius: 35, width: 220, height: 280 }}
+						source={cover?.localUri ? { uri: cover.localUri } : require("../assets/add-media.png")}
+					/>
 				</TouchableWithoutFeedback>
 				{loadingCover ? <ActivityIndicator color={"black"} style={{ marginTop: 10 }} /> : <Text style={{
 					fontFamily: "Red Hat Display Semi Bold",
@@ -488,7 +486,7 @@ export default function AddScreen({ navigation }) {
 					width: "90%",
 
 				}}>
-					{cover?.uri ? "" : "You can add a cover later"}
+					{cover?.localUri ? "" : "You can add a cover later"}
 				</Text>}
 				<TouchableOpacity style={{
 					position: "absolute",

@@ -191,7 +191,14 @@ public class TimestackCoreModule: Module {
             _ = semaphore.wait(timeout: .distantFuture)
 
             response["statusCode"] = statusCode
-            response["body"] = responseBodyData
+            if let responseBodyData = responseBodyData {
+                if let responseBodyString = String(data: responseBodyData, encoding: .utf8) {
+                    response["body"] = responseBodyString
+                } else {
+                    response["body"] = responseBodyData
+                }
+            }
+            
             return response
         }
 

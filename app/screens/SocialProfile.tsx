@@ -222,12 +222,8 @@ export default function SocialProfile({ }) {
                                 <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 15, marginVertical: 0}}>
                                     <Mutuals
                                         targetUserId={route.params?.userId}
-                                        mutualCount={40}
-                                        mutuals={mutuals?.mutuals ? [
-                                        ...mutuals?.mutuals,
-                                        ...mutuals?.mutuals,
-                                        ...mutuals?.mutuals,
-                                    ] : []} />
+                                        mutualCount={mutuals?.mutualCount}
+                                        mutuals={mutuals?.mutuals || []} />
                                 </View>
                                 <View style={{ flex: 1, flexDirection: "row", marginVertical:10 }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>

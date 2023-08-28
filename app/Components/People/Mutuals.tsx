@@ -33,7 +33,7 @@ export default function Mutuals ({targetUserId, mutualCount, mutuals}: {
     >
         <View style={{
             flexDirection: "row",
-            marginRight: 5*mutuals.length,
+            marginRight: 15
         }}>
             {mutuals.map((mutual, index) => {
                 return <ProfilePicture
