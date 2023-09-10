@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { AWS, Logger, Models } from "../../shared";
+import { AWS, Models } from "../../shared";
 import { v4 as uuid } from 'uuid';
 import moment = require("moment");
 import { IUser } from "../../shared/models/User";
-import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS, MEDIA_TYPES } from "../../shared/consts";
+import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "../../shared/consts";
 import { IMedia } from "../../shared/@types/Media";
 import { AWSS3ObjectType } from "shared/@types/global";
 import { PersonType } from "../@types";
-import mongoose, {mongo, Promise} from "mongoose";
+import mongoose, { Promise } from "mongoose";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
@@ -250,7 +250,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         $in: holder._id
                     }
                 }
-                
+
                 if (query.uploadLocalDeviceRef) {
                     let group = await Models.MediaGroup.findOneAndUpdate(groupQuery, {
                         $push: {
@@ -371,7 +371,7 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
         });
 
         for await (const item of content) {
-            if(item.contentType === "mediaGroup") {
+            if (item.contentType === "mediaGroup") {
                 const mediaGroup = await Models.MediaGroup.findOne({
                     _id: item.contentId
                 }).populate<IMedia>("media");

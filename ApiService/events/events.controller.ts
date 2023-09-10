@@ -7,7 +7,7 @@ import moment = require("moment");
 import { IMedia } from "shared/@types/Media";
 import { MediaInternetType } from "../../shared/@types/public";
 import mongoose from "mongoose";
-import {EventObject} from "../@types/dto";
+import { EventObject } from "../@types/dto";
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -241,7 +241,7 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
         // @ts-ignore
         const events = await Models.Event.find(query)
             .sort({ startsAt: -1 })
-            .skip(Number(skip)).limit(10)
+            .skip(Number(skip)).limit(100)
             .populate([{
                 path: "cover",
             },
@@ -744,7 +744,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 }
             }
 
-            if(!response) throw new Error("Response is undefined");
+            if (!response) throw new Error("Response is undefined");
 
             return {
                 ...response,
