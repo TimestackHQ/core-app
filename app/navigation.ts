@@ -22,6 +22,9 @@ export type RootStackParamList = {
         refresh?: boolean,
         openUpload?: boolean,
     },
+    EventsList: {
+
+    },
     EditEvent: {
         eventId: string,
         eventName: string,
@@ -79,6 +82,11 @@ export type InviteScreenNavigationProp = StackNavigationProp<
 export type EventScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Event'
+>;
+
+export type EventsListScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'EventsList'
 >;
 
 export type EditEventScreenNavigationProp = StackNavigationProp<

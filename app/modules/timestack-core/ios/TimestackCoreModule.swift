@@ -443,6 +443,4 @@ public class TimestackCoreModule: Module {
         return node
     }
 
-
-
 }

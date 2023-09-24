@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
-import axios from 'axios';
 import HTTPClient from '../httpClient';
 import { dateFormatter } from '../utils/time';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -8,7 +7,6 @@ import FastImage from 'react-native-fast-image';
 import TimestackMedia from '../Components/TimestackMedia';
 const { width } = Dimensions.get('window');
 
-import HapticFeedback from 'react-native-haptic-feedback';
 import { AuthScreenNavigationProp, EventScreenNavigationProp } from '../navigation';
 
 const hapticOptions = {

@@ -3,7 +3,7 @@ import Video from "react-native-video";
 import { Request } from "aws4";
 import { View } from "react-native";
 import convertToProxyURL from 'react-native-video-cache';
-import {SharedElement} from "react-navigation-shared-element";
+import { SharedElement } from "react-navigation-shared-element";
 
 export default function TimestackMedia({
     autoPlay = false,
@@ -13,7 +13,8 @@ export default function TimestackMedia({
     resizeMode,
     style,
     priority,
-    onLoad
+    onLoad,
+    noBorder
 }: {
     autoPlay?: boolean,
     itemInView: boolean,
@@ -22,7 +23,8 @@ export default function TimestackMedia({
     resizeMode?: ResizeMode,
     style?: any,
     priority?: Priority,
-    onLoad?: (loaded: boolean) => void
+    onLoad?: (loaded: boolean) => void,
+    noBorder?: boolean
 }) {
 
     return source ? type === "video" ? <Video
@@ -57,7 +59,7 @@ export default function TimestackMedia({
         : <View
             style={{
                 ...style,
-                borderWidth: 1,
+                borderWidth: noBorder ? 0 : 1,
                 borderColor: "black"
             }}
         />

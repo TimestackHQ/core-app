@@ -19,6 +19,18 @@ import SocialProfile from "../screens/SocialProfile";
 import UploadQueue from "../screens/UploadQueue";
 import TextComponent from "../Components/Library/Text";
 import MutualsScreen from "../screens/Mutuals";
+import EventsList from "../screens/EventsList";
+
+const DefaultBackButtonHeader = name => ({
+	headerShadowVisible: true,
+	headerTransparent: false,
+	headerBackTitleVisible: true,
+	headerBackTitle: name,
+	headerBackTitleStyle: {
+		fontSize: 30,
+		fontFamily: "Red Hat Display Semi Bold",
+	}
+})
 
 
 
@@ -53,30 +65,32 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ headerShown: false, headerBackTitle: "Hey" }} name="Main" component={HomeScreen} />
 
 			<Index.Screen name="Event" component={EventScreen} />
+			<Index.Screen name="EventsList" options={{
+				...DefaultBackButtonHeader("Events"),
+				// headerSearchBarOptions: {
+				// 	hideWhenScrolling: true,
+				// 	obscureBackground: true,
+				// }
+
+			}} component={EventsList} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="EditEvent" component={EditEvent} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
 			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
 			<Index.Screen options={{ headerShown: false }} name="Future" component={FutureScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Add" component={AddScreen} />
-			<Index.Screen options={{
-				headerShadowVisible: true,
-				headerTransparent: true,
-				headerBackTitleVisible: true,
-				headerBackTitle: "Notifications",
-				headerBackTitleStyle: {
-					fontSize: 30,
-					fontFamily: "Red Hat Display Semi Bold",
-				}
-			}}
+			<Index.Screen options={DefaultBackButtonHeader("Notifications")}
 				name="Notifications" component={NotificationsScreen} />
-			<Index.Screen options={{ headerShown: false }} name="Profile" component={Profile} />
+			<Index.Screen options={{
+				headerShown: false,
+				headerBlurEffect: "systemUltraThinMaterialDark",
+			}} name="Profile" component={Profile} />
 
 			<Index.Screen options={{ headerShown: true }} name="SocialProfile" component={SocialProfile} />
 
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="UploadQueue" component={UploadQueue} />
 
-			<Index.Screen options={{headerBackTitle: "Hey"}} name={"Mutuals"} component={MutualsScreen}/>
+			<Index.Screen options={{ headerBackTitle: "Hey" }} name={"Mutuals"} component={MutualsScreen} />
 
 		</Index.Navigator>
 	);

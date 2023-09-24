@@ -23,14 +23,22 @@ import { PhotoIdentifier } from "@react-native-camera-roll/camera-roll";
 import FastImage from "react-native-fast-image";
 import { BlurView } from "@react-native-community/blur";
 import { v4 as uuid } from "uuid";
-import {uploadQueueWorker} from "../hooks/queue";
+import { uploadQueueWorker } from "../hooks/queue";
+import { useQuery } from "react-query";
+import { listProfiles } from "../queries/profiles";
+import ListOfPeople from "../Components/People/List";
+import { getEvents } from "../queries/events";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import HolderSelectorScreen from "./HolderSelectorScreen";
 
 const groupPanelHeight = 65;
 
 export default function Roll() {
 
 	const navigator = useNavigation();
-	const route = useRoute<RouteProp<RootStackParamList, "Roll">>()
+	const route = useRoute<RouteProp<RootStackParamList, "Roll">>();
+
+	const [tab, setTab] = useState<"roll" | "holderPicker">("roll");
 
 	const [selected, setSelected] = useState<{
 		[key: string]: (PhotoIdentifier["node"] & { group: string | null })
@@ -87,7 +95,12 @@ export default function Roll() {
 
 	const save = async () => {
 
-		const mediaSelected = [];
+		if (route.params.holderType === "none") {
+			setTab("holderPicker");
+			return;
+		}
+
+		const mediaSelected: (PhotoIdentifier["node"] & { group: string | null })[] = [];
 
 		Object.values(selected).forEach((item) => mediaSelected.push(item));
 
@@ -116,8 +129,8 @@ export default function Roll() {
 							holderType: route.params.holderType,
 							playableDuration: media.image.playableDuration,
 							timestamp: media.timestamp,
-							location: media.location,
-							filesize: media.image.filesize,
+							location: `${media.location?.latitude},${media.location?.longitude}`,
+							filesize: media.image.fileSize,
 							groupName: media.group ? media.group : null,
 							compressionProgress: 0,
 						},
@@ -225,7 +238,7 @@ export default function Roll() {
 		setIsGrouping(!isGrouping);
 	}
 
-	return <View style={{ flex: 1, flexDirection: "column" }}>
+	return tab === "roll" ? <View style={{ flex: 1, flexDirection: "column" }}>
 		{route.params.holderType === "socialProfile" && (
 			<View style={{ flex: 2, justifyContent: 'center', padding: 15, paddingBottom: 0, backgroundColor: "#FFFEFD" }}>
 				{route.params.profile.people.length === 1 && (
@@ -421,7 +434,9 @@ export default function Roll() {
 				)}
 			</View>
 		</View>
-	</View>
+	</View> : <HolderSelectorScreen
+		setGlobalTab={setTab}
+	/>;
 
 }
 

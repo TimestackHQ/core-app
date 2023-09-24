@@ -8,8 +8,6 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import HTTPClient from "../httpClient";
-import { EventBannerButton } from "../Components/Events/EventBannerButton";
 import CreateEvent from "../Components/Skeletons/CreateEvent";
 import TextComponent from "../Components/Library/Text";
 import ListOfPeople from "../Components/People/List";
@@ -19,19 +17,17 @@ import IconBadge from 'react-native-icon-badge';
 import { BlurView } from "@react-native-community/blur";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import {
-	AddScreenNavigationProp,
 	AuthScreenNavigationProp,
 	EventScreenNavigationProp,
+	EventsListScreenNavigationProp,
 	NotificationsScreenNavigationProp
 } from "../navigation";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { getPeople } from "../queries/people";
 import { listProfiles } from "../queries/profiles";
-import { PeopleSearchResult } from "@api-types/api";
-import {SearchBar} from "react-native-elements";
-import {getEvents} from "../queries/events";
-import MaterialIcon from "@expo/vector-icons/MaterialIcons";
+import { SearchBar } from "react-native-elements";
+import { getEvents } from "../queries/events";
 import TimestackMedia from "../Components/TimestackMedia";
 
 export default function HomeScreen({ route }) {
@@ -41,7 +37,8 @@ export default function HomeScreen({ route }) {
 	const navigation = useNavigation<
 		AuthScreenNavigationProp |
 		NotificationsScreenNavigationProp |
-		EventScreenNavigationProp
+		EventScreenNavigationProp |
+		EventsListScreenNavigationProp
 	>();
 
 	// const queryClient = useQueryClient();
@@ -80,17 +77,17 @@ export default function HomeScreen({ route }) {
 
 	return <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
 		<View style={{ flexDirection: "row", marginLeft: 5, marginRight: 10, alignContent: "flex-end", alignItems: "center" }}>
-			<View style={{flex: 1}}>
+			<View style={{ flex: 1 }}>
 				<SearchBar
 					platform={Platform.OS === "ios" ? "ios" : "android"}
-					round={true} cancelButtonTitle={""}  showCancel={false}
+					round={true} cancelButtonTitle={""} showCancel={false}
 					showLoading={peopleStatus === "loading"}
 
-				   containerStyle={{
-					   flex: 1,
-					   borderRadius: 10,
-					   backgroundColor: "#F2F2F2",
-				   }}
+					containerStyle={{
+						flex: 1,
+						borderRadius: 10,
+						backgroundColor: "#F2F2F2",
+					}}
 
 					inputContainerStyle={{
 						flex: 1,
@@ -103,10 +100,10 @@ export default function HomeScreen({ route }) {
 						fontFamily: "Red Hat Display Regular",
 
 					}}
-				   cancelButtonProps={{ color: "black" }}
-				   onChangeText={(text) => {setSearchQuery(text)}}
-				   value={searchQuery}
-				 lightTheme/>
+					cancelButtonProps={{ color: "black" }}
+					onChangeText={(text) => { setSearchQuery(text) }}
+					value={searchQuery}
+					lightTheme />
 			</View>
 			{/*<TextInput style={{ flex: 1, fontSize: 16, borderRadius: 10, backgroundColor: "#F2F2F2", margin: 5, marginTop: 5, padding: 10, fontFamily: "Red Hat Display Regular" }} placeholder="Search" onChangeText={setSearchQuery} />*/}
 			<TouchableOpacity onPress={() => navigation.push("Notifications")}>
@@ -166,7 +163,7 @@ export default function HomeScreen({ route }) {
 									position: "absolute",
 									zIndex: 1,
 									textAlign: "center",
-									padding:10,
+									padding: 10,
 									height: "100%",
 									color: event.thumbnailUrl ? "white" : "black",
 								}}>{event.name}</TextComponent>
@@ -179,6 +176,28 @@ export default function HomeScreen({ route }) {
 						</TouchableOpacity>
 					}) : null}
 				</ScrollView>
+
+				<View style={{
+					flexDirection: "row",
+					justifyContent: "flex-end",
+					alignItems: "center",
+					paddingHorizontal: 10,
+					paddingTop: 5,
+				}}>
+					<TouchableOpacity onPress={() => {
+						navigation.navigate("EventsList");
+					}}>
+						<TextComponent
+							style={{
+								color: "gray",
+							}}
+							fontFamily="Semi Bold"
+							fontSize={14}
+						>
+							Show All
+						</TextComponent>
+					</TouchableOpacity>
+				</View>
 
 			</View>
 
@@ -258,7 +277,7 @@ export default function HomeScreen({ route }) {
 					paddingTop: 0
 				}}>
 					<ListOfPeople
-						refresh={() => {}}
+						refresh={() => { }}
 						people={people?.people || []}
 						style={{ height: "100%", paddingTop: 50, padding: 10 }}
 						loading={peopleStatus === "loading"}

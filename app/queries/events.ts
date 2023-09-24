@@ -1,12 +1,20 @@
-import {QueryFunctionContext} from "react-query";
+import { QueryFunctionContext } from "react-query";
 import HTTPClient from "../httpClient";
-import {EventObject} from "@api-types/public";
+import { EventObject } from "@api-types/public";
 
-export async function getEvents({ queryKey: [_key] }: QueryFunctionContext<[string, {  }]>) {
+export async function getEvents({ queryKey: [_key, { skip, limit }] }: QueryFunctionContext<[string, {
+    skip?: number,
+    limit?: number
+}]>) {
+
+    const queryParams = new URLSearchParams({
+        skip: skip?.toString() ?? "0",
+        limit: limit?.toString() ?? "10"
+    });
 
     const { data } = await HTTPClient<{
         events: EventObject[],
-    }>(`/events`, "GET");
+    }>(`/events?${queryParams.toString()}`, "GET");
 
     return data.events;
 

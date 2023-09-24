@@ -43,6 +43,6 @@ export interface IMedia extends ExtendedMongoDocument {
     updatedAt: Date;
 
     getThumbnailLocation(): Promise<AWSS3ObjectType>;
-    getFullsizeLocation(): Promise<AWSS3ObjectType>;
+    getFullsizeLocation(): Promise<AWSS3ObjectType>He;
 }
 

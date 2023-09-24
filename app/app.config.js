@@ -1,4 +1,4 @@
-const version = "0.24.0";
+const version = "0.25.0";
 export const build = 2;
 
 module.exports = {
