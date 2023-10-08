@@ -23,7 +23,6 @@ export const MEDIA_FORMAT_OPTIONS = [
     "jpeg",
     "jpg",
     "heic",
-    "jpg",
     "mov",
     "png"
 ] as const;

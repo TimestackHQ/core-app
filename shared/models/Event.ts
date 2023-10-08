@@ -5,8 +5,7 @@ import { IUser } from "./User";
 import { isObjectIdOrHexString } from "mongoose";
 import { IMedia } from "../@types/Media";
 import { ExtendedMongoSchema, UUIDProperty } from "./helpers";
-import {IContent} from "./Content";
-import {SocialProfilePermissionsInterface} from "../@types/SocialProfile";
+import { IContent } from "./Content";
 
 export interface IEvent extends mongoose.Document {
     name: string;
@@ -36,6 +35,7 @@ export interface IEvent extends mongoose.Document {
     defaultPermission: "editor" | "viewer";
     exclusionList: mongoose.Schema.Types.ObjectId/***/[];
     mutedList: mongoose.Schema.Types.ObjectId/***/[];
+    linkedEvents: mongoose.Schema.Types.ObjectId/***/[] | IEvent[];
     people: (userId: mongoose.Schema.Types.ObjectId/***/) => (IUser & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId/***/) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
@@ -147,6 +147,11 @@ const EventSchema = new ExtendedMongoSchema({
         ref: "User",
         default: []
     },
+
+    linkedEvents: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
+        ref: "Event",
+    }],
 
     ...commonProperties,
 });

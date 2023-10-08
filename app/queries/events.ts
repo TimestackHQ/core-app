@@ -19,6 +19,7 @@ export async function getEvents({ queryKey: [_key, { skip, limit }] }: QueryFunc
     return data.events;
 
 }
+
 export async function getEvent({ queryKey: [_key, { eventId }] }: QueryFunctionContext<[string, { eventId: string }]>) {
 
     const { data } = await HTTPClient<{
@@ -29,3 +30,19 @@ export async function getEvent({ queryKey: [_key, { eventId }] }: QueryFunctionC
     return data.event;
 
 }
+
+export async function getLinkedEvents({ queryKey: [_key, { eventId }] }: QueryFunctionContext<[string, { eventId: string }]>) {
+
+    const { data } = await HTTPClient<{
+        linkedEvents: {
+            _id: string,
+            name: string,
+            thumbnailUrl?: EventObject["thumbnailUrl"],
+            storageLocation?: EventObject["storageLocation"],
+        }[]
+    }>(`/events/${eventId}/linked-events`, "GET");
+
+    return data.linkedEvents;
+
+}
+

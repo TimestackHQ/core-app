@@ -7,7 +7,7 @@ import { SharedElement } from "react-navigation-shared-element";
 
 export default function TimestackMedia({
     autoPlay = false,
-    itemInView,
+    itemInView = true,
     source,
     type = "image",
     resizeMode,

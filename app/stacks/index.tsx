@@ -20,6 +20,7 @@ import UploadQueue from "../screens/UploadQueue";
 import TextComponent from "../Components/Library/Text";
 import MutualsScreen from "../screens/Mutuals";
 import EventsList from "../screens/EventsList";
+import LinkedEvents from "../screens/LinkedEventsScreen";
 
 const DefaultBackButtonHeader = name => ({
 	headerShadowVisible: true,
@@ -74,6 +75,7 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 
 			}} component={EventsList} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="EditEvent" component={EditEvent} />
+			<Index.Screen options={{ presentation: "card", headerShown: true }} name="LinkedEvents" component={LinkedEvents} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
 			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />

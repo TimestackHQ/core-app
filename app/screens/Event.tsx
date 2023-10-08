@@ -21,6 +21,7 @@ import * as WebBrowser from 'expo-web-browser';
 import TimestackMedia from "../Components/TimestackMedia";
 import {
 	InviteScreenNavigationProp,
+	LinkedEventsScreenNavigationProp,
 	RollScreenNavigationProp,
 	RootStackParamList,
 	SocialProfileScreenNavigationProp,
@@ -28,12 +29,13 @@ import {
 } from "../navigation";
 import { frontendUrl } from "../utils/io";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
-import {useQuery} from "react-query";
-import {getSocialProfile} from "../queries/profiles";
-import {getEvent} from "../queries/events";
-import {EventObject} from "@api-types/*";
-import {MediaInternetType} from "@shared-types/*";
+import { useQuery } from "react-query";
+import { getSocialProfile } from "../queries/profiles";
+import { getEvent, getLinkedEvents } from "../queries/events";
+import { EventObject } from "@api-types/*";
+import { MediaInternetType } from "@shared-types/*";
 import _ from "lodash";
+import LinkedEvents from "../Components/Library/LinkedEvents";
 
 
 function Picker(props) {
@@ -165,7 +167,8 @@ export default function EventScreen() {
 	const navigation = useNavigation<
 		InviteScreenNavigationProp |
 		RollScreenNavigationProp |
-		SocialProfileScreenNavigationProp
+		SocialProfileScreenNavigationProp |
+		LinkedEventsScreenNavigationProp
 	>();
 	const isFocused = useIsFocused();
 
@@ -176,6 +179,7 @@ export default function EventScreen() {
 		enabled: !!route.params?.eventId
 	});
 
+	const { data: linkedEvents, refetch: refetchLinkedEvents } = useQuery(["linkedEvents", { eventId: route?.params?.eventId }], getLinkedEvents);
 
 	const [gallery, setGallery] = useState<MediaInternetType[]>([]);
 	const [viewMenu, setViewMenu] = useState(false);
@@ -238,7 +242,10 @@ export default function EventScreen() {
 			) : null}
 		</View>
 		<FlatList
-			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
+				refetch();
+				refetchLinkedEvents();
+			}} />}
 			style={{ height: "100%", width: "100%", position: "absolute", top: 0, zIndex: 1 }}
 			ListHeaderComponent={
 				<View>
@@ -312,6 +319,11 @@ export default function EventScreen() {
 									{event?.revisits === 1 ? "Revisit" : "Revisits"}
 								</Text>
 							</View>
+
+						</View>
+						<View style={{ flexDirection: "row" }}>
+
+							<LinkedEvents eventId={event?._id} eventName={event?.name} linkedEvents={linkedEvents} />
 
 						</View>
 						<TouchableWithoutFeedback >

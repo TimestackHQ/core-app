@@ -1,10 +1,10 @@
 import _ from "lodash";
 import { MediaInternetType, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { MediaViewScreenNavigationProp, RollScreenNavigationProp, RootStackParamList, UploadQueueScreenNavigationProp } from "../navigation";
 import ProfilePicture from "../Components/ProfilePicture";
 import ConnectionStatus from "../Components/ConnectionStatus";
@@ -20,8 +20,14 @@ import { getSocialProfile } from "../queries/profiles";
 import HTTPClient from "../httpClient";
 import { flattenGallery } from "../utils/gallery";
 import TextComponent from "../Components/Library/Text";
-import {getMutuals} from "../queries/people";
+import { getMutuals } from "../queries/people";
 import Mutuals from "../Components/People/Mutuals";
+import { BlurView } from "@react-native-community/blur";
+import Animated, {
+    withTiming,
+    useAnimatedStyle,
+    Easing,
+} from 'react-native-reanimated';
 
 
 export default function SocialProfile({ }) {
@@ -49,7 +55,26 @@ export default function SocialProfile({ }) {
     const [page, setPage] = useState(0);
     const pageSize = 12;
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
-    const [selected, setSelected] = useState<{[key: string]: MediaInternetType}>({});
+    const [selected, setSelected] = useState<{ [key: string]: MediaInternetType }>({});
+    const [aiTab, setAiTab] = useState(false);
+
+    const [demoStage, setDemoStage] = useState(0);
+
+    const setAiTabValue = () => {
+        setAiTab(!aiTab);
+    }
+
+    const config = {
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    };
+
+    const style = useAnimatedStyle(() => {
+        return {
+            // width: withTiming(randomWidth.value, config),
+            opacity: withTiming(aiTab ? 1 : 0, config),
+        };
+    }, [aiTab]);
 
     useEffect(() => {
         console.log(queueCounter);
@@ -81,8 +106,11 @@ export default function SocialProfile({ }) {
             navigator.setOptions({
                 headerBackTitle: "Back",
                 headerShown: true,
+                headerStyle: {
+                    height: 1000,
+                },
                 headerTitle: () => (
-                    <View style={{ flex: 1, flexDirection: "row" }}>
+                    <View style={{ flex: 1, flexDirection: "row", marginBottom: 50 }}>
                         <View style={{ flex: 1, alignItems: "flex-end" }}>
                             <ProfilePicture
                                 userId={String(user?._id)}
@@ -92,9 +120,10 @@ export default function SocialProfile({ }) {
                                 location={user?.profilePictureSource}
                             />
                         </View>
-                        <View style={{ flex: 3, alignItems: "flex-start" }}>
-                            <TextComponent numberOfLines={1} ellipsizeMode="tail" fontFamily={"Bold"} fontSize={18} style={{
-                                marginBottom: 0
+                        <View style={{ flex: 4, alignItems: "flex-start" }}>
+                            <TextComponent numberOfLines={1} ellipsizeMode="tail" fontFamily={"Bold"} fontSize={16} style={{
+                                marginBottom: 0,
+                                marginTop: 2,
                             }}>
                                 {user?.firstName} {user?.lastName}
                             </TextComponent>
@@ -103,6 +132,9 @@ export default function SocialProfile({ }) {
                             }}>
                                 {user?.username}
                             </TextComponent>
+                        </View>
+                        <View style={{ flex: 3.5, flexDirection: "column", zIndex: 1000 }}>
+                            <TheAIButton setAiTab={setAiTab} aiTab={aiTab} />
                         </View>
                     </View>
                 )
@@ -165,6 +197,101 @@ export default function SocialProfile({ }) {
                         borderRadius: 20,
                     }} variant="shadow" holderId={String(profile?._id)} holderType={"socialProfile"} /> : null}
 
+                    {aiTab ? <Animated.View style={[{
+                        flex: 1,
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        zIndex: 10,
+                        opacity: 0,
+                    }, style]}>
+                        <BlurView
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                paddingHorizontal: 10
+                            }}
+                            blurType="xlight"
+                            blurAmount={10}
+                            reducedTransparencyFallbackColor="xwhite"
+                        >
+
+                            <KeyboardAvoidingView
+                                style={{
+                                    flex: 1,
+                                    // flexDirection: "column",
+                                    // flexDirection: "column-reverse",
+                                }}
+                            >
+                                <View style={{
+                                    flex: 1
+                                }}>
+                                    {demoStage >= 1 ? <View style={{
+                                        justifyContent: "flex-end",
+                                        alignItems: "flex-end",
+                                    }}>
+                                        <FastImage
+                                            source={require("../assets/mockup/now.png")}
+                                            resizeMode="contain"
+                                            style={{ width: "50%", height: 100, marginTop: 5 }}
+                                        />
+                                    </View> : null}
+                                    {demoStage >= 2 ? <FastImage
+                                        source={require("../assets/group41.png")}
+                                        resizeMode="contain"
+                                        style={{ width: "80%", height: 200, marginRight: -20, marginTop: -45 }}
+                                    /> : null}
+                                    {demoStage >= 3 ? <FastImage
+                                        source={require("../assets/mockup/group42.png")}
+                                        resizeMode="contain"
+                                        style={{ width: "70%", height: 100, marginLeft: 42, marginTop: -15 }}
+                                    /> : null}
+                                    <View style={{
+                                        flexDirection: "row",
+                                        position: "absolute",
+                                        bottom: 280,
+                                        marginRight: 10
+                                    }}>
+                                        <TextInput autoFocus style={{
+
+                                            width: "83%",
+                                            height: 30,
+                                            paddingLeft: 10,
+                                            borderRadius: 100,
+                                            backgroundColor: "transparent",
+                                            borderColor: "black",
+                                            borderWidth: 1,
+                                            fontSize: demoStage === 0 ? 14 : 0,
+                                            fontFamily: "Red Hat Display Regular",
+                                            // position: "absolute",
+                                        }}>
+
+                                        </TextInput>
+                                        <TouchableOpacity style={{ width: "20%", height: 30 }} onPress={() => {
+                                            setDemoStage(1);
+                                            setTimeout(() => {
+                                                setDemoStage(2);
+                                                setTimeout(() => {
+                                                    setDemoStage(3);
+                                                }, 1000);
+                                            }
+                                                , 1000);
+                                        }}>
+                                            <Image
+                                                source={require("../assets/mockup/buttonsend.png")}
+                                                resizeMode="contain"
+                                                style={{ width: "100%", height: "100%" }}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                </View>
+                            </KeyboardAvoidingView>
+                        </BlurView>
+
+                    </Animated.View> : null}
 
                     {selectionMode ? <View style={{ maxHeight: 50, flex: 1, flexDirection: "column" }}>
                         <View style={{
@@ -212,26 +339,27 @@ export default function SocialProfile({ }) {
                         data={gallery}
                         ListHeaderComponent={() => !selectionMode ? (
                             <View style={{ flex: 1, flexDirection: "column" }}>
-                                <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10 }}>
-                                    <FastImage
-                                        source={require("../assets/skeletons/timegraph.png")}
-                                        style={{ width: "100%", height: 160}}
-                                        resizeMode="contain"
-                                    />
-                                </View>
-                                <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 15, marginVertical: 0}}>
+                                {/* <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10, marginVertical: 15 }}>
                                     <Mutuals
                                         targetUserId={route.params?.userId}
                                         mutualCount={mutuals?.mutualCount}
                                         mutuals={mutuals?.mutuals || []} />
+                                </View> */}
+                                <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
+                                    <FastImage
+                                        source={require("../assets/events.png")}
+                                        style={{ width: "100%", height: 240 }}
+                                        resizeMode="contain"
+                                    />
                                 </View>
-                                <View style={{ flex: 1, flexDirection: "row", marginVertical:10 }}>
+
+                                {/* <View style={{ flex: 1, flexDirection: "row", marginVertical: 10 }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                         <ConnectionStatus style={{ flex: 1, width: 150, marginHorizontal: 15 }} refresh={refetchProfile} profile={profile} user={user} />
                                     </View>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                     </View>
-                                </View>
+                                </View> */}
 
                                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                                     <View style={{
@@ -271,6 +399,11 @@ export default function SocialProfile({ }) {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
+                                <FastImage
+                                    source={require("../assets/mockup/recipes.png")}
+                                    style={{ width: "100%", height: 206, marginBottom: 15 }}
+                                    resizeMode="contain"
+                                />
                                 {profile?._id && gallery.length === 0 ? <NoSharedMemories /> : null}
 
                             </View>
@@ -344,4 +477,17 @@ export default function SocialProfile({ }) {
                 </View> : null}
     </SafeAreaView >
 
+}
+
+function TheAIButton({ aiTab, setAiTab }: { aiTab: boolean, setAiTab: (value: boolean) => void }) {
+    return <TouchableWithoutFeedback onPress={() => {
+        // alert("AI");
+        setAiTab(!aiTab)
+    }}>
+        <Image
+            source={require("../assets/mockup/ai.png")}
+            resizeMode="contain"
+            style={{ width: 120, height: 40, marginRight: -20, marginTop: 0 }}
+        />
+    </TouchableWithoutFeedback>
 }

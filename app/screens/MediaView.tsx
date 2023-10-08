@@ -283,7 +283,15 @@ export default function MediaView() {
 					/>
 				</View>
 			</View>
-			<View style={{ flex: 1, padding: 10, alignContent: "center", flexDirection: "row", backgroundColor: "white" }}>
+			{/* <View style={{
+				flex: 1, padding: 10, alignContent: "center", flexDirection: "row", backgroundColor: "white",
+				shadowColor: "#000",
+				shadowOffset: {
+					width: 0,
+					height: 5,
+				},
+				shadowOpacity: 1,
+			}}>
 				<View>
 					<ProfilePicture userId={media?.user?._id} location={media?.user?.profilePictureSource} width={35} height={35} />
 				</View>
@@ -306,7 +314,7 @@ export default function MediaView() {
 						style={{ width: 20, height: 20, marginLeft: 10 }}
 					/>
 				</TouchableOpacity>
-			</View>
+			</View> */}
 		</View>
 	);
 }

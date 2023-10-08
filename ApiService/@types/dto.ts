@@ -14,6 +14,8 @@ export type EventObject = {
     peopleCount: number,
     mediaCount: number,
 
+    linkedEvents: IEvent["linkedEvents"],
+
     people: ReturnType<IEvent["people"]>,
     hasPermission: ReturnType<IEvent["hasPermission"]>,
     muted: boolean,

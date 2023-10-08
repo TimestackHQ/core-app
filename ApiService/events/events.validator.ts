@@ -51,3 +51,10 @@ export const updatePermissionValidator = (body: unknown): Joi.ValidationResult =
     return schema.validate(body);
 }
 
+export const linkEventValidator = (body: unknown): Joi.ValidationResult => {
+    const schema = Joi.object({
+        isLinked: Joi.boolean().required()
+    });
+
+    return schema.validate(body);
+}

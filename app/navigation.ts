@@ -22,6 +22,10 @@ export type RootStackParamList = {
         refresh?: boolean,
         openUpload?: boolean,
     },
+    LinkedEvents: {
+        eventId: string,
+        eventName: string,
+    },
     EventsList: {
 
     },
@@ -102,6 +106,11 @@ export type NotificationsScreenNavigationProp = StackNavigationProp<
 export type MediaViewScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'MediaView'
+>;
+
+export type LinkedEventsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'LinkedEvents'
 >;
 
 export type AddPeopleScreenNavigationProp = StackNavigationProp<

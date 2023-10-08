@@ -8,6 +8,7 @@ import { IMedia } from "shared/@types/Media";
 import { MediaInternetType } from "../../shared/@types/public";
 import mongoose from "mongoose";
 import { EventObject } from "../@types/dto";
+import { IEvent } from "shared/models/Event";
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -329,6 +330,7 @@ export async function getAllInvites(req: Request, res: Response<{
                     revisits: event.revisits,
                     peopleCount: event?.users?.length || 0,
                     mediaCount: event.content.length,
+                    linkedEvents: event.linkedEvents,
                     people: event.people(req.user._id),
                     hasPermission: event.hasPermission(req.user._id),
                     muted: event.mutedList?.includes(req.user._id.toString()),
@@ -408,6 +410,7 @@ export async function getEvent(req: Request, res: Response<{
                 revisits: event.revisits,
                 peopleCount: peopleCount?.users?.length || 0,
                 mediaCount: event.content.length,
+                linkedEvents: event.linkedEvents,
                 people: event.people(req.user._id),
                 hasPermission: event.hasPermission(req.user._id),
                 muted: event.mutedList?.includes(req.user._id.toString()),
@@ -819,4 +822,96 @@ export async function muteEvent(req: Request, res: Response, next: NextFunction)
     } catch (err) {
         next(err);
     }
+}
+
+export async function linkEvent(req: Request, res: Response) {
+    try {
+
+        const parentEvent = await Models.Event.findById(req.params.eventId);
+
+        if (!parentEvent) {
+            return res.status(404).json({
+                message: "Event not found"
+            });
+        }
+
+        if (req.body.isLinked) {
+            const childEvent = await Models.Event.findById(req.params.targetEventId);
+
+            if (!childEvent || parentEvent._id.toString() === childEvent._id.toString()) return res.status(404).json({
+                message: "Event not found"
+            });
+
+            if (parentEvent.linkedEvents.includes(childEvent._id.toString())) return res.status(400).json({
+                message: "Event already linked"
+            });
+
+            parentEvent.linkedEvents.push(childEvent._id);
+
+            await parentEvent.save();
+        } else {
+            parentEvent.linkedEvents = parentEvent.linkedEvents.filter((id: any) => id.toString() !== req.params.targetEventId);
+
+            await parentEvent.save();
+        }
+
+        return res.sendStatus(200);
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+}
+
+export async function getLinkedEvents(req: Request, res: Response) {
+
+
+    try {
+        const parentEvent = await Models.Event.findById(req.params.eventId)
+
+            .populate<IEvent[]>({
+                path: "linkedEvents",
+                populate: [{
+                    path: "cover",
+                }]
+            });
+
+        if (!parentEvent) return res.status(404).json({
+            message: "Event not found"
+        });
+
+        const events: {
+            _id: string,
+            name: string,
+            thumbnailUrl: EventObject["thumbnailUrl"],
+            storageLocation: EventObject["storageLocation"],
+        }[] = [];
+
+        await Promise.all((parentEvent.linkedEvents as IEvent[]).map(async (event: IEvent): Promise<void> => {
+
+            const cover = event.cover as IMedia;
+
+            events.push({
+                _id: event._id.toString(),
+                name: event.name,
+                thumbnailUrl: await cover?.getThumbnailLocation(),
+                storageLocation: await cover?.getFullsizeLocation(),
+            });
+
+        }));
+
+        return res.json({
+            linkedEvents: events.map((event) => ({
+                _id: event._id.toString(),
+                name: event.name,
+                thumbnailUrl: event.thumbnailUrl,
+                storageLocation: event.storageLocation,
+            }))
+        });
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+
+
 }

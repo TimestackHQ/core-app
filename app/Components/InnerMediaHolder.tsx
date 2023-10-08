@@ -1,4 +1,4 @@
-import { Dimensions, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Dimensions, Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
 import Pinchable from "react-native-pinchable";
 import TimestackMedia from "./TimestackMedia";
 import FastImage from "react-native-fast-image";
@@ -7,9 +7,9 @@ import { useEffect } from "react";
 import { MediaInternetType } from "@shared-types/*";
 import HTTPClient from "../httpClient";
 import TextComponent from "./Library/Text";
-import {SharedElement} from "react-navigation-shared-element";
+import { SharedElement } from "react-navigation-shared-element";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function InnerMediaHolder({ selfIndex, currentIndex, item, holderId, holderType }: {
     item: MediaInternetType,
@@ -24,8 +24,8 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
     const [videoLoaded, setVideoLoaded] = React.useState(false);
     const [itemInView, setItemInView] = React.useState(false);
 
-    useEffect(() =>{
-        if(selfIndex == currentIndex ||
+    useEffect(() => {
+        if (selfIndex == currentIndex ||
             selfIndex == currentIndex - 1 ||
             selfIndex == currentIndex + 1) setItemInView(true);
         else setItemInView(false);
@@ -44,58 +44,61 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
     }, [itemInView])
 
 
-    return <TouchableWithoutFeedback >
-        {media ? <View style={{ width, height: "100%" }}>
-            {/*<Text style={{*/}
-            {/*    position: "absolute",*/}
-            {/*    top: 0,*/}
-            {/*    zIndex: 2,*/}
-            {/*}}>{selfIndex} {currentIndex}</Text>*/}
+    return media ? <ScrollView style={{ flex: 1, width, height: 10000 }}>
+        {/*<Text style={{*/}
+        {/*    position: "absolute",*/}
+        {/*    top: 0,*/}
+        {/*    zIndex: 2,*/}
+        {/*}}>{selfIndex} {currentIndex}</Text>*/}
 
-            <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
-                    backgroundColor: "transparent",
-                    width, height: "100%",
-                }}>
-                {item.type === "image" ? <TimestackMedia
-                    itemInView={itemInView}
-                    type={media.type}
-                    onLoad={setVideoLoaded}
-                    source={media.fullsize}
-                    resizeMode={FastImage.resizeMode.contain}
-                    style={{ position: "absolute", top: 0,  zIndex: 1, width, height: "100%", backgroundColor: "transparent" }}
-                />: null}
+        {/* <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
+            backgroundColor: "transparent",
+            width, height: "100%",
+        }}> */}
+        {item.type === "image" ? <TimestackMedia
+            itemInView={itemInView}
+            type={media.type}
+            onLoad={setVideoLoaded}
+            source={media.fullsize}
+            resizeMode={FastImage.resizeMode.contain}
+            style={{ position: "absolute", top: 0, zIndex: 1, width, height: 0.8 * height, backgroundColor: "transparent" }}
+        /> : null}
 
-                {item.type === "image" ? <TimestackMedia
-                        itemInView={itemInView}
-                        type={"image"}
-                        source={media.thumbnail}
-                        resizeMode={FastImage.resizeMode.contain}
-                        style={{ position: "absolute", top: 0,  zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
-                    /> : null}
-
-
-            </Pinchable>
-
-            {item.type === "video" ? <TimestackMedia
-                itemInView={itemInView}
-                type={"image"}
-                source={media.thumbnail}
-                resizeMode={FastImage.resizeMode.contain}
-                style={{ position: "absolute", top: 0, zIndex: 3, width, height: "100%", backgroundColor: "black" }}
-            /> : null}
-
-            {item.type === "video" && itemInView ? <TimestackMedia
-                itemInView={itemInView}
-                autoPlay={currentIndex === selfIndex}
-                type={"video"}
-                source={media.fullsize}
-                resizeMode={FastImage.resizeMode.contain}
-                onLoad={setVideoLoaded}
-                style={{ position: "absolute", top: 0,  zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
-            /> : null}
+        {item.type === "image" ? <TimestackMedia
+            itemInView={itemInView}
+            type={"image"}
+            source={media.thumbnail}
+            resizeMode={FastImage.resizeMode.contain}
+            style={{ position: "absolute", top: 0, zIndex: 0, width, height: 0.8 * height, backgroundColor: "transparent" }}
+        /> : null}
 
 
+        {/* </Pinchable> */}
 
-        </View> : <View style={{ width, height: "100%" }} />}
-    </TouchableWithoutFeedback>
+        {/* {item.type === "video" ? <TimestackMedia
+            itemInView={itemInView}
+            type={"image"}
+            source={media.thumbnail}
+            resizeMode={FastImage.resizeMode.contain}
+            style={{ position: "absolute", top: 0, zIndex: 3, width, height: "100%", backgroundColor: "black" }}
+        /> : null}
+
+        {item.type === "video" && itemInView ? <TimestackMedia
+            itemInView={itemInView}
+            autoPlay={currentIndex === selfIndex}
+            type={"video"}
+            source={media.fullsize}
+            resizeMode={FastImage.resizeMode.contain}
+            onLoad={setVideoLoaded}
+            style={{ position: "absolute", top: 0, zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
+        /> : null} */}
+
+        <Image source={require("../assets/mockup/group45.png")} style={{
+            top: 0.65 * height, zIndex: 1, width, height: 1000
+        }} resizeMode={FastImage.resizeMode.contain} />
+
+
+
+
+    </ScrollView> : <View style={{ width, height: "100%" }} />
 }
