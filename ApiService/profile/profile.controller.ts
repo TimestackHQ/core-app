@@ -49,7 +49,7 @@ export async function picture(req: Request, res: Response, next: NextFunction) {
 
         const location = await AWS.upload(fileName, <Buffer>file.buffer, "timestack-profile-pictures");
 
-        req.user.profilePictureSource = location;
+        req.user.profilePictureSource = location.Location;
         await req.user.save();
 
         return res.status(200).json({
