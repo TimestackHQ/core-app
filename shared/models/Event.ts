@@ -35,7 +35,7 @@ export interface IEvent extends mongoose.Document {
     defaultPermission: "editor" | "viewer";
     exclusionList: mongoose.Schema.Types.ObjectId/***/[];
     mutedList: mongoose.Schema.Types.ObjectId/***/[];
-    linkedEvents: mongoose.Schema.Types.ObjectId/***/[] | IEvent[];
+    linkedEvents: (mongoose.Schema.Types.ObjectId | IEvent)[];
     people: (userId: mongoose.Schema.Types.ObjectId/***/) => (IUser & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId/***/) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
