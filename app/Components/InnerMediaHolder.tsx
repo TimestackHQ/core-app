@@ -75,7 +75,7 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
 
         {/* </Pinchable> */}
 
-        {/* {item.type === "video" ? <TimestackMedia
+        {item.type === "video" ? <TimestackMedia
             itemInView={itemInView}
             type={"image"}
             source={media.thumbnail}
@@ -91,7 +91,7 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
             resizeMode={FastImage.resizeMode.contain}
             onLoad={setVideoLoaded}
             style={{ position: "absolute", top: 0, zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
-        /> : null} */}
+        /> : null}
 
         <Image source={require("../assets/mockup/group45.png")} style={{
             top: 0.65 * height, zIndex: 1, width, height: 1000

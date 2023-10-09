@@ -166,12 +166,14 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
             console.log("------> ", media.uri, FileSystem.documentDirectory + media.filename);
 
             const mediaList: string[] = [];
-
+            let timestamp: Date = null;
 
             if (Platform.OS === "ios") {
                 if (media.type === "video") {
 
                     const video = await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), media.type, 1080, 1080)
+
+                    if (video?.metadata?.creationDate) timestamp = moment(video.metadata.creationDate).toDate();
 
                     const videoPath: string = video.compressedURL;
                     const thumbnailPath: string = (await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), "image", 300)).compressedURL;
@@ -181,6 +183,10 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
 
                 else {
                     const image = await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), media.type)
+                    console.log(image);
+
+                    if (image?.metadata?.creationDate) timestamp = moment(image.metadata.creationDate).toDate();
+
                     const imagePath: string = image.compressedURL;
                     const thumbnailPath: string = (await TimestackCoreModule.fetchImage(job.id, media.uri.replace("ph://", ""), "image", 600, 600)).compressedURL;
 
@@ -239,6 +245,8 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
                 throw new Error("Some media is missing");
             }
 
+            console.log(mediaList)
+
             const upload = await TimestackCoreModule.uploadFile(
                 {
                     mediaFile: mediaList[0],
@@ -254,7 +262,8 @@ export class UploadJobsRepository extends Repository<UploadItemJob> {
                     holderType: media.holderType,
                     mediaQuality: "high",
                     mediaFormat: media.type === "video" ? "mp4" : "jpeg",
-                    uploadLocalDeviceRef: media.groupName
+                    uploadLocalDeviceRef: media.groupName,
+                    timestamp: timestamp ? timestamp.toISOString() : null,
                 }
             );
 

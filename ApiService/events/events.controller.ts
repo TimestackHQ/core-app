@@ -795,7 +795,8 @@ export async function muteEvent(req: Request, res: Response, next: NextFunction)
         });
 
         if (!event) {
-            return res.sendStatus(404);
+            return res.sendStsl
+            atus(404);
         }
 
         if (!event.hasPermission(req.user._id)) {

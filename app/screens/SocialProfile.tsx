@@ -345,13 +345,79 @@ export default function SocialProfile({ }) {
                                         mutualCount={mutuals?.mutualCount}
                                         mutuals={mutuals?.mutuals || []} />
                                 </View> */}
-                                <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
+                                <View style={{
+                                    // flex: 1,
+                                    width: "100%",
+                                    height: 240,
+                                    position: "absolute",
+                                    // backgroundColor: "black",
+                                    top: 0,
+                                    zIndex: 1000
+                                }}>
+                                    <View style={{
+                                        flexDirection: "row",
+                                        opacity: 0
+                                    }}>
+                                        <TouchableOpacity onPress={() => {
+                                            navigator.navigate("Event", {
+                                                eventId: "65105ad153a414a264ba93a0"
+                                            })
+                                        }} style={{
+                                            backgroundColor: "orange",
+                                            width: "50%",
+                                            height: 140
+                                        }} />
+                                        <TouchableOpacity onPress={() => {
+                                            navigator.navigate("Event", {
+                                                eventId: profile._id === "652303d12fd13bf3efa3ddf5" ? "65230a4b0e110af5b8a92e0b" : "643aa5d1204fd8be960f896f"
+                                            })
+                                        }} style={{
+                                            backgroundColor: "yellow",
+                                            width: "50%",
+                                            height: 140
+                                        }} />
+                                    </View>
+                                    <View style={{
+                                        flexDirection: "row",
+                                        opacity: 0
+                                    }}>
+                                        <TouchableOpacity onPress={() => {
+                                            navigator.navigate("Event", {
+                                                eventId: "65230a770e110af5b8a92e98"
+                                            })
+                                        }} style={{
+                                            backgroundColor: "orange",
+                                            width: "50%",
+                                            height: 140
+                                        }} />
+                                        <TouchableOpacity onPress={() => {
+                                            navigator.navigate("Event", {
+                                                eventId: "65231288b56e7370a760d89b"
+                                            })
+                                        }} style={{
+                                            backgroundColor: "yellow",
+                                            width: "50%",
+                                            height: 140
+                                        }} />
+                                    </View>
+
+                                </View>
+
+                                {profile._id === "652303d12fd13bf3efa3ddf5" ? <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
                                     <FastImage
                                         source={require("../assets/events.png")}
                                         style={{ width: "100%", height: 240 }}
                                         resizeMode="contain"
                                     />
-                                </View>
+                                </View> : null}
+
+                                {profile._id !== "652303d12fd13bf3efa3ddf5" ? <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
+                                    <FastImage
+                                        source={require("../assets/mockup/recipes2.png")}
+                                        style={{ width: "100%", height: 240 }}
+                                        resizeMode="contain"
+                                    />
+                                </View> : null}
 
                                 {/* <View style={{ flex: 1, flexDirection: "row", marginVertical: 10 }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
@@ -399,11 +465,11 @@ export default function SocialProfile({ }) {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                <FastImage
+                                {profile._id === "652303d12fd13bf3efa3ddf5" ? <FastImage
                                     source={require("../assets/mockup/recipes.png")}
                                     style={{ width: "100%", height: 206, marginBottom: 15 }}
                                     resizeMode="contain"
-                                />
+                                /> : null}
                                 {profile?._id && gallery.length === 0 ? <NoSharedMemories /> : null}
 
                             </View>

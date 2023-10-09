@@ -1,4 +1,5 @@
 import AVFoundation
+import Foundation
 import ExpoModulesCore
 import React
 import Photos
@@ -59,6 +60,7 @@ public class TimestackCoreModule: Module {
                     node = createImageNode(asset: asset, compressedURL: compressedImageURL)
                     compressedURL = compressedImageURL
                 }
+                
             } else if mediaType == .video {
                 let semaphore = DispatchSemaphore(value: 0)
                 
@@ -112,8 +114,15 @@ public class TimestackCoreModule: Module {
                 result["compressedURL"] = "file://" + compressedURL.path
             }
             
+            // Add original asset metadata to the result
+            result["metadata"] = getAssetMetadata(asset: asset)
+            
             return result
         }
+
+        // Function to get asset metadata
+       
+
         
         AsyncFunction("uploadFile") { (
             files: [String: String],
@@ -204,6 +213,31 @@ public class TimestackCoreModule: Module {
 
 
 
+    }
+    
+    private func getAssetMetadata(asset: PHAsset) -> [String: Any] {
+        var metadata: [String: Any] = [:]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
+        
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // You can customize the format as needed
+
+        
+        // Add metadata properties as needed
+        metadata["localIdentifier"] = asset.localIdentifier
+        metadata["pixelWidth"] = asset.pixelWidth
+        metadata["pixelHeight"] = asset.pixelHeight
+        if let unwrappedDate = asset.creationDate {
+            metadata["creationDate"] = dateFormatter.string(from: unwrappedDate)
+        } else {
+            print("Date is nil")
+        }
+        
+        
+        // Add more metadata properties as needed
+        
+        return metadata
     }
     
     private func convertToMediaType(_ mediaTypeString: String) -> PHAssetMediaType? {

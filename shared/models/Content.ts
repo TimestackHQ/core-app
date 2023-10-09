@@ -7,6 +7,7 @@ export interface IContent extends mongoose.Document {
     contentId: mongoose.Schema.Types.ObjectId/***/;
     contentType: "media" | "mediaGroup";
     createdAt: Date;
+    timestamp: Date;
 }
 
 
@@ -24,7 +25,8 @@ const contentSchema = new ExtendedMongoSchema({
         type: String,
         enum: ["media", "mediaGroup"]
     },
-    createdAt: Date
+    createdAt: Date,
+    timestamp: Date,
 }, {
     timestamps: {
         createdAt: true,

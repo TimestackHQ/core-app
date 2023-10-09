@@ -205,8 +205,8 @@ export default function MediaView() {
 
 
 	const onViewCallBack = React.useCallback((event) => {
-		setItemInView(event.viewableItems[0].item._id);
-		console.log("Item in view", event.viewableItems[0].item._id);
+		setItemInView(event.viewableItems[0]?.item?._id);
+		console.log("Item in view", event.viewableItems[0]?.item?._id);
 	}, []) // any dependencies that require the function to be "redeclared"
 
 	const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 })
@@ -266,7 +266,6 @@ export default function MediaView() {
 									selfIndex={index}
 									currentIndex={currentIndex}
 									item={item}
-									itemInView={itemInView === item._id}
 									holderId={route.params?.holderId}
 									holderType={route.params?.holderType}
 								/>

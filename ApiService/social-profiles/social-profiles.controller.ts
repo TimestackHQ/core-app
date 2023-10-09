@@ -7,7 +7,7 @@ import moment from "moment";
 import User, { IUser } from "../../shared/models/User";
 import { IMedia } from "../../shared/@types/Media";
 import { MediaInternetType, SocialProfileInterface } from "../../shared/@types/public";
-import {PeopleSearchResult} from "../people/people.controller";
+import { PeopleSearchResult } from "../people/people.controller";
 
 const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUserId: string) => {
 
@@ -32,8 +32,6 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
             $nin: [targetUserId]
         }
     }).select("_id").lean();
-
-    console.log(userProfiles);
 
     const userProfilesIds = userProfiles.map((profile: any) => profile._id);
 
@@ -93,14 +91,14 @@ const getProfile = async (userId: mongoose.Schema.Types.ObjectId/***/, targetUse
 
 const clearProfile = async (profile: SocialProfileInterface) => {
 
-    if(profile.status !== "PENDING") return false;
+    if (profile.status !== "PENDING") return false;
     const profileDocument = await Models.SocialProfile.findOne({
         _id: profile._id
     }).select({
         content: 1
     });
 
-    if(!profileDocument) return false;
+    if (!profileDocument) return false;
 
     const allContent = profileDocument.content;
 
@@ -109,9 +107,9 @@ const clearProfile = async (profile: SocialProfileInterface) => {
             _id: contentId
         });
 
-        if(!content) continue;
+        if (!content) continue;
 
-        if(content.contentType === "mediaGroup") {
+        if (content.contentType === "mediaGroup") {
             const mediaGroup = await Models.MediaGroup.findOne({
                 _id: content.contentId
             }).select({
@@ -123,7 +121,7 @@ const clearProfile = async (profile: SocialProfileInterface) => {
                 }
             });
 
-            if(!mediaGroup) continue;
+            if (!mediaGroup) continue;
 
             for await (const mediaRaw of mediaGroup.media) {
 
@@ -136,14 +134,14 @@ const clearProfile = async (profile: SocialProfileInterface) => {
                 });
 
             }
-        } else if(content.contentType === "media") {
+        } else if (content.contentType === "media") {
             const media = await Models.Media.findOne({
                 _id: content.contentId
             }).select({
                 files: 1
             });
 
-            if(!media) continue;
+            if (!media) continue;
 
             await Promise.allSettled(media.files.map(async (file) => {
                 await AWS.deleteFile(file.storage.path);
@@ -278,7 +276,7 @@ export async function acceptProfile(req: Request, res: Response) {
 
 }
 
-export async function declineProfile (req: Request, res: Response) {
+export async function declineProfile(req: Request, res: Response) {
     try {
 
         const userId = req.user._id;
@@ -289,7 +287,7 @@ export async function declineProfile (req: Request, res: Response) {
         }
 
         const profile = await getProfile(userId, targetUserId);
-        if(profile.status !== "PENDING") {
+        if (profile.status !== "PENDING") {
             return res.sendStatus(400);
         }
 
@@ -356,7 +354,7 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                     limit: 30,
                     skip: req.query?.skip ? Number(req.query.skip) : 0,
                     sort: {
-                        createdAt: 1
+                        timestamp: 1
                     }
                 }
             }]);
@@ -438,13 +436,13 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                 }
             }
 
-            if(!response) throw new Error("Response is undefined");
+            if (!response) throw new Error("Response is undefined");
 
             return {
                 ...response,
                 isProcessing: response?.thumbnail?.path === response?.fullsize?.path,
             }
-        }))).sort((a, b) => moment(b.createdAt).unix() - moment(a.createdAt).unix())
+        }))).sort((a, b) => moment(b.timestamp).unix() - moment(a.timestamp).unix())
 
         res.json({
             content: mediaContent

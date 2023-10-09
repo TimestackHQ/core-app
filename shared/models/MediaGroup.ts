@@ -11,6 +11,7 @@ export interface IMediaGroup extends ExtendedMongoSchema {
     relatedEvents: (mongoose.Schema.Types.ObjectId/***/ | Event)[];
     relatedSocialProfiles: (mongoose.Schema.Types.ObjectId/***/ | SocialProfileInterface)[];
     relatedUsers: mongoose.Schema.Types.ObjectId/***/[];
+    timestamp: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -43,6 +44,11 @@ export const MediaGroupSchema = new ExtendedMongoSchema({
         type: mongoose.Schema.Types.ObjectId/***/,
         ref: "User"
     }],
+    timestamp: {
+        type: Date,
+        required: false,
+        default: Date.now
+    }
 }, {
     timestamps: true
 });

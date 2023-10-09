@@ -143,7 +143,7 @@ export const viewMedia = async (req: Request, res: Response<{
                 _id: media?._id.toString(),
                 fullsize: await media.getFullsizeLocation(),
                 thumbnail: await media.getThumbnailLocation(),
-                timestamp: media.metadata.timestamp,
+                timestamp: media.timestamp,
                 user: media.user ? {
                     _id: user._id.toString(),
                     firstName: user?.firstName,
@@ -167,12 +167,14 @@ export type CreateMediaType = {
     holderType: typeof MEDIA_HOLDER_TYPES[number],
     mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
     mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
-    metadata?: any
+    metadata?: any,
+    timestamp?: string
 } | {
     mediaQuality: typeof MEDIA_QUALITY_OPTIONS[number],
     mediaFormat: typeof MEDIA_FORMAT_OPTIONS[number],
     holderType: "cover",
-    metadata?: any
+    metadata?: any,
+    timestamp?: string
 }
 
 export async function createMedia(req: Request, res: Response, next: NextFunction) {
@@ -221,9 +223,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
             type: IMAGE_FORMAT_OPTIONS.includes(mediaFilename.split(".").pop() as typeof IMAGE_FORMAT_OPTIONS[number]) ? "image" : "video",
             user: req.user._id,
             metadata: req.query.metadata,
-            timestamp: req.query.metadata ? JSON.parse(query.metadata)?.timestamp
-                ? moment(JSON.parse(query.metadata)?.timestamp).toDate()
-                : undefined : undefined,
+            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
         });
 
         await media.save();
@@ -262,13 +262,15 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         group = await Models.MediaGroup.create({
                             uploadLocalDeviceRef: query.uploadLocalDeviceRef,
                             relatedSocialProfiles: [holder._id],
-                            media: [media._id]
+                            media: [media._id],
+                            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                         });
 
                         const content = await Models.Content.create({
                             contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                             contentId: group._id,
                             createdAt: new Date(),
+                            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                         });
 
                         await holder.updateOne({
@@ -286,6 +288,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                         contentId: media._id,
                         createdAt: new Date(),
+                        timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                     });
 
                     await holder.updateOne({
