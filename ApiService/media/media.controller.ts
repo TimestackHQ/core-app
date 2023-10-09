@@ -223,7 +223,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
             type: IMAGE_FORMAT_OPTIONS.includes(mediaFilename.split(".").pop() as typeof IMAGE_FORMAT_OPTIONS[number]) ? "image" : "video",
             user: req.user._id,
             metadata: req.query.metadata,
-            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
+            timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
         });
 
         await media.save();
@@ -263,14 +263,14 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                             uploadLocalDeviceRef: query.uploadLocalDeviceRef,
                             relatedSocialProfiles: [holder._id],
                             media: [media._id],
-                            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
+                            timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                         });
 
                         const content = await Models.Content.create({
                             contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                             contentId: group._id,
                             createdAt: new Date(),
-                            timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
+                            timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                         });
 
                         await holder.updateOne({
@@ -288,7 +288,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                         contentId: media._id,
                         createdAt: new Date(),
-                        timestamp: query.timestamp ? moment(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
+                        timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                     });
 
                     await holder.updateOne({
