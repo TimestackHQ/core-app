@@ -219,7 +219,6 @@ public class TimestackCoreModule: Module {
         var metadata: [String: Any] = [:]
         
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss" // You can customize the format as needed
 
