@@ -20,6 +20,7 @@ import { Hyperlink } from "react-native-hyperlink";
 import * as WebBrowser from 'expo-web-browser';
 import TimestackMedia from "../Components/TimestackMedia";
 import {
+	ChatSpaceScreenNavigationProp,
 	InviteScreenNavigationProp,
 	LinkedEventsScreenNavigationProp,
 	RollScreenNavigationProp,
@@ -105,6 +106,7 @@ function Headers({
 		>
 			<Image source={muted ? require("../assets/icons/collection/unmute.png") : require("../assets/icons/collection/mute.png")} style={{ width: 30, height: 30 }} />
 		</TouchableOpacity>
+
 		<TouchableOpacity onPress={async () => {
 			await Share.share({
 				url: frontendUrl + "/event/" + route.params.eventId + "/invite",
@@ -113,6 +115,13 @@ function Headers({
 		}
 		}>
 			<Image source={require("../assets/icons/collection/share.png")} style={{ width: 30, height: 30 }} />
+		</TouchableOpacity>
+		<TouchableOpacity onPress={async () => {
+			navigation.navigate("ChatSpace", {
+			})
+		}
+		}>
+			<Image source={require("../assets/icons/collection/chat.png")} resizeMode="contain" style={{ width: 25, height: 22, marginTop: 8, marginLeft: 15 }} />
 		</TouchableOpacity>
 		<OverflowMenu
 			style={{ marginHorizontal: 10, marginRight: -10, zIndex: 100 }}
@@ -168,7 +177,8 @@ export default function EventScreen() {
 		InviteScreenNavigationProp |
 		RollScreenNavigationProp |
 		SocialProfileScreenNavigationProp |
-		LinkedEventsScreenNavigationProp
+		LinkedEventsScreenNavigationProp |
+		ChatSpaceScreenNavigationProp
 	>();
 	const isFocused = useIsFocused();
 
