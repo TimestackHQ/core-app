@@ -5,6 +5,7 @@ import moment = require("moment");
 import { IUser } from "../../shared/models/User";
 import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "../../shared/consts";
 import { IMedia } from "../../shared/@types/Media";
+import { IContent } from "../../shared/models/Content";
 import { AWSS3ObjectType } from "shared/@types/global";
 import { PersonType } from "../@types";
 import mongoose, { Promise } from "mongoose";
@@ -97,6 +98,7 @@ export type MediaInView = {
     thumbnail: AWSS3ObjectType;
     fullsize: AWSS3ObjectType;
     timestamp: Date;
+    contentId?: string;
     user?: PersonType
     hasPermission: Boolean
 }
@@ -144,6 +146,7 @@ export const viewMedia = async (req: Request, res: Response<{
                 fullsize: await media.getFullsizeLocation(),
                 thumbnail: await media.getThumbnailLocation(),
                 timestamp: media.timestamp,
+                contentId: media?.content?.toString(),
                 user: media.user ? {
                     _id: user._id.toString(),
                     firstName: user?.firstName,
@@ -251,12 +254,16 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                     }
                 }
 
+
+                let content: IContent | null = null;
+
                 if (query.uploadLocalDeviceRef) {
                     let group = await Models.MediaGroup.findOneAndUpdate(groupQuery, {
                         $push: {
                             media: media._id
                         }
                     });
+
                     if (!group) {
 
                         group = await Models.MediaGroup.create({
@@ -266,7 +273,7 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                             timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
                         });
 
-                        const content = await Models.Content.create({
+                        content = await Models.Content.create({
                             contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                             contentId: group._id,
                             createdAt: new Date(),
@@ -279,12 +286,13 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                             }
                         });
 
-                        media.relatedGroups.push(group._id as unknown as mongoose.Schema.Types.ObjectId);
+
+
 
                     }
 
                 } else {
-                    const content = await Models.Content.create({
+                     content = await Models.Content.create({
                         contentType: query.uploadLocalDeviceRef ? "mediaGroup" : "media",
                         contentId: media._id,
                         createdAt: new Date(),
@@ -299,7 +307,29 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                 }
 
 
-                media.relatedSocialProfiles.push(holder?._id);
+                if (content) {
+                    const update = {
+                        "$push": {},
+                    };
+
+                    if (query.holderType === "event") {
+                        update["$push"] = {
+                            events: holder._id
+                        };
+                    } else if (query.holderType === "socialProfile") {
+                        update["$push"] = {
+                            socialProfiles: holder._id
+                        };
+                    }
+
+                    if (Object.keys(update).length > 0) {
+                        await Models.Content.updateOne({ _id: content._id }, update, {
+                            upsert: true
+                        });
+                    }
+
+                    media.content = content._id;
+                }
 
             }
         }

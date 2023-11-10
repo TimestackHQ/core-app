@@ -301,7 +301,7 @@ export default function EventScreen() {
 						</View>
 					</View>
 					<View>
-						<View style={{ flexDirection: "row", margin: 15 }}>
+						{/* <View style={{ flexDirection: "row", margin: 15 }}>
 							<TouchableWithoutFeedback onPress={peopleScreenNav}>
 								<View style={{ flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "flex-end" }}>
 									<Text style={styles.counterNumber} numberOfLines={1}>
@@ -330,13 +330,13 @@ export default function EventScreen() {
 								</Text>
 							</View>
 
-						</View>
-						<View style={{ flexDirection: "row" }}>
+						</View> */}
+						{/* <View style={{ flexDirection: "row" }}>
 
 							<LinkedEvents eventId={event?._id} eventName={event?.name} linkedEvents={linkedEvents} />
 
-						</View>
-						<TouchableWithoutFeedback >
+						</View> */}
+						{/* <TouchableWithoutFeedback >
 							<View style={{
 								flexDirection: 'row',
 								alignItems: 'center',
@@ -386,7 +386,7 @@ export default function EventScreen() {
 								}) : null}
 
 							</View>
-						</TouchableWithoutFeedback>
+						</TouchableWithoutFeedback> */}
 						<View style={{ flexDirection: "row", marginTop: 10 }}>
 							<View style={{
 								flex: 1,

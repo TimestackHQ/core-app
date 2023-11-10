@@ -22,6 +22,7 @@ import MutualsScreen from "../screens/Mutuals";
 import EventsList from "../screens/EventsList";
 import LinkedEvents from "../screens/LinkedEventsScreen";
 import ChatSpaceScreen from "../screens/ChatSpaceScreen";
+import LinkContent from "../screens/LinkContent";
 
 const DefaultBackButtonHeader = name => ({
 	headerShadowVisible: true,
@@ -79,6 +80,7 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen options={{ presentation: "card", headerShown: true }} name="LinkedEvents" component={LinkedEvents} />
 			<Index.Screen options={{ presentation: "card", headerShown: false }} name="ChatSpace" component={ChatSpaceScreen} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
+			<Index.Screen options={{ presentation: "formSheet" }} name="LinkContent" component={LinkContent} />
 			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
 			<Index.Screen options={{ headerShown: false }} name="Future" component={FutureScreen} />

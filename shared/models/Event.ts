@@ -6,6 +6,7 @@ import { isObjectIdOrHexString } from "mongoose";
 import { IMedia } from "../@types/Media";
 import { ExtendedMongoSchema, UUIDProperty } from "./helpers";
 import { IContent } from "./Content";
+import {SocialProfilePermissionsInterface} from "../@types/SocialProfile";
 
 export interface IEvent extends mongoose.Document {
     name: string;
@@ -39,9 +40,7 @@ export interface IEvent extends mongoose.Document {
     people: (userId: mongoose.Schema.Types.ObjectId/***/) => (IUser & { type: String })[];
     hasPermission: (userId: mongoose.Schema.Types.ObjectId/***/) => boolean;
     // ics: (organizer: UserSchema, users: UserSchema[]) => Promise<any>;
-    permissions: (userId: mongoose.Schema.Types.ObjectId/***/) => {
-        canUploadMedia: boolean;
-    };
+    permissions: (userId: mongoose.Schema.Types.ObjectId/***/) => SocialProfilePermissionsInterface;
 
 }
 
@@ -190,14 +189,18 @@ EventSchema.methods.hasPermission = function (userId: mongoose.Schema.Types.Obje
 
 }
 
-EventSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId/***/) {
+EventSchema.methods.permissions = function (userId: mongoose.Schema.Types.ObjectId/***/):SocialProfilePermissionsInterface {
 
     let canUploadMedia = false;
     if (this.defaultPermission === "editor") canUploadMedia = !this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
     else if (this.defaultPermission === "viewer") canUploadMedia = this.exclusionList.map((u: any) => u.toString()).includes(userId.toString());
 
     return {
+        canAdd: false,
+        canAccept: false,
+        canUnblock: false,
         canUploadMedia,
+        canLinkNestedPhoto: canUploadMedia
     }
 
 }

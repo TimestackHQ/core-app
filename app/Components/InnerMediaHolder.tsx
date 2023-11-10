@@ -44,17 +44,17 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
     }, [itemInView])
 
 
-    return media ? <ScrollView style={{ flex: 1, width, height: 10000 }}>
+    return media ? <View style={{ flex: 1, width, height: 10000 }}>
         {/*<Text style={{*/}
         {/*    position: "absolute",*/}
         {/*    top: 0,*/}
         {/*    zIndex: 2,*/}
         {/*}}>{selfIndex} {currentIndex}</Text>*/}
 
-        {/* <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
+        <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
             backgroundColor: "transparent",
             width, height: "100%",
-        }}> */}
+        }}>
         {item.type === "image" ? <TimestackMedia
             itemInView={itemInView}
             type={media.type}
@@ -73,7 +73,7 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
         /> : null}
 
 
-        {/* </Pinchable> */}
+        </Pinchable>
 
         {item.type === "video" ? <TimestackMedia
             itemInView={itemInView}
@@ -93,12 +93,9 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
             style={{ position: "absolute", top: 0, zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
         /> : null}
 
-        <Image source={require("../assets/mockup/group45.png")} style={{
-            top: 0.65 * height, zIndex: 1, width, height: 1000
-        }} resizeMode={FastImage.resizeMode.contain} />
 
 
 
 
-    </ScrollView> : <View style={{ width, height: "100%" }} />
+    </View> : <View style={{ width, height: "100%" }} />
 }

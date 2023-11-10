@@ -41,7 +41,8 @@ socialProfileSchema.methods.permissions = function (userId: mongoose.Schema.Type
         canAdd: this.status === "NONE",
         canAccept: this.status === "PENDING" && this.addedBy.toString() !== userId.toString(),
         canUnblock: this.status === "BLOCKED" && this.blockedBy.toString() === userId.toString(),
-        canUploadMedia: this.status === "ACTIVE" || this.status === "PENDING"
+        canUploadMedia: this.status === "ACTIVE" || this.status === "PENDING",
+        canLinkNestedPhoto: this.status === "ACTIVE",
     }
 }
 

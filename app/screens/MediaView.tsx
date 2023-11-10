@@ -8,7 +8,7 @@ import {
 	ActivityIndicator,
 	Dimensions,
 	FlatList,
-	TouchableWithoutFeedback
+	TouchableWithoutFeedback, StyleSheet, Button, SafeAreaView
 } from "react-native";
 import { useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
@@ -19,14 +19,17 @@ import FastImage from "react-native-fast-image";
 import ProfilePicture from "../Components/ProfilePicture";
 import { HeaderButtons, HiddenItem, OverflowMenu } from "react-navigation-header-buttons";
 import * as React from "react";
-import mediaDownload from "../utils/mediaDownload";
-import { RootStackParamList } from "../navigation";
+import {LinkContentScreenNavigationProp, RootStackParamList} from "../navigation";
 import { BlurView } from "@react-native-community/blur";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import InnerMediaHolder from "../Components/InnerMediaHolder";
 import { MediaInView } from "@api-types/public";
 import { flatten } from "lodash";
 import { MediaInternetType } from "@shared-types/*";
+// import {ReactNativeModal} from "react-native-modal";
+import ReactNativeModal from 'react-native-swipe-modal-up-down';
+import MediaViewHeaders from "../Components/MediaView/MediaViewHeaders";
+import MediaViewNavBar from "../Components/MediaView/MediaViewNavBar";
 
 // optional
 const options = {
@@ -38,54 +41,11 @@ const options = {
 const { width } = Dimensions.get('window');
 
 
-function Headers({ media, hasPermission, deleteMedia }) {
 
-	const [sharing, setSharing] = useState(false);
-	return <HeaderButtons>
-		<View>
-			<ActivityIndicator color={"#4fc711"} animating={sharing} style={{ marginTop: 5 }} />
-		</View>
-		<TouchableOpacity onPress={async () => {
-			setSharing(true);
-			try {
-
-				await mediaDownload(media?.storageLocation, "share", setSharing, false);
-
-				return;
-			} catch (e) {
-				console.log(e)
-				// if(e !== "[Error: User did not share]") Alert.alert("Error", "Unable to share media");
-			}
-			setSharing(false);
-		}}>
-
-			<Image source={require("../assets/icons/collection/share.png")} style={{ width: 30, height: 30 }} />
-		</TouchableOpacity>
-		{hasPermission ? <OverflowMenu
-			style={{ marginHorizontal: 10, marginRight: -10 }}
-			OverflowIcon={({ color }) => <TouchableOpacity onPress={() => {
-			}}>
-				<Image source={require("../assets/icons/collection/three-dots.png")} style={{ width: 35, height: 35 }} />
-			</TouchableOpacity>}
-		>
-			<HiddenItem title="Delete" onPress={() => {
-				Alert.alert("Delete", "Are you sure you want to delete this item?", [
-					{
-						text: "Cancel",
-						onPress: () => console.log("Cancel Pressed"),
-						style: "cancel"
-					},
-					{ text: "Yes", onPress: () => deleteMedia(media?._id) }
-
-				]);
-			}} />
-		</OverflowMenu> : null}
-	</HeaderButtons>
-}
 
 export default function MediaView() {
 
-	const navigator = useNavigation();
+	const navigator = useNavigation<LinkContentScreenNavigationProp>();
 	const route = useRoute<RouteProp<RootStackParamList, "MediaView">>();
 	const isFocused = useIsFocused();
 
@@ -96,6 +56,9 @@ export default function MediaView() {
 	const [currentIndex, setCurrentIndex] = useState(null);
 	const [isInGroup, setIsInGroup] = useState(0);
 	const [itemInView, setItemInView] = useState(null);
+	let [ShowComment, setShowModelComment] = useState(false);
+	let [animateModal, setanimateModal] = useState(false);
+
 
 	const getGallery = () => {
 		HTTPClient(`/social-profiles/${route.params.holderId}/media?skip=${gallery.length}${route.params.holderType === "socialProfile" ? "&profile=true" : ""}`, "GET")
@@ -162,7 +125,6 @@ export default function MediaView() {
 
 				navigator.setOptions({
 					headerBackTitle: "Back",
-					headerBackButtonVisible: true,
 					headerBackTitleVisible: true,
 					headerShown: true,
 					headerTitle: () => res.data.media?.timestamp ? (
@@ -185,7 +147,7 @@ export default function MediaView() {
 						</Text>
 					</View>,
 
-					headerRight: () => <Headers media={res.data.media} deleteMedia={deleteMedia} hasPermission={res.data.media?.hasPermission} />
+					headerRight: () => <MediaViewHeaders media={res.data.media} deleteMedia={deleteMedia} hasPermission={res.data.media?.hasPermission} />
 
 				});
 			})
@@ -282,38 +244,11 @@ export default function MediaView() {
 					/>
 				</View>
 			</View>
-			{/* <View style={{
-				flex: 1, padding: 10, alignContent: "center", flexDirection: "row", backgroundColor: "white",
-				shadowColor: "#000",
-				shadowOffset: {
-					width: 0,
-					height: 5,
-				},
-				shadowOpacity: 1,
-			}}>
-				<View>
-					<ProfilePicture userId={media?.user?._id} location={media?.user?.profilePictureSource} width={35} height={35} />
-				</View>
-				<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-					<View style={{ flexDirection: "column", justifyContent: "center" }}>
-						<Text style={{ fontFamily: "Red Hat Display Semi Bold", fontSize: 17, marginBottom: 40, marginLeft: 10 }}>
-							{media?.user?.firstName} {media?.user?.lastName}
-						</Text>
-
-					</View>
-				</View>
-				<ActivityIndicator animating={downloading} style={{ position: 'absolute', right: 40, marginTop: 5 }} color={"#4fc711"} />
-				<TouchableOpacity onPress={async () => {
-					setDownloading(true);
-					mediaDownload(media.fullsize, "download", setDownloading, false);
-				}
-				} disabled={downloading} style={{ position: 'absolute', right: 10, marginTop: 15, marginRight: 5 }} >
-					<FastImage
-						source={require("../assets/icons/download.png")}
-						style={{ width: 20, height: 20, marginLeft: 10 }}
-					/>
-				</TouchableOpacity>
-			</View> */}
+			<MediaViewNavBar
+				media={media}
+				holderId={route.params?.holderId}
+				holderType={route.params?.holderType}
+			/>
 		</View>
 	);
 }
@@ -338,5 +273,26 @@ const styles = {
 		marginHorizontal: 6,
 	},
 };
+
+const stylesModal = StyleSheet.create({
+	containerContent: {flex: 1, marginTop: 400, paddingTop: 400},
+	containerHeader: {
+		marginTop: 400,
+		flex: 1,
+		alignContent: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
+		height: 40,
+		backgroundColor: '#F1F1F1',
+	},
+	headerContent:{
+		marginTop: "70%",
+	},
+	Modal: {
+		marginTop: "70%",
+		backgroundColor: '#005252',
+	}
+});
+
 
 

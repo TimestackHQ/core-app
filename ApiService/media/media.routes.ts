@@ -17,6 +17,7 @@ router.post("/", authCheck, upload.fields([{ name: 'mediaFile', maxCount: 1 }, {
 router.post("/:holderId/delete", authCheck, HTTPValidator(deleteMemoriesValidator), deleteMemories);
 router.get("/:mediaId", get);
 router.get("/view/:mediaId/:holderId", authCheck, viewMedia);
+router.post("/:mediaId/link/:holderId", authCheck, HTTPValidator(deleteMemoriesValidator));
 
 
 export default router;

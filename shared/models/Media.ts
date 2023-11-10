@@ -84,25 +84,30 @@ const MediaSchema = new ExtendedMongoSchema({
         enum: MEDIA_STATUSES
     },
 
-    relatedEvents: [{
+    content: {
         type: mongoose.Schema.Types.ObjectId/***/,
-        ref: "Event",
-    }],
+        ref: "Content",
+    },
 
-    relatedSocialProfiles: [{
-        type: mongoose.Schema.Types.ObjectId/***/,
-        ref: "SocialProfile",
-    }],
-
-    relatedGroups: [{
-        type: mongoose.Schema.Types.ObjectId/***/,
-        ref: "Group",
-    }],
-
-    relatedUsers: [{
-        type: mongoose.Schema.Types.ObjectId/***/,
-        ref: "User",
-    }]
+    // relatedEvents: [{
+    //     type: mongoose.Schema.Types.ObjectId/***/,
+    //     ref: "Event",
+    // }],
+    //
+    // relatedSocialProfiles: [{
+    //     type: mongoose.Schema.Types.ObjectId/***/,
+    //     ref: "SocialProfile",
+    // }],
+    //
+    // relatedGroups: [{
+    //     type: mongoose.Schema.Types.ObjectId/***/,
+    //     ref: "Group",
+    // }],
+    //
+    // relatedUsers: [{
+    //     type: mongoose.Schema.Types.ObjectId/***/,
+    //     ref: "User",
+    // }]
 
 });
 

@@ -8,6 +8,8 @@ export interface SocialProfilePermissionsInterface {
     canAccept: boolean;
     canUnblock: boolean;
     canUploadMedia: boolean;
+
+    canLinkNestedPhoto: boolean;
 }
 
 

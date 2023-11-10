@@ -66,6 +66,12 @@ export type RootStackParamList = {
 
     Mutuals: {
         targetUserId: string,
+    },
+
+    LinkContent: {
+        contentId: string;
+        sourceHolderId: string;
+        holderType: MediaHolderTypesType;
     }
 
 
@@ -149,4 +155,9 @@ export type UploadQueueScreenNavigationProp = StackNavigationProp<
 export type MutualsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Mutuals'
+>;
+
+export type LinkContentScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'LinkContent'
 >;

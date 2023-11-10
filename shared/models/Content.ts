@@ -8,6 +8,10 @@ export interface IContent extends mongoose.Document {
     contentType: "media" | "mediaGroup";
     createdAt: Date;
     timestamp: Date;
+
+    events: mongoose.Schema.Types.ObjectId/***/[];
+
+    socialProfiles: mongoose.Schema.Types.ObjectId/***/[];
 }
 
 
@@ -27,6 +31,14 @@ const contentSchema = new ExtendedMongoSchema({
     },
     createdAt: Date,
     timestamp: Date,
+    events: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
+        ref: "Event"
+    }],
+    socialProfiles: [{
+        type: mongoose.Schema.Types.ObjectId/***/,
+        ref: "SocialProfile"
+    }],
 }, {
     timestamps: {
         createdAt: true,

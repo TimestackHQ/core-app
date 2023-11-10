@@ -339,93 +339,20 @@ export default function SocialProfile({ }) {
                         data={gallery}
                         ListHeaderComponent={() => !selectionMode ? (
                             <View style={{ flex: 1, flexDirection: "column" }}>
-                                {/* <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10, marginVertical: 15 }}>
+                                <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10, marginVertical: 15 }}>
                                     <Mutuals
                                         targetUserId={route.params?.userId}
                                         mutualCount={mutuals?.mutualCount}
                                         mutuals={mutuals?.mutuals || []} />
-                                </View> */}
-                                <View style={{
-                                    // flex: 1,
-                                    width: "100%",
-                                    height: 240,
-                                    position: "absolute",
-                                    // backgroundColor: "black",
-                                    top: 0,
-                                    zIndex: 1000
-                                }}>
-                                    <View style={{
-                                        flexDirection: "row",
-                                        opacity: 0
-                                    }}>
-                                        <TouchableOpacity onPress={() => {
-                                            navigator.navigate("Event", {
-                                                eventId: "65105ad153a414a264ba93a0"
-                                            })
-                                        }} style={{
-                                            backgroundColor: "orange",
-                                            width: "50%",
-                                            height: 140
-                                        }} />
-                                        <TouchableOpacity onPress={() => {
-                                            navigator.navigate("Event", {
-                                                eventId: profile._id === "652303d12fd13bf3efa3ddf5" ? "65230a4b0e110af5b8a92e0b" : "643aa5d1204fd8be960f896f"
-                                            })
-                                        }} style={{
-                                            backgroundColor: "yellow",
-                                            width: "50%",
-                                            height: 140
-                                        }} />
-                                    </View>
-                                    <View style={{
-                                        flexDirection: "row",
-                                        opacity: 0
-                                    }}>
-                                        <TouchableOpacity onPress={() => {
-                                            navigator.navigate("Event", {
-                                                eventId: "65230a770e110af5b8a92e98"
-                                            })
-                                        }} style={{
-                                            backgroundColor: "orange",
-                                            width: "50%",
-                                            height: 140
-                                        }} />
-                                        <TouchableOpacity onPress={() => {
-                                            navigator.navigate("Event", {
-                                                eventId: "65231288b56e7370a760d89b"
-                                            })
-                                        }} style={{
-                                            backgroundColor: "yellow",
-                                            width: "50%",
-                                            height: 140
-                                        }} />
-                                    </View>
-
                                 </View>
 
-                                {profile._id === "652303d12fd13bf3efa3ddf5" ? <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
-                                    <FastImage
-                                        source={require("../assets/events.png")}
-                                        style={{ width: "100%", height: 240 }}
-                                        resizeMode="contain"
-                                    />
-                                </View> : null}
-
-                                {profile._id !== "652303d12fd13bf3efa3ddf5" ? <View style={{ flex: 1, flexDirection: "row", marginTop: 20 }}>
-                                    <FastImage
-                                        source={require("../assets/mockup/recipes2.png")}
-                                        style={{ width: "100%", height: 240 }}
-                                        resizeMode="contain"
-                                    />
-                                </View> : null}
-
-                                {/* <View style={{ flex: 1, flexDirection: "row", marginVertical: 10 }}>
+                                <View style={{ flex: 1, flexDirection: "row", marginVertical: 10 }}>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                         <ConnectionStatus style={{ flex: 1, width: 150, marginHorizontal: 15 }} refresh={refetchProfile} profile={profile} user={user} />
                                     </View>
                                     <View style={{ flex: 1, alignItems: "flex-start" }}>
                                     </View>
-                                </View> */}
+                                </View>
 
                                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                                     <View style={{
@@ -553,7 +480,7 @@ function TheAIButton({ aiTab, setAiTab }: { aiTab: boolean, setAiTab: (value: bo
         <Image
             source={require("../assets/mockup/ai.png")}
             resizeMode="contain"
-            style={{ width: 120, height: 40, marginRight: -20, marginTop: 0 }}
+            style={{ width: 110, height: 35, marginRight: -20, marginTop: 0 }}
         />
     </TouchableWithoutFeedback>
 }

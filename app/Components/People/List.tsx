@@ -12,19 +12,21 @@ export default function ListOfPeople({
     ListHeaderComponent,
     people,
     style,
+    viewStyle,
     loading,
     mode = "clickToView",
     selectedProfiles,
-    profileSelected = (profileId) => { }
+    profileSelected = (userId, profileId) => { }
 }: {
     refresh: () => void,
     ListHeaderComponent?: any,
     people: PeopleSearchResult["people"],
     style?: any,
+    viewStyle?: any,
     loading: boolean,
     mode?: "clickToView" | "multiselect",
     selectedProfiles?: string[],
-    profileSelected?: (profileId: PeopleSearchResult["people"][0]["_id"]) => void
+    profileSelected?: (userId: PeopleSearchResult["people"][0]["_id"], profileId: PeopleSearchResult["people"][0]["profileId"]) => void
 }) {
 
     const navigator = useNavigation<SocialProfileScreenNavigationProp>();
@@ -84,7 +86,8 @@ export default function ListOfPeople({
                 //     onRefresh={refresh}
                 // />}
                 ListHeaderComponent={ListHeaderComponent}
-                style={{ ...style }}
+                ListFooterComponent={<View style={{ height: 30 }} />}
+                style={{ ...style, ...viewStyle }}
                 data={people}
 
                 renderItem={({ item }) => {
@@ -98,7 +101,7 @@ export default function ListOfPeople({
                                 userId: item._id
                             })
                             else {
-                                profileSelected(item._id);
+                                profileSelected(item._id, item?.profileId);
                             }
 
                         }}

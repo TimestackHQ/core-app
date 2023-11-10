@@ -381,7 +381,7 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
             }
         });
 
-        const content = [
+        const contentDetails = [
             ...media.map(media => ({
                 payload: media,
                 createdAt: media.createdAt,
@@ -392,21 +392,22 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
             }))
         ];
 
-        const mediaContent = (await Promise.all(content.map(async (contentHolder): Promise<MediaInternetType> => {
-            const content = contentHolder.payload;
+        const mediaContent = (await Promise.all(contentDetails.map(async (contentHolderRaw): Promise<MediaInternetType> => {
+            const contentDetails = contentHolderRaw.payload;
 
             let response: MediaInternetType | null = null;
 
-            if (content instanceof Models.Media) {
+            if (contentDetails instanceof Models.Media) {
                 response = {
-                    _id: content._id.toString(),
-                    fullsize: await content.getFullsizeLocation(),
-                    thumbnail: await content.getThumbnailLocation(),
-                    createdAt: content.createdAt,
-                    hasPermission: content.user.toString() === req.user._id.toString(),
-                    user: content.user.toString(),
-                    timestamp: content.timestamp,
-                    type: content?.type,
+                    _id: contentDetails._id.toString(),
+                    contentId: profile.content.find((contentReference) => contentReference.contentId.toString() === contentDetails._id.toString())?._id.toString(),
+                    fullsize: await contentDetails.getFullsizeLocation(),
+                    thumbnail: await contentDetails.getThumbnailLocation(),
+                    createdAt: contentDetails.createdAt,
+                    hasPermission: contentDetails.user.toString() === req.user._id.toString(),
+                    user: contentDetails.user.toString(),
+                    timestamp: contentDetails.timestamp,
+                    type: contentDetails?.type,
                     mediaList: [],
                     isGroup: false,
                     groupLength: 0,
@@ -414,12 +415,13 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                     indexInGroup: 0,
                     isProcessing: false,
                 }
-            } else if (content instanceof Models.MediaGroup) {
-                const media = await Models.Media.findById(content.media[0]);
+            } else if (contentDetails instanceof Models.MediaGroup) {
+                const media = await Models.Media.findById(contentDetails.media[0]);
 
                 if (!media) throw new Error("Media not found");
                 response = {
                     _id: media._id.toString(),
+                    contentId: profile.content.find((contentReference) => contentReference.contentId.toString() === media._id.toString())?._id.toString(),
                     fullsize: await media.getFullsizeLocation(),
                     thumbnail: await media.getThumbnailLocation(),
                     createdAt: media.createdAt,
@@ -428,8 +430,8 @@ export const mediaList = async (req: Request, res: Response<{ content: MediaInte
                     timestamp: media.timestamp,
                     type: media?.type,
                     isGroup: true,
-                    groupLength: content.media.length,
-                    mediaList: (content.media as mongoose.Schema.Types.ObjectId[]).map(id => id.toString()),
+                    groupLength: contentDetails.media.length,
+                    mediaList: (contentDetails.media as mongoose.Schema.Types.ObjectId[]).map(id => id.toString()),
                     isPlaceholder: false,
                     indexInGroup: 0,
                     isProcessing: false,
@@ -495,6 +497,7 @@ export const get = async (req: Request, res: Response<PeopleSearchResult>) => {
 
                 return {
                     _id: user._id.toString(),
+                    profileId: profile._id.toString(),
                     firstName: user.firstName,
                     lastName: user.lastName,
                     username: user.username,

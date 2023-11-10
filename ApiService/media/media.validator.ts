@@ -37,3 +37,12 @@ export const deleteMemoriesValidator = (body: unknown): Joi.ValidationResult => 
 
 }
 
+export const linkContent = (body: unknown): Joi.ValidationResult => {
+
+    const schema = Joi.object({
+        ids: Joi.array().required(),
+    });
+    return schema.validate(body);
+
+}
+

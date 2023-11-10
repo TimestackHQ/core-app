@@ -35,6 +35,8 @@ export {
 
 export type MediaInternetType = {
     _id: string;
+
+    contentId: string;
     fullsize?: AWSS3ObjectType,
     thumbnail?: AWSS3ObjectType;
     createdAt: Date;

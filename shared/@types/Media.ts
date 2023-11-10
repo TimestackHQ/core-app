@@ -32,10 +32,12 @@ export interface IMedia extends ExtendedMongoDocument {
 
     type: typeof MEDIA_TYPES[number];
 
-    relatedEvents: mongoose.Schema.Types.ObjectId/***/[];
-    relatedSocialProfiles: mongoose.Schema.Types.ObjectId/***/[];
-    relatedGroups: mongoose.Schema.Types.ObjectId/***/[];
-    relatedUsers: mongoose.Schema.Types.ObjectId/***/[];
+    // relatedEvents: mongoose.Schema.Types.ObjectId/***/[];
+    // relatedSocialProfiles: mongoose.Schema.Types.ObjectId/***/[];
+    // relatedGroups: mongoose.Schema.Types.ObjectId/***/[];
+    // relatedUsers: mongoose.Schema.Types.ObjectId/***/[];
+
+    content: mongoose.Schema.Types.ObjectId/***/;
 
     timestamp: Date;
 
