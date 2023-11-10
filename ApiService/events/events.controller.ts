@@ -714,6 +714,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                     fullsize: await content.getFullsizeLocation(),
                     thumbnail: await content.getThumbnailLocation(),
                     createdAt: content.createdAt,
+                    contentId: content._id.toString(),
                     hasPermission: content.user.toString() === req.user._id.toString(),
                     user: content.user.toString(),
                     timestamp: content.timestamp,
@@ -731,6 +732,7 @@ export const mediaList = async (req: Request, res: Response, next: NextFunction)
                 if (!media) throw new Error("Media not found");
                 response = {
                     _id: media._id.toString(),
+                    contentId: media._id.toString(),
                     fullsize: await media.getFullsizeLocation(),
                     thumbnail: await media.getThumbnailLocation(),
                     createdAt: media.createdAt,
