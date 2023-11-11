@@ -21,7 +21,7 @@ export default function handler(req, res) {
 		},
 		activeClients: {
 			ios: [
-				"0.25.0",
+				"0.25.1",
 				"0.24.0",
 				"0.23.4",
 				"0.23.5"
