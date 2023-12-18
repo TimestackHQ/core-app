@@ -139,7 +139,6 @@ export default function Index() {
 						</ul>
 						<br/><br/>
 						<div className={"col-12 text-center"} style={{color: "gray", lineHeight: "20px"}}>
-							{window.localStorage?.appVersion}
 							<br/>
 								Make great memories
 

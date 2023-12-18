@@ -14,6 +14,8 @@ export default function InitLogin({
 
 	const inputRef = React.useRef(null);
 
+
+
 	useEffect(() => {
 		setInterval(() => {
 			inputRef?.current?.focus();

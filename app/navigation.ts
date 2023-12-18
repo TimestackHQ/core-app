@@ -3,6 +3,10 @@ import { RollType } from "./types/global";
 import { MediaHolderTypesType, MediaInternetType } from "@shared-types/*";
 
 export type RootStackParamList = {
+
+    Main: {
+
+    }
     Add: {
 
     }
@@ -76,6 +80,11 @@ export type RootStackParamList = {
 
 
 };
+
+export type MainScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Main'
+>;
 
 export type AddScreenNavigationProp = StackNavigationProp<
     RootStackParamList,

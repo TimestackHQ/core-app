@@ -3,10 +3,8 @@ import {NativeNavigate, NativeResetStack, clearNativeSession, notifyNativeOfSess
 
 export default function Logout() {
   useEffect(() => {
-	  window.localStorage.removeItem("TIMESTACK_TOKEN");
-	  clearNativeSession();
 	  NativeNavigate("Auth");
-	  window.location.href = "/auth";
+	  window.location.href = "/profile";
   }, []);
 
   return <div></div>;

@@ -16,6 +16,7 @@ import store from './store'
 import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
 import {QueueContext, useQueue, useQueueCounter} from "./hooks/queue";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 
 
 export const setSession = async (session) => {
@@ -83,11 +84,13 @@ function App() {
         <Provider store={store}>
             <QueueContext.Provider value={[queueCounter, queue]}>
                 <QueryClientProvider client={queryClient}>
-                    <NavigationContainer>
-                        <OverflowMenuProvider>
-                            <CoreNavigationStack />
-                        </OverflowMenuProvider>
-                    </NavigationContainer>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                        <NavigationContainer>
+                            <OverflowMenuProvider>
+                                <CoreNavigationStack />
+                            </OverflowMenuProvider>
+                        </NavigationContainer>
+                    </GestureHandlerRootView>
                 </QueryClientProvider>
             </QueueContext.Provider>
 

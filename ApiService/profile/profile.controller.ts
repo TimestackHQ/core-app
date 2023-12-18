@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { AWS, Models } from "../../shared";
-import * as jwt from "jsonwebtoken";
 import { v4 } from "uuid";
 
 export async function get(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +23,6 @@ export async function get(req: Request, res: Response, next: NextFunction) {
     }
 
 }
-
 export async function picture(req: Request, res: Response, next: NextFunction) {
 
     try {

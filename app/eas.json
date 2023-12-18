@@ -12,14 +12,14 @@
     "production": {
       "channel": "production",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       }
     },
     "preview": {
       "channel": "preview",
       "ios": {
         "distribution": "internal",
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "android": {
         "buildType": "apk",
@@ -31,7 +31,7 @@
       "distribution": "internal",
       "ios": {
         "simulator": true,
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "android": {
         "buildType": "apk",
@@ -43,7 +43,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "android": {
         "buildType": "apk"

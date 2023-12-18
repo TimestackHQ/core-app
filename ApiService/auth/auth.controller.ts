@@ -2,8 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { Models } from "../../shared";
 import * as jwt from "jsonwebtoken";
 import moment = require("moment");
+import {
+    HTTPConfirmLoginQueryRequest, HTTPConfirmLoginQueryResponse,
+    HTTPInitLoginQueryRequest,
+    HTTPInitLoginQueryResponse
+} from "../@types/transations";
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request<any, any, HTTPInitLoginQueryRequest>, res: Response<HTTPInitLoginQueryResponse>, next: NextFunction) {
 
     try {
         const { phoneNumber } = req.body;
@@ -27,7 +32,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
 
         return res.status(200).json({
-            message: newUser ? "User created" : "User found",
+            userExists: !newUser,
         });
     } catch (e) {
         next(e);
@@ -37,7 +42,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 }
 
-export async function confirmLogin(req: Request, res: Response, next: NextFunction) {
+export async function confirmLogin(req: Request<any, any, HTTPConfirmLoginQueryRequest>, res: Response<HTTPConfirmLoginQueryResponse>, next: NextFunction) {
     try {
         const { username, code } = req.body;
 
@@ -50,8 +55,8 @@ export async function confirmLogin(req: Request, res: Response, next: NextFuncti
 
         if (user.phoneNumber === "+14384934907" && code === "826671") {
             return res.status(200).json({
-                message: user.isConfirmed && !user.isOnWaitList ? "User confirmed" : "User not confirmed",
-                token: await user.generateSessionToken(),
+                userConfirmed: user.isConfirmed,
+                token: String(await user.generateSessionToken()),
             })
         }
 
@@ -76,7 +81,7 @@ export async function confirmLogin(req: Request, res: Response, next: NextFuncti
             await notification.notify();
 
             return res.status(200).json({
-                message: user.isConfirmed && !user.isOnWaitList ? "User confirmed" : "User not confirmed",
+                userConfirmed: user.isConfirmed,
                 token: await user.generateSessionToken(),
             })
         }

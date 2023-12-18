@@ -34,3 +34,14 @@ export type RollType = ({
     )) | {
         holderType: "none",
     };
+
+export type UserStoreType = {
+    loggedIn: true,
+   user?: {
+       firstName: string,
+       lastName: string,
+       username: string,
+       profilePictureSource?: string,
+       authToken: string,
+   }
+};

@@ -5,6 +5,7 @@ export default function TextComponent({
     fontFamily,
     fontSize,
     style,
+    fontColor: color,
     ellipsizeMode,
     numberOfLines,
 }: {
@@ -15,6 +16,7 @@ export default function TextComponent({
         "Regular" |
         "Semi Bold"
     ),
+    fontColor?: string,
     fontSize?: number,
     style?: any,
     ellipsizeMode?: TextProps["ellipsizeMode"],
@@ -33,6 +35,7 @@ export default function TextComponent({
         style={{
             fontFamily: fontFamilies[fontFamily],
             fontSize: fontSize ? fontSize : undefined,
+            color,
             ...style
         }}
     >

@@ -1,7 +1,3 @@
-import { AWS } from "../../shared";
-import mongoose from "mongoose";
-
-
 export const standardEventPopulation = [{
     path: "cover",
     select: "publicId thumbnail snapshot"

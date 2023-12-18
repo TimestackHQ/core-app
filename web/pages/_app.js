@@ -34,9 +34,7 @@ function MyApp({ Component, pageProps }) {
           </Head>
           <Provider store={store}>
               <IOSLayer>
-                  <AuthCheck>
-                      <Component {...pageProps} />
-                  </AuthCheck>
+                  <Component {...pageProps} />
               </IOSLayer>
           </Provider>
 
