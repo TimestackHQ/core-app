@@ -169,7 +169,7 @@ export default function MediaViewNavBar({
                             style={{ width: 20, height: 20 }}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={async () => {
+                    {holderType === "socialProfile" ? <TouchableOpacity onPress={async () => {
                         navigator.navigate("LinkContent", {
                             contentId: media?.contentId,
                             sourceHolderId: holderId,
@@ -182,7 +182,7 @@ export default function MediaViewNavBar({
                             source={require("../../assets/icons/peopleadd.png")}
                             style={{ width: 30, height: 20}}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> : null}
 
 
 
