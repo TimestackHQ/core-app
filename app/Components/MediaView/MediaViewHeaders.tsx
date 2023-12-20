@@ -3,10 +3,11 @@ import {HeaderButtons, HiddenItem, OverflowMenu} from "react-navigation-header-b
 import {ActivityIndicator, Alert, Image, TouchableOpacity, View} from "react-native";
 import mediaDownload from "../../utils/mediaDownload";
 import * as React from "react";
+import { MediaInView } from "@api-types/public";
 
 export default function MediaViewHeaders(
     { media, hasPermission, deleteMedia }: {
-        media: any,
+        media: MediaInView,
         hasPermission: boolean,
         deleteMedia: (mediaId) => void
     }
@@ -19,18 +20,8 @@ export default function MediaViewHeaders(
         </View>
         <TouchableOpacity onPress={async () => {
             setSharing(true);
-            try {
-
-                await mediaDownload(media?.storageLocation, "share", setSharing, false);
-
-                return;
-            } catch (e) {
-                console.log(e)
-                // if(e !== "[Error: User did not share]") Alert.alert("Error", "Unable to share media");
-            }
-            setSharing(false);
+            mediaDownload(media?.fullsize, "share").finally(() => setSharing(false));
         }}>
-
             <Image source={require("../../assets/icons/collection/share.png")} style={{ width: 30, height: 30 }} />
         </TouchableOpacity>
         {hasPermission ? <OverflowMenu

@@ -5,7 +5,6 @@ import {
 	Alert,
 	Keyboard, KeyboardAvoidingView, Platform,
 	SafeAreaView,
-	ScrollView,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -16,12 +15,8 @@ import {
 import KeyboardListener from 'react-native-keyboard-listener';
 import FastImage from "react-native-fast-image";
 import * as ImagePicker from "react-native-image-picker";
-import Video from "react-native-video";
-import { generateScreenshot, processPhoto, processVideo } from "../utils/compression";
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
-import uuid from "react-native-uuid";
 import moment from "moment-timezone";
 import HTTPClient from "../httpClient";
 import { useEffect } from "react";

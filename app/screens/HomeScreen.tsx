@@ -1,9 +1,6 @@
 import {
-	RefreshControl,
 	SafeAreaView,
 	View,
-	FlatList,
-	TextInput,
 	ScrollView, Platform
 } from "react-native";
 import React, { useEffect } from "react";
@@ -44,9 +41,7 @@ export default function HomeScreen({ route }) {
 	// const queryClient = useQueryClient();
 
 	const [searchQuery, setSearchQuery] = React.useState("");
-	const { data: people, status: peopleStatus } = useQuery(["people", { searchQuery }], getPeople, {
-		enabled: searchQuery !== "",
-	});
+	const { data: people, status: peopleStatus } = useQuery(["people", { searchQuery }], getPeople);
 
 	const { data: events, status: eventsStatus, refetch: refreshEvents } = useQuery(["events", {}], getEvents);
 	const { data: profiles, status: profilesStatus, refetch: refreshProfiles } = useQuery(["profiles", { searchQuery }], listProfiles, {

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { ExtendedMongoSchema } from "./helpers";
 import { MEDIA_HOLDER_TYPES } from "../consts";
+import {SocialProfileInterface} from "../@types/public";
 
 export interface IContent extends mongoose.Document {
     uploadLocalDeviceRef: string,
@@ -11,7 +12,7 @@ export interface IContent extends mongoose.Document {
 
     events: mongoose.Schema.Types.ObjectId/***/[];
 
-    socialProfiles: mongoose.Schema.Types.ObjectId/***/[];
+    socialProfiles: mongoose.Schema.Types.ObjectId/***/[] | SocialProfileInterface[];
 }
 
 

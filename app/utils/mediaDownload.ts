@@ -4,12 +4,14 @@ import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import { Alert } from "react-native";
 import Share from "react-native-share";
 
-export default async function (networkLocation: Request, action: "download" | "share", callback, callbackArgument) {
+export default async function (networkLocation: Request, action: "download" | "share") {
     try {
 
-        const itemUrl = "https://" + networkLocation.host + networkLocation.path;
+        const itemUrl = "https://" + networkLocation.host + "/" +networkLocation.path;
         const fileName = networkLocation.path.split("/").pop();
         const locationUrl = FileSystem.documentDirectory + fileName
+
+        console.log(itemUrl, locationUrl);
         await FileSystem.downloadAsync(itemUrl, FileSystem.documentDirectory + fileName, {
             // @ts-ignore
             headers: networkLocation.headers
@@ -25,7 +27,7 @@ export default async function (networkLocation: Request, action: "download" | "s
                     url: locationUrl,
                 });
             } catch (err) {
-
+                console.log(err);
             }
             await FileSystem.deleteAsync(locationUrl);
         }
@@ -34,6 +36,4 @@ export default async function (networkLocation: Request, action: "download" | "s
         console.log(err);
         Alert.alert("Failed to save", "");
     }
-
-    callback(callbackArgument);
 }

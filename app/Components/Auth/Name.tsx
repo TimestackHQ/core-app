@@ -5,7 +5,15 @@ import TextComponent from "../Library/Text";
 import {AuthFormAction} from "../../screens/Auth";
 
 export default function NameStep({
+    firstName,
+    lastName,
+    setFirstName,
+    setLastName,
 }: {
+    firstName: string,
+    lastName: string,
+    setFirstName: (firstName: string) => void,
+    setLastName: (lastName: string) => void,
 }) {
 
 

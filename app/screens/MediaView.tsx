@@ -1,23 +1,17 @@
 import _ from "lodash";
 import {
-	Image,
-	TouchableOpacity,
 	View,
 	Text,
 	Alert,
-	ActivityIndicator,
 	Dimensions,
 	FlatList,
-	TouchableWithoutFeedback, StyleSheet, Button, SafeAreaView
+	StyleSheet
 } from "react-native";
 import { useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
 import { getTimezone } from "../utils/time";
-import FastImage from "react-native-fast-image";
-import ProfilePicture from "../Components/ProfilePicture";
-import { HeaderButtons, HiddenItem, OverflowMenu } from "react-navigation-header-buttons";
 import * as React from "react";
 import {LinkContentScreenNavigationProp, RootStackParamList} from "../navigation";
 import { BlurView } from "@react-native-community/blur";
@@ -26,8 +20,6 @@ import InnerMediaHolder from "../Components/InnerMediaHolder";
 import { MediaInView } from "@api-types/public";
 import { flatten } from "lodash";
 import { MediaInternetType } from "@shared-types/*";
-// import {ReactNativeModal} from "react-native-modal";
-import ReactNativeModal from 'react-native-swipe-modal-up-down';
 import MediaViewHeaders from "../Components/MediaView/MediaViewHeaders";
 import MediaViewNavBar from "../Components/MediaView/MediaViewNavBar";
 
@@ -108,6 +100,7 @@ export default function MediaView() {
 		console.log("Fetching media", url)
 		HTTPClient(url, "GET")
 			.then(async res => {
+				console.log(res.data)
 				const timezone = getTimezone();
 
 				setMedia(res.data.media);
@@ -163,13 +156,13 @@ export default function MediaView() {
 				])
 			});
 
-	}, [currentIndex, gallery]);
+	}, [currentIndex, gallery, isFocused]);
 
 
 	const onViewCallBack = React.useCallback((event) => {
 		setItemInView(event.viewableItems[0]?.item?._id);
 		console.log("Item in view", event.viewableItems[0]?.item?._id);
-	}, []) // any dependencies that require the function to be "redeclared"
+	}, [])
 
 	const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 })
 
@@ -256,7 +249,6 @@ export default function MediaView() {
 const styles = {
 	container: {
 		flex: 1,
-		// backgroundColor: '#111',
 	},
 	dotsContainer: {
 		flexDirection: 'row',
@@ -273,26 +265,3 @@ const styles = {
 		marginHorizontal: 6,
 	},
 };
-
-const stylesModal = StyleSheet.create({
-	containerContent: {flex: 1, marginTop: 400, paddingTop: 400},
-	containerHeader: {
-		marginTop: 400,
-		flex: 1,
-		alignContent: 'center',
-		alignItems: 'center',
-		justifyContent: 'center',
-		height: 40,
-		backgroundColor: '#F1F1F1',
-	},
-	headerContent:{
-		marginTop: "70%",
-	},
-	Modal: {
-		marginTop: "70%",
-		backgroundColor: '#005252',
-	}
-});
-
-
-

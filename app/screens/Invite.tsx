@@ -9,11 +9,6 @@ const { width } = Dimensions.get('window');
 
 import { AuthScreenNavigationProp, EventScreenNavigationProp } from '../navigation';
 
-const hapticOptions = {
-    enableVibrateFallback: true, // fallback to vibration if haptic feedback is not available
-    ignoreAndroidSystemSettings: false, // respect Android system settings for haptic feedback
-};
-
 export default function Invite() {
 
     const route = useRoute<RouteProp<{

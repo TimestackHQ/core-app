@@ -1,4 +1,4 @@
-import {View, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Alert} from "react-native";
+import {View, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity} from "react-native";
 import FastImage from "react-native-fast-image";
 import Home from "../Components/Auth/Home";
 import TextComponent from "../Components/Library/Text";
@@ -14,7 +14,6 @@ import {HTTPConfirmLoginQueryResponse, HTTPErrorMessageResponse} from "@api-type
 import PrivacyAndTermsStep from "../Components/Auth/PrivacyAndTerms";
 import {useAppDispatch} from "../store/hooks";
 import {setAuthToken as setStoreAuthToken} from "../store/userState";
-import HomeScreen from "./HomeScreen";
 import {MainScreenNavigationProp} from "../navigation";
 import {useNavigation} from "@react-navigation/native";
 
@@ -27,10 +26,14 @@ export default function AuthScreen() {
 
     const logoHeight = useSharedValue(0);
 
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
     const [step, setStep] = useState<AuthStep>("HOME");
     const [phoneNumber, setPhoneNumber] = useState<string>("");
     const [authCode, setAuthCode] = useState<string>("");
-    const [authToken, setAuthToken] = useState<string>("");
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
 
     const initLoginPost = useMutation({
         mutationFn: initLogin,
@@ -51,7 +54,6 @@ export default function AuthScreen() {
                     return;
                 }
                 setStep("PRIVACY_AND_POLICY");
-                setAuthToken(data.token);
             }
         },
         onError: (error) => {
@@ -104,13 +106,38 @@ export default function AuthScreen() {
             flex: 1,
             zIndex: 1,
         }}>
+
+
             <Animated.View
                 style={[{
                     // flex: 1,
                     alignSelf: "center",
-                    width: "80%",
+                    width: "100%",
                 }, truncatedAnimation]}
             >
+
+                {step !== "HOME" ? <TouchableOpacity
+                    onPress={() => {
+                        if (step === "PHONE_NUMBER") setStep("HOME");
+                        else if (step === "CODE") setStep("PHONE_NUMBER");
+                        else if (step === "PRIVACY_AND_POLICY") setStep("CODE");
+                        else if (step === "NAME") setStep("PRIVACY_AND_POLICY");
+                        else if (step === "EMAIL") setStep("NAME");
+                        else if (step === "PASSWORD") setStep("EMAIL");
+                    }}
+                    style={{
+                    zIndex: 1,
+                    position: "absolute",
+                    left: 20,
+                }}>
+                    <FastImage source={require("../assets/icons/arrow_back_ios_FILL1_wght300_GRAD0_opsz48-white.png")} resizeMode={FastImage.resizeMode.contain} style={{
+                        width: 30,
+                        height: 30,
+                        // marginTop: 20,
+
+                    }}/>
+                </TouchableOpacity> : null}
+
                 {step === "HOME" ? <TextComponent fontFamily={"Semi Bold"} fontColor={"white"} fontSize={20} numberOfLines={1}  style={{
                     marginTop: 20,
                     textAlign: "center",
@@ -118,7 +145,7 @@ export default function AuthScreen() {
                     Beta Version
                 </TextComponent> : null}
                 <FastImage source={require("../assets/covers/logo.png")} resizeMode={FastImage.resizeMode.contain} style={{
-                    width: "80%",
+                    width: "50%",
                     height: "100%",
                     alignSelf: "center",
                 }} />
@@ -147,6 +174,10 @@ export default function AuthScreen() {
                     /> : null}
                     {step === "PRIVACY_AND_POLICY" ? <PrivacyAndTermsStep /> : null}
                     {step === "NAME" ? <NameStep
+                        firstName={firstName}
+                        lastName={lastName}
+                        setFirstName={setFirstName}
+                        setLastName={setLastName}
                     /> : null}
                 </View>
                 <View style={{
@@ -157,7 +188,7 @@ export default function AuthScreen() {
                     paddingBottom: 20,
                 }}>
 
-                    <LargeButton fontSize={20} body={String(
+                    <LargeButton disabled={buttonDisabled} fontSize={20} body={String(
                         step === "HOME" ? "START" : "CONTINUE"
                     )} onPress={() => {
                         if(step === "HOME") setStep("PHONE_NUMBER");

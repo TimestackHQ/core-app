@@ -2,10 +2,11 @@ import {PeopleSearchResult, PersonType} from "@api-types/public";
 import HTTPClient from "../httpClient";
 import { QueryFunctionContext } from "react-query";
 
-export async function getPeople({ queryKey: [_key, { searchQuery }] }: QueryFunctionContext<[string, { searchQuery: string }]>) {
+export async function getPeople({ queryKey: [_key, { searchQuery, getConnectedOnly }] }: QueryFunctionContext<[string, { searchQuery: string, getConnectedOnly: boolean }]>) {
 
     const query = new URLSearchParams({
-        q: searchQuery,
+        searchQuery,
+        getConnectedOnly: String(getConnectedOnly)
     });
 
     const { data } = await HTTPClient<PeopleSearchResult>(`/people?${query.toString()}`, "GET");
@@ -13,9 +14,14 @@ export async function getPeople({ queryKey: [_key, { searchQuery }] }: QueryFunc
 
 }
 
-export async function getMutuals({ queryKey: [_key, { targetUserId, getAll }] }: QueryFunctionContext<[string, { targetUserId: string, getAll: boolean }]>) {
+export async function getMutuals({ queryKey: [_key, { targetUserId, getAll, q }] }: QueryFunctionContext<[string, { targetUserId: string, getAll: boolean, q: string }]>) {
 
-    console.log(`/people/${targetUserId}/mutuals${getAll ? "?getAll=true" : ""}`)
+    const query = new URLSearchParams({
+        q,
+        getAll: getAll ? "true" : undefined
+    })
+
+    console.log(`/people/${targetUserId}/mutuals?${query.toString()}`);
     const { data } = await HTTPClient<{
         mutualCount: number,
         mutuals: PersonType[]

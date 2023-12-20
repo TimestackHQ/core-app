@@ -22,7 +22,7 @@ import MutualsScreen from "../screens/Mutuals";
 import EventsList from "../screens/EventsList";
 import LinkedEvents from "../screens/LinkedEventsScreen";
 import ChatSpaceScreen from "../screens/ChatSpaceScreen";
-import LinkContent from "../screens/LinkContent";
+import LinkContent from "../screens/LinkContentScreen";
 
 const DefaultBackButtonHeader = name => ({
 	headerShadowVisible: true,
@@ -43,20 +43,6 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 	const navigation = useNavigation();
 	const route = useRoute();
 
-	React.useLayoutEffect(() => {
-		const routeName = getFocusedRouteNameFromRoute(route);
-		if (routeName === "MediaView") {
-			navigation.setOptions({ tabBarStyle: { display: 'none' } });
-		} else {
-			navigation.setOptions({
-				tabBarStyle: {
-					padding: 20,
-					borderWidth: 0,
-					margin: 0
-				}
-			});
-		}
-	}, [navigation, route]);
 
 	return (
 		<Index.Navigator initialRouteName={initialRouteName} screenOptions={{
@@ -70,19 +56,11 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen name="EventsList" options={{
 				...DefaultBackButtonHeader("Events"),
-				// headerSearchBarOptions: {
-				// 	hideWhenScrolling: true,
-				// 	obscureBackground: true,
-				// }
-
 			}} component={EventsList} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="EditEvent" component={EditEvent} />
 			<Index.Screen options={{ presentation: "card", headerShown: true }} name="LinkedEvents" component={LinkedEvents} />
 			<Index.Screen options={{ presentation: "card", headerShown: false }} name="ChatSpace" component={ChatSpaceScreen} />
 			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="AddPeople" component={AddPeople} />
-			<Index.Screen options={{ presentation: "formSheet" }} name="LinkContent" component={LinkContent} />
-			<Index.Screen options={{ presentation: "card", gestureDirection: "vertical", fullScreenGestureEnabled: true, animation: "none" }} name="MediaView" component={MediaView} />
-			<Index.Screen options={{ presentation: "formSheet", headerShown: false }} name="Roll" component={Roll} />
 			<Index.Screen options={{ headerShown: false }} name="Future" component={FutureScreen} />
 			<Index.Screen options={{ headerShown: false }} name="Add" component={AddScreen} />
 			<Index.Screen options={DefaultBackButtonHeader("Notifications")}

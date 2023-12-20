@@ -1,6 +1,5 @@
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import Constants from "expo-constants";
-import Main from "../Main";
 import { useEffect, useState } from "react";
 import HTTPClient from "../httpClient";
 import {

@@ -8,7 +8,7 @@ import {
 	Image,
 	Share, RefreshControl, FlatList
 } from "react-native";
-import { useRoute, useNavigation, useIsFocused, RouteProp } from '@react-navigation/native';
+import {useRoute, useNavigation, useIsFocused, RouteProp, useFocusEffect} from '@react-navigation/native';
 import HTTPClient from "../httpClient";
 import { useEffect, useState } from "react";
 import { HeaderButtons, HiddenItem, OverflowMenu } from "react-navigation-header-buttons";
@@ -37,6 +37,9 @@ import { EventObject } from "@api-types/*";
 import { MediaInternetType } from "@shared-types/*";
 import _ from "lodash";
 import LinkedEvents from "../Components/Library/LinkedEvents";
+import {useAppDispatch} from "../store/hooks";
+import {setRoll} from "../store/rollState";
+import UploadQueueTracker from "../Components/UploadQueueTracker";
 
 
 function Picker(props) {
@@ -172,6 +175,9 @@ function Headers({
 
 export default function EventScreen() {
 
+	const dispatch = useAppDispatch()
+
+
 	const route = useRoute<RouteProp<RootStackParamList, "Event">>();
 	const navigation = useNavigation<
 		InviteScreenNavigationProp |
@@ -221,6 +227,28 @@ export default function EventScreen() {
 		getGallery(true);
 	}, [event])
 
+	useEffect(() => {
+		if (isFocused) {
+			dispatch(setRoll({
+				holderType: "event",
+				holderId: route.params.eventId,
+				holderImageS3Object: event?.thumbnailUrl,
+			}))
+		}
+	}, [isFocused, event])
+
+	useFocusEffect(
+		React.useCallback(() => {
+			return () => {
+				dispatch(setRoll({
+					holderType: "none",
+					holderUrl: undefined,
+					holderId: undefined,
+				}));
+			}
+		}, [])
+	);
+
 
 	const peopleScreenNav = () => {
 		navigation.navigate("AddPeople", { eventId: event?._id });
@@ -229,28 +257,17 @@ export default function EventScreen() {
 
 
 	return status === "loading" ? <View style={{ flex: 1, backgroundColor: "white" }} /> : <View style={{ flex: 1, backgroundColor: "white" }}>
-		<View style={{ zIndex: 2, margin: 10, position: "absolute", bottom: 0, flexDirection: "row" }}>
-			<TouchableWithoutFeedback style={{}} onPress={() => setViewMenu(!viewMenu)}>
-				<FastImage source={require("../assets/icons/collection/action_button.png")} style={{ width: 45, height: 45 }} />
-			</TouchableWithoutFeedback>
-			{viewMenu ? (
-				<View style={{ flexDirection: 'row' }}>
-					<TouchableOpacity onPress={peopleScreenNav}
-						style={styles.actionButton}
-					>
-						<Text style={styles.actionButtonText}>People</Text>
-					</TouchableOpacity>
-					{event?.hasPermission ? <TouchableOpacity onPress={() => {
-						navigation.navigate("Roll", { holderId: event?._id, holderType: "event" });
-						setViewMenu(false);
-					}}
-						style={styles.actionButton}
-					>
-						<Text style={styles.actionButtonText}>Upload</Text>
-					</TouchableOpacity> : null}
-				</View>
-			) : null}
-		</View>
+		{event?._id ? <UploadQueueTracker style={{
+			position: "absolute",
+			bottom: "1%",
+			left: "2%",
+			height: 40,
+			zIndex: 10,
+			opacity: 1,
+			borderRadius: 20,
+		}} variant="shadow" holderId={String(event?._id)} holderType={"event"} /> : null}
+
+
 		<FlatList
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
 				refetch();
@@ -301,7 +318,7 @@ export default function EventScreen() {
 						</View>
 					</View>
 					<View>
-						{/* <View style={{ flexDirection: "row", margin: 15 }}>
+						 <View style={{ flexDirection: "row", margin: 15 }}>
 							<TouchableWithoutFeedback onPress={peopleScreenNav}>
 								<View style={{ flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "flex-end" }}>
 									<Text style={styles.counterNumber} numberOfLines={1}>
@@ -330,13 +347,13 @@ export default function EventScreen() {
 								</Text>
 							</View>
 
-						</View> */}
+						</View>
 						{/* <View style={{ flexDirection: "row" }}>
 
 							<LinkedEvents eventId={event?._id} eventName={event?.name} linkedEvents={linkedEvents} />
 
 						</View> */}
-						{/* <TouchableWithoutFeedback >
+						<TouchableWithoutFeedback >
 							<View style={{
 								flexDirection: 'row',
 								alignItems: 'center',
@@ -386,7 +403,7 @@ export default function EventScreen() {
 								}) : null}
 
 							</View>
-						</TouchableWithoutFeedback> */}
+						</TouchableWithoutFeedback>
 						<View style={{ flexDirection: "row", marginTop: 10 }}>
 							<View style={{
 								flex: 1,

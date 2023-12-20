@@ -46,6 +46,7 @@ export default function CodeStep({
             Enter the code we sent to {phoneNumber}
         </TextComponent>
         <TextInput
+            autoFocus={true}
             autoComplete={"one-time-code"}
             keyboardType={"number-pad"}
             returnKeyType='search'

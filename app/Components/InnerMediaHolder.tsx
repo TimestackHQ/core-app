@@ -1,4 +1,4 @@
-import { Dimensions, Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Dimensions, View } from "react-native";
 import Pinchable from "react-native-pinchable";
 import TimestackMedia from "./TimestackMedia";
 import FastImage from "react-native-fast-image";
@@ -6,8 +6,6 @@ import * as React from "react";
 import { useEffect } from "react";
 import { MediaInternetType } from "@shared-types/*";
 import HTTPClient from "../httpClient";
-import TextComponent from "./Library/Text";
-import { SharedElement } from "react-navigation-shared-element";
 
 const { width, height } = Dimensions.get('window');
 
@@ -45,16 +43,12 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
 
 
     return media ? <View style={{ flex: 1, width, height: 10000 }}>
-        {/*<Text style={{*/}
-        {/*    position: "absolute",*/}
-        {/*    top: 0,*/}
-        {/*    zIndex: 2,*/}
-        {/*}}>{selfIndex} {currentIndex}</Text>*/}
 
         <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
             backgroundColor: "transparent",
             width, height: "100%",
         }}>
+
         {item.type === "image" ? <TimestackMedia
             itemInView={itemInView}
             type={media.type}

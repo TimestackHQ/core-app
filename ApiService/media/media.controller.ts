@@ -8,7 +8,8 @@ import { IMedia } from "../../shared/@types/Media";
 import { IContent } from "../../shared/models/Content";
 import { AWSS3ObjectType } from "shared/@types/global";
 import { PersonType } from "../@types";
-import mongoose, { Promise } from "mongoose";
+import {SocialProfileInterface} from "../../shared/@types/SocialProfile";
+import mongoose, {Promise, Schema} from "mongoose";
 
 export async function uploadCover(req: Request, res: Response, next: NextFunction) {
 
@@ -100,7 +101,8 @@ export type MediaInView = {
     timestamp: Date;
     contentId?: string;
     user?: PersonType
-    hasPermission: Boolean
+    hasPermission: Boolean,
+    people: PersonType[]
 }
 
 export const viewMedia = async (req: Request, res: Response<{
@@ -126,11 +128,25 @@ export const viewMedia = async (req: Request, res: Response<{
         const media = await Models.Media.findOne({
             _id: mediaId,
             event: holderId
-        }).populate({
+        }).populate([{
             path: "user",
             select: "firstName lastName profilePictureSource"
-        });
+        }, {
+            path: "content",
+            populate: {
+                path: "socialProfiles",
+            }
+        }]);
 
+        // @ts-ignore
+        const userIds = (media?.content as IContent)?.socialProfiles?.map((profile: SocialProfileInterface) => (profile.users as mongoose.Schema.Types.ObjectId[])).flat();
+
+        console.log("PEOPLE",media?.content, userIds);
+        const people = await Models.User.find({
+            _id: {
+                $in: userIds.filter((id: mongoose.Schema.Types.ObjectId) => id.toString() !== req.user._id.toString())
+            }
+        }).select("firstName lastName username profilePictureSource");
         if (!media) {
             return res.sendStatus(404);
         }
@@ -146,7 +162,7 @@ export const viewMedia = async (req: Request, res: Response<{
                 fullsize: await media.getFullsizeLocation(),
                 thumbnail: await media.getThumbnailLocation(),
                 timestamp: media.timestamp,
-                contentId: media?.content?.toString(),
+                contentId: (media?.content as IContent)?._id.toString(),
                 user: media.user ? {
                     _id: user._id.toString(),
                     firstName: user?.firstName,
@@ -156,6 +172,13 @@ export const viewMedia = async (req: Request, res: Response<{
                 } : undefined,
                 hasPermission:
                     holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
+                people: people.map((person: IUser) => ({
+                    _id: person._id.toString(),
+                    firstName: person.firstName,
+                    lastName: person.lastName,
+                    username: person.username,
+                    profilePictureSource: person.profilePictureSource
+                }))
             }
         });
     } catch (e) {

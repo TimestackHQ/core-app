@@ -97,6 +97,7 @@ export default function ListOfPeople({
                     const selected = selectedProfiles ? selectedProfiles.includes(item._id) : false;
                     return <TouchableWithoutFeedback
                         onPress={() => {
+                            console.log(item)
                             if (mode === "clickToView") navigator.navigate("SocialProfile", {
                                 userId: item._id
                             })

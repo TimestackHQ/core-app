@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger, Models } from "../../shared";
+import { IUser } from "../../shared/models/User";
+import {  } from "../../shared/models/SocialProfile";
 import { isObjectIdOrHexString } from "../../shared";
 import moment = require("moment");
 import * as _ from "lodash";
 import { PersonType } from "../@types";
 import mongoose from "mongoose";
+import { SocialProfileInterface } from "../../shared/@types/SocialProfile";
 
 export type PeopleSearchResult = {
     people: PersonType[]
@@ -14,7 +17,46 @@ export async function findPeople(req: Request, res: Response<PeopleSearchResult>
 
     try {
 
-        const people = await Models.User.find({ $text: { $search: String(req.query.q) } }).limit(10).lean();
+        let people: IUser[] = [];
+        const profiles = await Models.SocialProfile.find({
+            users: {
+                $in: [req.user._id],
+            },
+            // status: {
+            //     $nin: ["BLOCKED", "NONE"]
+            // }
+        }).select("users");
+
+        if(String(req.query.getConnectedOnly) === "true") {
+
+            console.log(profiles);
+
+            const userIds = profiles.map(profile => profile.users).flat();
+
+            console.log(userIds)
+
+            const query: {
+                [key: string]: any
+            } = {
+                _id: {
+                    $in: userIds
+                }
+            }
+
+            if(req.query.searchQuery && String(req.query.searchQuery).length > 4) {
+                query["$text"] = {
+                    $search: String(req.query.searchQuery)
+                }
+            }
+
+            people = await Models.User.find(query).limit(50).lean();
+        } else {
+             people = await Models.User.find({
+                $text: {$search: String(req.query.searchQuery)},
+            }).limit(10).lean();
+
+        }
+
 
         res.json({
             people: people.filter(people => people?.username !== req.user.username).map((person) => ({
@@ -23,6 +65,7 @@ export async function findPeople(req: Request, res: Response<PeopleSearchResult>
                 lastName: person.lastName,
                 username: person.username,
                 profilePictureSource: person.profilePictureSource,
+                profileId: profiles.find(profile => profile.users.includes(person._id))?.id
             }))
         });
 

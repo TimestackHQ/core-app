@@ -1,23 +1,25 @@
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function LargeButton({
-    notClickable,
     onPress,
     body,
     style,
     textStyle,
+    disabled = false,
     fontSize = 15,
     width = "100%",
-    variant = "default"
+    variant = "default",
+    children
 }: {
-    notClickable?: boolean,
     onPress?: () => void,
-    body: string,
+    body?: string,
     style?: any,
     textStyle?: any,
     fontSize?: number,
+    disabled?: boolean,
     width?: number | string,
-    variant?: "default" | "pending" | "added" | "positive" | "negative"
+    variant?: "default" | "pending" | "added" | "positive" | "negative",
+    children: any
 }) {
 
     let buttonStyle: any = blackButton;
@@ -69,7 +71,7 @@ export default function LargeButton({
     });
 
 
-    return <TouchableOpacity disabled={notClickable} onPress={onPress} style={{
+    return <TouchableOpacity disabled={disabled} onPress={onPress} style={{
         ...buttonStyle.container,
         ...style,
         borderRadius: fontSize * 2,
@@ -84,7 +86,7 @@ export default function LargeButton({
             justifyContent: "center",
             alignContent: "center",
         }}>
-            {body}
+            {body}{children}
         </Text>
     </TouchableOpacity>
 }

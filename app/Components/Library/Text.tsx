@@ -30,6 +30,7 @@ export default function TextComponent({
         'Semi Bold': 'Red Hat Display Semi Bold'
     }
     return <Text
+        adjustsFontSizeToFit={true}
         ellipsizeMode={ellipsizeMode}
         numberOfLines={numberOfLines}
         style={{
@@ -38,6 +39,12 @@ export default function TextComponent({
             color,
             ...style
         }}
+        onTextLayout={ (e) => {
+            const { lines } = e.nativeEvent;
+            if (lines.length > numberOfLines) {
+            }
+        } }
+
     >
         {children}
     </Text>

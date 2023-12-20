@@ -10,6 +10,10 @@ import * as Notifications from "expo-notifications";
 import HTTPClient from "../httpClient";
 import { AuthScreenNavigationProp, InviteScreenNavigationProp, NotificationsScreenNavigationProp, SocialProfileScreenNavigationProp } from "../navigation";
 import { ConnectionRequest } from "@shared-types/*";
+import Roll from "../screens/Roll";
+import * as React from "react";
+import LinkContent from "../screens/LinkContentScreen";
+import MediaView from "../screens/MediaView";
 
 const CoreStack = createNativeStackNavigator();
 
@@ -104,7 +108,7 @@ export default function CoreNavigationStack() {
     return (
         <CoreStack.Navigator screenOptions={{
             headerShown: false,
-            gestureEnabled: false
+            gestureEnabled: false,
         }}>
             <CoreStack.Screen name="Main" component={Nav} />
             <CoreStack.Screen name="Auth" component={AuthScreen} />
@@ -113,6 +117,15 @@ export default function CoreNavigationStack() {
                 options={{ presentation: "modal" }}
                 name="Error" component={ErrorScreen}
             />
+            <CoreStack.Screen options={{ presentation: "formSheet", headerShown: false, gestureEnabled: true }} name="Roll" component={Roll} />
+            <CoreStack.Screen options={{ presentation: "formSheet", gestureEnabled: true }} name="LinkContent" component={LinkContent} />
+            <CoreStack.Screen options={{
+                presentation: "card",
+                gestureDirection: "vertical",
+                fullScreenGestureEnabled: true,
+                animation: "none",
+                gestureEnabled: true
+            }} name="MediaView" component={MediaView} />
 
         </CoreStack.Navigator>
     );

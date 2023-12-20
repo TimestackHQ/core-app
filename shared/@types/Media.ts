@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { IUser } from "../models/User";
 import { MEDIA_FORMAT_OPTIONS, MEDIA_QUALITY_OPTIONS, MEDIA_STATUSES, MEDIA_TYPES } from "../consts";
 import { AWSS3ObjectType, ExtendedMongoDocument } from "./global";
+import {SocialProfileInterface} from "./SocialProfile";
+import {IContent} from "../models/Content";
 
 type fileType = {
     _id: mongoose.Schema.Types.ObjectId/***/;
@@ -37,7 +39,7 @@ export interface IMedia extends ExtendedMongoDocument {
     // relatedGroups: mongoose.Schema.Types.ObjectId/***/[];
     // relatedUsers: mongoose.Schema.Types.ObjectId/***/[];
 
-    content: mongoose.Schema.Types.ObjectId/***/;
+    content: mongoose.Schema.Types.ObjectId | IContent/***/;
 
     timestamp: Date;
 

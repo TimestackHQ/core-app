@@ -1,3 +1,5 @@
+import {Request} from "aws4";
+
 export type UploadItem = {
     filename: string;
     extension: string;
@@ -15,6 +17,7 @@ export type UploadItem = {
 
 export type RollType = ({
     holderImageUrl?: string,
+    holderImageS3Object?: Request
 } & (
         {
             holderId: string,

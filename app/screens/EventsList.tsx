@@ -49,15 +49,13 @@ export default function EventsList() {
                             borderRadius: 10,
                             elevation: 10,
                             backgroundColor: "white",
-
-                            // For iOS
-                            shadowColor: 'rgba(0, 0, 0, 0.1)',
+                            shadowColor: 'rgba(0, 0, 0, 0.05)',
                             shadowOffset: {
                                 width: 0,
                                 height: 0,
                             },
                             shadowOpacity: 1,
-                            shadowRadius: 10,
+                            shadowRadius: 15,
                         }}>
 
                             <TimestackMedia itemInView={true} source={event.thumbnailUrl} style={{
@@ -82,17 +80,16 @@ export default function EventsList() {
 
                                 <View>
                                     <View style={{
-                                        borderRadius: 100, backgroundColor: "#F0F0F0",
+                                        borderRadius: 100,
                                     }}>
                                         <TextComponent
                                             fontFamily="Regular"
                                             fontSize={13}
                                             style={{
                                                 padding: 3,
-                                                marginHorizontal: 8,
-
+                                                borderRadius: 100,
                                             }}
-                                            numberOfLines={2}
+                                            numberOfLines={1}
                                         >
                                             {event?.startsAt ? dateFormatter(new Date(event?.startsAt), event?.endsAt ? new Date(event?.endsAt) : null) : ""}
                                         </TextComponent>

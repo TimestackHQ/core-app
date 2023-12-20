@@ -6,7 +6,6 @@ import { getLinkedEvents } from "../queries/events";
 import { FlatList } from "react-native-gesture-handler";
 import TextComponent from "../Components/Library/Text";
 import TimestackMedia from "../Components/TimestackMedia";
-import { SafeAreaView } from "react-native";
 import { useEffect } from "react";
 
 export default function LinkedEvents() {

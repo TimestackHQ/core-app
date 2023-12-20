@@ -24,9 +24,13 @@ export const counterSlice = createSlice<RollType, SliceCaseReducers<RollType>, "
                 }
                 // @ts-ignore
                 state.holderImageUrl = action.payload.holderImageUrl;
+                // @ts-ignore
+                state.holderImageS3Object = action.payload.holderImageS3Object;
+                console.log("setRoll", state)
             } else {
                 if ("holderId" in state) delete state.holderId;
                 if ("holderImageUrl" in state) delete state.holderImageUrl;
+                if ("holderImageS3Object" in state) delete state.holderImageS3Object;
                 if ("profile" in state) delete state.profile;
             }
         }

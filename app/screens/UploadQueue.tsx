@@ -1,14 +1,10 @@
-import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
-import { UploadItem } from "../types/global";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import React, {useContext, useEffect, useState} from "react";
 
-import { RootStackParamList, UploadScreenNavigationProp } from "../navigation";
-import { FlashList } from "@shopify/flash-list";
+import { RootStackParamList } from "../navigation";
 import { FlatList } from "react-native-gesture-handler";
-import {ActivityIndicator, Image, Text, Touchable, TouchableOpacity, View} from "react-native";
-import {QueueContext, uploadQueueWorker, useQueue, useQueueCounter} from "../hooks/queue";
-import FastImage from "react-native-fast-image";
-import { set } from "lodash";
+import {Image, Text, TouchableOpacity, View} from "react-native";
+import {QueueContext, uploadQueueWorker} from "../hooks/queue";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
 import {CompressionProgressEvent, UploadItemJob} from "../utils/UploadJobsQueue";
 import {TimestackCoreNativeCompressionListener} from "../modules/timestack-core";
@@ -18,6 +14,7 @@ import Spinner from "../Components/Library/Spinner";
 export default function UploadQueue() {
 
     const route = useRoute<RouteProp<RootStackParamList, "UploadQueue">>();
+    const navigator = useNavigation();
 
     const [queueCounter, rawQueue] = useContext(QueueContext);
 
@@ -31,6 +28,12 @@ export default function UploadQueue() {
             .reverse();
 
     };
+
+    useEffect(() => {
+        if (queueCounter === 0) {
+            navigator.goBack();
+        }
+    }, [queueCounter]);
 
     useEffect(() => {
         (async () => {

@@ -38,8 +38,6 @@ export default function Roll() {
 	const navigator = useNavigation();
 	const route = useRoute<RouteProp<RootStackParamList, "Roll">>();
 
-	const [tab, setTab] = useState<"roll" | "holderPicker">("roll");
-
 	const [selected, setSelected] = useState<{
 		[key: string]: (PhotoIdentifier["node"] & { group: string | null })
 	}>({});
@@ -94,11 +92,6 @@ export default function Roll() {
 	}, [isFocused]);
 
 	const save = async () => {
-
-		if (route.params.holderType === "none") {
-			setTab("holderPicker");
-			return;
-		}
 
 		const mediaSelected: (PhotoIdentifier["node"] & { group: string | null })[] = [];
 
@@ -238,7 +231,7 @@ export default function Roll() {
 		setIsGrouping(!isGrouping);
 	}
 
-	return tab === "roll" ? <View style={{ flex: 1, flexDirection: "column" }}>
+	return <View style={{ flex: 1, flexDirection: "column" }}>
 		{route.params.holderType === "socialProfile" && (
 			<View style={{ flex: 2, justifyContent: 'center', padding: 15, paddingBottom: 0, backgroundColor: "#FFFEFD" }}>
 				{route.params.profile.people.length === 1 && (
@@ -273,16 +266,16 @@ export default function Roll() {
 				}}>Recents</Text>
 			</View>
 			<View style={{ justifyContent: "center" }}>
-				<TouchableOpacity>
-					<Text style={{
-						fontSize: 16,
-						fontFamily: "Red Hat Display Semi Bold",
-						paddingTop: 20,
-						padding: 15,
-						color: "#A6A6A6",
-						textAlign: "right"
-					}}>Clear</Text>
-				</TouchableOpacity>
+				{/*<TouchableOpacity>*/}
+				{/*	<Text style={{*/}
+				{/*		fontSize: 16,*/}
+				{/*		fontFamily: "Red Hat Display Semi Bold",*/}
+				{/*		paddingTop: 20,*/}
+				{/*		padding: 15,*/}
+				{/*		color: "#A6A6A6",*/}
+				{/*		textAlign: "right"*/}
+				{/*	}}>Clear</Text>*/}
+				{/*</TouchableOpacity>*/}
 			</View>
 		</View>
 
@@ -364,8 +357,6 @@ export default function Roll() {
 				{groups[Object.keys(groups)[0]].media.length !== 0 ? (
 					<BlurView
 						style={{
-							position: "absolute",
-							top: 0,
 							width: "100%",
 							flex: 1,
 							height: groupPanelHeight,
@@ -434,9 +425,7 @@ export default function Roll() {
 				)}
 			</View>
 		</View>
-	</View> : <HolderSelectorScreen
-		setGlobalTab={setTab}
-	/>;
+	</View>
 
 }
 
