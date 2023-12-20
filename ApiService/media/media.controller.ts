@@ -144,7 +144,7 @@ export const viewMedia = async (req: Request, res: Response<{
         console.log("PEOPLE",media?.content, userIds);
         const people = await Models.User.find({
             _id: {
-                $in: userIds.filter((id: mongoose.Schema.Types.ObjectId) => id.toString() !== req.user._id.toString())
+                $in: userIds?.filter((id: mongoose.Schema.Types.ObjectId) => id.toString() !== req.user._id.toString())
             }
         }).select("firstName lastName username profilePictureSource");
         if (!media) {
