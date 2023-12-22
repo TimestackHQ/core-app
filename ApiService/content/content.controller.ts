@@ -1,14 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { AWS, Models } from "../../shared";
-import { v4 as uuid } from 'uuid';
-import moment = require("moment");
-import { IUser } from "../../shared/models/User";
-import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "../../shared/consts";
-import { IMedia } from "../../shared/@types/Media";
-import { IContent } from "../../shared/models/Content";
-import { AWSS3ObjectType } from "shared/@types/global";
-import { PersonType } from "../@types";
-import mongoose, { Promise } from "mongoose";
+import { Models } from "../../shared";
 import {LinkContent} from "./content.validator";
 
 
@@ -16,7 +7,6 @@ export async function linkContent(req: Request<{ contentId: string }, any, LinkC
 
     try {
 
-        console.log(req.body)
 
         const sourceHolder = req.body.holderType === "event" ? await Models.Event.findOne({
             _id: req.body.sourceHolderId,

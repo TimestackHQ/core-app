@@ -19,19 +19,13 @@ export const createMediaValidator = (body: CreateMediaType): Joi.ValidationResul
 
 };
 
-export const getUploadedMediaValidator = (body: unknown): Joi.ValidationResult => {
-
-    const schema = Joi.object({
-        greaterThanOrEqual: Joi.date().required(),
-    });
-    return schema.validate(body);
-
-};
-
 export const deleteMemoriesValidator = (body: unknown): Joi.ValidationResult => {
 
     const schema = Joi.object({
-        ids: Joi.array().required(),
+        mediaId: Joi.string().required(),
+        contentId: Joi.string().required(),
+        holderId: Joi.string().required(),
+        holderType: Joi.string().valid(...MEDIA_HOLDER_TYPES).required(),
     });
     return schema.validate(body);
 

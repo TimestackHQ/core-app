@@ -14,10 +14,9 @@ export async function getPeople({ queryKey: [_key, { searchQuery, getConnectedOn
 
 }
 
-export async function getMutuals({ queryKey: [_key, { targetUserId, getAll, q }] }: QueryFunctionContext<[string, { targetUserId: string, getAll: boolean, q: string }]>) {
+export async function getMutuals({ queryKey: [_key, { targetUserId, getAll }] }: QueryFunctionContext<[string, { targetUserId: string, getAll: boolean }]>) {
 
     const query = new URLSearchParams({
-        q,
         getAll: getAll ? "true" : undefined
     })
 

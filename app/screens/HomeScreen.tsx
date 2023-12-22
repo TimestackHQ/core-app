@@ -41,18 +41,12 @@ export default function HomeScreen({ route }) {
 	// const queryClient = useQueryClient();
 
 	const [searchQuery, setSearchQuery] = React.useState("");
-	const { data: people, status: peopleStatus } = useQuery(["people", { searchQuery }], getPeople);
+	const { data: people, status: peopleStatus } = useQuery(["people", { searchQuery, getConnectedOnly: false }], getPeople);
 
 	const { data: events, status: eventsStatus, refetch: refreshEvents } = useQuery(["events", {}], getEvents);
 	const { data: profiles, status: profilesStatus, refetch: refreshProfiles } = useQuery(["profiles", { searchQuery }], listProfiles, {
 	});
 
-	const onRefresh = () => {
-		setRefreshing(true);
-		setTimeout(() => {
-			setRefreshing(false);
-		}, 1000);
-	};
 
 	useEffect(() => {
 		(async () => {
@@ -63,69 +57,39 @@ export default function HomeScreen({ route }) {
 	}, []);
 
 	useEffect(() => {
-		onRefresh();
 	}, [route.params?.updatedId]);
+
+	useEffect(() => {
+
+		refreshProfiles();
+		refreshEvents();
+
+	}, [isFocused]);
 
 	useEffect(() => {
 		console.log("people", people);
 	}, [people]);
 
+	React.useLayoutEffect(() => {
+		navigation.setOptions({
+			// @ts-ignore
+			headerSearchBarOptions: {
+				visible: true,
+				autoFocus: true,
+				hideWhenScrolling: false,
+				placeholder: "Search for people",
+				onChangeText: (event) => {
+					setSearchQuery(event.nativeEvent.text);
+				}
+			},
+		});
+	}, [navigation]);
+
+
 	return <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-		<View style={{ flexDirection: "row", marginLeft: 5, marginRight: 10, alignContent: "flex-end", alignItems: "center" }}>
-			<View style={{ flex: 1 }}>
-				<SearchBar
-					platform={Platform.OS === "ios" ? "ios" : "android"}
-					round={true} cancelButtonTitle={""} showCancel={false}
-					showLoading={peopleStatus === "loading"}
-
-					containerStyle={{
-						flex: 1,
-						borderRadius: 10,
-						backgroundColor: "#F2F2F2",
-					}}
-
-					inputContainerStyle={{
-						flex: 1,
-						borderRadius: 10,
-						backgroundColor: "#F2F2F2",
-					}}
-
-					inputStyle={{
-						fontSize: 16,
-						fontFamily: "Red Hat Display Regular",
-
-					}}
-					cancelButtonProps={{ color: "black" }}
-					onChangeText={(text) => { setSearchQuery(text) }}
-					value={searchQuery}
-					lightTheme />
-			</View>
-			{/*<TextInput style={{ flex: 1, fontSize: 16, borderRadius: 10, backgroundColor: "#F2F2F2", margin: 5, marginTop: 5, padding: 10, fontFamily: "Red Hat Display Regular" }} placeholder="Search" onChangeText={setSearchQuery} />*/}
-			<TouchableOpacity onPress={() => navigation.push("Notifications")}>
-				<IconBadge
-					IconBadgeStyle={
-						{
-							// width: 10,
-							height: 20,
-							paddingHorizontal: 5,
-							backgroundColor: '#FF3B30'
-						}
-					}
-					// Hidden={this.state.BadgeCount == 0}
-					BadgeElement={
-						<TextComponent fontFamily="Semi Bold" fontSize={13} style={{ color: "white" }}>4</TextComponent>
-					}
-					MainElement={<MaterialCommunityIcon
-						size={28}
-						style={{ alignSelf: "center", margin: 5, borderColor: "green" }}
-						name="bell-outline"
-					/>}
-				/>
-			</TouchableOpacity>
-		</View>
 
 		{searchQuery === "" ? <React.Fragment>
-			<View style={{ paddingTop: 10, paddingVertical: 10 }}>
+			<View style={{ paddingTop: 0, paddingVertical: 10 }}>
 				<TextComponent style={{ marginHorizontal: 10 }} fontFamily="Semi Bold" fontSize={16}>
 					Events
 				</TextComponent>

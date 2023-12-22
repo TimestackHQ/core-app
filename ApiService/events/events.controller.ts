@@ -261,7 +261,6 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
 
                 const cover = event.cover as IMedia;
 
-                console.log(cover)
 
                 const media = await Models.Media.countDocuments({
                     event: event._id
@@ -270,7 +269,7 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
                 return {
                     ...event.toJSON(),
                     peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
-                    mediaCount: media,
+                    mediaCount: event.content.length,
                     users: undefined,
                     invitees: undefined,
                     nonUsersInvitees: undefined,
@@ -372,7 +371,6 @@ export async function getEvent(req: Request, res: Response<{
 
         const cover = event.cover as IMedia;
 
-        console.log(cover)
 
         if (!event) {
             return res.status(404).json({
@@ -386,7 +384,6 @@ export async function getEvent(req: Request, res: Response<{
         }]);
 
         if (!event.revisitsCache?.[String(req.user._id)] || moment(event["revisitsCache"][String(req.user._id)]).unix() < moment().subtract(10, "minutes").unix()) {
-            console.log(moment(event["revisitsCache"][String(req.user._id)]).unix(), moment().subtract(10, "minutes").unix(), event.revisitsCache[String(req.user._id)]);
             event.revisitsCache = {
                 ...event.revisitsCache,
                 [String(req.user._id)]: new Date()

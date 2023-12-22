@@ -5,7 +5,7 @@ import {
 	Alert,
 	Dimensions,
 	FlatList,
-	StyleSheet
+	StyleSheet, TouchableWithoutFeedback
 } from "react-native";
 import { useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
@@ -22,6 +22,8 @@ import { flatten } from "lodash";
 import { MediaInternetType } from "@shared-types/*";
 import MediaViewHeaders from "../Components/MediaView/MediaViewHeaders";
 import MediaViewNavBar from "../Components/MediaView/MediaViewNavBar";
+import TextComponent from "../Components/Library/Text";
+import ProfilePicture from "../Components/ProfilePicture";
 
 // optional
 const options = {
@@ -60,26 +62,31 @@ export default function MediaView() {
 			});
 	}
 
-	const deleteMedia = (id) => {
-		HTTPClient(`/media/${route.params.holderId}/delete${route.params.holderType === "socialProfile" ? "?profile=true" : ""}`, "POST", { ids: [id] }).then(() => {
+	const deleteMedia = (mediaId, mediaContentId) => {
+
+		console.log({mediaId: mediaId,
+			contentId: mediaContentId,
+			holderId: route.params.holderId,
+			holderType: route.params.holderType
+		})
+
+
+		HTTPClient(`/media/delete`, "POST", {
+			mediaId: mediaId,
+			contentId: mediaContentId,
+			holderId: route.params.holderId,
+			holderType: route.params.holderType
+		}).then(() => {
 			if (gallery.length === 1 || currentIndex === gallery.length - 1) {
 				navigator.goBack();
 				return;
 			}
-			setGallery(gallery.filter((item) => item._id !== id));
+			setGallery(gallery.filter((item) => item._id !== mediaId));
 		}).catch(err => {
 			console.log(err.response);
 			alert("Error deleting. Please try again.")
 		})
 	}
-
-	const handleSwipe = (direction) => {
-		if (direction === 'left') {
-			setCurrentIndex((prevIndex) => prevIndex + 1);
-		} else if (direction === 'right') {
-			setCurrentIndex((prevIndex) => prevIndex - 1);
-		}
-	};
 
 	useEffect(() => {
 
@@ -117,7 +124,10 @@ export default function MediaView() {
 				}
 
 				navigator.setOptions({
-					headerBackTitle: "Back",
+					headerBackTitleStyle: {
+						color: "black"
+					},
+					headerBackTitle: "",
 					headerBackTitleVisible: true,
 					headerShown: true,
 					headerTitle: () => res.data.media?.timestamp ? (
@@ -168,7 +178,7 @@ export default function MediaView() {
 
 	return (
 		<View style={{ backgroundColor: "white", flex: 1, flexDirection: "column" }}>
-			<View style={{ flex: 9 }}>
+			<View style={{ flex: media?.people.length > 1 ? 18 : 19 }}>
 				<View style={styles.container}>
 					{gallery[currentIndex]?.isGroup ? <BlurView
 						style={{
@@ -237,6 +247,80 @@ export default function MediaView() {
 					/>
 				</View>
 			</View>
+			{media?.people.length > 1 ? <View style={{
+				flex: 1,
+				flexDirection: "row",
+			}}>
+				<View style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'flex-end',
+					flex: 1,
+					marginLeft: 10, marginVertical: 15, marginTop: 10,
+					marginRight: 15
+
+				}}>
+
+					{media?.people.length > 1 ? media?.people.map((user, i) => {
+						if (media.people.length > 7 && i === 7) {
+							return (
+								<TouchableWithoutFeedback style={{ marginLeft: 5 }}>
+									<View>
+										<View style={{
+											width: 20,
+											height: 20,
+											borderRadius: 30,
+											justifyContent: 'center',
+											alignItems: 'center',
+											marginLeft: 5,
+											backgroundColor: "black",
+											opacity: 0.6,
+											zIndex: 1,
+											position: "absolute",
+											right: 0,
+											bottom: 0,
+										}}>
+											<TextComponent
+												fontSize={10}
+												fontFamily={"Semi Bold"}
+												style={{
+													color: "white",
+												}}
+											>{12 - 6}</TextComponent>
+										</View>
+										<ProfilePicture
+											pressToProfile={false}
+											key={i}
+											userId={user?._id.toString()}
+											width={20}
+											height={20}
+											location={user.profilePictureSource}
+											style={{ marginLeft: 5 }}
+										/>
+									</View>
+								</TouchableWithoutFeedback>
+							);
+						} else if(i < 7) {
+							return (
+								<ProfilePicture
+									key={i}
+									userId={user._id.toString()}
+									style={{ marginLeft: 5, borderColor: "black", borderWidth: 1 }}
+									width={20}
+									height={20}
+									location={user.profilePictureSource}
+									pressToProfile={false}
+								/>
+
+							);
+						} else {
+							return null;
+						}
+
+					}) : null}
+
+				</View>
+			</View> : null}
 			<MediaViewNavBar
 				media={media}
 				holderId={route.params?.holderId}

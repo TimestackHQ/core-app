@@ -23,6 +23,7 @@ import EventsList from "../screens/EventsList";
 import LinkedEvents from "../screens/LinkedEventsScreen";
 import ChatSpaceScreen from "../screens/ChatSpaceScreen";
 import LinkContent from "../screens/LinkContentScreen";
+import FastImage from "react-native-fast-image";
 
 const DefaultBackButtonHeader = name => ({
 	headerShadowVisible: true,
@@ -51,7 +52,19 @@ export default function CoreStackScreen({ initialRouteName = "Main" }) {
 			headerTitle: "",
 			headerBackTitleVisible: false,
 		}}>
-			<Index.Screen options={{ headerShown: false, headerBackTitle: "Hey" }} name="Main" component={HomeScreen} />
+			<Index.Screen options={{
+				headerShadowVisible: false,
+				headerSearchBarOptions: {
+					hideWhenScrolling: false,
+				},
+				headerLeft: () => {
+					return <FastImage resizeMode={"contain"} source={require("../assets/icons/logo.png")} style={{
+						width: 160,
+						height: 40,
+					}} />
+				}
+
+			}} name="Main" component={HomeScreen} />
 
 			<Index.Screen name="Event" component={EventScreen} />
 			<Index.Screen name="EventsList" options={{

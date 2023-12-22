@@ -29,11 +29,8 @@ export async function findPeople(req: Request, res: Response<PeopleSearchResult>
 
         if(String(req.query.getConnectedOnly) === "true") {
 
-            console.log(profiles);
-
             const userIds = profiles.map(profile => profile.users).flat();
 
-            console.log(userIds)
 
             const query: {
                 [key: string]: any

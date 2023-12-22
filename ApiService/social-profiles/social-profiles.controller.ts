@@ -310,30 +310,6 @@ export async function declineProfile(req: Request, res: Response) {
 
 }
 
-export async function hasAccess(req: Request, res: Response) {
-    try {
-
-        if (process.env.NODE_ENV === "development") {
-            return res.sendStatus(200);
-        }
-
-        const profilesCount = await Models.SocialProfile.countDocuments({
-            users: {
-                $in: [req.user._id]
-            },
-        });
-
-        if (profilesCount > 0 || process.env?.NODE_ENV === "development") {
-            return res.sendStatus(200);
-        }
-
-        return res.sendStatus(400);
-
-    } catch (Err) {
-        console.log(Err);
-        return res.sendStatus(500);
-    }
-}
 
 export const mediaList = async (req: Request, res: Response<{ content: MediaInternetType[] }>, next: NextFunction) => {
     try {

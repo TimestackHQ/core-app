@@ -1,20 +1,16 @@
 import React from "react";
 import { useQuery } from "react-query";
 import { getEvents } from "../queries/events";
-import { Image, Text, View } from "react-native";
+import {Image, RefreshControl, Text, View} from "react-native";
 import TextComponent from "../Components/Library/Text";
-import { FlashList } from "@shopify/flash-list";
 import TimestackMedia from "../Components/TimestackMedia";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { EventScreenNavigationProp } from "../navigation";
-import CreateEvent from "../Components/Skeletons/CreateEvent";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { dateFormatter } from "../utils/time";
 import ProfilePicture from "../Components/ProfilePicture";
 
 const iconWidth = 25;
-
 
 export default function EventsList() {
 
@@ -30,9 +26,16 @@ export default function EventsList() {
             backgroundColor: "white",
         }}>
             <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={eventsStatus === "loading"}
+                        onRefresh={() => {
+                            refreshEvents();
+                        }}
+                    />
+                }
                 style={{ flex: 1, height: "100%", backgroundColor: "white", paddingTop: 10, paddingHorizontal: 10 }}
             >
-                {/* <CreateEvent /> */}
                 {events ? events.map((event, index) => {
                     return <TouchableOpacity style={{
                     }} onPress={() => {
@@ -165,7 +168,6 @@ export default function EventsList() {
                             </View>
 
                         </View>
-                        {/* <EventBannerButton event={event} /> */}
                     </TouchableOpacity>
                 }) : null}
             </ScrollView>

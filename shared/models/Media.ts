@@ -118,9 +118,6 @@ MediaSchema.methods.getThumbnailLocation = async function (): Promise<AWSS3Objec
     // @ts-ignore
     const media: IMedia = this;
 
-    console.log(media);
-
-
     const lowestQualityFile = media.files.map(file => {
         return {
             ...file.toJSON(),

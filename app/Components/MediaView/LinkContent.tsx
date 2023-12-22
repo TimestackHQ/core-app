@@ -136,6 +136,7 @@ export default function LinkContent({
                         loading={profilesStatus === "loading"}
                     />
                     {selectedProfiles.length > 0 ? <TouchableOpacity onPress={() => {
+                        console.log("mutate", contentId);
                         mutation.mutate({
                             contentId,
                             sourceHolderId,

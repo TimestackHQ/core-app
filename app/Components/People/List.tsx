@@ -6,6 +6,7 @@ import { FlashList } from "@shopify/flash-list";
 import { PeopleSearchResult } from "@api-types/public";
 import { useNavigation } from "@react-navigation/native";
 import { SocialProfileScreenNavigationProp } from "../../navigation";
+import FastImage from "react-native-fast-image";
 
 export default function ListOfPeople({
     refresh,
@@ -81,10 +82,10 @@ export default function ListOfPeople({
             })]}
         </View> : <View>
             <FlatList
-                // refreshControl={<RefreshControl
-                //     refreshing={loading}
-                //     onRefresh={refresh}
-                // />}
+                refreshControl={<RefreshControl
+                    refreshing={loading}
+                    onRefresh={refresh}
+                />}
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={<View style={{ height: 30 }} />}
                 style={{ ...style, ...viewStyle }}
@@ -152,7 +153,7 @@ export default function ListOfPeople({
                                 flex: 1
                             }}>
                                 {mode === "multiselect" ?
-                                    <Image source={selected ? require(`../../assets/icons/collection/check-filled.png`) : require(`../../assets/icons/collection/check.png`)} style={{
+                                    <FastImage source={selected ? require(`../../assets/icons/collection/check-filled.png`) : require(`../../assets/icons/collection/check.png`)} style={{
                                         width: 22,
                                         height: 22,
                                         marginHorizontal: 10,

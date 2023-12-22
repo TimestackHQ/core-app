@@ -5,14 +5,14 @@ import { AddStackScreen, FutureStackScreen, HomeStackScreen, NotificationsStackS
 import TimestackButton from "../Components/TimestackButton";
 import { useAppSelector } from "../store/hooks";
 import { useNavigation } from "@react-navigation/native";
-import { RollScreenNavigationProp } from "../navigation";
+import {AddScreenNavigationProp, RollScreenNavigationProp} from "../navigation";
 
 const Tab = createBottomTabNavigator();
 export default function Nav() {
 
     const rollState = useAppSelector(state => state.rollState);
 
-    const navigator = useNavigation<RollScreenNavigationProp>();
+    const navigator = useNavigation<RollScreenNavigationProp, AddScreenNavigationProp>();
 
     return (
         <Tab.Navigator
@@ -55,6 +55,11 @@ export default function Nav() {
                 listeners={({ }) => ({
                     tabPress: (e) => {
                         e.preventDefault();
+                        if(rollState.holderType === "none") {
+                            navigator.navigate("Add", {
+                            });
+                            return;
+                        }
                         navigator.navigate("Roll", {
                             ...rollState
                         });

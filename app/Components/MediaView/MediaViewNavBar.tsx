@@ -43,7 +43,7 @@ export default function MediaViewNavBar({
 
     return (
         <Animated.View style={{
-            flex: 1, padding: 10, alignContent: "center", flexDirection: "column", backgroundColor: "white",
+            flex: 2, padding: 10, alignContent: "center", flexDirection: "column", backgroundColor: "white",
             shadowColor: "#000",
             shadowOffset: {
                 width: 0,
@@ -52,82 +52,7 @@ export default function MediaViewNavBar({
             shadowOpacity: 1,
             opacity: fadeAnim, // Apply the animated opacity
         }}>
-            <View style={{
-                flex: 1,
-                flexDirection: "row",
-                position: "absolute",
-                top: -40,
-            }}>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    flex: 1,
-                    marginLeft: 10, marginVertical: 15, marginTop: 10,
-                    marginRight: 0
 
-                }}>
-
-                    {media?.people.length > 1 ? media?.people.map((user, i) => {
-                        if (media.people.length > 7 && i === 7) {
-                            return (
-                                <TouchableWithoutFeedback style={{ marginLeft: 5 }}>
-                                    <View>
-                                        <View style={{
-                                            width: 20,
-                                            height: 20,
-                                            borderRadius: 30,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            marginLeft: 5,
-                                            backgroundColor: "black",
-                                            opacity: 0.6,
-                                            zIndex: 1,
-                                            position: "absolute",
-                                            right: 0,
-                                            bottom: 0,
-                                        }}>
-                                            <TextComponent
-                                                fontSize={10}
-                                                fontFamily={"Semi Bold"}
-                                             style={{
-                                                    color: "white",
-                                             }}
-                                            >{12 - 6}</TextComponent>
-                                        </View>
-                                        <ProfilePicture
-                                            pressToProfile={false}
-                                            key={i}
-                                            userId={user?._id.toString()}
-                                            width={20}
-                                            height={20}
-                                            location={user.profilePictureSource}
-                                            style={{ marginLeft: 5 }}
-                                        />
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            );
-                        } else if(i < 7) {
-                            return (
-                                <ProfilePicture
-                                    key={i}
-                                    userId={user._id.toString()}
-                                    style={{ marginLeft: 5 }}
-                                    width={20}
-                                    height={20}
-                                    location={user.profilePictureSource}
-                                    pressToProfile={false}
-                                />
-
-                            );
-                        } else {
-                            return null;
-                        }
-
-                    }) : null}
-
-                </View>
-            </View>
             <View style={{
                 flex: 1,
                 flexDirection: "row",
@@ -170,6 +95,7 @@ export default function MediaViewNavBar({
                         />
                     </TouchableOpacity>
                     {holderType === "socialProfile" ? <TouchableOpacity onPress={async () => {
+                        console.log("Linking content", media);
                         navigator.navigate("LinkContent", {
                             contentId: media?.contentId,
                             sourceHolderId: holderId,

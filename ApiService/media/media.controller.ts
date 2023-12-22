@@ -4,71 +4,11 @@ import { v4 as uuid } from 'uuid';
 import moment = require("moment");
 import { IUser } from "../../shared/models/User";
 import { IMAGE_FORMAT_OPTIONS, MEDIA_FORMAT_OPTIONS, MEDIA_HOLDER_TYPES, MEDIA_QUALITY_OPTIONS } from "../../shared/consts";
-import { IMedia } from "../../shared/@types/Media";
 import { IContent } from "../../shared/models/Content";
 import { AWSS3ObjectType } from "shared/@types/global";
 import { PersonType } from "../@types";
 import {SocialProfileInterface} from "../../shared/@types/SocialProfile";
 import mongoose, {Promise, Schema} from "mongoose";
-
-export async function uploadCover(req: Request, res: Response, next: NextFunction) {
-
-    try {
-
-        // const file: Express.Multer.File | undefined = req.file;
-
-        // const fileId = uuid();
-
-        // // @ts-ignore
-        // const mediaFile = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "media");
-        // const thumbnail = Array(...req?.files)?.find((file: Express.Multer.File) => file.fieldname === "thumbnail");
-        // const snapshot = Array(...req.files)?.find((file: Express.Multer.File) => file.fieldname === "snapshot");
-
-
-        // await AWS.upload(thumbnail.originalname, <Buffer>thumbnail.buffer);
-        // if (snapshot) {
-        //     await AWS.upload(snapshot.originalname, <Buffer>snapshot.buffer);
-        // }
-
-
-        // const media = new Models.Media({
-        //     publicId: fileId,
-        //     // @ts-ignore
-        //     storageLocation: thumbnail.originalname,
-        //     thumbnail: thumbnail.originalname,
-        //     snapshot: snapshot ? snapshot.originalname : undefined,
-        //     // @ts-ignore
-        //     type: thumbnail.mimetype,
-        //     group: "cover",
-        //     user: req.user._id,
-        //     timestamp: new Date(),
-        // });
-
-        // await media.save();
-
-        // res.status(200).json({
-        //     message: "Cover uploaded successfully",
-        //     media: {
-        //         publicId: media._id,
-        //         storageLocation: media.storage.path,
-        //     },
-        // });
-
-        // await AWS.upload(mediaFile.originalname, <Buffer>mediaFile.buffer);
-
-        // media.storageLocation = mediaFile.originalname;
-        // media.type = mediaFile.mimetype;
-        // await media.save();
-
-
-
-
-
-    } catch (e) {
-        next(e);
-    }
-
-}
 
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -83,7 +23,6 @@ export const get = async (req: Request, res: Response, next: NextFunction) => {
             return res.sendStatus(404);
         }
 
-        console.log(media)
         return res.json({
             thumbnail: await media.getThumbnailLocation(),
             fullsize: await media.getFullsizeLocation(),
@@ -141,7 +80,6 @@ export const viewMedia = async (req: Request, res: Response<{
         // @ts-ignore
         const userIds = (media?.content as IContent)?.socialProfiles?.map((profile: SocialProfileInterface) => (profile.users as mongoose.Schema.Types.ObjectId[])).flat();
 
-        console.log("PEOPLE",media?.content, userIds);
         const people = await Models.User.find({
             _id: {
                 $in: userIds?.filter((id: mongoose.Schema.Types.ObjectId) => id.toString() !== req.user._id.toString())
@@ -151,35 +89,35 @@ export const viewMedia = async (req: Request, res: Response<{
             return res.sendStatus(404);
         }
 
+        console.log(media)
         const user = media.user as IUser;
 
-
-        return res.json({
-
-
-            media: {
-                _id: media?._id.toString(),
+        const response: MediaInView = {
+            _id: media?._id.toString(),
                 fullsize: await media.getFullsizeLocation(),
                 thumbnail: await media.getThumbnailLocation(),
                 timestamp: media.timestamp,
                 contentId: (media?.content as IContent)?._id.toString(),
                 user: media.user ? {
-                    _id: user._id.toString(),
-                    firstName: user?.firstName,
-                    lastName: user?.lastName,
-                    username: user.username,
-                    profilePictureSource: user?.profilePictureSource
-                } : undefined,
+                _id: user._id.toString(),
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                username: user.username,
+                profilePictureSource: user?.profilePictureSource
+            } : undefined,
                 hasPermission:
-                    holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
+            holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
                 people: people.map((person: IUser) => ({
-                    _id: person._id.toString(),
-                    firstName: person.firstName,
-                    lastName: person.lastName,
-                    username: person.username,
-                    profilePictureSource: person.profilePictureSource
-                }))
-            }
+                _id: person._id.toString(),
+                firstName: person.firstName,
+                lastName: person.lastName,
+                username: person.username,
+                profilePictureSource: person.profilePictureSource
+            }))
+        }
+
+        return res.json({
+            media: response
         });
     } catch (e) {
         next(e);
@@ -209,14 +147,12 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 
         const query: CreateMediaType = req.query as CreateMediaType;
 
-        console.log(req.files)
         if (!req.files) {
             return res.status(400).json({
                 message: "No file provided"
             });
         }
 
-        console.log(req.files);
 
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
         const thumbnailFile = files["mediaThumbnail"][0];
@@ -310,8 +246,6 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         });
 
 
-
-
                     }
 
                 } else {
@@ -350,6 +284,8 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                             upsert: true
                         });
                     }
+
+                    console.log("MEDIA UPLOAD", content)
 
                     media.content = content._id;
                 }
@@ -396,16 +332,16 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
 export async function deleteMemories(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const { holderId, ids } = req.params;
+        console.log(req.body);
 
-        const holder = req.query?.profile ?
+        const holder = req.body.holderType === "socialProfile" ?
             await Models.SocialProfile.findOne({
-                _id: holderId,
+                _id: req.body.holderId,
                 users: {
                     $in: [req.user._id]
                 },
             }) : await Models.Event.findOne({
-                _id: holderId,
+                _id: req.body.holderId,
                 users: {
                     $in: [req.user._id]
                 }
@@ -420,44 +356,73 @@ export async function deleteMemories(req: Request, res: Response, next: NextFunc
             });
         }
 
-        const content = await Models.Content.find({
-            _id: {
-                $in: ids
-            }
-        });
+        const content = await Models.Content.findById(req.body.contentId);
 
-        for await (const item of content) {
-            if (item.contentType === "mediaGroup") {
-                const mediaGroup = await Models.MediaGroup.findOne({
-                    _id: item.contentId
-                }).populate<IMedia>("media");
-
-                for await (const media of mediaGroup?.media || []) {
-                    await Promise.allSettled((media as IMedia).files.map(files => AWS.deleteFile(files.storage.path)));
-                    await (media as IMedia).remove();
-                }
-
-                await mediaGroup?.remove();
-
-            } else if (item.contentType === "media") {
-                const media = await Models.Media.findOne({
-                    _id: item.contentId
-                }).populate<IMedia>("files");
-
-                await Promise.allSettled(media?.files.map(files => AWS.deleteFile(files.storage.path)));
-                await media?.remove();
-            }
-
-            await item.remove();
+        if (!content) {
+            return res.sendStatus(404);
         }
 
-        await holder.updateOne({
-            $pull: {
-                content: {
-                    $in: ids
-                }
+        if(content.contentType === "mediaGroup") {
+            const mediaGroup = await Models.MediaGroup.findById(content.contentId);
+            if(!mediaGroup) {
+                return res.sendStatus(404);
             }
-        });
+            if(mediaGroup.media.includes(req.body.mediaId)) {
+                await mediaGroup.updateOne({
+                    $pull: {
+                        media: req.body.mediaId
+                    }
+                });
+            }
+            if(mediaGroup.media.length === 0) {
+                await mediaGroup.deleteOne();
+                await Models.SocialProfile.updateMany({
+                    content: {
+                        $in: [content._id]
+                    }
+                }, {
+                    $pull: {
+                        content: content._id
+                    }
+                });
+                await Models.Event.updateMany({
+                    content: {
+                        $in: [content._id]
+                    }
+                }, {
+                    $pull: {
+                        content: content._id
+                    }
+                });
+            }
+        } else if(content.contentType === "media") {
+            const media = await Models.Media.findById(content.contentId);
+            if(!media) {
+                return res.sendStatus(404);
+            }
+            if(media._id.toString() === req.body.mediaId) {
+                await media.deleteOne();
+                await content.deleteOne();
+                await Models.SocialProfile.updateMany({
+                    content: {
+                        $in: [content._id]
+                    }
+                }, {
+                    $pull: {
+                        content: content._id
+                    }
+                });
+                await Models.Event.updateMany({
+                    content: {
+                        $in: [content._id]
+                    }
+                }, {
+                    $pull: {
+                        content: content._id
+                    }
+                });
+            }
+        }
 
         return res.sendStatus(200);
 

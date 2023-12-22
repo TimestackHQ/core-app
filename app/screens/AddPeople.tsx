@@ -46,7 +46,7 @@ export default function AddPeople() {
 
 	useEffect(() => {
 		if (search) {
-			HTTPClient("/people?q=" + search).then(res => {
+			HTTPClient("/people?getConnectedOnly=false&searchQuery=" + search).then(res => {
 				setResults(res.data.people.map(person => {
 					return {
 						...person,

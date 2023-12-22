@@ -3,10 +3,13 @@ import { View, Animated } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useAppSelector } from '../store/hooks';
 import TimestackMedia from './TimestackMedia';
+import { NavigationContext } from '@react-navigation/native';
 
 export default function TimestackButton({ color, size, focused }: { color: string, size: number, focused: boolean }) {
     const rollState = useAppSelector(state => state.rollState);
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity of 0
+
+    const navigation = React.useContext(NavigationContext);
 
     const fadeIn = () => {
         fadeAnim.setValue(0); // Reset the animation

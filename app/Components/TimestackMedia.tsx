@@ -30,6 +30,7 @@ export default function TimestackMedia({
     return source ? type === "video" ? <Video
         paused={!autoPlay}
         controls={true}
+        resizeMode={resizeMode}
         onReadyForDisplay={(value) => onLoad(true)}
         style={{
             ...style,

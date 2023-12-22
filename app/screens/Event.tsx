@@ -40,6 +40,7 @@ import LinkedEvents from "../Components/Library/LinkedEvents";
 import {useAppDispatch} from "../store/hooks";
 import {setRoll} from "../store/rollState";
 import UploadQueueTracker from "../Components/UploadQueueTracker";
+import {flattenGallery} from "../utils/gallery";
 
 
 function Picker(props) {
@@ -118,13 +119,6 @@ function Headers({
 		}
 		}>
 			<Image source={require("../assets/icons/collection/share.png")} style={{ width: 30, height: 30 }} />
-		</TouchableOpacity>
-		<TouchableOpacity onPress={async () => {
-			navigation.navigate("ChatSpace", {
-			})
-		}
-		}>
-			<Image source={require("../assets/icons/collection/chat.png")} resizeMode="contain" style={{ width: 25, height: 22, marginTop: 8, marginLeft: 15 }} />
 		</TouchableOpacity>
 		<OverflowMenu
 			style={{ marginHorizontal: 10, marginRight: -10, zIndex: 100 }}
@@ -382,6 +376,7 @@ export default function EventScreen() {
 														width={iconWidth}
 														height={iconWidth}
 														location={user.profilePictureSource}
+														pressToProfile
 													/>
 												</View>
 											</TouchableWithoutFeedback>
@@ -463,17 +458,38 @@ export default function EventScreen() {
 				>
 					<TouchableWithoutFeedback
 						onPress={() => {
+
+							const flattenedGallery = flattenGallery(gallery);
+							const index = flattenedGallery.findIndex((m: MediaInternetType) => m._id === media._id);
+
 							navigation.navigate("MediaView", {
 								mediaId: media._id,
 								holderId: event?._id,
 								holderType: "event",
-								content: gallery,
-								currentIndex: raw.index,
+								content: flattenedGallery,
+								currentIndex: index,
 								hasPermission: event?.hasPermission
 							})
 						}
 						}>
 						<View>
+							{media.isGroup ? <View style={{
+								position: "absolute",
+								top: 0,
+								left: 0,
+								width: "100%",
+								height: "100%",
+								zIndex: 1,
+								justifyContent: "flex-start",
+								alignItems: "flex-end"
+							}}>
+
+								<FastImage
+									source={require("../assets/icons/collection/group-white.png")}
+									style={{ width: 18, height: 18, margin: 10 }}
+								/>
+
+							</View> : null}
 							<TimestackMedia itemInView style={{ borderRadius: 0, width: "100%", height: 180 }} source={media.thumbnail} />
 						</View>
 					</TouchableWithoutFeedback>

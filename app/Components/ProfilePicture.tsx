@@ -25,11 +25,8 @@ export default function ProfilePicture({
 	const navigator = useNavigation<SocialProfileScreenNavigationProp>();
 
 	return <TouchableWithoutFeedback onPress={() => {
-		if (userId) HTTPClient("/social-profiles/hasAccess").then(res => {
-			navigator.navigate("SocialProfile", {
-				userId: userId
-			});
-		}).catch(err => {
+		if (userId && pressToProfile) navigator.navigate("SocialProfile", {
+			userId: userId
 		});
 	}}>
 		<View>

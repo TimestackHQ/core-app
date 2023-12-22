@@ -107,24 +107,29 @@ export default function CoreNavigationStack() {
 
     return (
         <CoreStack.Navigator screenOptions={{
-            headerShown: false,
             gestureEnabled: false,
         }}>
-            <CoreStack.Screen name="Main" component={Nav} />
-            <CoreStack.Screen name="Auth" component={AuthScreen} />
-            <CoreStack.Screen name="Invite" component={Invite} />
+            <CoreStack.Screen name="Main" component={Nav} options={{headerShown: false}} />
+            <CoreStack.Screen name="Auth" component={AuthScreen} options={{headerShown: false}} />
+            <CoreStack.Screen name="Invite" component={Invite} options={{headerShown: false}} />
             <CoreStack.Screen
-                options={{ presentation: "modal" }}
+                options={{ presentation: "modal", headerShown: false }}
                 name="Error" component={ErrorScreen}
             />
             <CoreStack.Screen options={{ presentation: "formSheet", headerShown: false, gestureEnabled: true }} name="Roll" component={Roll} />
-            <CoreStack.Screen options={{ presentation: "formSheet", gestureEnabled: true }} name="LinkContent" component={LinkContent} />
             <CoreStack.Screen options={{
-                presentation: "card",
+                presentation: "formSheet",
+                gestureEnabled: true ,
+                headerShown: true,
+            }} name="LinkContent" component={LinkContent} />
+            <CoreStack.Screen options={{
+                presentation: "formSheet",
                 gestureDirection: "vertical",
                 fullScreenGestureEnabled: true,
-                animation: "none",
-                gestureEnabled: true
+                gestureEnabled: true,
+                headerShown: true,
+
+                headerTitle: "",
             }} name="MediaView" component={MediaView} />
 
         </CoreStack.Navigator>

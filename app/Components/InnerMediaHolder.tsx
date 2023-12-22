@@ -42,7 +42,7 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
     }, [itemInView])
 
 
-    return media ? <View style={{ flex: 1, width, height: 10000 }}>
+    return media ? <View style={{ flex: 1, width, height: "100%" }}>
 
         <Pinchable maximumZoomScale={item.type === "video" ? 1 : 5} style={{
             backgroundColor: "transparent",
@@ -74,7 +74,7 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
             type={"image"}
             source={media.thumbnail}
             resizeMode={FastImage.resizeMode.contain}
-            style={{ position: "absolute", top: 0, zIndex: 3, width, height: "100%", backgroundColor: "black" }}
+            style={{ position: "absolute", top: 0, zIndex: 3, width, height: "100%", backgroundColor: "transparent" }}
         /> : null}
 
         {item.type === "video" && itemInView ? <TimestackMedia
@@ -84,7 +84,15 @@ export default function InnerMediaHolder({ selfIndex, currentIndex, item, holder
             source={media.fullsize}
             resizeMode={FastImage.resizeMode.contain}
             onLoad={setVideoLoaded}
-            style={{ position: "absolute", top: 0, zIndex: 0, width: width, height: "100%", backgroundColor: "transparent" }}
+            style={{
+                position: "absolute",
+                top: 0,
+                zIndex: 0,
+                width: width,
+                flex: 1,
+                height: '100%',
+                backgroundColor: "transparent"
+            }}
         /> : null}
 
 

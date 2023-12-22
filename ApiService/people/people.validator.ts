@@ -4,7 +4,7 @@ export const getPeopleQueryValidator = (body: unknown): Joi.ValidationResult => 
 
         const schema = Joi.object({
             searchQuery: Joi.string().allow("").optional(),
-            getConnectedOnly: Joi.string().valid("true").optional()
+            getConnectedOnly: Joi.string().valid("true", "false").optional()
         });
         return schema.validate(body);
 }

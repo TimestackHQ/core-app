@@ -4,7 +4,7 @@ import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
-import { Image, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, SafeAreaView, TouchableOpacity, View } from "react-native";
 import { MediaViewScreenNavigationProp, RollScreenNavigationProp, RootStackParamList, UploadQueueScreenNavigationProp } from "../navigation";
 import ProfilePicture from "../Components/ProfilePicture";
 import ConnectionStatus from "../Components/ConnectionStatus";
@@ -22,19 +22,11 @@ import { flattenGallery } from "../utils/gallery";
 import TextComponent from "../Components/Library/Text";
 import { getMutuals } from "../queries/people";
 import Mutuals from "../Components/People/Mutuals";
-import { BlurView } from "@react-native-community/blur";
-import Animated, {
-    withTiming,
-    useAnimatedStyle,
-    Easing,
-} from 'react-native-reanimated';
-
 
 export default function SocialProfile({ }) {
 
     const dispatch = useAppDispatch()
 
-    const [selectionMode, setSelectionMode] = useState(false);
     const route = useRoute<RouteProp<RootStackParamList, "SocialProfile">>();
     const navigator = useNavigation<RollScreenNavigationProp | UploadQueueScreenNavigationProp | MediaViewScreenNavigationProp>();
     const isFocused = useIsFocused();
@@ -49,18 +41,10 @@ export default function SocialProfile({ }) {
     const [tab, setTab] = useState<
         "memories" | "events"
     >("memories");
-    const queueCounter = 0//useQueueCounter(profile?._id.toString());
+    const queueCounter = 0;
 
-    const [user, setUser] = useState<UserInterface>(profile?.users[0] || null);
-    const [page, setPage] = useState(0);
-    const pageSize = 12;
+    const user = profile?.users[0]
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
-    const [selected, setSelected] = useState<{ [key: string]: MediaInternetType }>({});
-
-    const config = {
-        duration: 300,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    };
 
 
     useEffect(() => {
@@ -131,6 +115,8 @@ export default function SocialProfile({ }) {
                 }
             }
 
+            console.log(user)
+
             dispatch(setRoll(payload))
         }
     }, [profile, isFocused])
@@ -150,11 +136,6 @@ export default function SocialProfile({ }) {
         }, [])
     );
 
-    useEffect(() => {
-        navigator.setOptions({
-            headerShown: !selectionMode,
-        })
-    }, [selectionMode]);
 
     const getGallery = (flush = false) => {
         setRefreshing(true);
@@ -188,43 +169,6 @@ export default function SocialProfile({ }) {
                     }} variant="shadow" holderId={String(profile?._id)} holderType={"socialProfile"} /> : null}
 
 
-                    {selectionMode ? <View style={{ maxHeight: 50, flex: 1, flexDirection: "column" }}>
-                        <View style={{
-                            flex: 1,
-                            justifyContent: "center",
-                            height: 0,
-                            alignItems: "flex-end",
-                        }}>
-
-                        </View>
-                        <View style={{ flexDirection: "row", height: "100%", margin: 0, backgroundColor: "white", borderColor: "black", borderBottomWidth: 1, paddingHorizontal: 14 }}>
-
-                            <View style={{ flex: 1, flexDirection: "row", justifyContent: 'space-between', alignItems: "center" }}>
-                                <TouchableOpacity onPress={() => {
-                                    setSelectionMode(false);
-                                    setSelected({});
-                                }}>
-                                    <Text style={{ fontFamily: "Red Hat Display Semi Bold", fontSize: 18 }}>Cancel</Text>
-                                </TouchableOpacity>
-                                <Text style={{ fontFamily: 'Red Hat Display Semi Bold', fontSize: 18 }}>
-                                    {Object.keys(selected).length} {Object.keys(selected).length !== 1 ? "Memories" : "Memory"} selected
-                                </Text>
-                                <TouchableWithoutFeedback style={{ width: "100%" }} onPress={() => {
-
-                                    if (Object.keys(selected).length) {
-                                        HTTPClient(`/${profile._id}/delete?profile=true`, "POST", {
-                                            ids: Object.keys(selected).map(key => selected[key]._id)
-                                        }).then(refresh);
-                                    }
-
-                                }}>
-                                    <Image alt={"Cassis 2022"} style={{ borderRadius: 0, width: 30, height: 30, opacity: !Object.keys(selected).length ? 1 : 0.5 }} source={require("../assets/icons/Remove.png")} />
-                                </TouchableWithoutFeedback>
-                            </View>
-
-                        </View>
-                    </View> : null}
-
 
                     <FlatList
                         onEndReached={() => getGallery()}
@@ -232,7 +176,7 @@ export default function SocialProfile({ }) {
                             refresh()
                         }} />}
                         data={gallery}
-                        ListHeaderComponent={() => !selectionMode ? (
+                        ListHeaderComponent={() => (
                             <View style={{ flex: 1, flexDirection: "column" }}>
                                 <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10, marginVertical: 15 }}>
                                     <Mutuals
@@ -287,15 +231,10 @@ export default function SocialProfile({ }) {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                {profile._id === "652303d12fd13bf3efa3ddf5" ? <FastImage
-                                    source={require("../assets/mockup/recipes.png")}
-                                    style={{ width: "100%", height: 206, marginBottom: 15 }}
-                                    resizeMode="contain"
-                                /> : null}
                                 {profile?._id && gallery.length === 0 ? <NoSharedMemories /> : null}
 
                             </View>
-                        ) : null}
+                        )}
                         numColumns={3}
                         renderItem={(raw) => {
                             const media = raw.item;
@@ -303,28 +242,13 @@ export default function SocialProfile({ }) {
                             return <View style={{
                                 width: '33%',
                                 backgroundColor: "#efefef",
-                                opacity: tab !== "memories" ? 0 : selectionMode ? selected[media._id] ? 1 : 0.5 : 1,
                                 height: tab !== "memories" ? 0 : 180,
                                 margin: 0.5
                             }}
                             >
                                 <TouchableWithoutFeedback
-                                    onLongPress={() => {
-                                        ReactNativeHapticFeedback.trigger("impactLight");
-                                        setSelectionMode(true);
-                                    }}
                                     onPress={() => {
-                                        if (selectionMode) {
-                                            const selectedMutable = { ...selected };
-                                            if (selected[media._id]) {
-                                                delete selectedMutable[media._id];
-                                            } else {
-                                                selectedMutable[media._id] = media;
-                                            }
-                                            setSelected(selectedMutable);
-                                            return;
-                                        } else {
-                                            const flattenedGallery = flattenGallery(gallery);
+                                        const flattenedGallery = flattenGallery(gallery);
                                             const index = flattenedGallery.findIndex((m: MediaInternetType) => m._id === media._id);
                                             navigator.navigate("MediaView", {
                                                 mediaId: media._id,
@@ -335,7 +259,6 @@ export default function SocialProfile({ }) {
                                                 hasPermission: media.hasPermission,
                                             });
                                         }
-                                    }
                                     }
                                 >
                                     <View>
@@ -365,17 +288,4 @@ export default function SocialProfile({ }) {
                 </View> : null}
     </SafeAreaView >
 
-}
-
-function TheAIButton({ aiTab, setAiTab }: { aiTab: boolean, setAiTab: (value: boolean) => void }) {
-    return <TouchableWithoutFeedback onPress={() => {
-        // alert("AI");
-        setAiTab(!aiTab)
-    }}>
-        <Image
-            source={require("../assets/mockup/ai.png")}
-            resizeMode="contain"
-            style={{ width: 110, height: 35, marginRight: -20, marginTop: 0 }}
-        />
-    </TouchableWithoutFeedback>
 }
