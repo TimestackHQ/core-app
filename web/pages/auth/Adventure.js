@@ -1,7 +1,6 @@
 import * as React from "react";
 import {useRouter} from "next/router";
 import {NativeNavigate, NativeResetStack, notifyNativeOfSession} from "../../utils/nativeBridge";
-import {login} from ".";
 
 export default function Adventure ({completeAuth}) {
 
