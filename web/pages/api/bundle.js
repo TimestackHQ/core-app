@@ -1,35 +1,26 @@
 export default function handler(req, res) {
 	res.status(200).json({
-		bundleVersion: "0.23.2",
+		bundleVersion: "0.25.2",
 		clientVersion: {
-			ios: "0.23.2",
-			android: "0.23.2"
+			ios: "0.25.2",
+			android: "0.25.2"
 		},
 		backwardsCompatibleClients: {
 			ios: [
 
-				"0.23.3",
-				"0.23.2",
 
 			],
 			android: [
 
-				"0.23.2",
-				"0.23.3",
 
 			]
 		},
 		activeClients: {
 			ios: [
-				"0.25.1",
-				"0.24.0",
-				"0.23.4",
-				"0.23.5"
+				"0.25.2",
 			],
 			android: [
-				"0.23.4",
-				"0.23.5",
-				"0.23.2"
+				"0.25.2",
 			]
 		}
 	})
