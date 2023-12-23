@@ -14,6 +14,8 @@ import Roll from "../screens/Roll";
 import * as React from "react";
 import LinkContent from "../screens/LinkContentScreen";
 import MediaView from "../screens/MediaView";
+import ManageContentLinksScreen from "../screens/ManageContentLinksScreen";
+import SocialProfileSettingsScreen from "../screens/SocialProfileSettings";
 
 const CoreStack = createNativeStackNavigator();
 
@@ -33,10 +35,15 @@ export default function CoreNavigationStack() {
     const urlListenerWorker = url => {
         console.log("URL deeplink intercepted, navigating to: " + url);
         const path = url.replace("timestack://", "");
-        console.log(path);
+        alert(path)
         if (path.startsWith("event/")) {
             navigator.navigate("Invite", {
                 eventId: path.split("/")[1]
+            });
+        }
+        else if (path.startsWith("user/")) {
+            navigator.navigate("SocialProfile", {
+                userId: path.split("/")[1]
             });
         }
     }
@@ -124,6 +131,11 @@ export default function CoreNavigationStack() {
             }} name="LinkContent" component={LinkContent} />
             <CoreStack.Screen options={{
                 presentation: "formSheet",
+                gestureEnabled: true ,
+                headerShown: true,
+            }} name="ManageContentLinks" component={ManageContentLinksScreen} />
+            <CoreStack.Screen options={{
+                presentation: "formSheet",
                 gestureDirection: "vertical",
                 fullScreenGestureEnabled: true,
                 gestureEnabled: true,
@@ -131,6 +143,14 @@ export default function CoreNavigationStack() {
 
                 headerTitle: "",
             }} name="MediaView" component={MediaView} />
+
+            <CoreStack.Screen options={{
+                presentation: "formSheet",
+                gestureDirection: "vertical",
+                fullScreenGestureEnabled: true,
+                gestureEnabled: true,
+                headerShown: false,
+            }} name="SocialProfileSettings" component={SocialProfileSettingsScreen} />
 
         </CoreStack.Navigator>
     );

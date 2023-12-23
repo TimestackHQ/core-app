@@ -34,7 +34,7 @@ export default function ProfilePicture({
 				style={{ borderRadius: 1000, objectFit: "cover", width: width ? width : 90, height: height ? height : 90, ...style }}
 				source={{ uri: location }}
 			/> : <Image
-				style={{ borderRadius: 1000, objectFit: "cover", width: width ? width : 90, height: height ? height : 90, ...style }}
+				style={{ borderWidth: 1, borderColor: "black", borderRadius: 1000, objectFit: "cover", width: width ? width : 90, height: height ? height : 90, ...style }}
 				// @ts-ignore
 				source={location}
 			/>}

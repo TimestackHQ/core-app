@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import { useAppSelector } from '../store/hooks';
 import TimestackMedia from './TimestackMedia';
 import { NavigationContext } from '@react-navigation/native';
+import ProfilePicture from "./ProfilePicture";
 
 export default function TimestackButton({ color, size, focused }: { color: string, size: number, focused: boolean }) {
     const rollState = useAppSelector(state => state.rollState);
@@ -38,18 +39,14 @@ export default function TimestackButton({ color, size, focused }: { color: strin
 
     const renderAnimatedFastImage = () => (
         <Animated.View style={{ opacity: fadeAnim, zIndex: 2 }}>
-            <FastImage
-                resizeMode='cover'
-                style={{ width: 20, height: 20, zIndex: 1, position: "absolute", right: 0, borderRadius: 20, top: -5, borderColor: "white", borderWidth: 1.5 }}
-                source={{ uri: rollState.holderImageUrl }}
-            />
+            <ProfilePicture pressToProfile={false} width={20} height={20} location={rollState.holderImageUrl} style={{ zIndex: 1, position: "absolute", right: 0, borderRadius: 20, top: -5, borderColor: "black", borderWidth: 1.5, backgroundColor: "white" }} />
         </Animated.View>
     );
 
     const renderAnimatedTimestackMedia = () => (
         <Animated.View style={{ opacity: fadeAnim, zIndex: 2 }}>
             <TimestackMedia
-                style={{ width: 20, height: 25, zIndex: 1, position: "absolute", right: 0, borderRadius: 5, top: -5, borderColor: "white", borderWidth: 1.5 }}
+                style={{ width: 20, height: 25, zIndex: 1, position: "absolute", right: 0, borderRadius: 5, top: -5, borderColor: "black", borderWidth: 2, backgroundColor: "white" }}
                 itemInView={true}
                 source={rollState.holderImageS3Object}
             />

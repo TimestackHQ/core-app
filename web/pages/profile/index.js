@@ -33,7 +33,7 @@ export default function Index() {
 					<div className={"col-12 text-center"}>
 						<div className="image-upload">
 							<label htmlFor="file-input">
-								<ProfilePicture width={"120px"} height={"120px"} location={userStore.profilePictureSource}/>
+								<ProfilePicture width={"120px"} height={"120px"} location={coverPicture}/>
 							</label>
 							<input  id={"file-input"} accept="image/*" type="file" onChange={(e) => {
 								e.preventDefault();

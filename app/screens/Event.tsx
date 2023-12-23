@@ -196,7 +196,7 @@ export default function EventScreen() {
 
 	const getGallery = (flush = false) => {
 		setGallery(flush ? [] : gallery)
-		HTTPClient(`/events/${event?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
+		if (event?._id) HTTPClient(`/events/${event?._id}/media?skip=${String(flush ? 0 : gallery.length)}`, "GET")
 			.then(res => {
 				const content: MediaInternetType[] = res.data.content;
 				if (flush) setGallery(_.uniq([...content]));
@@ -381,7 +381,7 @@ export default function EventScreen() {
 												</View>
 											</TouchableWithoutFeedback>
 										);
-									} else {
+									} else if(i < 6) {
 										return (
 											<ProfilePicture
 												key={i}
@@ -394,6 +394,8 @@ export default function EventScreen() {
 											/>
 
 										);
+									} else {
+										return null;
 									}
 								}) : null}
 

@@ -7,15 +7,17 @@ import {
 import HTTPClient from "../httpClient";
 
 
-export async function initLogin(query: { phoneNumber: string }) {
+export async function initLogin(query: HTTPInitLoginQueryRequest) {
     try {
         const res = await HTTPClient<HTTPInitLoginQueryResponse, HTTPInitLoginQueryRequest>(`/auth/login`, "POST", {
             phoneNumber: query.phoneNumber,
+            emailAddress: query.emailAddress,
         });
 
         return res.data;
     } catch (error) {
         console.log(error.response.data);
+        return error.response.data;
     }
 }
 

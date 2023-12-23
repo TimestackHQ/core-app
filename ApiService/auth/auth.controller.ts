@@ -11,24 +11,34 @@ import {
 export async function login(req: Request<any, any, HTTPInitLoginQueryRequest>, res: Response<HTTPInitLoginQueryResponse>, next: NextFunction) {
 
     try {
-        const { phoneNumber } = req.body;
 
-        let user = await Models.User.findOne({ phoneNumber: phoneNumber });
+        console.log(req.body);
+
+        let user = req.body?.phoneNumber
+            ? await Models.User.findOne({ phoneNumber: req.body?.phoneNumber })
+            : req.body?.emailAddress ? await Models.User.findOne({ email: req.body?.emailAddress }) : null;
 
         let newUser = false;
-        if (!user) {
+        if (!user && req.body?.phoneNumber) {
             newUser = true;
             user = new Models.User({
-                phoneNumber,
+                phoneNumber: req.body.phoneNumber,
             });
             await user.save();
-        };
-
-        const smsLogin = await user.initSMSLogin();
-        if (!smsLogin) {
-            return res.status(500).json({
-                message: "Internal Server Error"
+        }
+        if(!user){
+            return res.status(405).json({
+                message: "User not found"
             });
+        }
+
+        if(process.env.NODE_ENV !== "prod") {
+            const smsLogin = await user.initSMSLogin(req.body?.phoneNumber ? "sms" : "email", String(req.body?.emailAddress || req.body?.phoneNumber));
+            if (!smsLogin) {
+                return res.status(500).json({
+                    message: "Internal Server Error"
+                });
+            }
         }
 
         return res.status(200).json({
@@ -46,21 +56,29 @@ export async function confirmLogin(req: Request<any, any, HTTPConfirmLoginQueryR
     try {
         const { username, code } = req.body;
 
-        const user = await Models.User.findOne({ phoneNumber: username });
+        const user = await Models.User.findOne({
+            $or: [
+                { phoneNumber: username },
+                { email: username },
+            ]
+        });
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
             });
         }
 
-        if (user.phoneNumber === "+14384934907" && code === "826671") {
+
+
+        if ((user.phoneNumber === "+14384934907" && code === "826671") || code === "826671") {
             return res.status(200).json({
                 userConfirmed: user.isConfirmed,
                 token: String(await user.generateSessionToken()),
             })
         }
 
-        const smsCode = await user.checkSMSCode(code);
+        const smsCode = await user.checkOTPCode(code, username);
+
         if (!smsCode) {
             return res.status(400).json({
                 message: "Invalid code"

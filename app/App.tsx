@@ -17,6 +17,7 @@ import { Provider } from 'react-redux'
 import { frontendUrl } from "./utils/io";
 import {QueueContext, useQueue, useQueueCounter} from "./hooks/queue";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {ActionSheetProvider} from "@expo/react-native-action-sheet";
 
 
 export const setSession = async (session) => {
@@ -85,11 +86,13 @@ function App() {
             <QueueContext.Provider value={[queueCounter, queue]}>
                 <QueryClientProvider client={queryClient}>
                     <GestureHandlerRootView style={{ flex: 1 }}>
-                        <NavigationContainer>
-                            <OverflowMenuProvider>
-                                <CoreNavigationStack />
-                            </OverflowMenuProvider>
-                        </NavigationContainer>
+                        <ActionSheetProvider>
+                            <NavigationContainer>
+                                <OverflowMenuProvider>
+                                    <CoreNavigationStack />
+                                </OverflowMenuProvider>
+                            </NavigationContainer>
+                        </ActionSheetProvider>
                     </GestureHandlerRootView>
                 </QueryClientProvider>
             </QueueContext.Provider>

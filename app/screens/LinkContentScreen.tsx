@@ -14,8 +14,9 @@ import {MediaViewScreenNavigationProp, RootStackParamList} from "../navigation";
 import LargeButton from "../Components/Library/LargeButton";
 import {getMutuals, getPeople} from "../queries/people";
 import TextComponent from "../Components/Library/Text";
+import ProfilePicture from "../Components/ProfilePicture";
 
-export default function LinkContent({}) {
+export default function LinkContentScreen({}) {
 
     const route = useRoute<RouteProp<RootStackParamList, "LinkContent">>();
     const navigation = useNavigation<MediaViewScreenNavigationProp>();
@@ -53,68 +54,67 @@ export default function LinkContent({}) {
             }}>Share</TextComponent>,
             headerTitle: "",
             headerTitleAlign: "left",
+            headerRight: () => route.params.people.length > 1 ? <TouchableOpacity onPress={() => {
+                navigation.replace("ManageContentLinks", {
+                    contentId: route.params.contentId,
+                    people: route.params.people,
+                    sourceHolderId: route.params.sourceHolderId,
+                    holderType: route.params.holderType,
+                });
+            }} style={{
+                backgroundColor: "white",
+                borderRadius: 30,
+                borderColor: "black",
+                borderWidth: 1,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+            }}>
+                <View style={{
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                }}>
+                    {route.params.people
+                        .sort((a, b) => {
+                            return a.profilePictureSource ? -1 : 1
+                        }).slice(0, 4).sort((a, b) => a._id > b._id ? 1 : -1)
+                        .reverse().map((user, index) => {
+                        return <ProfilePicture key={index} userId={user._id} location={user.profilePictureSource} width={25} height={25} style={{
+                            borderRadius: 100,
+                            marginLeft: -10,
+                            borderWidth: 1,
+                            borderColor: "black",
+                            backgroundColor: "white",
+                        }} />
+
+                    })}
+                    <TextComponent fontFamily={"Semi Bold"} style={{
+                        fontSize: 18,
+                        marginRight: 15,
+                    }}>Edit</TextComponent>
+                </View>
+
+            </TouchableOpacity> : null,
             // @ts-ignore
             headerSearchBarOptions: {
-                visible: true,
-                autoFocus: true,
-                hideWhenScrolling: false,
+                placeholder: "Search",
                 onChangeText: (event) => {
-                    console.log(event.nativeEvent.text);
                     setSearchQuery(event.nativeEvent.text);
-                }
-            },
+                },
+                hideWhenScrolling: false,
+            }
+
+
 
         })
     }, [navigation]);
 
 
     return <View style={styles.containerContent}>
-        {/*<TextComponent fontFamily={"Semi Bold"} style={{*/}
-        {/*    marginTop: 10,*/}
-        {/*    marginLeft: 10,*/}
-        {/*    fontSize: 24, marginBottom: 0*/}
-        {/*}}>Share</TextComponent>*/}
-        {/*<SearchBar*/}
-        {/*    placeholder={"Search for people"}*/}
-        {/*    style={{height: 100}}*/}
-        {/*    platform={Platform.OS === "ios" ? "ios" : "android"}*/}
-        {/*    round={true} cancelButtonTitle={""} showCancel={false}*/}
-
-        {/*    containerStyle={{*/}
-        {/*        flex: 1,*/}
-        {/*        borderRadius: 10,*/}
-        {/*        height: 700,*/}
-        {/*        backgroundColor: "#F2F2F2",*/}
-        {/*        margin: 10,*/}
-        {/*    }}*/}
-
-        {/*    inputContainerStyle={{*/}
-        {/*        flex: 1,*/}
-        {/*        height: 800,*/}
-        {/*        backgroundColor: "#F2F2F2",*/}
-        {/*    }}*/}
-
-        {/*    rightIconContainerStyle={{*/}
-        {/*        // width: 10,*/}
-        {/*        // marginRight: 10,*/}
-        {/*        height: 500,*/}
-        {/*    }}*/}
-
-        {/*    inputStyle={{*/}
-        {/*        fontSize: 16,*/}
-        {/*        fontFamily: "Red Hat Display Regular",*/}
-
-        {/*    }}*/}
-        {/*    cancelButtonProps={{ color: "black" }}*/}
-        {/*    //@ts-ignore*/}
-        {/*    onChangeText={(text) => { setSearchQuery(text) }}*/}
-        {/*    value={searchQuery}*/}
-        {/*    lightTheme*/}
-        {/*/>*/}
         <View style={{
             flex: 11
         }}>
             <ListOfPeople
+                pressToProfile={false}
                 refresh={() => {}}
                 mode={"multiselect"}
                 profileSelected={(userId, profileId) => {

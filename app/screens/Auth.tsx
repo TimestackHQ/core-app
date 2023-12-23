@@ -5,7 +5,7 @@ import TextComponent from "../Components/Library/Text";
 import Animated, {useSharedValue, withTiming, Easing, useAnimatedStyle} from "react-native-reanimated";
 import {useEffect, useState} from "react";
 import LargeButton from "../Components/Library/LargeButton";
-import AuthPhoneNumberStep from "../Components/Auth/PhoneNumber";
+import AuthReferenceStep from "../Components/Auth/AuthReferenceStep";
 import {useMutation, useQuery} from "react-query";
 import {confirmLogin, initLogin} from "../queries/auth";
 import CodeStep from "../Components/Auth/Code";
@@ -17,7 +17,7 @@ import {setAuthToken as setStoreAuthToken} from "../store/userState";
 import {MainScreenNavigationProp} from "../navigation";
 import {useNavigation} from "@react-navigation/native";
 
-export type AuthStep = "HOME" | "PHONE_NUMBER" | "CODE" | "PRIVACY_AND_POLICY" | "NAME" | "EMAIL" | "PASSWORD";
+export type AuthStep = "HOME" | "AUTH_REFERENCE" | "EMAIL_AUTH" | "CODE" | "PRIVACY_AND_POLICY" | "NAME" | "EMAIL" | "PASSWORD";
 export type AuthFormAction = "INIT_LOGIN" | "CONFIRM_LOGIN"
 export default function AuthScreen() {
 
@@ -30,6 +30,8 @@ export default function AuthScreen() {
 
     const [step, setStep] = useState<AuthStep>("HOME");
     const [phoneNumber, setPhoneNumber] = useState<string>("");
+    const [emailAuth, setEmailAuth] = useState<string>("");
+    const [authMode, setAuthMode] = useState<"EMAIL" | "PHONE_NUMBER">("PHONE_NUMBER");
     const [authCode, setAuthCode] = useState<string>("");
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
@@ -38,7 +40,11 @@ export default function AuthScreen() {
     const initLoginPost = useMutation({
         mutationFn: initLogin,
         onSuccess: (data) => {
-            setStep("CODE");
+            if ("message" in data) {
+                new Alert.alert( "Error",data.message);
+            } else {
+                setStep("CODE")
+            }
         }
     });
 
@@ -62,9 +68,6 @@ export default function AuthScreen() {
         }
     });
 
-
-
-
     useEffect(() => {
         logoHeight.value = step === "HOME" ? 100 : 30
     }, [step]);
@@ -82,12 +85,13 @@ export default function AuthScreen() {
         switch (action) {
             case "INIT_LOGIN":
                 initLoginPost.mutate({
-                    phoneNumber: phoneNumber,
+                    phoneNumber: authMode === "PHONE_NUMBER" ? phoneNumber : "",
+                    emailAddress: authMode === "EMAIL" ? emailAuth : "",
                 });
                 break;
             case "CONFIRM_LOGIN":
                 confirmLoginPost.mutate({
-                    username: phoneNumber,
+                    username: authMode === "PHONE_NUMBER" ? phoneNumber : emailAuth,
                     code: authCode,
                 });
                 break;
@@ -99,8 +103,6 @@ export default function AuthScreen() {
     }
 
     return <View style={{flex: 1}}>
-
-
 
         <SafeAreaView style={{
             flex: 1,
@@ -118,8 +120,8 @@ export default function AuthScreen() {
 
                 {step !== "HOME" ? <TouchableOpacity
                     onPress={() => {
-                        if (step === "PHONE_NUMBER") setStep("HOME");
-                        else if (step === "CODE") setStep("PHONE_NUMBER");
+                        if (step === "AUTH_REFERENCE") setStep("HOME");
+                        else if (step === "CODE") setStep("AUTH_REFERENCE");
                         else if (step === "PRIVACY_AND_POLICY") setStep("CODE");
                         else if (step === "NAME") setStep("PRIVACY_AND_POLICY");
                         else if (step === "EMAIL") setStep("NAME");
@@ -161,16 +163,21 @@ export default function AuthScreen() {
                     flex: 5,
                 }}>
                     {step === "HOME" ? <Home /> : null}
-                    {step === "PHONE_NUMBER" ? <AuthPhoneNumberStep
+                    {step === "AUTH_REFERENCE" ? <AuthReferenceStep
+                        authMode={authMode}
+                        setAuthMode={setAuthMode}
+                        setEmailAuth={setEmailAuth}
                         setPhoneNumber={setPhoneNumber}
                         submitForm={submitForm}
                     /> : null}
                     {step === "CODE" ? <CodeStep
+                        authMode={authMode}
                         resendCode={() => {
                             submitForm("INIT_LOGIN");
                         }}
                         setAuthCode={setAuthCode}
                         phoneNumber={phoneNumber}
+                        emailAuth={emailAuth}
                     /> : null}
                     {step === "PRIVACY_AND_POLICY" ? <PrivacyAndTermsStep /> : null}
                     {step === "NAME" ? <NameStep
@@ -188,12 +195,11 @@ export default function AuthScreen() {
                     paddingBottom: 20,
                 }}>
 
-                    <LargeButton disabled={buttonDisabled} fontSize={20} body={String(
-                        step === "HOME" ? "START" : "CONTINUE"
-                    )} onPress={() => {
-                        if(step === "HOME") setStep("PHONE_NUMBER");
-                        if(step === "PHONE_NUMBER") submitForm("INIT_LOGIN");
+                    <LargeButton disabled={buttonDisabled} fontSize={20} onPress={() => {
+                        if(step === "HOME") setStep("AUTH_REFERENCE");
+                        if(step === "AUTH_REFERENCE") submitForm("INIT_LOGIN");
                         if(step === "CODE") submitForm("CONFIRM_LOGIN");
+                        if(step === "PRIVACY_AND_POLICY") setStep("NAME");
                     }} textStyle={{
                         fontFamily: "Red Hat Display Semi Bold",
                     }} style={{
@@ -206,14 +212,22 @@ export default function AuthScreen() {
                         },
                         shadowOpacity: 0.5,
                         shadowRadius: 10,
-                    }}/>
+                    }}>
+                        <TextComponent fontFamily={"Semi Bold"} fontColor={"black"} fontSize={20} numberOfLines={1} style={{
+                            textAlign: "center",
+                        }}>
+                            {String(
+                                step === "HOME" ? "START" : "CONTINUE"
+                            )}
+                        </TextComponent>
+                    </LargeButton>
                     <TextComponent fontFamily={"Semi Bold"} fontColor={"white"} fontSize={15} numberOfLines={2} style={{
                         marginBottom: 10,
                         textAlign: "center",
                         width: "80%",
                         alignSelf: "center",
                     }}  >
-                        {step === "PHONE_NUMBER" ? "This is how we keep yout account safe." : null}
+                        {step === "AUTH_REFERENCE" ? "This is how we keep yout account safe." : null}
                         {step === "CODE" ? "This code is only for you." : null}
                         {step === "PRIVACY_AND_POLICY" ? "By clicking “CONTINUE”, you agree to our Privacy Policy and Terms of Service." : null}
 

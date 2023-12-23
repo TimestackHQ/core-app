@@ -4,7 +4,8 @@ import {PhoneNumberValidator} from "../../shared";
 export const loginValidator = (body: unknown): Joi.ValidationResult => {
 
     const schema = Joi.object({
-        phoneNumber: PhoneNumberValidator().required(),
+        phoneNumber: PhoneNumberValidator().allow(""),
+        emailAddress: Joi.string().email().allow(""),
     });
     return schema.validate(body);
 
@@ -13,7 +14,7 @@ export const loginValidator = (body: unknown): Joi.ValidationResult => {
 export const confirmLoginValidator = (body: unknown): Joi.ValidationResult => {
 
         const schema = Joi.object({
-            username: PhoneNumberValidator().required(),
+            username: Joi.string().required(),
             code: Joi.string().required(),
         });
         return schema.validate(body);

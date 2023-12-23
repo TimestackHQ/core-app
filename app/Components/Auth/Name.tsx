@@ -25,32 +25,46 @@ export default function NameStep({
         paddingTop: "25%",
     }}>
 
-        <TextComponent
-            fontFamily={"Semi Bold"}
-            fontColor={"white"}
-            fontSize={18}
-            numberOfLines={1}
-            style={{
-                marginBottom: 10,
-                letterSpacing: -0.5,
-            }}
-        >
-            First Name
-        </TextComponent>
         <TextInput
             placeholder={"First Name"}
-            placeholderTextColor={"#FFFFFF"}
+            placeholderTextColor={"#b0b0b0"}
+            value={firstName}
             style={{
                 width: "80%",
                 height: 50,
                 borderRadius: 20,
-                backgroundColor: "#FFFFFF20",
                 color: "#FFFFFF",
+                textAlign: "center",
+                fontFamily: "Red Hat Display Bold",
+                marginTop: 20,
+                fontSize: 35,
             }}
             onChangeText={(text) => {
+                setFirstName(text);
             }}
 
         />
+
+        <TextInput
+            placeholder={"Last Name"}
+            placeholderTextColor={"#b0b0b0"}
+            value={lastName}
+            style={{
+                width: "80%",
+                height: 50,
+                borderRadius: 20,
+                color: "#FFFFFF",
+                textAlign: "center",
+                fontFamily: "Red Hat Display Bold",
+                marginTop: 20,
+                fontSize: 35,
+            }}
+            onChangeText={(text) => {
+                setLastName(text);
+            }}
+
+        />
+
 
     </View>
 }

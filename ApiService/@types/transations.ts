@@ -3,7 +3,9 @@ export type HTTPErrorMessageResponse = {
 }
 
 export type HTTPInitLoginQueryRequest = {
-    phoneNumber: string,
+    phoneNumber?: string,
+    emailAddress?: string,
+
 }
 
 export type HTTPInitLoginQueryResponse = {

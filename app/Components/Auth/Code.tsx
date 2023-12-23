@@ -5,13 +5,17 @@ import TextComponent from "../Library/Text";
 import {AuthFormAction} from "../../screens/Auth";
 
 export default function CodeStep({
+    authMode,
     setAuthCode,
     phoneNumber,
     resendCode,
+    emailAuth,
 }: {
+    authMode: "EMAIL" | "PHONE_NUMBER",
     setAuthCode: (code: string) => void,
     resendCode: () => void,
     phoneNumber: string,
+    emailAuth: string,
 }) {
 
     const [timeRemaining, setTimeRemaining] = useState<number>(30);
@@ -30,7 +34,7 @@ export default function CodeStep({
         paddingTop: "25%",
     }}>
 
-        <TextComponent
+        {authMode === "PHONE_NUMBER" ? <TextComponent
             fontFamily={"Semi Bold"}
             fontColor={"white"}
             fontSize={20}
@@ -44,7 +48,21 @@ export default function CodeStep({
             }}
         >
             Enter the code we sent to {phoneNumber}
-        </TextComponent>
+        </TextComponent> : <TextComponent
+            fontFamily={"Semi Bold"}
+            fontColor={"white"}
+            fontSize={20}
+            numberOfLines={2}
+
+            style={{
+                marginBottom: 10,
+                letterSpacing: -0.5,
+                width: "80%",
+                textAlign: "center",
+            }}
+        >
+            Enter the code we sent to {emailAuth}
+        </TextComponent>}
         <TextInput
             autoFocus={true}
             autoComplete={"one-time-code"}

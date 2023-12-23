@@ -1,6 +1,8 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RollType } from "./types/global";
-import { MediaHolderTypesType, MediaInternetType } from "@shared-types/*";
+import {MediaHolderTypesType, MediaInternetType, SocialProfileInterface} from "@shared-types/*";
+import {PersonType} from "@api-types/*";
+import SocialProfileSettingsScreen from "./screens/SocialProfileSettings";
 
 export type RootStackParamList = {
 
@@ -74,10 +76,22 @@ export type RootStackParamList = {
 
     LinkContent: {
         contentId: string;
+        people: PersonType[];
         sourceHolderId: string;
         holderType: MediaHolderTypesType;
     }
 
+    ManageContentLinks: {
+        contentId: string;
+        people: PersonType[];
+        sourceHolderId: string;
+        holderType: MediaHolderTypesType;
+    },
+
+    SocialProfileSettings: {
+        user: PersonType;
+        profile: SocialProfileInterface;
+    }
 
 };
 
@@ -169,4 +183,14 @@ export type MutualsScreenNavigationProp = StackNavigationProp<
 export type LinkContentScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'LinkContent'
+>;
+
+export type ManageContentLinksScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'ManageContentLinks'
+>;
+
+export type SocialProfileSettingsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'SocialProfileSettings'
 >;

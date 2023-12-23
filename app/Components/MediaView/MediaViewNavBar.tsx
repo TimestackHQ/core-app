@@ -100,6 +100,7 @@ export default function MediaViewNavBar({
                             contentId: media?.contentId,
                             sourceHolderId: holderId,
                             holderType: holderType,
+                            people: media?.people,
                         });
 
                     }} disabled={downloading} style={{ marginTop: 5, marginHorizontal: 5 }} >

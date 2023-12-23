@@ -2,10 +2,17 @@ import _ from "lodash";
 import { MediaInternetType, UserInterface } from "@shared-types/public";
 import { RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { FlatList, RefreshControl, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {FlatList, RefreshControl, ScrollView, TouchableWithoutFeedback} from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
-import { Image, SafeAreaView, TouchableOpacity, View } from "react-native";
-import { MediaViewScreenNavigationProp, RollScreenNavigationProp, RootStackParamList, UploadQueueScreenNavigationProp } from "../navigation";
+import {Alert, Image, SafeAreaView, Share, TouchableOpacity, View} from "react-native";
+import Clipboard from '@react-native-clipboard/clipboard';
+import {
+    MediaViewScreenNavigationProp,
+    RollScreenNavigationProp,
+    RootStackParamList,
+    SocialProfileSettingsScreenNavigationProp,
+    UploadQueueScreenNavigationProp
+} from "../navigation";
 import ProfilePicture from "../Components/ProfilePicture";
 import ConnectionStatus from "../Components/ConnectionStatus";
 import TimestackMedia from "../Components/TimestackMedia";
@@ -14,7 +21,6 @@ import UploadQueueTracker from "../Components/UploadQueueTracker";
 import { useAppDispatch } from '../store/hooks'
 import { setRoll } from "../store/rollState";
 import NoSharedMemories from "../Components/Library/NoSharedMemories";
-import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { useQuery } from "react-query";
 import { getSocialProfile } from "../queries/profiles";
 import HTTPClient from "../httpClient";
@@ -22,13 +28,20 @@ import { flattenGallery } from "../utils/gallery";
 import TextComponent from "../Components/Library/Text";
 import { getMutuals } from "../queries/people";
 import Mutuals from "../Components/People/Mutuals";
+import {getEvents, getMutualEvents} from "../queries/events";
+import EventsList from "../Components/EventsList";
+import {useActionSheet} from "@expo/react-native-action-sheet";
+import {frontendUrl} from "../utils/io";
 
 export default function SocialProfile({ }) {
 
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
+
+    const { showActionSheetWithOptions } = useActionSheet();
+
 
     const route = useRoute<RouteProp<RootStackParamList, "SocialProfile">>();
-    const navigator = useNavigation<RollScreenNavigationProp | UploadQueueScreenNavigationProp | MediaViewScreenNavigationProp>();
+    const navigator = useNavigation<RollScreenNavigationProp | UploadQueueScreenNavigationProp | MediaViewScreenNavigationProp | SocialProfileSettingsScreenNavigationProp>();
     const isFocused = useIsFocused();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -38,6 +51,7 @@ export default function SocialProfile({ }) {
     const { data: mutuals } = useQuery(["get-mutuals", { targetUserId: route.params?.userId, getAll: false }], getMutuals, {
         enabled: !!route.params?.userId
     });
+
     const [tab, setTab] = useState<
         "memories" | "events"
     >("memories");
@@ -45,6 +59,11 @@ export default function SocialProfile({ }) {
 
     const user = profile?.users[0]
     const [gallery, setGallery] = useState<MediaInternetType[]>([]);
+
+    const { data: events, status: eventsStatus, refetch: refreshEvents } = useQuery(["events", {userId: route.params?.userId}], getMutualEvents, {
+        enabled: !!route.params?.userId
+    });
+
 
 
     useEffect(() => {
@@ -68,28 +87,99 @@ export default function SocialProfile({ }) {
                 },
                 headerTitle: () => (
                     <View style={{ flex: 1, flexDirection: "row", marginBottom: 50 }}>
-                        <View style={{ flex: 1, alignItems: "flex-end" }}>
-                            <ProfilePicture
-                                userId={String(user?._id)}
-                                width={42}
-                                height={42}
-                                style={{ marginRight: 10 }}
-                                location={user?.profilePictureSource}
-                            />
-                        </View>
-                        <View style={{ flex: 4, alignItems: "flex-start" }}>
-                            <TextComponent numberOfLines={1} ellipsizeMode="tail" fontFamily={"Bold"} fontSize={16} style={{
-                                marginBottom: 0,
-                                marginTop: 2,
-                            }}>
-                                {user?.firstName} {user?.lastName}
-                            </TextComponent>
-                            <TextComponent fontFamily={"Regular"} fontSize={16} style={{
-                                marginTop: -5
-                            }}>
-                                {user?.username}
-                            </TextComponent>
-                        </View>
+                        <TouchableOpacity onPress={() => {
+
+                            const options = ['Block', 'Cancel', 'Report', 'Share this profile', 'Copy profile URL'];
+                            const destructiveButtonIndex = 0;
+                            const cancelButtonIndex = 1;
+
+                            showActionSheetWithOptions({
+                                title: user?.firstName + " " + user?.lastName,
+                                titleTextStyle: {
+                                    fontFamily: "Red Hat Display",
+                                    fontSize: 16,
+                                },
+                                options,
+                                cancelButtonIndex,
+                                showSeparators: true,
+                                destructiveButtonIndex
+                            }, async (selectedIndex: number) => {
+                                switch (selectedIndex) {
+                                    case 1:
+                                        // Save
+                                        break;
+
+                                    case destructiveButtonIndex:
+                                        Alert.alert("Block", `Blocking is not available on this private beta version. Send us a DM if you really need to block ${user.firstName}.`, [{
+                                            text: "OK"
+                                        }])
+                                        break;
+
+                                    case 2:
+                                        Alert.alert("Report", `Reporting is not available on this private beta version. Send us a DM if you really need to report ${user.firstName}.`, [{
+                                            text: "OK"
+                                        }])
+                                        break;
+                                    case 3:
+                                        await Share.share({
+                                            url: frontendUrl + "/user/" + route.params.userId,
+                                            title: "Check out " + user.firstName + " " + user.lastName + "'s profile on Timestack!"
+                                        }, {
+                                            subject: "Check out " + user.firstName + " " + user.lastName + "'s profile on Timestack!"
+                                        });
+                                        break
+                                    case 4:
+                                        Clipboard.setString(frontendUrl + "/user/" + route.params.userId);
+                                        Alert.alert("Copied", "Copied profile URL to clipboard.", [{
+                                            text: "OK"
+                                        }])
+                                        break;
+
+                                    case cancelButtonIndex:
+                                    // Canceled
+                                }});
+
+                            // user && profile ? navigator.navigate("SocialProfileSettings", {
+                            //     user: {
+                            //         _id: user._id.toString(),
+                            //         username: user.username,
+                            //         firstName: user.firstName,
+                            //         lastName: user.lastName,
+                            //         profilePictureSource: user.profilePictureSource,
+                            //         profileId: profile._id.toString(),
+                            //     },
+                            //     profile: profile,
+                            // }) : null
+
+                        }} style={{
+                            flex: 1,
+                            flexDirection: "row",
+                        }}>
+                            <View style={{flexDirection: "row", flexBasis: "auto"}}>
+                                <View style={{alignItems: "flex-end" }}>
+                                    <ProfilePicture
+                                        userId={String(user?._id)}
+                                        width={42}
+                                        height={42}
+                                        style={{ marginRight: 10 }}
+                                        location={user?.profilePictureSource}
+                                    />
+                                </View>
+                                <View style={{alignItems: "flex-start" }}>
+                                    <TextComponent numberOfLines={1} ellipsizeMode="tail" fontFamily={"Bold"} fontSize={16} style={{
+                                        marginBottom: 0,
+                                        marginTop: 2,
+                                    }}>
+                                        {user?.firstName} {user?.lastName}
+                                    </TextComponent>
+                                    <TextComponent fontFamily={"Regular"} fontSize={16} style={{
+                                        marginTop: -5
+                                    }}>
+                                        {user?.username}
+                                    </TextComponent>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 )
             });
@@ -152,6 +242,7 @@ export default function SocialProfile({ }) {
     const refresh = () => {
         getGallery(true);
         refetchProfile();
+        refreshEvents();
     }
 
     return <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column" }}>
@@ -175,7 +266,7 @@ export default function SocialProfile({ }) {
                         refreshControl={< RefreshControl refreshing={refreshing} onRefresh={() => {
                             refresh()
                         }} />}
-                        data={gallery}
+                        data={tab === "memories" ? gallery : []}
                         ListHeaderComponent={() => (
                             <View style={{ flex: 1, flexDirection: "column" }}>
                                 <View style={{ flex: 1, flexDirection: "row", marginHorizontal: 10, marginVertical: 15 }}>
@@ -232,6 +323,17 @@ export default function SocialProfile({ }) {
                                     </View>
                                 </View>
                                 {profile?._id && gallery.length === 0 ? <NoSharedMemories /> : null}
+                                {tab === "events" ? <View style={{ flex: 1, flexDirection: "column", marginHorizontal: 10, marginVertical: 15 }}>
+
+                                    <TextComponent fontFamily={"Semi Bold"} fontSize={16} style={{ marginBottom: 10 }}>Mutual Events</TextComponent>
+
+                                    <ScrollView
+                                        style={{ flex: 1, height: "100%", backgroundColor: "white" }}
+                                    >
+                                        <EventsList events={events ? events : []} />
+                                    </ScrollView>
+
+                                </View> : null}
 
                             </View>
                         )}

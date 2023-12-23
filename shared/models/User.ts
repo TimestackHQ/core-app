@@ -6,6 +6,10 @@ import { Logger } from "../index";
 import { ExtendedMongoDocument } from "../@types/global";
 import { ExtendedMongoSchema } from "./helpers";
 
+const accountSid = process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
+
 export interface IUser extends ExtendedMongoDocument {
     firstName: string;
     lastName: string;
@@ -18,8 +22,8 @@ export interface IUser extends ExtendedMongoDocument {
     queuedForDeletionAt?: Date;
     commonProperties: commonProperties;
     profilePictureSource?: string;
-    initSMSLogin: () => Promise<boolean>;
-    checkSMSCode: (code: string) => Promise<boolean>;
+    initSMSLogin: (method: "sms" | "email", username: string) => Promise<boolean>;
+    checkOTPCode: (code: string, username: string) => Promise<boolean>;
     generateSessionToken: () => Promise<string>;
     pushEvent: (eventName: ("profileUpdate"), payload: any) => void;
     setUsername: (username: string) => void;
@@ -80,18 +84,12 @@ UserSchema.index({
     username: 'text'
 });
 
-UserSchema.methods.initSMSLogin = async function () {
-    const code = Math.floor(100000 + Math.random() * 900000);
+UserSchema.methods.initSMSLogin = async function (method: "sms" | "email", username: string) {
 
     try {
-        const smsCode = new SMSCode({
-            user: this._id,
-            code: code.toString(),
-            phoneNumber: this.phoneNumber,
-        });
-
-        await smsCode.save();
-        await smsCode.sendSMS(code);
+        await client.verify.v2.services('VA57da475a2beaca5b1f40ecc57380bc53')
+            .verifications
+            .create({to: username, channel: method})
     } catch (e) {
         Logger(e);
         return false;
@@ -100,14 +98,22 @@ UserSchema.methods.initSMSLogin = async function () {
     return true;
 }
 
-UserSchema.methods.checkSMSCode = async function (code: string) {
-    const smsCode = await SMSCode.findOne({ user: this._id, code: code, isConfirmed: false }).sort({ createdAt: -1 });
-    if (!smsCode) return false;
+UserSchema.methods.checkOTPCode = async function (code: string, username: string) {
 
-    smsCode.isConfirmed = true;
-    await smsCode.save();
+    try {
+        const verificationCheck = await client.verify.v2.services('VA57da475a2beaca5b1f40ecc57380bc53')
+            .verificationChecks
+            .create({to: username, code: code})
 
-    return true;
+        if (verificationCheck.status === "approved") {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (e) {
+        Logger(e);
+        return false;
+    }
 }
 
 UserSchema.methods.generateSessionToken = async function () {

@@ -1,23 +1,34 @@
-import {View} from "react-native";
+import {TextInput, TouchableOpacity, View} from "react-native";
 import PhoneInput from "react-native-phone-number-input";
 import {useEffect, useRef, useState} from "react";
 import TextComponent from "../Library/Text";
 import {AuthFormAction} from "../../screens/Auth";
 
-export default function AuthPhoneNumberStep({
+export default function AuthReferenceStep({
+    authMode,
+    setAuthMode,
     setPhoneNumber,
+    setEmailAuth,
     submitForm
 }: {
+    authMode: "EMAIL" | "PHONE_NUMBER",
+    setAuthMode: (mode: "EMAIL" | "PHONE_NUMBER") => void,
+    setEmailAuth: (email: string) => void,
     setPhoneNumber: (phoneNumber: string) => void,
     submitForm: (action: AuthFormAction) => void,
 }) {
 
+    const [email, setEmail] = useState<string>("");
     const [countryCodePart, setCountryCodePart] = useState<string>("1");
     const [phoneNumberPart, setPhoneNumberPart] = useState<string>("");
 
     useEffect(() => {
         setPhoneNumber("+"+countryCodePart + phoneNumberPart);
     }, [countryCodePart, phoneNumberPart]);
+
+    useEffect(() => {
+        setEmailAuth(email);
+    }, [email]);
 
 
     return <View style={{
@@ -39,7 +50,7 @@ export default function AuthPhoneNumberStep({
         >
             Let's get secure right away.
         </TextComponent>
-        <PhoneInput
+        {authMode === "PHONE_NUMBER" ? <PhoneInput
             defaultCode="CA"
             layout="second"
             placeholder="Your phone"
@@ -71,7 +82,40 @@ export default function AuthPhoneNumberStep({
                 fontFamily: "Red Hat Display Semi Bold",
             }}
             autoFocus={true}
-        />
+        /> : <TextInput
+            autoFocus={true}
+            autoComplete={"email"}
+            keyboardType={"email-address"}
+            returnKeyType='search'
+
+            placeholder={"Email"}
+            placeholderTextColor={"#a2a2a2"}
+            style={{
+                width: "100%",
+                height: 50,
+                borderRadius: 20,
+                color: "#FFFFFF",
+                textAlign: "center",
+                fontFamily: "Red Hat Display Bold",
+                marginTop: 20,
+                fontSize: email.length > 0 ? 20 : 35,
+            }}
+            onChangeText={(text) => {
+                setEmail(text)
+            }}
+
+        />}
+
+        <TouchableOpacity onPress={() => {
+            setAuthMode(authMode === "PHONE_NUMBER" ? "EMAIL" : "PHONE_NUMBER");
+        }}>
+            <TextComponent fontFamily={"Semi Bold"} fontColor={"white"} fontSize={15} numberOfLines={1} style={{
+                marginTop: 35,
+                letterSpacing: -0.5,
+            }}>
+                {authMode === "PHONE_NUMBER" ? "Use email instead ? (Login only)" : "Signup or login using your phone number"}
+            </TextComponent>
+        </TouchableOpacity>
 
     </View>
 }

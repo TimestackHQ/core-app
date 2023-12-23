@@ -16,12 +16,13 @@ import {
     getEvent,
     joinEvent,
     mediaList,
-    updatePeople, leaveEvent, updatePermissions, getPeople, muteEvent, getLinkedEvents, linkEvent
+    updatePeople, leaveEvent, updatePermissions, getPeople, muteEvent, getLinkedEvents, linkEvent, getMutualEvents
 } from "./events.controller";
 
 const router: Router = Router()
 
 router.get("/", authCheck, getAllEvents);
+router.get("/mutual/user/:userId", authCheck, getMutualEvents);
 router.get("/invites", authCheck, getAllInvites);
 router.get("/:eventId", authCheck, getEvent);
 router.get("/:eventId/linked-events", authCheck, getLinkedEvents);

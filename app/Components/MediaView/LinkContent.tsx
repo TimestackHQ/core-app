@@ -1,14 +1,17 @@
-import {Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {SearchBar} from "react-native-elements";
 import ListOfPeople from "../People/List";
 import SwipeUpDownModal from "react-native-swipe-modal-up-down";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useLayoutEffect, useState} from "react";
 import {useMutation, useQuery} from "react-query";
 import {listProfiles} from "../../queries/profiles";
 import {linkContent} from "../../queries/content";
 import {MediaHolderTypesType} from "@shared-types/*";
 import FastImage from "react-native-fast-image";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import {ManageContentLinksScreenNavigationProp, RootStackParamList} from "../../navigation";
+import TextComponent from "../Library/Text";
 
 export default function LinkContent({
     contentId,
@@ -24,6 +27,8 @@ export default function LinkContent({
     setIsLinkContentModalOpen: (isOpen: boolean) => void;
 }) {
 
+    const route = useRoute<RouteProp<RootStackParamList, "LinkContent">>();
+    const navigation = useNavigation<ManageContentLinksScreenNavigationProp>();
     const [searchPeople, setSearchPeople] = useState("");
 
     const [selectedProfiles, setSelectedProfiles] = React.useState<{
@@ -59,14 +64,33 @@ export default function LinkContent({
         }
     }, [mutation.isSuccess]);
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => <TouchableOpacity onPress={() => {
+                navigation.replace("ManageContentLinks", {
+                    contentId,
+                    people: route.params.people,
+                    sourceHolderId: route.params.sourceHolderId,
+                    holderType: route.params.holderType,
+                });
+            }} style={{
+                backgroundColor: "white",
+                borderRadius: 30,
+                borderColor: "black",
+                borderWidth: 1,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+            }}>
+                <TextComponent fontFamily={"Semi Bold"} style={{
+                    fontSize: 18,
+                }}>Add people</TextComponent>
+            </TouchableOpacity>
+        })
+    }, [navigation]);
+
 
     let [animateModal, setanimateModal] = useState(false);
-    return <SwipeUpDownModal
-        modalVisible={isLinkContentModalOpen}
-        PressToanimate={animateModal}
-        //if you don't pass HeaderContent you should pass marginTop in view of ContentModel to Make modal swipeable
-        ContentModal={
-            <View style={styles.containerContent}>
+    return <SafeAreaView style={styles.containerContent}>
                 {/*<Text>hello</Text>*/}
 
                 <View style={{
@@ -170,17 +194,8 @@ export default function LinkContent({
 
                 </View>
 
-            </View>
-        }
-        ContentModalStyle={styles.Modal}
+            </SafeAreaView>
 
-        onClose={() => {
-            setIsLinkContentModalOpen(false);
-            setanimateModal(false);
-            setSearchPeople("");
-            setSelectedProfiles([]);
-        }}
-    />
 }
 
 const styles = StyleSheet.create({

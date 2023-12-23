@@ -78,11 +78,14 @@ export const viewMedia = async (req: Request, res: Response<{
         }]);
 
         // @ts-ignore
-        const userIds = (media?.content as IContent)?.socialProfiles?.map((profile: SocialProfileInterface) => (profile.users as mongoose.Schema.Types.ObjectId[])).flat();
+        const userIdsAndProfileIds = (media?.content as IContent)?.socialProfiles?.map((profile: SocialProfileInterface) => ({
+            userId: String(profile.users.find((userId) => userId.toString() !== req.user._id.toString())),
+            profileId: profile._id
+        }));
 
         const people = await Models.User.find({
             _id: {
-                $in: userIds?.filter((id: mongoose.Schema.Types.ObjectId) => id.toString() !== req.user._id.toString())
+                $in: userIdsAndProfileIds.map(item => item.userId)
             }
         }).select("firstName lastName username profilePictureSource");
         if (!media) {
@@ -108,11 +111,12 @@ export const viewMedia = async (req: Request, res: Response<{
                 hasPermission:
             holder instanceof Models.Event ? holder?.hasPermission(req.user._id) : req.user._id.toString() === user?._id.toString(),
                 people: people.map((person: IUser) => ({
-                _id: person._id.toString(),
-                firstName: person.firstName,
-                lastName: person.lastName,
-                username: person.username,
-                profilePictureSource: person.profilePictureSource
+                    _id: person._id.toString(),
+                    firstName: person.firstName,
+                    lastName: person.lastName,
+                    username: person.username,
+                    profilePictureSource: person.profilePictureSource,
+                    profileId: userIdsAndProfileIds.find(item => item.userId === person._id.toString())?.profileId.toString()
             }))
         }
 

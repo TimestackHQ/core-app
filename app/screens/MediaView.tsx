@@ -13,7 +13,11 @@ import HTTPClient from "../httpClient";
 import moment from "moment-timezone";
 import { getTimezone } from "../utils/time";
 import * as React from "react";
-import {LinkContentScreenNavigationProp, RootStackParamList} from "../navigation";
+import {
+	LinkContentScreenNavigationProp,
+	ManageContentLinksScreenNavigationProp,
+	RootStackParamList
+} from "../navigation";
 import { BlurView } from "@react-native-community/blur";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import InnerMediaHolder from "../Components/InnerMediaHolder";
@@ -39,7 +43,7 @@ const { width } = Dimensions.get('window');
 
 export default function MediaView() {
 
-	const navigator = useNavigation<LinkContentScreenNavigationProp>();
+	const navigator = useNavigation<LinkContentScreenNavigationProp | ManageContentLinksScreenNavigationProp>();
 	const route = useRoute<RouteProp<RootStackParamList, "MediaView">>();
 	const isFocused = useIsFocused();
 
@@ -112,6 +116,8 @@ export default function MediaView() {
 
 				setMedia(res.data.media);
 
+				console.log(res.data.media)
+
 				if (isInGroup == 1 && current?.isGroup) {
 					ReactNativeHapticFeedback.trigger("impactHeavy", options);
 					setIsInGroup(2);
@@ -156,14 +162,14 @@ export default function MediaView() {
 			})
 			.catch(err => {
 				console.log(err);
-				Alert.alert("Error", "Unable to load media", [
-					{
-						text: "OK",
-						onPress: () => {
-							navigator.goBack();
-						}
-					}
-				])
+				// Alert.alert("Error", "Unable to load media", [
+				// 	{
+				// 		text: "OK",
+				// 		onPress: () => {
+				// 			navigator.goBack();
+				// 		}
+				// 	}
+				// ])
 			});
 
 	}, [currentIndex, gallery, isFocused]);
@@ -251,75 +257,85 @@ export default function MediaView() {
 				flex: 1,
 				flexDirection: "row",
 			}}>
-				<View style={{
-					flexDirection: 'row',
-					alignItems: 'center',
-					justifyContent: 'flex-end',
-					flex: 1,
-					marginLeft: 10, marginVertical: 15, marginTop: 10,
-					marginRight: 15
-
+				<TouchableWithoutFeedback onPress={() => {
+					navigator.navigate("ManageContentLinks", {
+						contentId: media?.contentId,
+						people: media?.people,
+						sourceHolderId: route.params?.holderId,
+						holderType: route.params?.holderType,
+					})
 				}}>
+					<View style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'flex-end',
+						flex: 1,
+						marginLeft: 10, marginVertical: 15, marginTop: 10,
+						marginRight: 15
 
-					{media?.people.length > 1 ? media?.people.map((user, i) => {
-						if (media.people.length > 7 && i === 7) {
-							return (
-								<TouchableWithoutFeedback style={{ marginLeft: 5 }}>
-									<View>
-										<View style={{
-											width: 20,
-											height: 20,
-											borderRadius: 30,
-											justifyContent: 'center',
-											alignItems: 'center',
-											marginLeft: 5,
-											backgroundColor: "black",
-											opacity: 0.6,
-											zIndex: 1,
-											position: "absolute",
-											right: 0,
-											bottom: 0,
-										}}>
-											<TextComponent
-												fontSize={10}
-												fontFamily={"Semi Bold"}
-												style={{
-													color: "white",
-												}}
-											>{12 - 6}</TextComponent>
+					}}>
+
+						{media?.people.length > 1 ? media?.people.map((user, i) => {
+							if (media.people.length > 7 && i === 7) {
+								return (
+									<TouchableWithoutFeedback style={{ marginLeft: 5 }}>
+										<View>
+											<View style={{
+												width: 20,
+												height: 20,
+												borderRadius: 30,
+												justifyContent: 'center',
+												alignItems: 'center',
+												marginLeft: 5,
+												backgroundColor: "black",
+												opacity: 0.6,
+												zIndex: 1,
+												position: "absolute",
+												right: 0,
+												bottom: 0,
+											}}>
+												<TextComponent
+													fontSize={10}
+													fontFamily={"Semi Bold"}
+													style={{
+														color: "white",
+													}}
+												>{media.people.length - 7}</TextComponent>
+
+											</View>
+											<ProfilePicture
+												pressToProfile={false}
+												key={i}
+												userId={user?._id.toString()}
+												width={20}
+												height={20}
+												location={user.profilePictureSource}
+												style={{ marginLeft: 5 }}
+											/>
 										</View>
-										<ProfilePicture
-											pressToProfile={false}
-											key={i}
-											userId={user?._id.toString()}
-											width={20}
-											height={20}
-											location={user.profilePictureSource}
-											style={{ marginLeft: 5 }}
-										/>
-									</View>
-								</TouchableWithoutFeedback>
-							);
-						} else if(i < 7) {
-							return (
-								<ProfilePicture
-									key={i}
-									userId={user._id.toString()}
-									style={{ marginLeft: 5, borderColor: "black", borderWidth: 1 }}
-									width={20}
-									height={20}
-									location={user.profilePictureSource}
-									pressToProfile={false}
-								/>
+									</TouchableWithoutFeedback>
+								);
+							} else if(i < 7) {
+								return (
+									<ProfilePicture
+										key={i}
+										userId={user._id.toString()}
+										style={{ marginLeft: 5, borderColor: "black", borderWidth: 1 }}
+										width={20}
+										height={20}
+										location={user.profilePictureSource}
+										pressToProfile={false}
+									/>
 
-							);
-						} else {
-							return null;
+								);
+							} else {
+								return null;
+							}
 						}
+						) : null}
 
-					}) : null}
-
-				</View>
+					</View>
+				</TouchableWithoutFeedback>
 			</View> : null}
 			<MediaViewNavBar
 				media={media}

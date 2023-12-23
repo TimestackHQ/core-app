@@ -9,6 +9,7 @@ import { SocialProfileScreenNavigationProp } from "../../navigation";
 import FastImage from "react-native-fast-image";
 
 export default function ListOfPeople({
+    disableRefresh = false,
     refresh,
     ListHeaderComponent,
     people,
@@ -17,8 +18,10 @@ export default function ListOfPeople({
     loading,
     mode = "clickToView",
     selectedProfiles,
-    profileSelected = (userId, profileId) => { }
+    profileSelected = (userId, profileId) => { },
+    pressToProfile = true
 }: {
+    disableRefresh?: boolean,
     refresh: () => void,
     ListHeaderComponent?: any,
     people: PeopleSearchResult["people"],
@@ -27,7 +30,8 @@ export default function ListOfPeople({
     loading: boolean,
     mode?: "clickToView" | "multiselect",
     selectedProfiles?: string[],
-    profileSelected?: (userId: PeopleSearchResult["people"][0]["_id"], profileId: PeopleSearchResult["people"][0]["profileId"]) => void
+    profileSelected?: (userId: PeopleSearchResult["people"][0]["_id"], profileId: PeopleSearchResult["people"][0]["profileId"]) => void,
+    pressToProfile?: boolean
 }) {
 
     const navigator = useNavigation<SocialProfileScreenNavigationProp>();
@@ -82,7 +86,8 @@ export default function ListOfPeople({
             })]}
         </View> : <View>
             <FlatList
-                refreshControl={<RefreshControl
+                contentInsetAdjustmentBehavior="automatic"
+                refreshControl={disableRefresh ? undefined : <RefreshControl
                     refreshing={loading}
                     onRefresh={refresh}
                 />}
@@ -118,7 +123,7 @@ export default function ListOfPeople({
                             }}>
                                 <ProfilePicture
                                     userId={item._id}
-                                    pressToProfile
+                                    pressToProfile={pressToProfile}
                                     width={50}
                                     height={50}
                                     location={item.profilePictureSource}

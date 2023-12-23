@@ -181,12 +181,12 @@ export default function HomeScreen({ route }) {
 					<TextComponent fontFamily="Semi Bold" fontSize={16}>
 						Recents
 					</TextComponent>
-					<SmallButton
-						variant="positive"
-						body="Add People"
-						fontSize={16}
-						width={120}
-					/>
+					{/*<SmallButton*/}
+					{/*	variant="positive"*/}
+					{/*	body="Add People"*/}
+					{/*	fontSize={16}*/}
+					{/*	width={120}*/}
+					{/*/>*/}
 				</View>
 				<View style={{
 					paddingTop: 0
@@ -223,14 +223,14 @@ export default function HomeScreen({ route }) {
 					reducedTransparencyFallbackColor="light"
 				>
 					<TextComponent fontFamily="Semi Bold" fontSize={16}>
-						Recents
+						On Timestack
 					</TextComponent>
-					<SmallButton
-						variant="positive"
-						body="Add People"
-						fontSize={16}
-						width={120}
-					/>
+					{/*<SmallButton*/}
+					{/*	variant="positive"*/}
+					{/*	body="Add People"*/}
+					{/*	fontSize={16}*/}
+					{/*	width={120}*/}
+					{/*/>*/}
 				</BlurView>
 				<View style={{
 					paddingTop: 0

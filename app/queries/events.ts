@@ -2,12 +2,14 @@ import { QueryFunctionContext } from "react-query";
 import HTTPClient from "../httpClient";
 import { EventObject } from "@api-types/public";
 
-export async function getEvents({ queryKey: [_key, { skip, limit }] }: QueryFunctionContext<[string, {
+export async function getEvents({ queryKey: [_key, { q, skip, limit }] }: QueryFunctionContext<[string, {
+    q?: string,
     skip?: number,
     limit?: number
 }]>) {
 
     const queryParams = new URLSearchParams({
+        q: q ?? "",
         skip: skip?.toString() ?? "0",
         limit: limit?.toString() ?? "10"
     });
@@ -15,6 +17,27 @@ export async function getEvents({ queryKey: [_key, { skip, limit }] }: QueryFunc
     const { data } = await HTTPClient<{
         events: EventObject[],
     }>(`/events?${queryParams.toString()}`, "GET");
+
+    return data.events;
+
+}
+
+export async function getMutualEvents({ queryKey: [_key, { userId, q, skip, limit }] }: QueryFunctionContext<[string, {
+    q?: string,
+    userId: string,
+    skip?: number,
+    limit?: number
+}]>) {
+
+    const queryParams = new URLSearchParams({
+        q: q ?? "",
+        skip: skip?.toString() ?? "0",
+        limit: limit?.toString() ?? "10"
+    });
+
+    const { data } = await HTTPClient<{
+        events: EventObject[],
+    }>(`/events/mutual/user/${userId}?${queryParams.toString()}`, "GET");
 
     return data.events;
 

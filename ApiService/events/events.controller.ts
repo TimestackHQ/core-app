@@ -9,6 +9,7 @@ import { MediaInternetType } from "../../shared/@types/public";
 import mongoose from "mongoose";
 import { EventObject } from "../@types/dto";
 import { IEvent } from "shared/models/Event";
+import {eventsDTOs} from "./events.helpers";
 
 export async function createEvent(req: Request, res: Response, next: NextFunction) {
 
@@ -236,54 +237,40 @@ export async function getAllEvents(req: Request, res: Response, next: NextFuncti
             }
         };
 
-        const skip = req.query.skip ? req.query.skip : 0;
-
-
-        // @ts-ignore
-        const events = await Models.Event.find(query)
-            .sort({ startsAt: -1 })
-            .skip(Number(skip)).limit(Number(req.query?.limit) || 100)
-            .populate([{
-                path: "cover",
-            },
-            {
-                path: "users",
-                select: "firstName lastName profilePictureSource username",
-                options: {
-                    limit: 6
-                }
-            }])
-            .select("-media");
-
+        const events = await eventsDTOs(req, query)
 
         res.json({
-            events: await Promise.all(events.map(async (event, i) => {
-
-                const cover = event.cover as IMedia;
-
-
-                const media = await Models.Media.countDocuments({
-                    event: event._id
-                })
-
-                return {
-                    ...event.toJSON(),
-                    peopleCount: Number((await Models.Event.findById(event._id))?.users.length) + event.invitees?.length + event.nonUsersInvitees?.length,
-                    mediaCount: event.content.length,
-                    users: undefined,
-                    invitees: undefined,
-                    nonUsersInvitees: undefined,
-                    media: undefined,
-                    cover: undefined,
-                    people: [
-                        ...event.users,
-                    ],
-                    content: undefined,
-                    thumbnailUrl: await cover?.getThumbnailLocation(),
-                }
-
-            }))
+            events
         });
+
+    } catch (e) {
+        next(e);
+    }
+
+}
+
+
+export async function getMutualEvents(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const query = req.query?.q ? {
+            $text: { $search: req.query?.q },
+            users: {
+                $in: [req.user._id, req.params.userId]
+            }
+        } : {
+            users: {
+                $in: [req.user._id, req.params.userId]
+            }
+        };
+
+        const events = await eventsDTOs(req, query)
+
+        res.json({
+            events
+        });
+
 
     } catch (e) {
         next(e);

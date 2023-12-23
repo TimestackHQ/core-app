@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Models } from "../../shared";
-import {LinkContent} from "./content.validator";
+import {LinkContent, UnlinkContent} from "./content.validator";
+import mongoose from "mongoose";
 
 
 export async function linkContent(req: Request<{ contentId: string }, any, LinkContent>, res: Response, next: NextFunction) {
@@ -48,7 +49,10 @@ export async function linkContent(req: Request<{ contentId: string }, any, LinkC
 
         if(req.body.holderType === "event") {
             await Models.Content.updateOne({
-                _id: content._id
+                _id: content._id,
+                events: {
+                    $nin: [targetHolder._id]
+                }
             }, {
                 $push: {
                     events: targetHolder._id
@@ -57,7 +61,10 @@ export async function linkContent(req: Request<{ contentId: string }, any, LinkC
         }
         else if (req.body.holderType === "socialProfile") {
             await Models.Content.updateOne({
-                _id: content._id
+                _id: content._id,
+                socialProfiles: {
+                    $nin: [targetHolder._id]
+                }
             }, {
                 $push: {
                     socialProfiles: targetHolder._id
@@ -74,3 +81,60 @@ export async function linkContent(req: Request<{ contentId: string }, any, LinkC
     }
 
 }
+
+export async function unlinkContent(req: Request<{
+    contentId: string;
+}, any, UnlinkContent>, res: Response, next: NextFunction) {
+    try {
+        const content = await Models.Content.findOne({
+            _id: req.params.contentId,
+        });
+
+        if(!content) return res.sendStatus(404);
+
+        await Models.Event.updateMany({
+            _id: {
+                $in: req.body.eventsToUnlink
+            },
+            users: {
+                $in: [req.user._id]
+            }
+        }, {
+            $pull: {
+                content: content._id
+            }
+        });
+
+        await Models.SocialProfile.updateMany({
+            _id: {
+                $in: req.body.socialProfilesToUnlink
+            },
+            users: {
+                $in: [req.user._id]
+            }
+        }, {
+            $pull: {
+                content: content._id
+            }
+        });
+
+        await Models.Content.updateOne({
+            _id: content._id
+        }, {
+            $pull: {
+                events: {
+                    $in: req.body.eventsToUnlink
+                },
+                socialProfiles: {
+                    $in: req.body.socialProfilesToUnlink
+                }
+            }
+        });
+
+        return res.sendStatus(200);
+
+    } catch (e) {
+        next(e);
+    }
+}
+

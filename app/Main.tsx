@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
 import {Image} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {TouchableOpacity, View, Text, StatusBar} from "react-native";
-import {useEffect, useRef, useState} from "react";
+import {TouchableOpacity, View, Text} from "react-native";
+import {useEffect} from "react";
 import * as Notifications from 'expo-notifications';
-import axios from "axios";
-import Constants from "expo-constants";
+import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -28,26 +28,21 @@ export default function Main({baseRoute, frontendUrl, navigation, session}) {
         webviewRef.current?.reload();
     }, [baseRoute]);
 
-
     const webviewRef = React.createRef();
-    const modalRef = React.createRef();
-    const [viewtype, setViewtype] = React.useState("safe");
     const [uri , setUri] = React.useState(null);
-    const [modalData, setModalData] = React.useState({
-        type: null,
-        payload: null
-    });
 
 
     return (
         <View style={{flex: 1, flexDirection: 'row', flexGrow: 1}}>
             <WebView
+                pullToRefreshEnabled
                 scalesPageToFit={false}
                 renderError={() => {
                     return <ViewError webviewRef={webviewRef}/>;
                 }}
+
                 source={{ uri: uri ? uri : frontendUrl+baseRoute }}
-                injectedJavaScript={`window.localStorage.setItem("TIMESTACK_SESSION", "${session}");window.localStorage.setItem("appVersion", "0.0.15-1"); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
+                injectedJavaScript={`window.localStorage.setItem("TIMESTACK_TOKEN", "${session}");window.localStorage.setItem("appVersion", "0.0.15-1"); meta.setAttribute('content', 'width=width, initial-scale=1, maximum-scale=1, user-scalable=0'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
                 onNavigationStateChange={async (event) => {
                     setUri(event.url);
                 }}
@@ -61,6 +56,18 @@ export default function Main({baseRoute, frontendUrl, navigation, session}) {
                             navigation.navigate(message.payload[0], message.payload[1]);
                         }
                     }
+
+                    if(message.request === "openLink") {
+                        console.log("Opening link", message.link);
+                        await WebBrowser.openBrowserAsync(message.link)
+                    }
+
+                    if(message.request === "clearSession") {
+                        console.log("Clearing session");
+                        await AsyncStorage.removeItem("@session");
+                    }
+
+
 
                 }}
             />
