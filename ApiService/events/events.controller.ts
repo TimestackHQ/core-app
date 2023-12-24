@@ -257,11 +257,11 @@ export async function getMutualEvents(req: Request, res: Response, next: NextFun
         const query = req.query?.q ? {
             $text: { $search: req.query?.q },
             users: {
-                $in: [req.user._id, req.params.userId]
+                $all: [req.user._id, req.params.userId]
             }
         } : {
             users: {
-                $in: [req.user._id, req.params.userId]
+                $all: [req.user._id, req.params.userId]
             }
         };
 
