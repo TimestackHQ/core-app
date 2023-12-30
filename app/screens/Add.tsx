@@ -22,7 +22,6 @@ import HTTPClient from "../httpClient";
 import { useEffect } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { getTimezone } from "../utils/time";
-import * as FileSystem from "expo-file-system";
 import * as TimestackCoreModule from "../modules/timestack-core";
 
 

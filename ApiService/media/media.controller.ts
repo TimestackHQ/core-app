@@ -83,6 +83,8 @@ export const viewMedia = async (req: Request, res: Response<{
             profileId: profile._id
         }));
 
+        console.log("MEDUA", userIdsAndProfileIds)
+
         const people = await Models.User.find({
             _id: {
                 $in: userIdsAndProfileIds.map(item => item.userId)
@@ -124,6 +126,7 @@ export const viewMedia = async (req: Request, res: Response<{
             media: response
         });
     } catch (e) {
+        console.log(e)
         next(e);
     }
 
@@ -250,6 +253,17 @@ export async function createMedia(req: Request, res: Response, next: NextFunctio
                         });
 
 
+                    } else {
+                        content = await Models.Content.findOne({
+                            contentType: "mediaGroup",
+                            contentId: group._id
+                        });
+
+                        if (content) {
+                            await content.updateOne({
+                                timestamp: query.timestamp ? moment.utc(query?.timestamp, "YYYY-MM-DDTHH:mm:ss.SSSZ").toDate() : new Date(),
+                            });
+                        }
                     }
 
                 } else {

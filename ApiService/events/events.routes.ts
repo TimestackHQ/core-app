@@ -1,4 +1,4 @@
-import { Router } from "express";
+  import { Router } from "express";
 import { HTTPValidator, authCheck } from "../../shared";
 import {
     createEventValidator,

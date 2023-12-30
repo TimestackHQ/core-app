@@ -1,13 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import { Models } from "../../shared";
 import * as jwt from "jsonwebtoken";
-import moment = require("moment");
+import moment from "moment";
 import {
     HTTPConfirmLoginQueryRequest, HTTPConfirmLoginQueryResponse,
     HTTPInitLoginQueryRequest,
     HTTPInitLoginQueryResponse
 } from "../@types/transations";
 
+/**
+ * Log in a user.
+ *
+ * @param {Request<any, any, HTTPInitLoginQueryRequest>} req - The request object containing login data.
+ * @param {Response<HTTPInitLoginQueryResponse>} res - The response object to send back to the client.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} - Promise that resolves with the login result.
+ */
 export async function login(req: Request<any, any, HTTPInitLoginQueryRequest>, res: Response<HTTPInitLoginQueryResponse>, next: NextFunction) {
 
     try {
@@ -52,6 +60,16 @@ export async function login(req: Request<any, any, HTTPInitLoginQueryRequest>, r
 
 }
 
+/**
+ * Confirms user login by validating the provided username and code against the database.
+ * If the user is confirmed, generates a session token and returns it along with the user's confirmation status.
+ *
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ * @param {NextFunction} next - The next function to call in the Express middleware chain.
+ *
+ * @returns {Promise} - A promise that resolves with the confirmation status and session token if successful, or rejects with an error.
+ */
 export async function confirmLogin(req: Request<any, any, HTTPConfirmLoginQueryRequest>, res: Response<HTTPConfirmLoginQueryResponse>, next: NextFunction) {
     try {
         const { username, code } = req.body;
@@ -109,6 +127,14 @@ export async function confirmLogin(req: Request<any, any, HTTPConfirmLoginQueryR
 
 }
 
+/**
+ * Registers a user.
+ *
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<Response>} The response containing a message and a session token.
+ */
 export async function register(req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -193,6 +219,14 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 
 }
 
+/**
+ * Checks if the user is on waitlist, confirmed or unconfirmed.
+ *
+ * @param {Request} req - The request object from Express.js.
+ * @param {Response} res - The response object from Express.js.
+ * @param {NextFunction} next - The next function from Express.js.
+ * @returns {Response} - The response sent back to the client.
+ */
 export const check = (req: Request, res: Response, next: NextFunction) => {
     try {
         return res.status(200).json({
@@ -203,6 +237,17 @@ export const check = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+/**
+ * Updates the push token for a specific user.
+ *
+ * @param {Object} req - The Request object.
+ * @param {Object} res - The Response object.
+ * @param {Function} next - The next middleware function.
+ *
+ * @returns {Promise<Object>} - A Promise that resolves to a JSON object with a success message.
+ *
+ * @throws {Error} - If an error occurs during the execution.
+ */
 export async function notificationLink(req: Request, res: Response, next: NextFunction) {
     try {
         const { authorization } = req.headers;
@@ -235,6 +280,17 @@ export async function notificationLink(req: Request, res: Response, next: NextFu
     }
 }
 
+/**
+ * Deletes the user account.
+ *
+ * @function deleteAccount
+ * @async
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function in the middleware chain.
+ * @returns {Promise<void>} - Returns a JSON response with a success message and the scheduled deletion date.
+ * @throws {Error} - Throws an error if there was a problem updating the user account.
+ */
 export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await Models.User.updateOne({
@@ -254,6 +310,17 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
     }
 }
 
+/**
+ * Aborts the deletion of a user account.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {function} next - The next function in the middleware chain.
+ *
+ * @returns {Promise} - A promise that resolves to the response object.
+ *
+ * @throws {Error} - If an error occurs while aborting the deletion.
+ */
 export const abortDeleteAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await Models.User.updateOne({

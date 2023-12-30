@@ -65,10 +65,10 @@ export default function SocialProfile({ }) {
     });
 
 
-
     useEffect(() => {
         console.log(queueCounter);
-        if (queueCounter === 0) {
+        const isQueueEmpty = queueCounter === 0;
+        if (isQueueEmpty) {
             getGallery(true);
         }
     }, [queueCounter])
