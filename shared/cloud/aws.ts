@@ -4,8 +4,8 @@ import * as aws4 from 'aws4';
 import { AWSS3ObjectType } from '../@types/global';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 
-const AWS_ACCESS_KEY_ID = 'AKIAUAFCOME3MI6RJV5J';
-const AWS_SECRET_ACCESS_KEY = '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';
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 
 AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY_ID,
