@@ -1,4 +1,4 @@
-# timestack-core
+# pixelpack
 
 My new module
 
@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install timestack-core
+npm install pixelpack
 ```
 
 ### Configure for iOS
